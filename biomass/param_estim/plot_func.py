@@ -1,15 +1,14 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from biomass.observable import observable_names, num_observables
-from biomass.experimental_data import ExperimentalData
+from biomass.observable import observable_names, num_observables, ExperimentalData
 
 def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
 
     exp = ExperimentalData()
 
     for j,title in enumerate(observable_names):
-        
+
         plt.figure(figsize=(4,3))
         plt.gca().spines['right'].set_visible(False)
         plt.gca().spines['top'].set_visible(False)
@@ -17,7 +16,7 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
         plt.rcParams['axes.linewidth'] = 1
         plt.rcParams['lines.linewidth'] = 2
         plt.rcParams['lines.markersize'] = 10
-        
+
         if show_all:
             for i in range(n_file):
                 plt.plot(sim.t,simulations_all[j,i,:,0]/np.max(simulations_all[j,i,:,:]),'b',alpha=0.05)
@@ -46,7 +45,7 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
                     sim.t, mean_hrg - yerr_hrg, mean_hrg + yerr_hrg,
                     lw=0,color='r',alpha=0.1
                 )
-                
+
         if exp.experiments[j] is not None:
             exp_t = exp.get_timepoint(j)
             plt.plot(exp_t/60.,exp.experiments[j]['EGF'],'D',markerfacecolor='None',markeredgecolor='b',clip_on=False)

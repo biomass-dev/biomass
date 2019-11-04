@@ -9,8 +9,7 @@ from biomass.model.name2idx import variables as V
 from biomass.model import differential_equation as de
 from biomass.model.param_const import f_params
 from biomass.model.initial_condition import initial_values
-from biomass.observable import species
-from biomass.simulation import solveode, NumericalSimulation
+from biomass.observable import species, NumericalSimulation
 from biomass.param_estim.search_parameter import search_parameter_index
 
 """
@@ -31,10 +30,10 @@ def analyze_sensitivity(num_reaction):
     sim = NumericalSimulation()
 
     rate = 1.01 # 1% change
-    
+
     x = f_params()
     y0 = initial_values()
-    
+
     n_file = 0
     fitparam_files = os.listdir('./out')
     for file in fitparam_files:
@@ -43,7 +42,7 @@ def analyze_sensitivity(num_reaction):
 
     signaling_metric_cfos_mRNA = np.ones((n_file,num_reaction,sim.condition))*np.nan
     signaling_metric_PcFos     = np.ones((n_file,num_reaction,sim.condition))*np.nan
-    
+
     search_idx = search_parameter_index()
 
     for i in range(n_file):
@@ -55,7 +54,7 @@ def analyze_sensitivity(num_reaction):
                 x[n] = best_indiv[m]
             for m,n in enumerate(search_idx[1]):
                 y0[n] = best_indiv[m+len(search_idx[0])]
-                
+
             for j in range(num_reaction):
                 de.perturbation = [1]*num_reaction
                 de.perturbation[j] = rate
@@ -70,16 +69,16 @@ def analyze_sensitivity(num_reaction):
                             simps(
                                 sim.simulations[species['Phosphorylated_cFos'],:,k]
                             )
-                
+
                 sys.stdout.write('\r%d/%d'%(i*num_reaction+j+1,n_file*num_reaction))
-    
+
     sensitivity_coefficients_cfos_mRNA = np.empty((n_file,num_reaction,sim.condition))
     sensitivity_coefficients_PcFos = np.empty((n_file,num_reaction,sim.condition))
-    
+
     for l in range(n_file):
         sensitivity_coefficients_cfos_mRNA[l,:,:] = \
             np.log(signaling_metric_cfos_mRNA[l,:,:]/signaling_metric_cfos_mRNA[l,0,:])/np.log(rate/1)
-            
+
         sensitivity_coefficients_PcFos[l,:,:] = \
             np.log(signaling_metric_PcFos[l,:,:]/signaling_metric_PcFos[l,0,:])/np.log(rate/1)
 

@@ -6,8 +6,6 @@ from biomass.model.name2idx import variables as V
 from biomass.model.param_const import f_params
 from biomass.model.initial_condition import initial_values
 from biomass.observable import *
-from biomass.simulation import NumericalSimulation
-from biomass.experimental_data import ExperimentalData
 from .ga.converter import decode_gene2variable
 
 def compute_objval_abs(sim_data,exp_data):  # Residual Sum of Squares
@@ -32,7 +30,7 @@ def objective(individual_gene,search_idx,search_region):
         x[j] = indiv[i]
     for i,j in enumerate(search_idx[1]):
         y0[j] = indiv[i+len(search_idx[0])]
-        
+
     # constraints ==============================================================
     x[C.V6] = x[C.V5]
     x[C.Km6] = x[C.Km5]
@@ -70,7 +68,7 @@ def objective(individual_gene,search_idx,search_region):
                 )
         '''
         error = np.zeros(16)
-        
+
         norm_max = np.max(sim.simulations[species['Phosphorylated_MEKc']])
         error[0] = compute_objval_abs(
             sim.simulations[species['Phosphorylated_MEKc']][exp.t2,0]/norm_max,
@@ -80,7 +78,7 @@ def objective(individual_gene,search_idx,search_region):
             sim.simulations[species['Phosphorylated_MEKc']][exp.t2,1]/norm_max,
             exp.experiments[species['Phosphorylated_MEKc']]['HRG']
         )
-        
+
         norm_max = np.max(sim.simulations[species['Phosphorylated_ERKc']])
         error[2] = compute_objval_abs(
             sim.simulations[species['Phosphorylated_ERKc']][exp.t2,0]/norm_max,
@@ -90,7 +88,7 @@ def objective(individual_gene,search_idx,search_region):
             sim.simulations[species['Phosphorylated_MEKc']][exp.t2,1]/norm_max,
             exp.experiments[species['Phosphorylated_ERKc']]['HRG']
         )
-        
+
         norm_max = np.max(sim.simulations[species['Phosphorylated_RSKw']])
         error[4] = compute_objval_abs(
             sim.simulations[species['Phosphorylated_RSKw']][exp.t2,0]/norm_max,
@@ -100,7 +98,7 @@ def objective(individual_gene,search_idx,search_region):
             sim.simulations[species['Phosphorylated_RSKw']][exp.t2,1]/norm_max,
             exp.experiments[species['Phosphorylated_RSKw']]['HRG']
         )
-        
+
         norm_max = np.max(sim.simulations[species['Phosphorylated_CREBw']])
         error[6] = compute_objval_abs(
             sim.simulations[species['Phosphorylated_CREBw']][exp.t3,0]/norm_max,
@@ -110,7 +108,7 @@ def objective(individual_gene,search_idx,search_region):
             sim.simulations[species['Phosphorylated_CREBw']][exp.t3,1]/norm_max,
             exp.experiments[species['Phosphorylated_CREBw']]['HRG']
         )
-        
+
         norm_max = np.max(sim.simulations[species['dusp_mRNA']])
         error[8] = compute_objval_abs(
             sim.simulations[species['dusp_mRNA']][exp.t5,0]/norm_max,
@@ -120,7 +118,7 @@ def objective(individual_gene,search_idx,search_region):
             sim.simulations[species['dusp_mRNA']][exp.t5,1]/norm_max,
             exp.experiments[species['dusp_mRNA']]['HRG']
         )
-        
+
         norm_max = np.max(sim.simulations[species['cfos_mRNA']])
         error[10] = compute_objval_abs(
             sim.simulations[species['cfos_mRNA']][exp.t4,0]/norm_max,
@@ -130,7 +128,7 @@ def objective(individual_gene,search_idx,search_region):
             sim.simulations[species['cfos_mRNA']][exp.t4,1]/norm_max,
             exp.experiments[species['cfos_mRNA']]['HRG']
         )
-        
+
         norm_max = np.max(sim.simulations[species['cFos_Protein']])
         error[12] = compute_objval_abs(
             sim.simulations[species['cFos_Protein']][exp.t5,0]/norm_max,
@@ -140,7 +138,7 @@ def objective(individual_gene,search_idx,search_region):
             sim.simulations[species['cFos_Protein']][exp.t5,1]/norm_max,
             exp.experiments[species['cFos_Protein']]['HRG']
         )
-        
+
         norm_max = np.max(sim.simulations[species['Phosphorylated_cFos']])
         error[14] = compute_objval_abs(
             sim.simulations[species['Phosphorylated_cFos']][exp.t2,0]/norm_max,
