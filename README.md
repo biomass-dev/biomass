@@ -1,6 +1,7 @@
 # BioMASS
 ## Modeling and Analysis of Signaling Systems
-![intro](public/images/intro.png)
+<img align="left" src=public/images/logo.png width="300">
+Mathematical modeling has the power to simplify and understand the input-output mechanism of biological systems. Although there are many researches devoted on producing models to describe dynamical cellular signaling systems, most of these models are limited and do not cover multiple pathways. Therefore, there is a challenge to combine these models to enable understanding at a larger scale. Nevertheless, larger network means that it gets more difficult to estimate parameters to reproduce dynamic experimental data needed for deeper understanding of a system. To overcome these problems, we developed BioMASS, a modeling platform tailored to optimizing mathematical models of biological processes. By using BioMASS, users can efficiently optimize kinetic parameters to fit user-defined models to experimental data, while performing analysis on reaction networks to predict critical components affecting cellular output.
 
 ## Description
 BioMASS is a biological modeling environment tailored to
@@ -11,25 +12,36 @@ BioMASS is a biological modeling environment tailored to
 currently implimented for modeling early transcriptional regulation pathway ([Nakakuki *et al., Cell*, 2010](https://doi.org/10.1016/j.cell.2010.03.054)).
 
 ## Dependencies
-- Python 3+
-- numpy, scipy, matplotlib, seaborn
+> - Python 3+
+> - numpy, scipy, matplotlib, seaborn
 
 ## Usage
 #### Parameter Estimation of ODE Models (*n* = 1, 2, 3, · · ·)
-```bash 
+The temporary result will be saved in **out/*n*/out.log** after each iteration.
+```bash
 $ nohup python run_ga.py n &
-``` 
+```
 - If you want to continue from where you stopped in the last parameter search,
-```bash 
+```bash
 $ nohup python run_ga_continue.py n &
-``` 
+```
 ---
 #### Visualization of Simulation Results
 ```bash
 $ python run_sim.py
 ```
+- viz_type='average',show_all=False,stdev=True
+![simulation_average](public/images/simulation_average.png)
+
+- viz_type='best',show_all=True,stdev=False
+![simulation_best](public/images/simulation_best.png)
 ---
 #### Sensitivity Analysis
+The single parameter sensitivity of each reaction is defined by<br>
+
+*s<sub>i</sub>*(*q*(**v**),*v<sub>i</sub>*) = *∂* ln(*q*(**v**)) / *∂* ln(*v<sub>i</sub>*) = *∂*_q_(**v**) / *∂*_v<sub>i</sub>_ · *v<sub>i</sub>* / *q*(**v**)
+
+where *v<sub>i</sub>* is the *i*<sup>th</sup> reaction rate, **v** is reaction vector **v** = (*v<sub>1</sub>*, *v<sub>2</sub>*, ...) and *q*(**v**) is a target function, e.g., time-integrated response, duration. Sensitivity coefficients were calculated using finite difference approximations with 1% changes in the reaction rates.
 ```bash
 $ python run_analysis.py
 ```
