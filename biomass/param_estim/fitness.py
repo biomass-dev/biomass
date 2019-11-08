@@ -85,7 +85,7 @@ def objective(individual_gene,search_idx,search_region):
             exp.experiments[species['Phosphorylated_ERKc']]['EGF']
         )
         error[3] = compute_objval_abs(
-            sim.simulations[species['Phosphorylated_MEKc']][exp.t2,1]/norm_max,
+            sim.simulations[species['Phosphorylated_ERKc']][exp.t2,1]/norm_max,
             exp.experiments[species['Phosphorylated_ERKc']]['HRG']
         )
 
