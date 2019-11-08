@@ -1,4 +1,5 @@
 import sys
+import time
 import numpy as np
 
 from .converter import *
@@ -10,6 +11,12 @@ from biomass.param_estim.search_parameter import search_parameter_index
 from biomass.param_estim.search_parameter import get_search_region
 
 def optimize_continue(nth_paramset):
+    
+    np.random.seed(
+        int(
+            time.time()/nth_paramset
+        )
+    )
 
     search_idx = search_parameter_index()
     search_region = get_search_region()
