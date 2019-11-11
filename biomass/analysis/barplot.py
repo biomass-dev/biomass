@@ -55,6 +55,7 @@ def visualize_sensivity():
     stdev = np.nanstd(s_cFosmRNA,axis=0,ddof=1)
 
     draw_vertical_span(reaction_module,num_reaction,width)
+    plt.hlines([0],-width,num_reaction-1-width,'k',lw=1)
     plt.bar(np.arange(num_reaction),average[sort_idx,0],
             yerr = stdev[sort_idx,0],ecolor='b',capsize=2,
             width=width,color='b',align='center',label='EGF')
@@ -96,6 +97,7 @@ def visualize_sensivity():
     stdev = np.nanstd(s_PcFos,axis=0,ddof=1)
 
     draw_vertical_span(reaction_module,num_reaction,width)
+    plt.hlines([0],-width,num_reaction-1-width,'k',lw=1)
     plt.bar(np.arange(num_reaction),average[sort_idx,0],
             yerr = stdev[sort_idx,0],ecolor='b',capsize=2,
             width=width,color='b',align='center',label='EGF')
