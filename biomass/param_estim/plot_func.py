@@ -13,6 +13,11 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
         plt.gca().spines['right'].set_visible(False)
         plt.gca().spines['top'].set_visible(False)
         plt.rcParams['font.size'] = 12
+        """
+        plt.rcParams['font.family'] = 'Arial'
+        plt.rcParams['mathtext.fontset'] = 'custom'
+        plt.rcParams['mathtext.it'] = 'Arial:italic'
+        """
         plt.rcParams['axes.linewidth'] = 1
         plt.rcParams['lines.linewidth'] = 2
         plt.rcParams['lines.markersize'] = 10
