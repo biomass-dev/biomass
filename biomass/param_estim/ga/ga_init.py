@@ -13,7 +13,7 @@ from biomass.param_estim.search_parameter import get_search_region
 def optimize(nth_paramset):
     
     np.random.seed(
-        time.time_ns()*nth_paramset%(2**32-1)
+        time.time_ns()*nth_paramset%2**32
     )
 
     search_idx = search_parameter_index()
