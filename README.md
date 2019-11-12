@@ -45,6 +45,7 @@ where *v<sub>i</sub>* is the *i*<sup>th</sup> reaction rate, **v** is reaction v
 ```bash
 $ python run_analysis.py
 ```
+![sensitivity_PcFos](public/images/sensitivity_PcFos.png)
 
 ## Installation
     $ git clone https://github.com/okadalabipr/biomass.git
