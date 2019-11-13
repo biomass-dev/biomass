@@ -1,10 +1,37 @@
 import os
 import numpy as np
 from matplotlib import pyplot as plt
+import seaborn as sns
 
 from .reaction_module import get_reaction_module
 from .sensitivity import analyze_sensitivity
 
+
+num_reaction = 64  # Num. of Rate Equations
+width = 0.3
+
+if not os.path.isfile('sensitivities/s_cFosmRNA.npy') or not os.path.isfile('sensitivities/s_PcFos.npy'):
+    os.makedirs('./sensitivities', exist_ok=True)
+    (s_cFosmRNA, s_PcFos) = analyze_sensitivity(num_reaction)
+    np.save('sensitivities/s_cFosmRNA',s_cFosmRNA)
+    np.save('sensitivities/s_PcFos',s_PcFos)
+else:
+    s_cFosmRNA = np.load('sensitivities/s_cFosmRNA.npy')
+    s_PcFos = np.load('sensitivities/s_PcFos.npy')
+    
+reaction_module = get_reaction_module()
+
+sort_idx = [0]*num_reaction
+left_end = 0
+for i,ith_module in enumerate(reaction_module):
+    for j,k in enumerate(ith_module):
+        if i != 0 and j == 0:
+            left_end += len(reaction_module[i-1])
+        sort_idx[left_end+j] = k
+
+reaction_number = [str(i) for i in sort_idx]
+    
+    
 def draw_vertical_span(reaction_module,num_reaction,width):
     left_end = 0
     for i,ith_module in enumerate(reaction_module):
@@ -17,34 +44,7 @@ def draw_vertical_span(reaction_module,num_reaction,width):
         left_end += len(ith_module)
         
 
-def visualize_sensivity():
-    
-    num_reaction = 64  # Num. of Rate Equations
-    width = 0.3
-    
-    if not os.path.isfile('sensitivities/s_cFosmRNA.npy') or not os.path.isfile('sensitivities/s_PcFos.npy'):
-        os.makedirs('./sensitivities', exist_ok=True)
-        (s_cFosmRNA, s_PcFos) = analyze_sensitivity(num_reaction)
-        np.save('sensitivities/s_cFosmRNA',s_cFosmRNA)
-        np.save('sensitivities/s_PcFos',s_PcFos)
-    else:
-        s_cFosmRNA = np.load('sensitivities/s_cFosmRNA.npy')
-        s_PcFos = np.load('sensitivities/s_PcFos.npy')
-        
-    reaction_module = get_reaction_module()
-    
-    sort_idx = [0]*num_reaction
-    left_end = 0
-    for i,ith_module in enumerate(reaction_module):
-        for j,k in enumerate(ith_module):
-            if i != 0 and j == 0:
-                left_end += len(reaction_module[i-1])
-            sort_idx[left_end+j] = k
-
-    reaction_number = [str(i) for i in sort_idx]
-    
-    # ==========================================================================
-    
+def sensitivity_barplot():
     plt.figure(figsize=(12,5))
     plt.rcParams['font.size'] = 15
     plt.rcParams['font.family'] = 'Arial'
@@ -125,3 +125,83 @@ def visualize_sensivity():
     plt.legend(loc='lower right',frameon=False)
 
     plt.savefig('figure/sensitivity_PcFos.pdf',bbox_inches='tight')
+    
+    
+def sensitivity_heatmap():
+    # e.g. Sensitivity coefficients on duration (c-fos mRNA, HRG-induced)
+    sensitivity_matrix = s_cFosmRNA[:,sort_idx[:-1],1]
+    
+    # Normalize from -1 to 1
+    nanidx =[]
+    for i in range(sensitivity_matrix.shape[0]):
+        if any(np.isnan(sensitivity_matrix[i,:])):
+            nanidx.append(i)
+        sensitivity_matrix[i,:] = \
+            sensitivity_matrix[i,:]/np.nanmax(np.abs(sensitivity_matrix[i,:]))
+    sensitivity_matrix = np.delete(sensitivity_matrix,nanidx,axis=0)
+    
+    plt.rcParams['font.size'] = 8
+    plt.rcParams['font.family'] = 'Arial'
+    plt.rcParams['mathtext.fontset'] = 'custom'
+    plt.rcParams['mathtext.it'] = 'Arial:italic'
+    plt.rcParams['axes.linewidth'] = 1
+
+    sns.clustermap(
+        sensitivity_matrix,
+        center=0,
+        method='ward',
+        cmap='RdBu_r',
+        linewidth=.5,
+        col_cluster=False,
+        figsize = (16,8),
+        xticklabels=[reaction_number[i] for i in range(num_reaction-1)],
+        yticklabels=[],
+        cbar_kws={"ticks":[-1,0,1]}
+    )
+    
+    plt.suptitle(
+        'Normalized sensitivity coefficients on duration ('+r'$\it{c}$'+'-'+r'$\it{fos}$'+' mRNA)',
+        fontsize=24
+    )
+    plt.savefig('figure/sensitivity_h_cFosmRNA_hrg.pdf',bbox_inches='tight')
+    plt.close()
+    
+    # ==========================================================================
+    
+    # e.g. Sensitivity coefficients on integrated response (pc-Fos, EGF-induced)
+    sensitivity_matrix = s_PcFos[:,sort_idx[:-1],0]
+    
+    # Normalize from -1 to 1
+    nanidx =[]
+    for i in range(sensitivity_matrix.shape[0]):
+        if any(np.isnan(sensitivity_matrix[i,:])):
+            nanidx.append(i)
+        sensitivity_matrix[i,:] = \
+            sensitivity_matrix[i,:]/np.nanmax(np.abs(sensitivity_matrix[i,:]))
+    sensitivity_matrix = np.delete(sensitivity_matrix,nanidx,axis=0)
+    
+    plt.rcParams['font.size'] = 8
+    plt.rcParams['font.family'] = 'Arial'
+    plt.rcParams['mathtext.fontset'] = 'custom'
+    plt.rcParams['mathtext.it'] = 'Arial:italic'
+    plt.rcParams['axes.linewidth'] = 1
+
+    sns.clustermap(
+        sensitivity_matrix,
+        center=0,
+        method='ward',
+        cmap='RdBu_r',
+        linewidth=.5,
+        col_cluster=False,
+        figsize = (16,8),
+        xticklabels=[reaction_number[i] for i in range(num_reaction-1)],
+        yticklabels=[],
+        cbar_kws={"ticks":[-1,0,1]}
+    )
+    
+    plt.suptitle(
+        'Normalized sensitivity coefficients on integrated response (pc-Fos)',
+        fontsize=24
+    )
+    plt.savefig('figure/sensitivity_h_PcFos_egf.pdf',bbox_inches='tight')
+    plt.close()
