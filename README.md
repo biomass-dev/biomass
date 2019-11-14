@@ -1,7 +1,8 @@
 # BioMASS
 ## Modeling and Analysis of Signaling Systems
 <img align="left" src=public/images/logo.png width="300">
-Mathematical modeling has the power to simplify and understand the input-output mechanism of biological systems. Although there are many researches devoted on producing models to describe dynamical cellular signaling systems, most of these models are limited and do not cover multiple pathways. Therefore, there is a challenge to combine these models to enable understanding at a larger scale. Nevertheless, larger network means that it gets more difficult to estimate parameters to reproduce dynamic experimental data needed for deeper understanding of a system. To overcome these problems, we developed BioMASS, a modeling platform tailored to optimizing mathematical models of biological processes. By using BioMASS, users can efficiently optimize kinetic parameters to fit user-defined models to experimental data, while performing analysis on reaction networks to predict critical components affecting cellular output.
+Mathematical modeling has the power to simplify and understand the input-output mechanism of biological systems. Although there are many researches devoted on producing models to describe dynamical cellular signaling systems, most of these models are limited and do not cover multiple pathways. Therefore, there is a challenge to combine these models to enable understanding at a larger scale. Nevertheless, larger network means that it gets more difficult to estimate parameters to reproduce dynamic experimental data needed for deeper understanding of a system.<br>
+To overcome these problems, we developed BioMASS, a modeling platform tailored to optimizing mathematical models of biological processes. By using BioMASS, users can efficiently optimize kinetic parameters to fit user-defined models to experimental data, while performing analysis on reaction networks to predict critical components affecting cellular output.
 
 ## Description
 BioMASS is a biological modeling environment tailored to
@@ -21,10 +22,15 @@ The temporary result will be saved in **out/*n*/out.log** after each iteration.
 ```bash
 $ nohup python run_ga.py n &
 ```
-- If you want to continue from where you stopped in the last parameter search,
-```bash
-$ nohup python run_ga_continue.py n &
-```
+1. If you want to continue from where you stopped in the last parameter search,
+    ```bash
+    $ nohup python run_ga_continue.py n &
+    ```
+1. If you want to search multiple parameter sets (from *n1* to *n2*) simutaneously,
+    ```bash
+    $ nohup python run_ga.py n1 n2 &
+    ```
+
 ---
 #### Visualization of Simulation Results
 ```bash
