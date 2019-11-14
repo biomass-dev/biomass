@@ -9,7 +9,7 @@ from biomass.observable import num_observables, NumericalSimulation
 from biomass.param_estim import plot_func
 from biomass.param_estim.search_parameter import search_parameter_index, write_best_fit_param
 
-def save_simulaitons(viz_type,show_all,stdev):
+def simulate_all(viz_type,show_all,stdev):
     if not viz_type in ['best','average','original']:
         try:
             int(viz_type)
