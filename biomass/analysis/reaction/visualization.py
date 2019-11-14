@@ -10,14 +10,14 @@ from .sensitivity import analyze_sensitivity
 num_reaction = 64  # Num. of Rate Equations
 width = 0.3
 
-if not os.path.isfile('sensitivities/s_cFosmRNA.npy') or not os.path.isfile('sensitivities/s_PcFos.npy'):
-    os.makedirs('./sensitivities', exist_ok=True)
+if not os.path.isfile('sensitivities_npy/s_cFosmRNA.npy') or not os.path.isfile('sensitivities_npy/s_PcFos.npy'):
+    os.makedirs('./sensitivities_npy', exist_ok=True)
     (s_cFosmRNA, s_PcFos) = analyze_sensitivity(num_reaction)
-    np.save('sensitivities/s_cFosmRNA',s_cFosmRNA)
-    np.save('sensitivities/s_PcFos',s_PcFos)
+    np.save('sensitivities_npy/s_cFosmRNA',s_cFosmRNA)
+    np.save('sensitivities_npy/s_PcFos',s_PcFos)
 else:
-    s_cFosmRNA = np.load('sensitivities/s_cFosmRNA.npy')
-    s_PcFos = np.load('sensitivities/s_PcFos.npy')
+    s_cFosmRNA = np.load('sensitivities_npy/s_cFosmRNA.npy')
+    s_PcFos = np.load('sensitivities_npy/s_PcFos.npy')
     
 reaction_module = get_reaction_module()
 
