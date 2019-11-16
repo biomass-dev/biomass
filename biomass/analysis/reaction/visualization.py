@@ -58,11 +58,11 @@ def sensitivity_barplot():
     draw_vertical_span(reaction_module,num_reaction,width)
     plt.hlines([0],-width,num_reaction-1-width,'k',lw=1)
     plt.bar(np.arange(num_reaction),average[sort_idx,0],
-            yerr = stdev[sort_idx,0],ecolor='b',capsize=2,
-            width=width,color='b',align='center',label='EGF')
+            yerr = stdev[sort_idx,0],ecolor='mediumblue',capsize=2,
+            width=width,color='mediumblue',align='center',label='EGF')
     plt.bar(np.arange(num_reaction)+width,average[sort_idx,1],
-            yerr = stdev[sort_idx,1],ecolor='r',capsize=2,
-            width=width,color='r',align='center',label='HRG')
+            yerr = stdev[sort_idx,1],ecolor='red',capsize=2,
+            width=width,color='red',align='center',label='HRG')
 
     for i,j in enumerate(sort_idx):
         if j != 0:
@@ -100,11 +100,11 @@ def sensitivity_barplot():
     draw_vertical_span(reaction_module,num_reaction,width)
     plt.hlines([0],-width,num_reaction-1-width,'k',lw=1)
     plt.bar(np.arange(num_reaction),average[sort_idx,0],
-            yerr = stdev[sort_idx,0],ecolor='b',capsize=2,
-            width=width,color='b',align='center',label='EGF')
+            yerr = stdev[sort_idx,0],ecolor='mediumblue',capsize=2,
+            width=width,color='mediumblue',align='center',label='EGF')
     plt.bar(np.arange(num_reaction)+width,average[sort_idx,1],
-            yerr = stdev[sort_idx,1],ecolor='r',capsize=2,
-            width=width,color='r',align='center',label='HRG')
+            yerr = stdev[sort_idx,1],ecolor='red',capsize=2,
+            width=width,color='red',align='center',label='HRG')
 
     for i,j in enumerate(sort_idx):
         if j != 0:
