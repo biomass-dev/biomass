@@ -1,7 +1,10 @@
+import os
 import numpy as np
 from matplotlib import pyplot as plt
 
 from biomass.observable import observable_names, num_observables, ExperimentalData
+
+os.makedirs('./figure/simulation', exist_ok=True)
 
 def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
 
@@ -69,6 +72,6 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
         plt.xlabel('Time (min)')
         plt.title(title)
 
-        plt.savefig('./figure/simulation_{0}_{1}.pdf'.
+        plt.savefig('./figure/simulation/{0}_{1}.pdf'.
                     format(viz_type,title),bbox_inches='tight')
         plt.close()
