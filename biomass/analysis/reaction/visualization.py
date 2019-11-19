@@ -3,8 +3,63 @@ import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-from .reaction_module import get_reaction_module
 from .sensitivity import analyze_sensitivity
+
+
+def get_reaction_module():
+
+    n_module = 16
+    reaction_module = [None]*n_module
+
+    # ERK_activation
+    reaction_module[0] = [i for i in range(1,7)]
+
+    # ERK_dephosphorylation_by_DUSP
+    reaction_module[1] = [i for i in range(47,57)]
+
+    # ERK_transport
+    reaction_module[2] = [i for i in range(7,10)]
+
+    # RSK_activation
+    reaction_module[3] = [24,25]
+
+    # RSK_transport
+    reaction_module[4] = [26]
+
+    # Elk1_activation
+    reaction_module[5] = [29,30]
+
+    # CREB_activation
+    reaction_module[6] = [27,28]
+
+    # dusp_production_etc
+    reaction_module[7] = [i for i in range(10,14)]
+
+    # DUSP_transport
+    reaction_module[8] = [18,19]
+
+    # DUSP_stabilization
+    reaction_module[9] = [14,15,20,21]
+
+    # DUSP_degradation
+    reaction_module[10] = [16,17,22,23]
+
+    # cfos_production_etc
+    reaction_module[11] = [i for i in range(31,35)]
+
+    # cFos_transport
+    reaction_module[12] = [40,41]
+
+    # cFos_stabilization
+    reaction_module[13] = [35,36,37,42,43,44]
+
+    # cFos_degradation
+    reaction_module[14] = [38,39,45,46]
+    
+    # Feedback_from_F
+    reaction_module[15] = [i for i in range(57,64)]
+
+    return reaction_module
 
 
 num_reaction = 64  # Num. of Rate Equations
@@ -30,8 +85,8 @@ for i,ith_module in enumerate(reaction_module):
         sort_idx[left_end+j] = k
 
 reaction_number = [str(i) for i in sort_idx]
-    
-    
+
+
 def draw_vertical_span(reaction_module,num_reaction,width):
     left_end = 0
     for i,ith_module in enumerate(reaction_module):
@@ -57,12 +112,16 @@ def sensitivity_barplot():
 
     draw_vertical_span(reaction_module,num_reaction,width)
     plt.hlines([0],-width,num_reaction-1-width,'k',lw=1)
-    plt.bar(np.arange(num_reaction),average[sort_idx,0],
-            yerr = stdev[sort_idx,0],ecolor='mediumblue',capsize=2,
-            width=width,color='mediumblue',align='center',label='EGF')
-    plt.bar(np.arange(num_reaction)+width,average[sort_idx,1],
-            yerr = stdev[sort_idx,1],ecolor='red',capsize=2,
-            width=width,color='red',align='center',label='HRG')
+    plt.bar(
+        np.arange(num_reaction),average[sort_idx,0],
+        yerr = stdev[sort_idx,0],ecolor='mediumblue',capsize=2,
+        width=width,color='mediumblue',align='center',label='EGF'
+    )
+    plt.bar(
+        np.arange(num_reaction)+width,average[sort_idx,1],
+        yerr = stdev[sort_idx,1],ecolor='red',capsize=2,
+        width=width,color='red',align='center',label='HRG'
+    )
 
     for i,j in enumerate(sort_idx):
         if j != 0:
@@ -70,11 +129,15 @@ def sensitivity_barplot():
             yp = average[j,np.argmax(np.abs(average[j,:]))]
             yerr = stdev[j,np.argmax(stdev[j,:])]
             if yp > 0:
-                plt.text(xp,yp+yerr+0.05,reaction_number[i],
-                        ha='center', va='bottom', fontsize=10, rotation=90)
+                plt.text(
+                    xp,yp+yerr+0.05,reaction_number[i],
+                    ha='center', va='bottom', fontsize=10, rotation=90
+                )
             else:
-                plt.text(xp,yp-yerr-0.05,reaction_number[i],
-                        ha='center', va='top', fontsize=10, rotation=90)
+                plt.text(
+                    xp,yp-yerr-0.05,reaction_number[i],
+                    ha='center', va='top', fontsize=10, rotation=90
+                )
 
     plt.xticks([])
     plt.ylabel('Control coefficients on\nduration ('+r'$\it{c}$'+'-'+r'$\it{fos}$'+' mRNA)')
@@ -99,12 +162,16 @@ def sensitivity_barplot():
 
     draw_vertical_span(reaction_module,num_reaction,width)
     plt.hlines([0],-width,num_reaction-1-width,'k',lw=1)
-    plt.bar(np.arange(num_reaction),average[sort_idx,0],
-            yerr = stdev[sort_idx,0],ecolor='mediumblue',capsize=2,
-            width=width,color='mediumblue',align='center',label='EGF')
-    plt.bar(np.arange(num_reaction)+width,average[sort_idx,1],
-            yerr = stdev[sort_idx,1],ecolor='red',capsize=2,
-            width=width,color='red',align='center',label='HRG')
+    plt.bar(
+        np.arange(num_reaction),average[sort_idx,0],
+        yerr = stdev[sort_idx,0],ecolor='mediumblue',capsize=2,
+        width=width,color='mediumblue',align='center',label='EGF'
+    )
+    plt.bar(
+        np.arange(num_reaction)+width,average[sort_idx,1],
+        yerr = stdev[sort_idx,1],ecolor='red',capsize=2,
+        width=width,color='red',align='center',label='HRG'
+    )
 
     for i,j in enumerate(sort_idx):
         if j != 0:
@@ -112,11 +179,15 @@ def sensitivity_barplot():
             yp = average[j,np.argmax(np.abs(average[j,:]))]
             yerr = stdev[j,np.argmax(stdev[j,:])]
             if yp > 0:
-                plt.text(xp,yp+yerr+0.2,reaction_number[i],
-                        ha='center', va='bottom', fontsize=10, rotation=90)
+                plt.text(
+                    xp,yp+yerr+0.2,reaction_number[i],
+                    ha='center', va='bottom', fontsize=10, rotation=90
+                )
             else:
-                plt.text(xp,yp-yerr-0.2,reaction_number[i],
-                        ha='center', va='top', fontsize=10, rotation=90)
+                plt.text(
+                    xp,yp-yerr-0.2,reaction_number[i],
+                    ha='center', va='top', fontsize=10, rotation=90
+                )
 
     plt.xticks([])
     plt.ylabel('Control coefficients on\nintegrated response (pc-Fos)')
