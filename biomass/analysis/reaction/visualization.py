@@ -5,6 +5,8 @@ import seaborn as sns
 
 from .sensitivity import analyze_sensitivity
 
+os.makedirs('./figure/sensitivity/reaction', exist_ok=True)
+
 
 def get_reaction_module():
 
@@ -65,14 +67,16 @@ def get_reaction_module():
 num_reaction = 64  # Num. of Rate Equations
 width = 0.3
 
-if not os.path.isfile('sensitivities_npy/s_cFosmRNA.npy') or not os.path.isfile('sensitivities_npy/s_PcFos.npy'):
-    os.makedirs('./sensitivities_npy', exist_ok=True)
+if not os.path.isfile('sensitivities_npy/reaction/s_cFosmRNA.npy') or \
+    not os.path.isfile('sensitivities_npy/reaction/s_PcFos.npy'):
+        
+    os.makedirs('./sensitivities_npy/reaction', exist_ok=True)
     (s_cFosmRNA, s_PcFos) = analyze_sensitivity(num_reaction)
-    np.save('sensitivities_npy/s_cFosmRNA',s_cFosmRNA)
-    np.save('sensitivities_npy/s_PcFos',s_PcFos)
+    np.save('sensitivities_npy/reaction/s_cFosmRNA',s_cFosmRNA)
+    np.save('sensitivities_npy/reaction/s_PcFos',s_PcFos)
 else:
-    s_cFosmRNA = np.load('sensitivities_npy/s_cFosmRNA.npy')
-    s_PcFos = np.load('sensitivities_npy/s_PcFos.npy')
+    s_cFosmRNA = np.load('sensitivities_npy/reaction/s_cFosmRNA.npy')
+    s_PcFos = np.load('sensitivities_npy/reaction/s_PcFos.npy')
     
 reaction_module = get_reaction_module()
 
@@ -145,7 +149,7 @@ def sensitivity_barplot():
     plt.ylim(-1.2,0.6)
     plt.yticks([-1.2,-1.0,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6])
     plt.legend(loc='lower right',frameon=False)
-    plt.savefig('figure/sensitivity_cFosmRNA.pdf',bbox_inches='tight')
+    plt.savefig('figure/sensitivity/reaction/cFosmRNA.pdf',bbox_inches='tight')
     plt.close()
 
     # ==========================================================================
@@ -195,7 +199,7 @@ def sensitivity_barplot():
     plt.ylim(-7,4.5)
     plt.legend(loc='lower right',frameon=False)
 
-    plt.savefig('figure/sensitivity_PcFos.pdf',bbox_inches='tight')
+    plt.savefig('figure/sensitivity/reaction/PcFos.pdf',bbox_inches='tight')
     
     
 def sensitivity_heatmap():
@@ -234,7 +238,7 @@ def sensitivity_heatmap():
         'Normalized sensitivity coefficients on duration ('+r'$\it{c}$'+'-'+r'$\it{fos}$'+' mRNA)',
         fontsize=24
     )
-    plt.savefig('figure/sensitivity_h_cFosmRNA_hrg.pdf',bbox_inches='tight')
+    plt.savefig('figure/sensitivity/reaction/h_cFosmRNA_hrg.pdf',bbox_inches='tight')
     plt.close()
     
     # ==========================================================================
@@ -274,5 +278,5 @@ def sensitivity_heatmap():
         'Normalized sensitivity coefficients on integrated response (pc-Fos)',
         fontsize=24
     )
-    plt.savefig('figure/sensitivity_h_PcFos_egf.pdf',bbox_inches='tight')
+    plt.savefig('figure/sensitivity/reaction/h_PcFos_egf.pdf',bbox_inches='tight')
     plt.close()
