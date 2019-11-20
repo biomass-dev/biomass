@@ -22,14 +22,14 @@ The temporary result will be saved in **out/*n*/out.log** after each iteration.
 ```bash
 $ nohup python run_ga.py n &
 ```
-1. If you want to continue from where you stopped in the last parameter search,
-    ```bash
-    $ nohup python run_ga_continue.py n &
-    ```
-1. If you want to search multiple parameter sets (from *n1* to *n2*) simutaneously,
-    ```bash
-    $ nohup python run_ga.py n1 n2 &
-    ```
+- If you want to continue from where you stopped in the last parameter search,
+```bash
+$ nohup python run_ga_continue.py n &
+```
+- If you want to search multiple parameter sets (from *n1* to *n2*) simutaneously,
+```bash
+$ nohup python run_ga.py n1 n2 &
+```
 
 ---
 #### Visualization of Simulation Results
@@ -50,6 +50,8 @@ $ python run_sim.py
 - ```viz_type='best',show_all=True,stdev=False```
 ![simulation_best](public/images/simulation_best.png)
 
+    Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid lines denote simulations
+
 ---
 #### Sensitivity Analysis
 The single parameter sensitivity of each reaction is defined by<br>
@@ -57,10 +59,13 @@ The single parameter sensitivity of each reaction is defined by<br>
 *s<sub>i</sub>*(*q*(**v**),*v<sub>i</sub>*) = *∂* ln(*q*(**v**)) / *∂* ln(*v<sub>i</sub>*) = *∂*_q_(**v**) / *∂*_v<sub>i</sub>_ · *v<sub>i</sub>* / *q*(**v**)
 
 where *v<sub>i</sub>* is the *i*<sup>th</sup> reaction rate, **v** is reaction vector **v** = (*v<sub>1</sub>*, *v<sub>2</sub>*, ...) and *q*(**v**) is a target function, e.g., time-integrated response, duration. Sensitivity coefficients were calculated using finite difference approximations with 1% changes in the reaction rates.
+
 ```bash
 $ python run_analysis.py
 ```
 ![sensitivity_PcFos](public/images/sensitivity_PcFos.png)
+
+Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HRG). Numbers above bars indicate the reaction indices, and error bars correspond to simulation standard deviation.
 
 ## Installation
     $ git clone https://github.com/okadalabipr/biomass.git
