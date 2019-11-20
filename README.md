@@ -36,11 +36,20 @@ $ nohup python run_ga.py n &
 ```bash
 $ python run_sim.py
 ```
-- viz_type='average',show_all=False,stdev=True
+
+|viz_type|Description|
+|--------|-----------|
+|'average'|The average of simulation results with parameter sets in ```out/```|
+|'best'|The best simulation result in ```out/```, simulation with ```best_fit_param```|
+|'original'|Simulation with the default parameters and initial values defined in ```biomass/model/```|
+|'n(=1,2,...)'|Use the parameter set in ```out/n/```|
+
+- ```viz_type='average',show_all=False,stdev=True```
 ![simulation_average](public/images/simulation_average.png)
 
-- viz_type='best',show_all=True,stdev=False
+- ```viz_type='best',show_all=True,stdev=False```
 ![simulation_best](public/images/simulation_best.png)
+
 ---
 #### Sensitivity Analysis
 The single parameter sensitivity of each reaction is defined by<br>
