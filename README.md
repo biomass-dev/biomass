@@ -13,8 +13,10 @@ BioMASS is a biological modeling environment tailored to
 currently implimented for modeling early transcriptional regulation pathway ([Nakakuki *et al., Cell*, 2010](https://doi.org/10.1016/j.cell.2010.03.054)).
 
 ## Dependencies
-> - Python 3+
-> - numpy, scipy, matplotlib, seaborn
+> - numpy
+> - scipy
+> - matplotlib
+> - seaborn
 
 ## Usage
 #### Parameter Estimation of ODE Models (*n* = 1, 2, 3, · · ·)
