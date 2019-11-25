@@ -10,7 +10,7 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
 
     exp = ExperimentalData()
 
-    for j,title in enumerate(observable_names):
+    for i,title in enumerate(observable_names):
 
         plt.figure(figsize=(4,3))
         plt.gca().spines['right'].set_visible(False)
@@ -26,42 +26,42 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
         plt.rcParams['lines.markersize'] = 10
 
         if show_all:
-            for i in range(n_file):
-                plt.plot(sim.t,simulations_all[j,i,:,0]/np.max(simulations_all[j,i,:,:]),'mediumblue',alpha=0.05)
-                plt.plot(sim.t,simulations_all[j,i,:,1]/np.max(simulations_all[j,i,:,:]),'red',alpha=0.05)
+            for j in range(n_file):
+                plt.plot(sim.t,simulations_all[i,j,:,0]/np.max(simulations_all[i,j,:,:]),'mediumblue',alpha=0.05)
+                plt.plot(sim.t,simulations_all[i,j,:,1]/np.max(simulations_all[i,j,:,:]),'red',alpha=0.05)
 
         if not viz_type == 'average':
-            plt.plot(sim.t,sim.simulations[j,:,0]/np.max(sim.simulations[j]),'mediumblue')
-            plt.plot(sim.t,sim.simulations[j,:,1]/np.max(sim.simulations[j]),'red')
+            plt.plot(sim.t,sim.simulations[i,:,0]/np.max(sim.simulations[i]),'mediumblue')
+            plt.plot(sim.t,sim.simulations[i,:,1]/np.max(sim.simulations[i]),'red')
         else:
             normalized = np.empty((num_observables,n_file,len(sim.tspan),sim.condition))
-            for i in range(n_file):
-                normalized[j,i,:,0] = simulations_all[j,i,:,0]/np.max(simulations_all[j,i,:,:])
-                normalized[j,i,:,1] = simulations_all[j,i,:,1]/np.max(simulations_all[j,i,:,:])
-            plt.plot(sim.t,np.nanmean(normalized[j,:,:,0],axis=0),'mediumblue')
-            plt.plot(sim.t,np.nanmean(normalized[j,:,:,1],axis=0),'red')
+            for j in range(n_file):
+                normalized[i,j,:,0] = simulations_all[i,j,:,0]/np.max(simulations_all[i,j,:,:])
+                normalized[i,j,:,1] = simulations_all[i,j,:,1]/np.max(simulations_all[i,j,:,:])
+            plt.plot(sim.t,np.nanmean(normalized[i,:,:,0],axis=0),'mediumblue')
+            plt.plot(sim.t,np.nanmean(normalized[i,:,:,1],axis=0),'red')
             if stdev:
-                mean_egf = np.nanmean(normalized[j,:,:,0],axis=0)
-                yerr_egf = [np.nanstd(normalized[j,:,i,0],ddof=1) for i,_ in enumerate(sim.t)]
+                mean_egf = np.nanmean(normalized[i,:,:,0],axis=0)
+                yerr_egf = [np.nanstd(normalized[i,:,k,0],ddof=1) for k,_ in enumerate(sim.t)]
                 plt.fill_between(
                     sim.t, mean_egf - yerr_egf, mean_egf + yerr_egf,
                     lw=0,color='mediumblue',alpha=0.1
                 )
-                mean_hrg = np.nanmean(normalized[j,:,:,1],axis=0)
-                yerr_hrg = [np.nanstd(normalized[j,:,i,1],ddof=1) for i,_ in enumerate(sim.t)]
+                mean_hrg = np.nanmean(normalized[i,:,:,1],axis=0)
+                yerr_hrg = [np.nanstd(normalized[i,:,k,1],ddof=1) for k,_ in enumerate(sim.t)]
                 plt.fill_between(
                     sim.t, mean_hrg - yerr_hrg, mean_hrg + yerr_hrg,
                     lw=0,color='red',alpha=0.1
                 )
 
-        if exp.experiments[j] is not None:
-            exp_t = exp.get_timepoint(j)
+        if exp.experiments[i] is not None:
+            exp_t = exp.get_timepoint(i)
             plt.plot(
-                exp_t/60.,exp.experiments[j]['EGF'],'D',
+                exp_t/60.,exp.experiments[i]['EGF'],'D',
                 markerfacecolor='None',markeredgecolor='mediumblue',clip_on=False
             )
             plt.plot(
-                exp_t/60.,exp.experiments[j]['HRG'],'s',
+                exp_t/60.,exp.experiments[i]['HRG'],'s',
                 markerfacecolor='None',markeredgecolor='red',clip_on=False
             )
 
