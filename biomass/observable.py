@@ -100,10 +100,10 @@ class NumericalSimulation(object):
 
 
 class ExperimentalData(object):
+    
+    experiments = [None]*num_observables
 
     t2 = np.array([0, 300, 600, 900, 1800, 2700, 3600, 5400])
-
-    experiments = [None]*num_observables
 
     experiments[species['Phosphorylated_MEKc']] = {
         'EGF':np.array([0.000,0.773,0.439,0.252,0.130,0.087,0.080,0.066]),
