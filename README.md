@@ -1,8 +1,8 @@
 # BioMASS
 ## Modeling and Analysis of Signaling Systems
 <img align="left" src=public/images/logo.png width="300">
-Mathematical modeling has the power to simplify and understand the input-output mechanism of biological systems. Although there are many researches devoted on producing models to describe dynamical cellular signaling systems, most of these models are limited and do not cover multiple pathways. Therefore, there is a challenge to combine these models to enable understanding at a larger scale. Nevertheless, larger network means that it gets more difficult to estimate parameters to reproduce dynamic experimental data needed for deeper understanding of a system.<br>
-To overcome these problems, we developed BioMASS, a modeling platform tailored to optimizing mathematical models of biological processes. By using BioMASS, users can efficiently optimize kinetic parameters to fit user-defined models to experimental data, while performing analysis on reaction networks to predict critical components affecting cellular output.
+Mathematical modeling is a powerful method for the analysis of complex biological systems. Although there are many researches devoted on producing models to describe dynamical cellular signaling systems, most of these models are limited and do not cover multiple pathways. Therefore, there is a challenge to combine these models to enable understanding at a larger scale. Nevertheless, larger network means that it gets more difficult to estimate parameters to reproduce dynamic experimental data needed for deeper understanding of a system.<br>
+To overcome this problem, we developed BioMASS, a modeling platform tailored to optimizing mathematical models of biological processes. By using BioMASS, users can efficiently optimize kinetic parameters to fit user-defined models to experimental data, while performing analysis on reaction networks to predict critical components affecting cellular output.
 
 ## Description
 BioMASS is a biological modeling environment tailored to
@@ -22,15 +22,15 @@ currently implimented for modeling early transcriptional regulation pathway ([Na
 #### Parameter Estimation of ODE Models (*n* = 1, 2, 3, · · ·)
 The temporary result will be saved in **out/*n*/out.log** after each iteration.
 ```bash
-$ nohup python run_ga.py n &
+$ nohup python optimize.py n &
 ```
 - If you want to continue from where you stopped in the last parameter search,
 ```bash
-$ nohup python run_ga_continue.py n &
+$ nohup python optimize_continue.py n &
 ```
 - If you want to search multiple parameter sets (from *n1* to *n2*) simutaneously,
 ```bash
-$ nohup python run_ga.py n1 n2 &
+$ nohup python optimize.py n1 n2 &
 ```
 
 ---
@@ -38,21 +38,31 @@ $ nohup python run_ga.py n1 n2 &
 ```bash
 $ python run_sim.py
 ```
+```viz_type```:
 
-|viz_type|Description|
-|--------|-----------|
-|'average'|The average of simulation results with parameter sets in ```out/```|
-|'best'|The best simulation result in ```out/```, simulation with ```best_fit_param```|
-|'original'|Simulation with the default parameters and initial values defined in ```biomass/model/```|
-|'n(=1,2,...)'|Use the parameter set in ```out/n/```|
+- 'average'
+    : The average of simulation results with parameter sets in ```out/```
 
-- ```viz_type='average',show_all=False,stdev=True```
+- 'best'
+    : The best simulation result in ```out/```, simulation with ```best_fit_param```
+
+- 'original'
+    : Simulation with the default parameters and initial values defined in "biomass/model/"
+
+- 'n(=1,2,...)'
+    : Use the parameter set in ```out/n/```
+
+```python
+simulate_all(viz_type='average',show_all=False,stdev=True)
+```
 ![simulation_average](public/images/simulation_average.png)
 
-- ```viz_type='best',show_all=True,stdev=False```
+```python
+simulate_all(viz_type='best',show_all=True,stdev=False)
+```
 ![simulation_best](public/images/simulation_best.png)
 
-    Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid lines denote simulations
+Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid lines denote simulations
 
 ---
 #### Sensitivity Analysis
@@ -63,7 +73,7 @@ The single parameter sensitivity of each reaction is defined by<br>
 where *v<sub>i</sub>* is the *i*<sup>th</sup> reaction rate, **v** is reaction vector **v** = (*v<sub>1</sub>*, *v<sub>2</sub>*, ...) and *q*(**v**) is a target function, e.g., time-integrated response, duration. Sensitivity coefficients were calculated using finite difference approximations with 1% changes in the reaction rates.
 
 ```bash
-$ python run_analysis.py
+$ python analyze.py
 ```
 ![sensitivity_PcFos](public/images/sensitivity_PcFos.png)
 
