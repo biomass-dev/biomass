@@ -6,7 +6,7 @@ from scipy.integrate import simps
 
 from biomass.model.name2idx import parameters as C
 from biomass.model.name2idx import variables as V
-from biomass.model import differential_equation as de
+from biomass.model import differential_equation as ode
 from biomass.model.param_const import f_params
 from biomass.model.initial_condition import initial_values
 from biomass.observable import species, NumericalSimulation
@@ -56,8 +56,8 @@ def analyze_sensitivity(num_reaction):
                 y0[n] = best_indiv[m+len(search_idx[0])]
 
             for j in range(num_reaction):
-                de.perturbation = [1]*num_reaction
-                de.perturbation[j] = rate
+                ode.perturbation = [1]*num_reaction
+                ode.perturbation[j] = rate
 
                 if sim.simulate(x,y0) is None:
                     for k in range(sim.condition):
