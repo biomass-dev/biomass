@@ -62,12 +62,13 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
         if exp.experiments[i] is not None:
             exp_t = exp.get_timepoint(i)
             for l,condition in enumerate(sim.conditions):
-                plt.plot(
-                    exp_t/60.,exp.experiments[i][condition],'D',
-                    markerfacecolor='None',
-                    markeredgecolor=cmap(l),
-                    clip_on=False
-                )
+                if condition in exp.experiments[i]:
+                    plt.plot(
+                        exp_t/60.,exp.experiments[i][condition],'D',
+                        markerfacecolor='None',
+                        markeredgecolor=cmap(l),
+                        clip_on=False
+                    )
 
         plt.xlim(0,90)
         plt.xticks([0,30,60,90])
