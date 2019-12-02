@@ -40,8 +40,8 @@ def analyze_sensitivity(num_reaction):
         if re.match(r'\d',file):
             n_file += 1
 
-    signaling_metric_cfos_mRNA = np.ones((n_file,num_reaction,sim.condition))*np.nan
-    signaling_metric_PcFos     = np.ones((n_file,num_reaction,sim.condition))*np.nan
+    signaling_metric_cfos_mRNA = np.ones((n_file,num_reaction,len(sim.conditions)))*np.nan
+    signaling_metric_PcFos     = np.ones((n_file,num_reaction,len(sim.conditions)))*np.nan
 
     search_idx = search_parameter_index()
 
@@ -60,7 +60,7 @@ def analyze_sensitivity(num_reaction):
                 ode.perturbation[j] = rate
 
                 if sim.simulate(x,y0) is None:
-                    for k in range(sim.condition):
+                    for k,_ in enumerate(sim.conditions):
                         signaling_metric_cfos_mRNA[i,j,k] = \
                             get_duration(
                                 sim.simulations[species['cfos_mRNA'],:,k]
@@ -72,8 +72,8 @@ def analyze_sensitivity(num_reaction):
 
                 sys.stdout.write('\r%d/%d'%(i*num_reaction+j+1,n_file*num_reaction))
 
-    sensitivity_coefficients_cfos_mRNA = np.empty((n_file,num_reaction,sim.condition))
-    sensitivity_coefficients_PcFos = np.empty((n_file,num_reaction,sim.condition))
+    sensitivity_coefficients_cfos_mRNA = np.empty((n_file,num_reaction,len(sim.conditions)))
+    sensitivity_coefficients_PcFos = np.empty((n_file,num_reaction,len(sim.conditions)))
 
     for l in range(n_file):
         sensitivity_coefficients_cfos_mRNA[l,:,:] = \

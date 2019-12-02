@@ -28,30 +28,30 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
 
         if show_all:
             for j in range(n_file):
-                for l in range(sim.condition):
+                for l,_ in enumerate(sim.conditions):
                     plt.plot(
                         sim.t,simulations_all[i,j,:,l]/np.max(simulations_all[i,j,:,:]),
                         color=cmap(l),alpha=0.05
                     )
 
         if not viz_type == 'average':
-            for l in range(sim.condition):
+            for l,_ in enumerate(sim.conditions):
                 plt.plot(
                     sim.t,sim.simulations[i,:,l]/np.max(sim.simulations[i]),
                     color=cmap(l)
                 )
         else:
-            normalized = np.empty((num_observables,n_file,len(sim.tspan),sim.condition))
+            normalized = np.empty((num_observables,n_file,len(sim.tspan),len(sim.conditions)))
             for j in range(n_file):
-                for l in range(sim.condition):
+                for l,_ in enumerate(sim.conditions):
                     normalized[i,j,:,l] = simulations_all[i,j,:,l]/np.max(simulations_all[i,j,:,:])
-            for l in range(sim.condition):
+            for l,_ in enumerate(sim.conditions):
                 plt.plot(
                     sim.t,np.nanmean(normalized[i,:,:,l],axis=0),
                     color=cmap(l)
                 )
             if stdev:
-                for l in range(sim.condition):
+                for l,_ in enumerate(sim.conditions):
                     mean = np.nanmean(normalized[i,:,:,l],axis=0)
                     yerr = [np.nanstd(normalized[i,:,k,l],ddof=1) for k,_ in enumerate(sim.t)]
                     plt.fill_between(
@@ -61,10 +61,9 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
 
         if exp.experiments[i] is not None:
             exp_t = exp.get_timepoint(i)
-            keys = list(exp.experiments[i].keys())
-            for l,key in enumerate(keys):
+            for l,condition in enumerate(sim.conditions):
                 plt.plot(
-                    exp_t/60.,exp.experiments[i][key],'D',
+                    exp_t/60.,exp.experiments[i][condition],'D',
                     markerfacecolor='None',
                     markeredgecolor=cmap(l),
                     clip_on=False

@@ -22,13 +22,13 @@ species = dict(zip(observable_names,range(num_observables)))
 
 
 def diff_sim_and_exp(
-    sim_matrix,exp_dict,exp_timepoint,num_condition,
+    sim_matrix,exp_dict,exp_timepoint,conditions,
     norm_max_sim=1,norm_max_exp=1
     ):
 
     return (
         np.r_[
-            [sim_matrix[exp_timepoint,i] for i in range(num_condition)]
+            [sim_matrix[exp_timepoint,i] for i,_ in enumerate(conditions)]
         ].flatten()/norm_max_sim,
         np.r_[
             list(exp_dict.values())
@@ -55,18 +55,18 @@ class NumericalSimulation(object):
         return np.array(T),np.array(Y)
 
     tspan = range(5401) # Unit time: 1 sec.
-    condition = 2
+    conditions = ['EGF', 'HRG']
 
     t = np.array(tspan)/60. # sec. -> min. (plot_func.py)
 
-    simulations = np.empty((num_observables,len(tspan),condition))
+    simulations = np.empty((num_observables,len(tspan),len(conditions)))
 
     def simulate(self,x,y0):
 
-        for i in range(self.condition):
-            if i==0:
+        for i,condition in enumerate(self.conditions):
+            if condition == 'EGF':
                 x[C.Ligand] = x[C.EGF]
-            elif i==1:
+            elif condition == 'HRG':
                 x[C.Ligand] = x[C.HRG]
 
             (T,Y) = self._solveode(diffeq,y0,self.tspan,tuple(x))

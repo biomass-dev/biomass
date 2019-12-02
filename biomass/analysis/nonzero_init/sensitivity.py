@@ -45,8 +45,8 @@ def analyze_sensitivity(nonzero_idx):
         if re.match(r'\d',file):
             n_file += 1
 
-    signaling_metric_cfos_mRNA = np.ones((n_file,len(nonzero_idx)+1,sim.condition))*np.nan
-    signaling_metric_PcFos     = np.ones((n_file,len(nonzero_idx)+1,sim.condition))*np.nan
+    signaling_metric_cfos_mRNA = np.ones((n_file,len(nonzero_idx)+1,len(sim.conditions)))*np.nan
+    signaling_metric_PcFos     = np.ones((n_file,len(nonzero_idx)+1,len(sim.conditions)))*np.nan
 
     search_idx = search_parameter_index()
 
@@ -66,7 +66,7 @@ def analyze_sensitivity(nonzero_idx):
                 y0[idx] = copy_y0[idx]*rate
                 
                 if sim.simulate(x,y0) is None:
-                    for k in range(sim.condition):
+                    for k,_ in enumerate(sim.conditions):
                         signaling_metric_cfos_mRNA[i,j,k] = \
                             get_duration(
                                 sim.simulations[species['cfos_mRNA'],:,k]
@@ -80,7 +80,7 @@ def analyze_sensitivity(nonzero_idx):
             
             y0 = copy_y0[:]
             if sim.simulate(x,y0) is None:
-                for k in range(sim.condition):
+                for k,_ in enumerate(sim.conditions):
                     signaling_metric_cfos_mRNA[i,len(nonzero_idx),k] = \
                         get_duration(
                             sim.simulations[species['cfos_mRNA'],:,k]
@@ -91,8 +91,8 @@ def analyze_sensitivity(nonzero_idx):
                         )
             
 
-    sensitivity_coefficients_cfos_mRNA = np.empty((n_file,len(nonzero_idx)+1,sim.condition))
-    sensitivity_coefficients_PcFos = np.empty((n_file,len(nonzero_idx)+1,sim.condition))
+    sensitivity_coefficients_cfos_mRNA = np.empty((n_file,len(nonzero_idx)+1,len(sim.conditions)))
+    sensitivity_coefficients_PcFos = np.empty((n_file,len(nonzero_idx)+1,len(sim.conditions)))
 
     for l in range(n_file):
         sensitivity_coefficients_cfos_mRNA[l,:,:] = \

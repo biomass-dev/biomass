@@ -62,7 +62,7 @@ def objective(individual_gene,search_idx,search_region):
                         sim.simulations[species[target]],
                         exp.experiments[species[target]],
                         exp_timepoint=exp_t,
-                        num_condition=sim.condition,
+                        conditions=sim.conditions,
                         norm_max_sim=norm_max
                     )
                 )
