@@ -21,19 +21,17 @@ num_observables = len(observable_names)
 species = dict(zip(observable_names,range(num_observables)))
 
 
-def diff_sim_and_exp(
-    sim_matrix,exp_dict,exp_timepoint,conditions,
-    norm_max_sim=1,norm_max_exp=1
-    ):
-
-    return (
-        np.r_[
-            [sim_matrix[exp_timepoint,i] for i,_ in enumerate(conditions)]
-        ].flatten()/norm_max_sim,
-        np.r_[
-            list(exp_dict.values())
-        ].flatten()/norm_max_exp
-    )
+def diff_sim_and_exp(sim_matrix,exp_dict,exp_timepoint,conditions,norm_max_sim=1,norm_max_exp=1):
+    
+    sim_val = []
+    exp_val = []
+    
+    for condition in conditions:
+        if condition in exp_dict.keys():
+            sim_val.extend(sim_matrix[exp_timepoint,conditions.index(condition)])
+            exp_val.extend(exp_dict[condition])
+            
+    return np.array(sim_val)/norm_max_sim, np.array(exp_val)/norm_max_exp
 
 
 class NumericalSimulation(object):
