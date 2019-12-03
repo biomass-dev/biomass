@@ -64,7 +64,7 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
             for l,condition in enumerate(sim.conditions):
                 if condition in exp.experiments[i]:
                     plt.plot(
-                        exp_t/60.,exp.experiments[i][condition],'D',
+                        np.array(exp_t)/60.,exp.experiments[i][condition],'D',
                         markerfacecolor='None',
                         markeredgecolor=cmap(l),
                         clip_on=False
