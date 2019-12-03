@@ -74,7 +74,7 @@ def diffeq(t,y,x):
     try:
         for i,original in enumerate(v):
             v[i] = original*perturbation[i]
-    except:
+    except NameError:
         pass
     
 
