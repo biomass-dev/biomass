@@ -38,7 +38,7 @@ def simulate_all(viz_type,show_all,stdev):
         for i in range(n_file):
             (sim,successful) = update_sim(i+1,sim,x,y0)
             if successful:
-                for j in range(len(species)):
+                for j,_ in enumerate(species):
                     simulations_all[j,i,:,:] = sim.simulations[j,:,:]
 
         best_fitness_all = np.empty(n_file)
