@@ -63,11 +63,11 @@ def analyze_sensitivity(num_reaction):
                     for k,_ in enumerate(sim.conditions):
                         signaling_metric_cfos_mRNA[i,j,k] = \
                             get_duration(
-                                sim.simulations[species['cfos_mRNA'],:,k]
+                                sim.simulations[species.index('cfos_mRNA'),:,k]
                             )
                         signaling_metric_PcFos[i,j,k] = \
                             simps(
-                                sim.simulations[species['Phosphorylated_cFos'],:,k]
+                                sim.simulations[species.index('Phosphorylated_cFos'),:,k]
                             )
 
                 sys.stdout.write('\r%d/%d'%(i*num_reaction+j+1,n_file*num_reaction))

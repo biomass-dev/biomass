@@ -2,7 +2,7 @@ import os
 import numpy as np
 from matplotlib import pyplot as plt
 
-from biomass.observable import observable_names, num_observables, ExperimentalData
+from biomass.observable import species, ExperimentalData
 
 os.makedirs('./figure/simulation', exist_ok=True)
 
@@ -20,7 +20,7 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
 
     cmap = plt.get_cmap('tab10')
 
-    for i,title in enumerate(observable_names):
+    for i,title in enumerate(species):
 
         plt.figure(figsize=(4,3))
         plt.gca().spines['right'].set_visible(False)
@@ -41,7 +41,7 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
                     color=cmap(l)
                 )
         else:
-            normalized = np.empty((num_observables,n_file,len(sim.tspan),len(sim.conditions)))
+            normalized = np.empty((len(species),n_file,len(sim.tspan),len(sim.conditions)))
             for j in range(n_file):
                 for l,_ in enumerate(sim.conditions):
                     normalized[i,j,:,l] = simulations_all[i,j,:,l]/np.max(simulations_all[i,j,:,:])

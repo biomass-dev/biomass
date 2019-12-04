@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from biomass import model
-from biomass.observable import num_observables, NumericalSimulation
+from biomass.observable import species, NumericalSimulation
 from biomass.param_estim import plot_func
 from biomass.param_estim.search_parameter import search_parameter_index, write_best_fit_param
 
@@ -30,7 +30,7 @@ def simulate_all(viz_type,show_all,stdev):
                 if re.match(r'\d',file):
                     n_file += 1
 
-    simulations_all = np.ones((num_observables,n_file,len(sim.tspan),len(sim.conditions)))*np.nan
+    simulations_all = np.ones((len(species),n_file,len(sim.tspan),len(sim.conditions)))*np.nan
 
     if n_file > 0:
         if n_file == 1 and viz_type == 'average':
@@ -38,7 +38,7 @@ def simulate_all(viz_type,show_all,stdev):
         for i in range(n_file):
             (sim,successful) = update_sim(i+1,sim,x,y0)
             if successful:
-                for j in range(num_observables):
+                for j in range(len(species)):
                     simulations_all[j,i,:,:] = sim.simulations[j,:,:]
 
         best_fitness_all = np.empty(n_file)
