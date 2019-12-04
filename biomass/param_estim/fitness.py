@@ -71,81 +71,81 @@ def objective(individual_gene,search_idx,search_region):
 
         norm_max = np.max(sim.simulations[species['Phosphorylated_MEKc']])
         error[0] = compute_objval_abs(
-            sim.simulations[species['Phosphorylated_MEKc']][exp.t2,0]/norm_max,
+            sim.simulations[species['Phosphorylated_MEKc']][exp.t2, sim.conditions.index('EGF')]/norm_max,
             exp.experiments[species['Phosphorylated_MEKc']]['EGF']
         )
         error[1] = compute_objval_abs(
-            sim.simulations[species['Phosphorylated_MEKc']][exp.t2,1]/norm_max,
+            sim.simulations[species['Phosphorylated_MEKc']][exp.t2, sim.conditions.index('HRG')]/norm_max,
             exp.experiments[species['Phosphorylated_MEKc']]['HRG']
         )
 
         norm_max = np.max(sim.simulations[species['Phosphorylated_ERKc']])
         error[2] = compute_objval_abs(
-            sim.simulations[species['Phosphorylated_ERKc']][exp.t2,0]/norm_max,
+            sim.simulations[species['Phosphorylated_ERKc']][exp.t2, sim.conditions.index('EGF')]/norm_max,
             exp.experiments[species['Phosphorylated_ERKc']]['EGF']
         )
         error[3] = compute_objval_abs(
-            sim.simulations[species['Phosphorylated_ERKc']][exp.t2,1]/norm_max,
+            sim.simulations[species['Phosphorylated_ERKc']][exp.t2, sim.conditions.index('HRG')]/norm_max,
             exp.experiments[species['Phosphorylated_ERKc']]['HRG']
         )
 
         norm_max = np.max(sim.simulations[species['Phosphorylated_RSKw']])
         error[4] = compute_objval_abs(
-            sim.simulations[species['Phosphorylated_RSKw']][exp.t2,0]/norm_max,
+            sim.simulations[species['Phosphorylated_RSKw']][exp.t2, sim.conditions.index('EGF')]/norm_max,
             exp.experiments[species['Phosphorylated_RSKw']]['EGF']
         )
         error[5] = compute_objval_abs(
-            sim.simulations[species['Phosphorylated_RSKw']][exp.t2,1]/norm_max,
+            sim.simulations[species['Phosphorylated_RSKw']][exp.t2, sim.conditions.index('HRG')]/norm_max,
             exp.experiments[species['Phosphorylated_RSKw']]['HRG']
         )
 
         norm_max = np.max(sim.simulations[species['Phosphorylated_CREBw']])
         error[6] = compute_objval_abs(
-            sim.simulations[species['Phosphorylated_CREBw']][exp.t3,0]/norm_max,
+            sim.simulations[species['Phosphorylated_CREBw']][exp.t3, sim.conditions.index('EGF')]/norm_max,
             exp.experiments[species['Phosphorylated_CREBw']]['EGF']
         )
         error[7] = compute_objval_abs(
-            sim.simulations[species['Phosphorylated_CREBw']][exp.t3,1]/norm_max,
+            sim.simulations[species['Phosphorylated_CREBw']][exp.t3, sim.conditions.index('HRG')]/norm_max,
             exp.experiments[species['Phosphorylated_CREBw']]['HRG']
         )
 
         norm_max = np.max(sim.simulations[species['dusp_mRNA']])
         error[8] = compute_objval_abs(
-            sim.simulations[species['dusp_mRNA']][exp.t5,0]/norm_max,
+            sim.simulations[species['dusp_mRNA']][exp.t5, sim.conditions.index('EGF')]/norm_max,
             exp.experiments[species['dusp_mRNA']]['EGF']
         )
         error[9] = compute_objval_abs(
-            sim.simulations[species['dusp_mRNA']][exp.t5,1]/norm_max,
+            sim.simulations[species['dusp_mRNA']][exp.t5, sim.conditions.index('HRG')]/norm_max,
             exp.experiments[species['dusp_mRNA']]['HRG']
         )
 
         norm_max = np.max(sim.simulations[species['cfos_mRNA']])
         error[10] = compute_objval_abs(
-            sim.simulations[species['cfos_mRNA']][exp.t4,0]/norm_max,
+            sim.simulations[species['cfos_mRNA']][exp.t4, sim.conditions.index('EGF')]/norm_max,
             exp.experiments[species['cfos_mRNA']]['EGF']
         )
         error[11] = compute_objval_abs(
-            sim.simulations[species['cfos_mRNA']][exp.t4,1]/norm_max,
+            sim.simulations[species['cfos_mRNA']][exp.t4, sim.conditions.index('HRG')]/norm_max,
             exp.experiments[species['cfos_mRNA']]['HRG']
         )
 
         norm_max = np.max(sim.simulations[species['cFos_Protein']])
         error[12] = compute_objval_abs(
-            sim.simulations[species['cFos_Protein']][exp.t5,0]/norm_max,
+            sim.simulations[species['cFos_Protein']][exp.t5, sim.conditions.index('EGF')]/norm_max,
             exp.experiments[species['cFos_Protein']]['EGF']
         )
         error[13] = compute_objval_abs(
-            sim.simulations[species['cFos_Protein']][exp.t5,1]/norm_max,
+            sim.simulations[species['cFos_Protein']][exp.t5, sim.conditions.index('HRG')]/norm_max,
             exp.experiments[species['cFos_Protein']]['HRG']
         )
 
         norm_max = np.max(sim.simulations[species['Phosphorylated_cFos']])
         error[14] = compute_objval_abs(
-            sim.simulations[species['Phosphorylated_cFos']][exp.t2,0]/norm_max,
+            sim.simulations[species['Phosphorylated_cFos']][exp.t2, sim.conditions.index('EGF')]/norm_max,
             exp.experiments[species['Phosphorylated_cFos']]['EGF']
         )
         error[15] = compute_objval_abs(
-            sim.simulations[species['Phosphorylated_cFos']][exp.t2,1]/norm_max,
+            sim.simulations[species['Phosphorylated_cFos']][exp.t2, sim.conditions.index('HRG')]/norm_max,
             exp.experiments[species['Phosphorylated_cFos']]['HRG']
         )
         '''
