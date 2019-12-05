@@ -1,5 +1,6 @@
 # BioMASS
-## Modeling and Analysis of Signaling Systems
+![logo2](public/images/logo2.png)
+
 当ソフトウェアは，細胞内シグナル伝達機構の数理モデリングを目的としたツールです．実験から得られた実測データに基づいてモデル内のパラメータを最適化し，その結果に基づいた解析により，細胞応答に対する反応ネットワーク内の重要な要素を同定することができます．
 
 ここでは，早期転写の反応ネットワーク ([Nakakuki *et al., Cell*, 2010](https://doi.org/10.1016/j.cell.2010.03.054)) を例に使用しています.
@@ -63,12 +64,12 @@ $ python run_sim.py
 - 'n(=1,2,...)': ```out/n(=1,2,...)``` における最新のパラメータセットでのシミュレーション結果を表示します．
 
 ```python
-viz_type='average',show_all=False,stdev=True
+simulate_all(viz_type='average',show_all=False,stdev=True)
 ```
 ![simulation_average](public/images/simulation_average.png)
 
 ```python
-viz_type='best',show_all=True,stdev=False
+simulate_all(viz_type='best',show_all=True,stdev=False)
 ```
 ![simulation_best](public/images/simulation_best.png)
 
