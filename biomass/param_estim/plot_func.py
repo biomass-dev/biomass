@@ -10,17 +10,18 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
 
     exp = ExperimentalData()
     
-    plt.rcParams['font.size'] = 12
+    plt.rcParams['font.size'] = 20
     plt.rcParams['axes.linewidth'] = 1
     plt.rcParams['lines.linewidth'] = 2
     plt.rcParams['lines.markersize'] = 10
-#   plt.rcParams['font.family'] = 'Arial'
-#   plt.rcParams['mathtext.fontset'] = 'custom'
-#   plt.rcParams['mathtext.it'] = 'Arial:italic'
+    plt.rcParams['font.family'] = 'Arial'
+    plt.rcParams['mathtext.fontset'] = 'custom'
+    plt.rcParams['mathtext.it'] = 'Arial:italic'
 
     cmap = plt.get_cmap('tab10')
+    shape = ['D','s']
 
-    for i,title in enumerate(species):
+    for i,obs_name in enumerate(species):
 
         plt.figure(figsize=(4,3))
         plt.gca().spines['right'].set_visible(False)
@@ -64,7 +65,7 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
             for l,condition in enumerate(sim.conditions):
                 if condition in exp.experiments[i]:
                     plt.plot(
-                        np.array(exp_t)/60.,exp.experiments[i][condition],'D',
+                        np.array(exp_t)/60.,exp.experiments[i][condition],shape[l],
                         markerfacecolor='None',
                         markeredgecolor=cmap(l),
                         clip_on=False
@@ -72,11 +73,11 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
 
         plt.xlim(0,90)
         plt.xticks([0,30,60,90])
-        plt.yticks([0,0.2,0.4,0.6,0.8,1,1.2])
+        plt.yticks([0,0.3,0.6,0.9,1.2])
         plt.ylim(0,1.2)
         plt.xlabel('Time (min)')
-        plt.title(title)
+        plt.ylabel(obs_name.replace('_',' '))
 
         plt.savefig('./figure/simulation/{0}_{1}.pdf'.
-                    format(viz_type,title),bbox_inches='tight')
+                    format(viz_type,obs_name),bbox_inches='tight')
         plt.close()
