@@ -124,7 +124,7 @@ def sensitivity_heatmap():
         pass
     else:
         # e.g. Sensitivity coefficients on duration (c-fos mRNA, HRG-induced)
-        sensitivity_matrix = s_cFosmRNA[:,:,sim.conditions.index('HRG')]
+        sensitivity_matrix = s_cFosmRNA[:,:-1,sim.conditions.index('HRG')]
         
         # Normalize from -1 to 1
         nanidx =[]
@@ -168,7 +168,7 @@ def sensitivity_heatmap():
         # ----------------------------------------------------------------------
         
         # e.g. Sensitivity coefficients on integrated response (pc-Fos, EGF-induced)
-        sensitivity_matrix = s_PcFos[:,:,sim.conditions.index('EGF')]
+        sensitivity_matrix = s_PcFos[:,:-1,sim.conditions.index('EGF')]
         
         # Normalize from -1 to 1
         nanidx =[]
