@@ -6,9 +6,12 @@ import seaborn as sns
 
 from biomass.model.name2idx import variables as V
 from biomass.model.initial_condition import initial_values
+from biomass.observable import NumericalSimulation
 from .sensitivity import analyze_sensitivity
 
 os.makedirs('./figure/sensitivity/nonzero_init', exist_ok=True)
+
+sim = NumericalSimulation()
 
 width = 0.3
 
@@ -34,6 +37,8 @@ else:
             
 
 def sensitivity_barplot():
+    # Sensitivity coefficients on duration (c-fos mRNA)
+    
     plt.figure(figsize=(9,5))
     plt.rcParams['font.size'] = 15
     plt.rcParams['font.family'] = 'Arial'
@@ -45,26 +50,35 @@ def sensitivity_barplot():
     stdev = np.nanstd(s_cFosmRNA,axis=0,ddof=1)
 
     plt.hlines([0],-width,len(nonzero_idx)-1-width,'k',lw=1)
+    # EGF-induced
     plt.bar(
-        np.arange(len(nonzero_idx)),average[:-1,0],
-        yerr = stdev[:-1,0],ecolor='mediumblue',capsize=2,
-        width=width,color='mediumblue',align='center',label='EGF'
+        np.arange(len(nonzero_idx)),average[:-1,sim.conditions.index('EGF')],
+        yerr = stdev[:-1,sim.conditions.index('EGF')],
+        ecolor='mediumblue',capsize=2,width=width,color='mediumblue',align='center',label='EGF'
     )
+    # HRG-induced
     plt.bar(
         np.arange(len(nonzero_idx))+width,average[:-1,1],
         yerr = stdev[:-1,1],ecolor='red',capsize=2,
         width=width,color='red',align='center',label='HRG'
     )
 
-    plt.xticks(np.arange(len(nonzero_idx))+width/2,[V.var_names[i] for i in nonzero_idx],rotation=30)
+    plt.xticks(
+        np.arange(len(nonzero_idx))+width/2,[V.var_names[i] for i in nonzero_idx],
+        rotation=30
+    )
     plt.ylabel('Control coefficients on\nduration ('+r'$\it{c}$'+'-'+r'$\it{fos}$'+' mRNA)')
     plt.xlim(-width,len(nonzero_idx)-1-width)
     plt.ylim(-0.2,1.2)
     plt.legend(loc='upper left',frameon=False)
-    plt.savefig('figure/sensitivity/nonzero_init/cFosmRNA.pdf',bbox_inches='tight')
+    plt.savefig(
+        'figure/sensitivity/nonzero_init/cFosmRNA.pdf',
+        bbox_inches='tight'
+    )
     plt.close()
 
-    # ==========================================================================
+    # --------------------------------------------------------------------------
+    # Sensitivity coefficients on integrated response (pc-Fos)
     
     plt.figure(figsize=(9,5))
     plt.rcParams['font.size'] = 15
@@ -77,23 +91,31 @@ def sensitivity_barplot():
     stdev = np.nanstd(s_PcFos,axis=0,ddof=1)
 
     plt.hlines([0],-width,len(nonzero_idx)-1-width,'k',lw=1)
+    # EGF-induced
     plt.bar(
-        np.arange(len(nonzero_idx)),average[:-1,0],
-        yerr = stdev[:-1,0],ecolor='mediumblue',capsize=2,
-        width=width,color='mediumblue',align='center',label='EGF'
+        np.arange(len(nonzero_idx)),average[:-1,sim.conditions.index('EGF')],
+        yerr = stdev[:-1,sim.conditions.index('EGF')],
+        ecolor='mediumblue',capsize=2,width=width,color='mediumblue',align='center',label='EGF'
     )
+    # HRG-induced
     plt.bar(
-        np.arange(len(nonzero_idx))+width,average[:-1,1],
+        np.arange(len(nonzero_idx))+width,average[:-1,sim.conditions.index('HRG')],
         yerr = stdev[:-1,1],ecolor='red',capsize=2,
         width=width,color='red',align='center',label='HRG'
     )
 
-    plt.xticks(np.arange(len(nonzero_idx))+width/2,[V.var_names[i] for i in nonzero_idx],rotation=30)
+    plt.xticks(
+        np.arange(len(nonzero_idx))+width/2,[V.var_names[i] for i in nonzero_idx],
+        rotation=30
+    )
     plt.ylabel('Control coefficients on\nintegrated response (pc-Fos)')
     plt.xlim(-width,len(nonzero_idx)-1-width)
     plt.legend(loc='upper left',frameon=False)
 
-    plt.savefig('figure/sensitivity/nonzero_init/PcFos.pdf',bbox_inches='tight')
+    plt.savefig(
+        'figure/sensitivity/nonzero_init/PcFos.pdf',
+        bbox_inches='tight'
+    )
     plt.close()
 
 
@@ -102,7 +124,7 @@ def sensitivity_heatmap():
         pass
     else:
         # e.g. Sensitivity coefficients on duration (c-fos mRNA, HRG-induced)
-        sensitivity_matrix = s_cFosmRNA[:,:,1]
+        sensitivity_matrix = s_cFosmRNA[:,:,sim.conditions.index('HRG')]
         
         # Normalize from -1 to 1
         nanidx =[]
@@ -133,14 +155,20 @@ def sensitivity_heatmap():
         )
         
         
-        plt.suptitle('Control coefficients on duration ('+r'$\it{c}$'+'-'+r'$\it{fos}$'+' mRNA)', fontsize=24)
-        plt.savefig('figure/sensitivity/nonzero_init/h_cFosmRNA_hrg.pdf',bbox_inches='tight')
+        plt.suptitle(
+            'Control coefficients on duration ('+r'$\it{c}$'+'-'+r'$\it{fos}$'+' mRNA)',
+            fontsize=24
+        )
+        plt.savefig(
+            'figure/sensitivity/nonzero_init/h_cFosmRNA_hrg.pdf',
+            bbox_inches='tight'
+        )
         plt.close()
         
-        # ==========================================================================
+        # ----------------------------------------------------------------------
         
         # e.g. Sensitivity coefficients on integrated response (pc-Fos, EGF-induced)
-        sensitivity_matrix = s_PcFos[:,:,0]
+        sensitivity_matrix = s_PcFos[:,:,sim.conditions.index('EGF')]
         
         # Normalize from -1 to 1
         nanidx =[]
@@ -170,5 +198,7 @@ def sensitivity_heatmap():
             cbar_kws={"ticks":[-1,0,1]}
         )
         
-        plt.savefig('figure/sensitivity/nonzero_init/h_PcFos_egf.pdf',bbox_inches='tight')
+        plt.savefig(
+            'figure/sensitivity/nonzero_init/h_PcFos_egf.pdf',bbox_inches='tight'
+        )
         plt.close()
