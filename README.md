@@ -10,7 +10,7 @@ BioMASS is a biological modeling environment tailored to
 1. Parameter Estimation of ODE Models
 1. Sensitivity Analysis
 
-currently implimented for modeling early transcriptional regulation pathway ([Nakakuki *et al., Cell*, 2010](https://doi.org/10.1016/j.cell.2010.03.054)).
+currently implimented for modeling early transcriptional regulation pathway ([Nakakuki *et al.*, ***Cell***, 2010](https://doi.org/10.1016/j.cell.2010.03.054)).
 
 ## Dependencies
 > - numpy
@@ -71,7 +71,7 @@ $ python run_sim.py
     : The best simulation result in ```out/```, simulation with ```best_fit_param```
 
 - 'original'
-    : Simulation with the default parameters and initial values defined in "biomass/model/"
+    : Simulation with the default parameters and initial values defined in ```biomass/model/```
 
 - 'n(=1,2,...)'
     : Use the parameter set in ```out/n/```
