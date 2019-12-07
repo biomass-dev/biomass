@@ -30,7 +30,7 @@ def simulate_all(viz_type,show_all,stdev):
                 if re.match(r'\d',file):
                     n_file += 1
 
-    simulations_all = np.ones((len(species),n_file,len(sim.tspan),len(sim.conditions)))*np.nan
+    simulations_all = np.ones((len(species),n_file,len(sim.t),len(sim.conditions)))*np.nan
 
     if n_file > 0:
         if n_file == 1 and viz_type == 'average':

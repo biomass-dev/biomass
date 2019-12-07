@@ -14,7 +14,7 @@ species = [
     'dusp_mRNA',
     'cfos_mRNA',
     'cFos_Protein',
-    'Phosphorylated_cFos'
+    'Phosphorylated_cFos',
 ]
 
 
@@ -49,12 +49,13 @@ class NumericalSimulation(object):
 
         return np.array(T),np.array(Y)
 
-    tspan = range(5401) # Unit time: 1 sec.
+    tspan = [0, 5400] # [start, end] (Unit time: 1 sec.)
+    t = np.arange(tspan[0],tspan[-1]+1)/60. # sec. -> min. (plot_func.py)
+    
+    # Experimental conditions
     conditions = ['EGF', 'HRG']
 
-    t = np.array(tspan)/60. # sec. -> min. (plot_func.py)
-
-    simulations = np.empty((len(species),len(tspan),len(conditions)))
+    simulations = np.empty((len(species),len(t),len(conditions)))
 
     def simulate(self,x,y0):
 
@@ -102,22 +103,22 @@ class ExperimentalData(object):
 
     experiments[species.index('Phosphorylated_MEKc')] = {
         'EGF':[0.000,0.773,0.439,0.252,0.130,0.087,0.080,0.066],
-        'HRG':[0.000,0.865,1.000,0.837,0.884,0.920,0.875,0.789]
+        'HRG':[0.000,0.865,1.000,0.837,0.884,0.920,0.875,0.789],
     }
 
     experiments[species.index('Phosphorylated_ERKc')] = {
         'EGF':[0.000,0.867,0.799,0.494,0.313,0.266,0.200,0.194],
-        'HRG':[0.000,0.848,1.000,0.971,0.950,0.812,0.747,0.595]
+        'HRG':[0.000,0.848,1.000,0.971,0.950,0.812,0.747,0.595],
     }
 
     experiments[species.index('Phosphorylated_RSKw')] = {
         'EGF':[0,0.814,0.812,0.450,0.151,0.059,0.038,0.030],
-        'HRG':[0,0.953,1.000,0.844,0.935,0.868,0.779,0.558]
+        'HRG':[0,0.953,1.000,0.844,0.935,0.868,0.779,0.558],
     }
 
     experiments[species.index('Phosphorylated_cFos')] = {
         'EGF':[0,0.060,0.109,0.083,0.068,0.049,0.027,0.017],
-        'HRG':[0,0.145,0.177,0.158,0.598,1.000,0.852,0.431]
+        'HRG':[0,0.145,0.177,0.158,0.598,1.000,0.852,0.431],
     }
 
     # ==========================================================================
@@ -125,7 +126,7 @@ class ExperimentalData(object):
 
     experiments[species.index('Phosphorylated_CREBw')] = {
         'EGF':[0,0.446,0.030,0.000,0.000],
-        'HRG':[0,1.000,0.668,0.460,0.340]
+        'HRG':[0,1.000,0.668,0.460,0.340],
     }
 
     # ==========================================================================
@@ -133,7 +134,7 @@ class ExperimentalData(object):
 
     experiments[species.index('cfos_mRNA')] = {
         'EGF':[0,0.181,0.476,0.518,0.174,0.026,0.000],
-        'HRG':[0,0.353,0.861,1.000,0.637,0.300,0.059]
+        'HRG':[0,0.353,0.861,1.000,0.637,0.300,0.059],
     }
 
     # ==========================================================================
@@ -141,12 +142,12 @@ class ExperimentalData(object):
 
     experiments[species.index('cFos_Protein')] = {
         'EGF':[0,0.078,0.216,0.240,0.320,0.235],
-        'HRG':[0,0.089,0.552,0.861,1.000,0.698]
+        'HRG':[0,0.089,0.552,0.861,1.000,0.698],
     }
 
     experiments[species.index('dusp_mRNA')] = {
         'EGF':[0.000,0.177,0.331,0.214,0.177,0.231],
-        'HRG':[0.000,0.221,0.750,1.000,0.960,0.934]
+        'HRG':[0.000,0.221,0.750,1.000,0.960,0.934],
     }
 
 
@@ -155,7 +156,7 @@ class ExperimentalData(object):
             species.index('Phosphorylated_MEKc'),
             species.index('Phosphorylated_ERKc'),
             species.index('Phosphorylated_RSKw'),
-            species.index('Phosphorylated_cFos')
+            species.index('Phosphorylated_cFos'),
             ]:
             exp_t = self.t2
 
@@ -167,7 +168,7 @@ class ExperimentalData(object):
 
         elif observable in [
             species.index('cFos_Protein'),
-            species.index('dusp_mRNA')
+            species.index('dusp_mRNA'),
             ]:
             exp_t = self.t5
 
