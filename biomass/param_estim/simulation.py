@@ -32,14 +32,11 @@ def simulate_all(viz_type,show_all,stdev):
 
     simulations_all = np.ones((len(species),n_file,len(sim.t),len(sim.conditions)))*np.nan
     
-    # -------------------------------------------------------------------------
-    # Validates the dynamical viability of a set of estimated parameter values.
-    # -------------------------------------------------------------------------
     if n_file > 0:
         if n_file == 1 and viz_type == 'average':
             viz_type = 'best'
         for i in range(n_file):
-            (sim,successful) = update_sim(i+1,sim,x,y0)
+            (sim,successful) = validate(i+1,x,y0)
             if successful:
                 for j,_ in enumerate(species):
                     simulations_all[j,i,:,:] = sim.simulations[j,:,:]
@@ -58,9 +55,9 @@ def simulate_all(viz_type,show_all,stdev):
         if viz_type == 'average':
             pass
         elif viz_type == 'best':
-            sim,_ = update_sim(int(best_paramset),sim,x,y0)
+            sim = validate(int(best_paramset),x,y0)[0]
         elif int(viz_type) <= n_file:
-            sim,_ = update_sim(int(viz_type),sim,x,y0)
+            sim = validate(int(viz_type),x,y0)[0]
         else:
             raise ValueError(
                 '%d is larger than n_fit_param(%d)'%(int(viz_type),n_file)
@@ -76,7 +73,11 @@ def simulate_all(viz_type,show_all,stdev):
     plot_func.timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all)
 
 
-def update_sim(nth_paramset,sim,x,y0):
+def validate(nth_paramset,x,y0):
+    # -------------------------------------------------------------------------
+    # Validates the dynamical viability of a set of estimated parameter values.
+    # -------------------------------------------------------------------------
+    sim = NumericalSimulation()
     search_idx = search_parameter_index()
 
     # get_best_param
