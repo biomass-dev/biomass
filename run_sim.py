@@ -5,7 +5,7 @@ warnings.filterwarnings('ignore')
 if not os.path.isdir('./figure'):
     os.mkdir('./figure')
 
-from  biomass.param_estim.viz import simulate_all
+from  biomass.param_estim.simulation import simulate_all
 
 if __name__ == '__main__':
     """
