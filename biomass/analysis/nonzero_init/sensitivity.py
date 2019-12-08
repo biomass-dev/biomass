@@ -45,8 +45,8 @@ def analyze_sensitivity(nonzero_idx):
         if re.match(r'\d',file):
             n_file += 1
 
-    signaling_metric_cfos_mRNA = np.ones((n_file,len(nonzero_idx)+1,len(sim.conditions)))*np.nan
-    signaling_metric_PcFos     = np.ones((n_file,len(nonzero_idx)+1,len(sim.conditions)))*np.nan
+    signaling_metric_cfos_mRNA = np.full((n_file,len(nonzero_idx)+1,len(sim.conditions)),np.nan)
+    signaling_metric_PcFos     = np.full((n_file,len(nonzero_idx)+1,len(sim.conditions)),np.nan)
 
     search_idx = search_parameter_index()
 
