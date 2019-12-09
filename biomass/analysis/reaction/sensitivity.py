@@ -72,8 +72,8 @@ def analyze_sensitivity(num_reaction):
 
                 sys.stdout.write('\r%d/%d'%(i*num_reaction+j+1,n_file*num_reaction))
 
-    sensitivity_coefficients_cfos_mRNA = np.empty((n_file,num_reaction,len(sim.conditions)))
-    sensitivity_coefficients_PcFos = np.empty((n_file,num_reaction,len(sim.conditions)))
+    sensitivity_coefficients_cfos_mRNA = np.empty_like(signaling_metric_cfos_mRNA)
+    sensitivity_coefficients_PcFos = np.empty_like(signaling_metric_PcFos)
 
     for l in range(n_file):
         sensitivity_coefficients_cfos_mRNA[l,:,:] = \

@@ -91,8 +91,8 @@ def analyze_sensitivity(nonzero_idx):
                         )
             
 
-    sensitivity_coefficients_cfos_mRNA = np.empty((n_file,len(nonzero_idx)+1,len(sim.conditions)))
-    sensitivity_coefficients_PcFos = np.empty((n_file,len(nonzero_idx)+1,len(sim.conditions)))
+    sensitivity_coefficients_cfos_mRNA = np.empty_like(signaling_metric_cfos_mRNA)
+    sensitivity_coefficients_PcFos = np.empty_like(signaling_metric_PcFos)
 
     for l in range(n_file):
         sensitivity_coefficients_cfos_mRNA[l,:,:] = \

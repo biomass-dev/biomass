@@ -42,7 +42,7 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
                     color=cmap(l)
                 )
         else:
-            normalized = np.empty((len(species),n_file,len(sim.t),len(sim.conditions)))
+            normalized = np.empty_like(simulations_all)
             for j in range(n_file):
                 for l,_ in enumerate(sim.conditions):
                     normalized[i,j,:,l] = simulations_all[i,j,:,l]/np.max(simulations_all[i,j,:,:])
