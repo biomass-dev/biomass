@@ -37,16 +37,8 @@ def optimize(nth_paramset):
     )
 
 
-def ga_v1(
-    nth_paramset,
-    n_generation,
-    n_population,
-    n_children,
-    n_gene,
-    allowable_error,
-    search_idx,
-    search_region
-    ):
+def ga_v1(nth_paramset,n_generation,n_population,n_children,n_gene,
+            allowable_error,search_idx,search_region):
     population = get_initial_population(nth_paramset,n_population,n_gene,search_idx,search_region)
     with open('./out/%d/out.log'%(nth_paramset), mode='w') as f:
             f.write(
@@ -95,22 +87,14 @@ def ga_v1(
     return best_indiv,best_fitness
 
 
-def ga_v2(
-    nth_paramset,
-    n_generation,
-    n_population,
-    n_children,
-    n_gene,
-    allowable_error,
-    search_idx,
-    search_region
-    ):
+def ga_v2(nth_paramset,n_generation,n_population,n_children,n_gene,
+            allowable_error,search_idx,search_region):
     if n_population < n_gene+2:
         print('n_population must be larger than %d'%(n_gene+2))
         sys.exit()
         
     n_iter = 1
-    n0 = np.zeros(2*n_population)
+    n0 = np.empty(2*n_population)
 
     population = get_initial_population(nth_paramset,n_population,n_gene,search_idx,search_region)
     n0[0] = population[0,-1]
@@ -139,15 +123,16 @@ def ga_v2(
             ip = np.random.choice(n_population,n_gene+2,replace=False)
             ip,population = converging(ip,population,n_population,n_gene,search_idx,search_region)
         if i%len(n0) == 0:
-            n0 = np.zeros(len(n0))
-
-        n0[i%len(n0)] = population[0,-1]
-
-        if i%(len(n0)-1) == 0:
-            if n0[0] == n0[len(n0)-1]:
+            n0 = np.empty_like(n0)
+            n0[0] = population[0,-1]
+        elif i%len(n0) == len(n0)-1:
+            n0[-1] = population[0,-1]
+            if n0[0] == n0[-1]:
                 n_iter *= 2
             else:
                 n_iter = 1
+        else:
+            n0[i%len(n0)] = population[0,-1]
 
         best_indiv = decode_gene2variable(population[0,:n_gene],search_region)
 

@@ -39,17 +39,8 @@ def optimize_continue(nth_paramset):
     )
 
 
-def ga_v1_continue(
-    nth_paramset,
-    n_generation,
-    n_population,
-    n_children,
-    n_gene,
-    allowable_error,
-    search_idx,
-    search_region,
-    p0_bounds
-    ):
+def ga_v1_continue(nth_paramset,n_generation,n_population,n_children,n_gene,
+                    allowable_error,search_idx,search_region,p0_bounds):
     count_num = np.load('./out/%d/count_num.npy'%(nth_paramset))
     generation = np.load('./out/%d/generation.npy'%(nth_paramset))
     best_indiv = np.load('./out/%d/fit_param%d.npy'%(nth_paramset,int(generation)))
@@ -108,23 +99,14 @@ def ga_v1_continue(
     return best_indiv,best_fitness
 
 
-def ga_v2_continue(
-    nth_paramset,
-    n_generation,
-    n_population,
-    n_children,
-    n_gene,
-    allowable_error,
-    search_idx,
-    search_region,
-    p0_bounds
-    ):
+def ga_v2_continue(nth_paramset,n_generation,n_population,n_children,n_gene,
+                    allowable_error,search_idx,search_region,p0_bounds):
     if n_population < n_gene+2:
         print('n_population must be larger than %d'%(n_gene+2))
         sys.exit()
         
     n_iter = 1
-    n0 = np.zeros(2*n_population)
+    n0 = np.empty(2*n_population)
 
     count_num = np.load('./out/%d/count_num.npy'%(nth_paramset))
     generation = np.load('./out/%d/generation.npy'%(nth_paramset))
@@ -165,15 +147,16 @@ def ga_v2_continue(
             ip = np.random.choice(n_population,n_gene+2,replace=False)
             ip,population = converging(ip,population,n_population,n_gene,search_idx,search_region)
         if i%len(n0) == 0:
-            n0 = np.zeros(len(n0))
-
-        n0[i%len(n0)] = population[0,-1]
-
-        if i%(len(n0)-1) == 0:
-            if n0[0] == n0[len(n0)-1]:
+            n0 = np.empty_like(n0)
+            n0[0] = population[0,-1]
+        elif i%len(n0) == len(n0)-1:
+            n0[-1] = population[0,-1]
+            if n0[0] == n0[-1]:
                 n_iter *= 2
             else:
                 n_iter = 1
+        else:
+            n0[i%len(n0)] = population[0,-1]
 
         best_indiv = decode_gene2variable(population[0,:n_gene],search_region)
 
