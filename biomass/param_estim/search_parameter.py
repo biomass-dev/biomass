@@ -142,7 +142,7 @@ def get_search_region():
     search_region[:,C.n57] = [1.00,4.00]
     search_region[:,C.nF31] = [1.00,4.00]
     
-    ''' Example ================================================================
+    ''' Example ----------------------------------------------------------------
     
     search_region[:,C.V1] = [7.33e-2,6.60e-01]
     search_region[:,C.Km1] = [1.83e+2,8.50e+2]
@@ -219,41 +219,11 @@ def get_search_region():
     search_region[:,C.KF31] = [np.exp(-10),np.exp(10)]
     search_region[:,C.nF31] = [1.00,4.00]
     search_region[:,C.a] = [1.00e+2,5.00e+2]
-    
-    ========================================================================='''
+    ----------------------------------------------------------------------------
+    '''
 
     search_region = lin2log(search_idx,search_region,len(x),len(search_param))
-
     return search_region
-
-
-def write_best_fit_param(best_paramset):
-
-    x = f_params()
-    y0 = initial_values()
-
-    search_idx = search_parameter_index()
-
-    if os.path.isfile('./out/%d/generation.npy'%(best_paramset)):
-        generation = np.load('./out/%d/generation.npy'%(best_paramset))
-        best_indiv = np.load('./out/%d/fit_param%d.npy'%(best_paramset,int(generation)))
-
-        for i,j in enumerate(search_idx[0]):
-            x[j] = best_indiv[i]
-        for i,j in enumerate(search_idx[1]):
-            y0[j] = best_indiv[i+len(search_idx[0])]
-    else:
-        pass
-    
-    with open('./out/best_fit_param.txt', mode='w') as f:
-        f.write('# param set: %d\n'%(best_paramset))
-        f.write('\n### Param. const\n')
-        for i in range(C.len_f_params):
-            f.write('x[C.%s] = %e\n'%(C.param_names[i],x[i]))
-        f.write('\n### Non-zero initial conditions\n')
-        for i in range(V.len_f_vars):
-            if y0[i] != 0:
-                f.write('y0[V.%s] = %e\n'%(V.var_names[i],y0[i]))
                 
 
 def lin2log(search_idx,search_region,n_param_const,n_search_param):

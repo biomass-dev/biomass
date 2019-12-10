@@ -7,7 +7,7 @@ import seaborn as sns
 from biomass import model
 from biomass.observable import species, NumericalSimulation
 from biomass.param_estim import plot_func
-from biomass.param_estim.search_parameter import search_parameter_index, write_best_fit_param
+from biomass.param_estim.search_parameter import search_parameter_index
 
 def simulate_all(viz_type,show_all,stdev):
     if not viz_type in ['best','average','original']:
@@ -50,7 +50,7 @@ def simulate_all(viz_type,show_all,stdev):
 
         # global best_paramset
         best_paramset = np.argmin(best_fitness_all) + 1
-        write_best_fit_param(best_paramset)
+        write_best_fit_param(best_paramset,x,y0)
 
         if viz_type == 'average':
             pass
@@ -73,17 +73,12 @@ def simulate_all(viz_type,show_all,stdev):
     plot_func.timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all)
 
 
-def validate(nth_paramset,x,y0):
-    # -------------------------------------------------------------------------
-    # Validates the dynamical viability of a set of estimated parameter values.
-    # -------------------------------------------------------------------------
-    sim = NumericalSimulation()
+def update_param(paramset,x,y0):
     search_idx = search_parameter_index()
 
-    # get_best_param
-    if os.path.isfile('./out/%d/generation.npy'%(nth_paramset)):
-        generation = np.load('./out/%d/generation.npy'%(nth_paramset))
-        best_indiv = np.load('./out/%d/fit_param%d.npy'%(nth_paramset,int(generation)))
+    if os.path.isfile('./out/%d/generation.npy'%(paramset)):
+        generation = np.load('./out/%d/generation.npy'%(paramset))
+        best_indiv = np.load('./out/%d/fit_param%d.npy'%(paramset,int(generation)))
 
         for i,j in enumerate(search_idx[0]):
             x[j] = best_indiv[i]
@@ -91,12 +86,37 @@ def validate(nth_paramset,x,y0):
             y0[j] = best_indiv[i+len(search_idx[0])]
     else:
         pass
+    return x, y0
+
+
+def validate(nth_paramset,x,y0):
+    # -------------------------------------------------------------------------
+    # Validates the dynamical viability of a set of estimated parameter values.
+    # -------------------------------------------------------------------------
+    sim = NumericalSimulation()
+    
+    (x,y0) = update_param(nth_paramset,x,y0)
 
     if sim.simulate(x,y0) is None:
         return sim,True
     else:
         print('Simulation failed.\nparameter_set #%d'%(nth_paramset))
         return sim,False
+
+
+def write_best_fit_param(best_paramset,x,y0):
+
+    (x,y0) = update_param(best_paramset,x,y0)
+    
+    with open('./out/best_fit_param.txt', mode='w') as f:
+        f.write('# param set: %d\n'%(best_paramset))
+        f.write('\n### Param. const\n')
+        for i in range(model.C.len_f_params):
+            f.write('x[C.%s] = %8.3e\n'%(model.C.param_names[i],x[i]))
+        f.write('\n### Non-zero initial conditions\n')
+        for i in range(model.V.len_f_vars):
+            if y0[i] != 0:
+                f.write('y0[V.%s] = %8.3e\n'%(model.V.var_names[i],y0[i]))
 
 
 def save_param_range(n_file,x,y0,portrait):
@@ -118,7 +138,6 @@ def save_param_range(n_file,x,y0,portrait):
 
     # --------------------------------------------------------------------------
     # seaborn.boxenplot
-    
     if portrait:
         fig = plt.figure(figsize=(8,24))
         plt.gca().spines['right'].set_visible(False)
