@@ -10,6 +10,21 @@ from biomass.param_estim import plot_func
 from biomass.param_estim.search_parameter import search_parameter_index
 
 def simulate_all(viz_type,show_all,stdev):
+    """Simulate ODE model with estimated parameter values.
+    
+    Parameters
+    ----------
+    viz_type : str
+        - 'average': The average of simulation results with parameter sets in "out/"
+        - 'best': The best simulation result in "out/", simulation with "best_fit_param"
+        - 'original': Simulation with the default parameters and initial values defined in "biomass/model/"
+        - 'n(=1,2,...)': Use the parameter set in "out/n/"
+    show_all : bool
+        Whether to show all simulation results
+    stdev: bool
+        If True, the standard deviation of simulated values will be shown
+        (only when viz_type == 'average')
+    """
     if not viz_type in ['best','average','original']:
         try:
             int(viz_type)
@@ -48,7 +63,6 @@ def simulate_all(viz_type,show_all,stdev):
             else:
                 best_fitness_all[i] = np.inf
 
-        # global best_paramset
         best_paramset = np.argmin(best_fitness_all) + 1
         write_best_fit_param(best_paramset,x,y0)
 
