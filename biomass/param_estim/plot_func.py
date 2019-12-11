@@ -34,14 +34,7 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
                         sim.t,simulations_all[i,j,:,l]/np.max(simulations_all[i,j,:,:]),
                         color=cmap(l),alpha=0.05
                     )
-
-        if not viz_type == 'average':
-            for l,_ in enumerate(sim.conditions):
-                plt.plot(
-                    sim.t,sim.simulations[i,:,l]/np.max(sim.simulations[i]),
-                    color=cmap(l)
-                )
-        else:
+        if viz_type == 'average':
             normalized = np.empty_like(simulations_all)
             for j in range(n_file):
                 for l,_ in enumerate(sim.conditions):
@@ -59,16 +52,19 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
                         sim.t, mean - yerr, mean + yerr,
                         lw=0,color=cmap(l),alpha=0.1
                     )
-
+        else:
+            for l,_ in enumerate(sim.conditions):
+                plt.plot(
+                    sim.t,sim.simulations[i,:,l]/np.max(sim.simulations[i]),
+                    color=cmap(l)
+                )
         if exp.experiments[i] is not None:
             exp_t = exp.get_timepoint(i)
             for l,condition in enumerate(sim.conditions):
                 if condition in exp.experiments[i]:
                     plt.plot(
                         np.array(exp_t)/60.,exp.experiments[i][condition],shape[l],
-                        markerfacecolor='None',
-                        markeredgecolor=cmap(l),
-                        clip_on=False
+                        markerfacecolor='None',markeredgecolor=cmap(l),clip_on=False
                     )
 
         plt.xlim(0,90)
@@ -78,6 +74,8 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
         plt.xlabel('Time (min)')
         plt.ylabel(obs_name.replace('_',' '))
 
-        plt.savefig('./figure/simulation/{0}_{1}.pdf'.
-                    format(viz_type,obs_name),bbox_inches='tight')
+        plt.savefig(
+            './figure/simulation/{0}_{1}.pdf'.format(viz_type,obs_name),
+            bbox_inches='tight'
+        )
         plt.close()
