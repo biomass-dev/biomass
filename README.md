@@ -112,7 +112,7 @@ Parameter values are searched by genetic algorithm with Unimodal Normal Distribu
 ga_v2 optimizes an objective function through the following procedure.
 
 1. **Initialization**<br>
-As an initial population, create *n*<sub>*p*</sub> individuals randomly. ga_v2 also represents individuals as *n*-dimensional real number vectors, where *n* is the dimension of the search space. To these individuals, ga_v2 tentatively assigns a single objective value which is worse than those of any of the possible candidate solutions. Set Generation to 0, and set the iteration number of converging operations *N<sub>iter</sub>* to 1.
+As an initial population, create *n*<sub>*p*</sub> individuals randomly. ga_v2 also represents individuals as *n*-dimensional real number vectors, where *n* is the dimension of the search space. Set Generation to 0, and set the iteration number of converging operations *N<sub>iter</sub>* to 1.
 
 1. **Selection for reproduction**<br>
 As parents for the recombination operator, ENDX, select *m* individuals, **p**<sub>1</sub>, **p**<sub>2</sub>, · · · ,**p**<sub>*m*</sub>, without replacement from the population.
