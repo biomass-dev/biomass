@@ -50,7 +50,7 @@ def ndm(parents,n_gene):
     child = np.empty(n_gene+1)
 
     t2 = np.sum(
-        np.random.normal(scale=GAMMA,size=n_gene+1)[:,None]
+        np.random.normal(scale=GAMMA,size=n_gene+1)[:,np.newaxis]
         *(parents[1:,:n_gene]-(np.sum(parents[1:,:n_gene],axis=0)/(n_gene+1))),
         axis=0
     )

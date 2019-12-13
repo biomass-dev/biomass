@@ -55,7 +55,7 @@ def endx(parents,n_gene):
     t1 = (parents[1,:n_gene]-parents[0,:n_gene])/2.
     t2 = np.random.normal(scale=ALPHA)*(parents[1,:n_gene]-parents[0,:n_gene])
     t3 = np.sum(
-        np.random.normal(scale=BETA,size=n_gene)[:,None]
+        np.random.normal(scale=BETA,size=n_gene)[:,np.newaxis]
         *(parents[2:,:n_gene]-(np.sum(parents[2:,:n_gene],axis=0)/n_gene)),
         axis=0
     )
