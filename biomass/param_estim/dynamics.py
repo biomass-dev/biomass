@@ -161,7 +161,7 @@ def save_param_range(n_file,x,y0,portrait):
             plt.gca().xaxis.set_ticks_position('bottom')
 
             ax = sns.boxenplot(
-                data=search_param_matrix[:len(search_idx[0])],
+                data=search_param_matrix[:,:len(search_idx[0])],
                 orient='h',
                 linewidth=0.5,
                 palette='Set2'
@@ -181,7 +181,7 @@ def save_param_range(n_file,x,y0,portrait):
             plt.gca().xaxis.set_ticks_position('bottom')
 
             ax = sns.boxenplot(
-                data=search_param_matrix[len(search_idx[0]):],
+                data=search_param_matrix[:,len(search_idx[0]):],
                 orient='h',
                 linewidth=0.5,
                 palette='Set2'
@@ -202,7 +202,7 @@ def save_param_range(n_file,x,y0,portrait):
             plt.gca().xaxis.set_ticks_position('bottom')
 
             ax = sns.boxenplot(
-                data=search_param_matrix[:len(search_idx[0])],
+                data=search_param_matrix[:,:len(search_idx[0])],
                 linewidth=0.5,
                 palette='Set2'
             )
@@ -211,7 +211,7 @@ def save_param_range(n_file,x,y0,portrait):
             ax.set_ylabel('Parameter value')
             ax.set_yscale('log')
 
-            plt.savefig('./figure/param_range.pdf',bbox_inches='tight')
+            plt.savefig('./figure/param_range_h.pdf',bbox_inches='tight')
             plt.close(fig)
         if len(search_idx[1]) > 0:
             fig = plt.figure(figsize=(len(search_idx[1])/2.2,6))
@@ -221,7 +221,7 @@ def save_param_range(n_file,x,y0,portrait):
             plt.gca().xaxis.set_ticks_position('bottom')
 
             ax = sns.boxenplot(
-                data=search_param_matrix[len(search_idx[0]):],
+                data=search_param_matrix[:,len(search_idx[0]):],
                 linewidth=0.5,
                 palette='Set2'
             )
@@ -230,5 +230,5 @@ def save_param_range(n_file,x,y0,portrait):
             ax.set_ylabel('Initial value')
             ax.set_yscale('log')
 
-            plt.savefig('./figure/initail_value_range.pdf',bbox_inches='tight')
+            plt.savefig('./figure/initail_value_range_h.pdf',bbox_inches='tight')
             plt.close(fig)
