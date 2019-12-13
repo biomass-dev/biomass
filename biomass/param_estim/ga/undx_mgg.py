@@ -2,14 +2,7 @@ import numpy as np
 
 from biomass.param_estim.fitness import objective
 
-def mgg_alternation(
-    population,
-    n_population,
-    n_children,
-    n_gene,
-    search_idx,
-    search_region
-    ):
+def mgg_alternation(population,n_population,n_children,n_gene,search_idx,search_region):
     ip = [0]*3
     ip[:2] = np.random.choice(n_population,2,replace=False)
     idx = [True]*n_population
@@ -40,7 +33,7 @@ def mgg_alternation(
 
 
 def get_new_child(parents,n_gene,search_idx,search_region):
-    MAXITER = np.iinfo(np.int8).max
+    MAXITER = 100
 
     in_range = False
     for _ in range(MAXITER):
@@ -48,7 +41,6 @@ def get_new_child(parents,n_gene,search_idx,search_region):
         if 0. <= np.min(child[:n_gene]) and np.max(child[:n_gene]) <= 1.:
             in_range = True
             break
-
     if not in_range:
         child[:n_gene] = np.clip(child[:n_gene],0.,1.)
 
@@ -57,8 +49,8 @@ def get_new_child(parents,n_gene,search_idx,search_region):
     return child
 
 
-# Unimodal Normal Distribution Xover
 def undx(parents,n_gene):
+    """Unimodal Normal Distribution Xover"""
     child = np.empty(n_gene+1)
 
     ALPHA = 0.5
