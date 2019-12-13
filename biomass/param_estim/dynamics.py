@@ -135,7 +135,7 @@ def write_best_fit_param(best_paramset,x,y0):
 
 def save_param_range(n_file,x,y0,portrait):
     search_idx = search_parameter_index()
-    search_param_matrix = np.empty((n_file,len(search_idx[0])))
+    search_param_matrix = np.empty((n_file,len(search_idx[0])+len(search_idx[1])))
 
     for nth_paramset in range(1,n_file+1):
         if os.path.isfile('./out/%d/generation.npy'%(nth_paramset)):
@@ -148,46 +148,87 @@ def save_param_range(n_file,x,y0,portrait):
             for i,j in enumerate(search_idx[1]):
                 best_indiv[i+len(search_idx[0])] = y0[j]
 
-        search_param_matrix[nth_paramset-1,:] = best_indiv[:len(search_idx[0])]
+        search_param_matrix[nth_paramset-1,:] = best_indiv
 
     # --------------------------------------------------------------------------
     # seaborn.boxenplot
     if portrait:
-        fig = plt.figure(figsize=(8,24))
-        plt.gca().spines['right'].set_visible(False)
-        plt.gca().spines['top'].set_visible(False)
-        plt.gca().yaxis.set_ticks_position('left')
-        plt.gca().xaxis.set_ticks_position('bottom')
+        if len(search_idx[0]) > 0:
+            fig = plt.figure(figsize=(8,len(search_idx[0])/2.5))
+            plt.gca().spines['right'].set_visible(False)
+            plt.gca().spines['top'].set_visible(False)
+            plt.gca().yaxis.set_ticks_position('left')
+            plt.gca().xaxis.set_ticks_position('bottom')
 
-        ax = sns.boxenplot(data=search_param_matrix,
-            orient='h',
-            linewidth=0.5,
-            palette='Set2'
-        )
+            ax = sns.boxenplot(
+                data=search_param_matrix[:len(search_idx[0])],
+                orient='h',
+                linewidth=0.5,
+                palette='Set2'
+            )
+            ax.set_xlabel('Parameter value')
+            ax.set_ylabel('')
+            ax.set_yticklabels([model.C.param_names[i] for i in search_idx[0]])
+            ax.set_xscale('log')
 
-        ax.set_xlabel('Parameter value')
-        ax.set_ylabel('')
-        ax.set_yticklabels([model.C.param_names[i] for i in search_idx[0]])
-        ax.set_xscale('log')
+            plt.savefig('./figure/param_range.pdf',bbox_inches='tight')
+            plt.close(fig)
+        if len(search_idx[1]) > 0:
+            fig = plt.figure(figsize=(8,len(search_idx[1])/2.5))
+            plt.gca().spines['right'].set_visible(False)
+            plt.gca().spines['top'].set_visible(False)
+            plt.gca().yaxis.set_ticks_position('left')
+            plt.gca().xaxis.set_ticks_position('bottom')
 
-        plt.savefig('./figure/param_range.pdf',bbox_inches='tight')
-        plt.close(fig)
+            ax = sns.boxenplot(
+                data=search_param_matrix[len(search_idx[0]):],
+                orient='h',
+                linewidth=0.5,
+                palette='Set2'
+            )
+            ax.set_xlabel('Initial value')
+            ax.set_ylabel('')
+            ax.set_yticklabels([model.V.var_names[i] for i in search_idx[1]])
+            ax.set_xscale('log')
+
+            plt.savefig('./figure/initial_value_range.pdf',bbox_inches='tight')
+            plt.close(fig)
     else:
-        fig = plt.figure(figsize=(30,6))
-        plt.gca().spines['right'].set_visible(False)
-        plt.gca().spines['top'].set_visible(False)
-        plt.gca().yaxis.set_ticks_position('left')
-        plt.gca().xaxis.set_ticks_position('bottom')
+        if len(search_idx[0]) > 0:
+            fig = plt.figure(figsize=(len(search_idx[0])/2.2,6))
+            plt.gca().spines['right'].set_visible(False)
+            plt.gca().spines['top'].set_visible(False)
+            plt.gca().yaxis.set_ticks_position('left')
+            plt.gca().xaxis.set_ticks_position('bottom')
 
-        ax = sns.boxenplot(data=search_param_matrix,
-            linewidth=0.5,
-            palette='Set2'
-        )
+            ax = sns.boxenplot(
+                data=search_param_matrix[:len(search_idx[0])],
+                linewidth=0.5,
+                palette='Set2'
+            )
+            ax.set_xlabel('')
+            ax.set_xticklabels([model.C.param_names[i] for i in search_idx[0]],rotation=45)
+            ax.set_ylabel('Parameter value')
+            ax.set_yscale('log')
 
-        ax.set_xlabel('')
-        ax.set_xticklabels([model.C.param_names[i] for i in search_idx[0]],rotation=45)
-        ax.set_ylabel('Parameter value')
-        ax.set_yscale('log')
+            plt.savefig('./figure/param_range.pdf',bbox_inches='tight')
+            plt.close(fig)
+        if len(search_idx[1]) > 0:
+            fig = plt.figure(figsize=(len(search_idx[1])/2.2,6))
+            plt.gca().spines['right'].set_visible(False)
+            plt.gca().spines['top'].set_visible(False)
+            plt.gca().yaxis.set_ticks_position('left')
+            plt.gca().xaxis.set_ticks_position('bottom')
 
-        plt.savefig('./figure/param_range.pdf',bbox_inches='tight')
-        plt.close(fig)
+            ax = sns.boxenplot(
+                data=search_param_matrix[len(search_idx[0]):],
+                linewidth=0.5,
+                palette='Set2'
+            )
+            ax.set_xlabel('')
+            ax.set_xticklabels([model.V.var_names[i] for i in search_idx[1]],rotation=45)
+            ax.set_ylabel('Initial value')
+            ax.set_yscale('log')
+
+            plt.savefig('./figure/initail_value_range.pdf',bbox_inches='tight')
+            plt.close(fig)
