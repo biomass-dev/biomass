@@ -172,8 +172,6 @@ def get_initial_population(nth_paramset,n_population,n_gene,search_idx,search_re
         while np.isinf(population[i,-1]) or np.isnan(population[i,-1]):
             population[i,:n_gene] = np.random.rand(n_gene)
             population[i,-1] = objective(population[i,:n_gene],search_idx,search_region)
-        sys.stdout.write('\r%d/%d'%(i+1,n_population))
-        
         with open('./out/%d/initpop.log'%(nth_paramset), mode='a') as f:
             f.write(
                 '%d/%d\n'%(i+1,n_population)
