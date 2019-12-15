@@ -18,7 +18,7 @@ def optimize(nth_paramset):
     search_idx = search_parameter_index()
     search_region = get_search_region()
 
-    n_generation = 10000
+    max_generation = 10000
     n_population = int(5*search_region.shape[1])
     n_children = 50
     n_gene = search_region.shape[1]
@@ -26,7 +26,7 @@ def optimize(nth_paramset):
 
     (best_indiv,best_fitness) = ga_v2(
         nth_paramset,
-        n_generation,
+        max_generation,
         n_population,
         n_children,
         n_gene,
@@ -36,7 +36,7 @@ def optimize(nth_paramset):
     )
 
 
-def ga_v1(nth_paramset,n_generation,n_population,n_children,n_gene,
+def ga_v1(nth_paramset,max_generation,n_population,n_children,n_gene,
             allowable_error,search_idx,search_region):
     population = get_initial_population(
         nth_paramset,n_population,n_gene,search_idx,search_region
@@ -57,7 +57,7 @@ def ga_v1(nth_paramset,n_generation,n_population,n_children,n_gene,
         best_fitness = population[0,-1]
         return best_indiv,best_fitness
 
-    while generation < n_generation:
+    while generation < max_generation:
         population = mgg_alternation(
             population,n_population,n_children,n_gene,search_idx,search_region
         )
@@ -94,7 +94,7 @@ def ga_v1(nth_paramset,n_generation,n_population,n_children,n_gene,
     return best_indiv,best_fitness
 
 
-def ga_v2(nth_paramset,n_generation,n_population,n_children,n_gene,
+def ga_v2(nth_paramset,max_generation,n_population,n_children,n_gene,
             allowable_error,search_idx,search_region):
     if n_population < n_gene+2:
         print('n_population must be larger than %d'%(n_gene+2))
@@ -130,7 +130,7 @@ def ga_v2(nth_paramset,n_generation,n_population,n_children,n_gene,
         return best_indiv,best_fitness
 
     generation = 1
-    while generation < n_generation:
+    while generation < max_generation:
         ip = np.random.choice(n_population,n_gene+2,replace=False)  # m = n + 2
         ip, population = converging(
             ip,population,n_population,n_gene,search_idx,search_region
