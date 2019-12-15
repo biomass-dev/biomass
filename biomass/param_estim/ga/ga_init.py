@@ -46,7 +46,6 @@ def ga_v1(nth_paramset,n_generation,n_population,n_children,n_gene,
                 'Generation1: Best Fitness = %e\n'%(population[0,-1])
             )
     best_indiv = decode_gene2variable(population[0,:n_gene],search_region)
-
     best_fitness = population[0,-1]
 
     np.save('./out/%d/generation.npy'%(nth_paramset),1)
@@ -190,7 +189,7 @@ def ga_v2(nth_paramset,n_generation,n_population,n_children,n_gene,
 
 
 def get_initial_population(nth_paramset,n_population,n_gene,search_idx,search_region):
-    population = np.inf*np.ones((n_population,n_gene+1))
+    population = np.full((n_population,n_gene+1),np.inf)
 
     with open('./out/%d/initpop.log'%(nth_paramset), mode='w') as f:
             f.write(
@@ -204,7 +203,6 @@ def get_initial_population(nth_paramset,n_population,n_gene,search_idx,search_re
             f.write(
                 '%d/%d\n'%(i+1,n_population)
             )
-
     population = population[np.argsort(population[:,-1]),:]
 
     return population
