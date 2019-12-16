@@ -6,9 +6,8 @@ import seaborn as sns
 from biomass import model
 from biomass.observable import species, ExperimentalData
 
-os.makedirs('./figure/simulation', exist_ok=True)
-
 def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
+    os.makedirs('./figure/simulation', exist_ok=True)
 
     exp = ExperimentalData()
     
@@ -84,6 +83,7 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
         
         
 def param_range(search_idx,search_param_matrix,portrait):
+    os.makedirs('./figure/param_range', exist_ok=True)
     if portrait:
         if len(search_idx[0]) > 0:
             fig = plt.figure(figsize=(8,len(search_idx[0])/2.5))
@@ -103,7 +103,9 @@ def param_range(search_idx,search_param_matrix,portrait):
             ax.set_yticklabels([model.C.param_names[i] for i in search_idx[0]])
             ax.set_xscale('log')
 
-            plt.savefig('./figure/param_range.pdf',bbox_inches='tight')
+            plt.savefig(
+                './figure/param_range/param_range.pdf',bbox_inches='tight'
+            )
             plt.close(fig)
         if len(search_idx[1]) > 0:
             fig = plt.figure(figsize=(8,len(search_idx[1])/2.5))
@@ -123,7 +125,9 @@ def param_range(search_idx,search_param_matrix,portrait):
             ax.set_yticklabels([model.V.var_names[i] for i in search_idx[1]])
             ax.set_xscale('log')
 
-            plt.savefig('./figure/initial_value_range.pdf',bbox_inches='tight')
+            plt.savefig(
+                './figure/param_range/initial_value_range.pdf',bbox_inches='tight'
+            )
             plt.close(fig)
     else:
         if len(search_idx[0]) > 0:
@@ -143,7 +147,9 @@ def param_range(search_idx,search_param_matrix,portrait):
             ax.set_ylabel('Parameter value')
             ax.set_yscale('log')
 
-            plt.savefig('./figure/param_range_h.pdf',bbox_inches='tight')
+            plt.savefig(
+                './figure/param_range/param_range_h.pdf',bbox_inches='tight'
+            )
             plt.close(fig)
         if len(search_idx[1]) > 0:
             fig = plt.figure(figsize=(len(search_idx[1])/2.2,6))
@@ -162,5 +168,7 @@ def param_range(search_idx,search_param_matrix,portrait):
             ax.set_ylabel('Initial value')
             ax.set_yscale('log')
 
-            plt.savefig('./figure/initail_value_range_h.pdf',bbox_inches='tight')
+            plt.savefig(
+                './figure/param_range/initail_value_range_h.pdf',bbox_inches='tight'
+            )
             plt.close(fig)
