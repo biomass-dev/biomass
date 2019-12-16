@@ -29,16 +29,14 @@ def simulate_all(viz_type,show_all,stdev):
         try:
             int(viz_type)
         except ValueError:
-            print("Error: viz_type ∈ {'best','average','original',int(1~n_fit_param)}")
+            print("viz_type ∈ {'best','average','original','n(=1,2,...)'}")
 
     x = model.f_params()
     y0 = model.initial_values()
     sim = NumericalSimulation()
 
     n_file = 0
-    if viz_type == 'original':
-        pass
-    else:
+    if viz_type != 'original':
         if os.path.isdir('./out'):
             fit_param_files = os.listdir('./out')
             for file in fit_param_files:
@@ -76,10 +74,8 @@ def simulate_all(viz_type,show_all,stdev):
             raise ValueError(
                 '%d is larger than n_fit_param(%d)'%(int(viz_type),n_file)
             )
-
         if n_file >= 2:
             save_param_range(n_file,x,y0,portrait=True)
-
     else:
         if sim.simulate(x,y0) is not None:
             print('Simulation failed.')
@@ -91,8 +87,10 @@ def update_param(paramset,x,y0):
     search_idx = search_parameter_index()
 
     if os.path.isfile('./out/%d/generation.npy'%(paramset)):
-        generation = np.load('./out/%d/generation.npy'%(paramset))
-        best_indiv = np.load('./out/%d/fit_param%d.npy'%(paramset,int(generation)))
+        best_generation = \
+            np.load('./out/%d/generation.npy'%(paramset))
+        best_indiv = \
+            np.load('./out/%d/fit_param%d.npy'%(paramset,int(best_generation)))
 
         for i,j in enumerate(search_idx[0]):
             x[j] = best_indiv[i]
@@ -123,14 +121,24 @@ def write_best_fit_param(best_paramset,x,y0):
     (x,y0) = update_param(best_paramset,x,y0)
     
     with open('./out/best_fit_param.txt', mode='w') as f:
-        f.write('# param set: %d\n'%(best_paramset))
-        f.write('\n### Param. const\n')
+        f.write(
+            '# param set: %d\n'%(best_paramset)
+        )
+        f.write(
+            '\n### Param. const\n'
+        )
         for i in range(model.C.len_f_params):
-            f.write('x[C.%s] = %8.3e\n'%(model.C.param_names[i],x[i]))
-        f.write('\n### Non-zero initial conditions\n')
+            f.write(
+                'x[C.%s] = %8.3e\n'%(model.C.param_names[i],x[i])
+            )
+        f.write(
+            '\n### Non-zero initial conditions\n'
+        )
         for i in range(model.V.len_f_vars):
             if y0[i] != 0:
-                f.write('y0[V.%s] = %8.3e\n'%(model.V.var_names[i],y0[i]))
+                f.write(
+                    'y0[V.%s] = %8.3e\n'%(model.V.var_names[i],y0[i])
+                )
 
 
 def save_param_range(n_file,x,y0,portrait):
@@ -139,8 +147,10 @@ def save_param_range(n_file,x,y0,portrait):
 
     for nth_paramset in range(1,n_file+1):
         if os.path.isfile('./out/%d/generation.npy'%(nth_paramset)):
-            generation = np.load('./out/%d/generation.npy'%(nth_paramset))
-            best_indiv = np.load('./out/%d/fit_param%d.npy'%(nth_paramset,int(generation)))
+            best_generation = \
+                np.load('./out/%d/generation.npy'%(nth_paramset))
+            best_indiv = \
+                np.load('./out/%d/fit_param%d.npy'%(nth_paramset,int(best_generation)))
         else:
             best_indiv = np.empty(len(search_idx[0])+len(search_idx[1]))
             for i,j in enumerate(search_idx[0]):
