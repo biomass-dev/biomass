@@ -8,7 +8,7 @@ from biomass.model.name2idx import parameters as C
 from biomass.model.name2idx import variables as V
 from biomass.model.param_const import f_params
 from biomass.model.initial_condition import initial_values
-from biomass.observable import species, NumericalSimulation
+from biomass.observable import observables, NumericalSimulation
 from biomass.param_estim.search_parameter import search_parameter_index
 
 
@@ -69,11 +69,11 @@ def analyze_sensitivity(nonzero_idx):
                     for k,_ in enumerate(sim.conditions):
                         signaling_metric_cfos_mRNA[i,j,k] = \
                             get_duration(
-                                sim.simulations[species.index('cfos_mRNA'),:,k]
+                                sim.simulations[observables.index('cfos_mRNA'),:,k]
                             )
                         signaling_metric_PcFos[i,j,k] = \
                             simps(
-                                sim.simulations[species.index('Phosphorylated_cFos'),:,k]
+                                sim.simulations[observables.index('Phosphorylated_cFos'),:,k]
                             )
 
                 sys.stdout.write('\r%d/%d'%(i*len(nonzero_idx)+j+1,n_file*len(nonzero_idx)))
@@ -83,11 +83,11 @@ def analyze_sensitivity(nonzero_idx):
                 for k,_ in enumerate(sim.conditions):
                     signaling_metric_cfos_mRNA[i,len(nonzero_idx),k] = \
                         get_duration(
-                            sim.simulations[species.index('cfos_mRNA'),:,k]
+                            sim.simulations[observables.index('cfos_mRNA'),:,k]
                         )
                     signaling_metric_PcFos[i,len(nonzero_idx),k] = \
                         simps(
-                            sim.simulations[species.index('Phosphorylated_cFos'),:,k]
+                            sim.simulations[observables.index('Phosphorylated_cFos'),:,k]
                         )
             
 

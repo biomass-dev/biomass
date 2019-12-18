@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 
 from biomass import model
-from biomass.observable import species, ExperimentalData
+from biomass.observable import observables, ExperimentalData
 
 def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
     os.makedirs('./figure/simulation', exist_ok=True)
@@ -24,7 +24,7 @@ def timecourse(sim,n_file,viz_type,show_all,stdev,simulations_all):
     cmap = ['goldenrod','seagreen']
     shape = ['^','o']
 
-    for i,obs_name in enumerate(species):
+    for i,obs_name in enumerate(observables):
 
         plt.figure(figsize=(4,3))
         plt.gca().spines['right'].set_visible(False)

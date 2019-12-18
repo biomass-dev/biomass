@@ -9,7 +9,7 @@ from biomass.model.name2idx import variables as V
 from biomass.model import differential_equation as ode
 from biomass.model.param_const import f_params
 from biomass.model.initial_condition import initial_values
-from biomass.observable import species, NumericalSimulation
+from biomass.observable import observables, NumericalSimulation
 from biomass.param_estim.search_parameter import search_parameter_index
 
 """
@@ -63,11 +63,11 @@ def analyze_sensitivity(num_reaction):
                     for k,_ in enumerate(sim.conditions):
                         signaling_metric_cfos_mRNA[i,j,k] = \
                             get_duration(
-                                sim.simulations[species.index('cfos_mRNA'),:,k]
+                                sim.simulations[observables.index('cfos_mRNA'),:,k]
                             )
                         signaling_metric_PcFos[i,j,k] = \
                             simps(
-                                sim.simulations[species.index('Phosphorylated_cFos'),:,k]
+                                sim.simulations[observables.index('Phosphorylated_cFos'),:,k]
                             )
 
                 sys.stdout.write('\r%d/%d'%(i*num_reaction+j+1,n_file*num_reaction))

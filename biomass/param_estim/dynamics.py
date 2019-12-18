@@ -3,7 +3,7 @@ import re
 import numpy as np
 
 from biomass import model
-from biomass.observable import species, NumericalSimulation
+from biomass.observable import observables, NumericalSimulation
 from biomass.param_estim import plot_func
 from biomass.param_estim.search_parameter import search_parameter_index
 
@@ -41,7 +41,7 @@ def simulate_all(viz_type,show_all,stdev):
                 if re.match(r'\d',file):
                     n_file += 1
 
-    simulations_all = np.full((len(species),n_file,len(sim.t),len(sim.conditions)),np.nan)
+    simulations_all = np.full((len(observables),n_file,len(sim.t),len(sim.conditions)),np.nan)
     
     if n_file > 0:
         if n_file == 1 and viz_type == 'average':
@@ -49,7 +49,7 @@ def simulate_all(viz_type,show_all,stdev):
         for i in range(n_file):
             (sim,successful) = validate(i+1,x,y0)
             if successful:
-                for j,_ in enumerate(species):
+                for j,_ in enumerate(observables):
                     simulations_all[j,i,:,:] = sim.simulations[j,:,:]
 
         best_fitness_all = np.empty(n_file)
