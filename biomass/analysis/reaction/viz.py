@@ -95,12 +95,12 @@ def sensitivity_barplot(metric):
                 yerr = stdev[j,np.argmax(stdev[j,:])]
                 if yp > 0:
                     plt.text(
-                        xp,yp+yerr+distance,reaction_number[i],
+                        xp, yp + yerr + distance, reaction_number[i],
                         ha='center', va='bottom', fontsize=10, rotation=90
                     )
                 else:
                     plt.text(
-                        xp,yp-yerr-distance,reaction_number[i],
+                        xp, yp - yerr - distance, reaction_number[i],
                         ha='center', va='top', fontsize=10, rotation=90
                     )
         plt.xticks([])
@@ -140,21 +140,21 @@ def sensitivity_heatmap(metric):
                 sensitivity_matrix[i,:] = \
                     sensitivity_matrix[i,:]/np.nanmax(np.abs(sensitivity_matrix[i,:]))
             sensitivity_matrix = np.delete(sensitivity_matrix,nanidx,axis=0)
-            
-            sns.clustermap(
-                sensitivity_matrix,
-                center=0,
-                method='ward',
-                cmap='RdBu_r',
-                linewidth=.5,
-                col_cluster=False,
-                figsize = (16,8),
-                xticklabels=[reaction_number[i] for i in range(num_reaction-1)],
-                yticklabels=[],
-                cbar_kws={"ticks":[-1,0,1]}
-            )
-            plt.savefig(
-                'figure/sensitivity/reaction/heatmap/{0}_{1}_{2}.pdf'.format(condition,obs_name,metric),
-                bbox_inches='tight'
-            )
-            plt.close()
+            if sensitivity_matrix.size != 0:
+                sns.clustermap(
+                    sensitivity_matrix,
+                    center=0,
+                    method='ward',
+                    cmap='RdBu_r',
+                    linewidth=.5,
+                    col_cluster=False,
+                    figsize = (16,8),
+                    xticklabels=[reaction_number[i] for i in range(num_reaction-1)],
+                    yticklabels=[],
+                    cbar_kws={"ticks":[-1,0,1]}
+                )
+                plt.savefig(
+                    'figure/sensitivity/reaction/heatmap/{0}_{1}_{2}.pdf'.format(condition,obs_name,metric),
+                    bbox_inches='tight'
+                )
+                plt.close()
