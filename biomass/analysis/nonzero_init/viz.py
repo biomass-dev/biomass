@@ -52,8 +52,7 @@ def sensitivity_barplot(metric):
     plt.rcParams['ytick.major.width'] = 1.2
 
     color = ['mediumblue','red']
-    for obs_name in observables:
-        k = observables.index(obs_name)
+    for k,obs_name in enumerate(observables):
         average = np.nanmean(sensitivity_coefficients[:,:,k,:],axis=0)
         stdev = np.nanstd(sensitivity_coefficients[:,:,k,:],axis=0,ddof=1)
 
@@ -92,15 +91,10 @@ def sensitivity_heatmap(metric):
         plt.rcParams['font.family'] = 'Arial'
         plt.rcParams['mathtext.fontset'] = 'custom'
         plt.rcParams['mathtext.it'] = 'Arial:italic'
-        plt.rcParams['axes.linewidth'] = 1.2
-        plt.rcParams['xtick.major.width'] = 1.2
-        plt.rcParams['ytick.major.width'] = 1.2
                 
-        for obs_name in observables:
-            k = observables.index(obs_name)
+        for k,obs_name in enumerate(observables):
             for l,condition in enumerate(sim.conditions):
                 sensitivity_matrix = sensitivity_coefficients[:,:-1,k,l]
-                
                 # Normalize from -1 to 1
                 nanidx =[]
                 for i in range(sensitivity_matrix.shape[0]):
