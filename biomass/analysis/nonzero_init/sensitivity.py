@@ -2,6 +2,7 @@ import os
 import sys
 import re
 import numpy as np
+from math import fabs, log
 from scipy.integrate import simps
 
 from biomass.model.name2idx import parameters as C
@@ -109,11 +110,20 @@ def analyze_sensitivity(metric,nonzero_idx):
                             raise ValueError(
                                 "metric ∈ {'duration','integral'}"
                             )
-    sensitivity_coefficients = np.empty_like(signaling_metric)
+    sensitivity_coefficients = np.empty(
+        (n_file,len(nonzero_idx),len(observables),len(sim.conditions))
+    )
     for i in range(n_file):
-        for k,_ in enumerate(observables):
-            for l,_ in enumerate(sim.conditions):
-                sensitivity_coefficients[i,:,k,l] = \
-                    np.log(signaling_metric[i,:,k,l]/signaling_metric[i,-1,k,l])/np.log(rate)
-            
+        for j,_ in enumerate(nonzero_idx):
+            for k,_ in enumerate(observables):
+                for l,_ in enumerate(sim.conditions):
+                    if sensitivity_coefficients[i,j,k,l] < sys.float_info.epsilon or \
+                        (signaling_metric[i,j,k,l]/signaling_metric[i,-1,k,l]) < 0:
+                        sensitivity_coefficients[i,j,k,l] = np.nan
+                    elif fabs(1 - signaling_metric[i,j,k,l]/signaling_metric[i,-1,k,l]) < sys.float_info.epsilon:
+                        sensitivity_coefficients[i,j,k,l] = 0.0
+                    else:
+                        sensitivity_coefficients[i,j,k,l] = (
+                            log(signaling_metric[i,j,k,l]/signaling_metric[i,-1,k,l])/log(rate)
+                        )
     return sensitivity_coefficients

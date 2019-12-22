@@ -53,18 +53,25 @@ def sensitivity_barplot(metric):
 
     color = ['mediumblue','red']
     for k,obs_name in enumerate(observables):
-        average = np.nanmean(sensitivity_coefficients[:,:,k,:],axis=0)
-        stdev = np.nanstd(sensitivity_coefficients[:,:,k,:],axis=0,ddof=1)
-
         plt.figure(figsize=(9,5))
         plt.hlines([0],-width,len(nonzero_idx)-1-width,'k',lw=1)
         for l,condition in enumerate(sim.conditions):
-            plt.bar(
-                np.arange(len(nonzero_idx))+l*width,average[:-1,l],
-                yerr = stdev[:-1,l],
-                ecolor=color[l],capsize=2,width=width,color=color[l],
-                align='center',label=condition
+            sensitivity_matrix = sensitivity_coefficients[:,:,k,l]
+            nan_idx = []
+            for m in range(sensitivity_matrix.shape[0]):
+                if any(np.isnan(sensitivity_matrix[m,:])):
+                    nan_idx.append(m)
+            sensitivity_matrix = np.delete(
+                sensitivity_matrix, nan_idx, axis=0
             )
+            if sensitivity_matrix.size != 0:
+                average = np.mean(sensitivity_matrix,axis=0)
+                stdev = np.std(sensitivity_matrix,axis=0,ddof=1)
+                plt.bar(
+                    np.arange(len(nonzero_idx))+l*width, average, yerr = stdev,
+                    ecolor=color[l],capsize=2,width=width,color=color[l],
+                    align='center',label=condition
+                )
         plt.xticks(
             np.arange(len(nonzero_idx))+width/2,[V.var_names[i] for i in nonzero_idx],
             rotation=30
@@ -94,15 +101,17 @@ def sensitivity_heatmap(metric):
                 
         for k,obs_name in enumerate(observables):
             for l,condition in enumerate(sim.conditions):
-                sensitivity_matrix = sensitivity_coefficients[:,:-1,k,l]
+                sensitivity_matrix = sensitivity_coefficients[:,:,k,l]
                 # Normalize from -1 to 1
-                nanidx =[]
+                nan_idx = []
                 for i in range(sensitivity_matrix.shape[0]):
                     if any(np.isnan(sensitivity_matrix[i,:])):
-                        nanidx.append(i)
+                        nan_idx.append(i)
                     sensitivity_matrix[i,:] = \
                         sensitivity_matrix[i,:]/np.nanmax(np.abs(sensitivity_matrix[i,:]))
-                sensitivity_matrix = np.delete(sensitivity_matrix,nanidx,axis=0)
+                sensitivity_matrix = np.delete(
+                    sensitivity_matrix, nan_idx, axis=0
+                )
                 if sensitivity_matrix.size != 0:
                     sns.clustermap(
                         sensitivity_matrix,
