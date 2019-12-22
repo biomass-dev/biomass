@@ -13,9 +13,8 @@ def local_search(ip,population,n_population,n_children,n_gene,search_idx,search_
         children[i,:] = mutation(population[ip,:],n_gene,search_idx,search_region)
 
     family = np.empty((n_children+1,n_gene+1))
-
     family[:n_children,:] = children
-    family[n_children,:] = population[ip[0],:]
+    family[-1,:] = population[ip[0],:]
 
     family = family[np.argsort(family[:,-1]),:]
 
@@ -28,7 +27,6 @@ def local_search(ip,population,n_population,n_children,n_gene,search_idx,search_
 
 def mutation(parents,n_gene,search_idx,search_region):
     MAXITER = 100
-
     in_range = False
     for _ in range(MAXITER):
         child = ndm(parents,n_gene)
