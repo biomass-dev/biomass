@@ -12,13 +12,14 @@ def converging(ip,population,n_population,n_gene,search_idx,search_region):
 
     family = np.empty((n_children+2,n_gene+1))
     family[:n_children,:] = children
-    family[n_children,:] = population[ip[0],:]
-    family[n_children+1,:] = population[ip[1],:]
+    family[-2,:] = population[ip[0],:]
+    family[-1,:] = population[ip[1],:]
 
     family = family[np.argsort(family[:,-1]),:]
-
-    population[ip[0],:] = family[0,:] # Best, either of parents
-    population[ip[1],:] = family[np.random.randint(low=1,high=n_children+2,dtype=np.int),:] # Random
+    # Best, either of parents
+    population[ip[0],:] = family[0,:]
+    # Random
+    population[ip[1],:] = family[np.random.randint(low=1,high=n_children+2,dtype=np.int),:]
 
     if np.isinf(population[ip[1],-1]):
         population[ip[1],-1] = objective(population[ip[1],:n_gene],search_idx,search_region)
@@ -30,7 +31,6 @@ def converging(ip,population,n_population,n_gene,search_idx,search_region):
 
 def xover(parents,n_gene):
     MAXITER = 100
-
     in_range = False
     for _ in range(MAXITER):
         child = endx(parents,n_gene)
@@ -40,7 +40,7 @@ def xover(parents,n_gene):
     if not in_range:
         child[:n_gene] = np.clip(child[:n_gene],0.,1.)
 
-    child[-1] = np.inf
+    child[-1] = np.inf # assigns the worst objective value to the children.
 
     return child
 

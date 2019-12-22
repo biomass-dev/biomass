@@ -16,16 +16,16 @@ def mgg_alternation(population,n_population,n_children,n_gene,search_idx,search_
         children[i,:] = get_new_child(population[ip,:],n_gene,search_idx,search_region)
 
     family = np.empty((n_children+2,n_gene+1))
-
     family[:n_children,:] = children
-    family[n_children,:] = population[ip[0],:]
-    family[n_children+1,:] = population[ip[1],:]
+    family[-2,:] = population[ip[0],:]
+    family[-1,:] = population[ip[1],:]
 
     family = family[np.argsort(family[:,-1]),:]
-
-    population[ip[0],:] = family[0,:] # Elite
+    # Elite
+    population[ip[0],:] = family[0,:]
+    # Rank-based Roulette Selection
     ic1 = rank_selection(n_children+2)
-    population[ip[1],:] = family[ic1,:] # Rank-based Roulette Selection
+    population[ip[1],:] = family[ic1,:]
 
     population = population[np.argsort(population[:,-1]),:]
 
@@ -34,7 +34,6 @@ def mgg_alternation(population,n_population,n_children,n_gene,search_idx,search_
 
 def get_new_child(parents,n_gene,search_idx,search_region):
     MAXITER = 100
-
     in_range = False
     for _ in range(MAXITER):
         child = undx(parents,n_gene)
@@ -52,7 +51,6 @@ def get_new_child(parents,n_gene,search_idx,search_region):
 def undx(parents,n_gene):
     """Unimodal Normal Distribution Xover"""
     child = np.empty(n_gene+1)
-
     ALPHA = 0.5
     BETA = 0.35/(n_gene**0.5)
 
