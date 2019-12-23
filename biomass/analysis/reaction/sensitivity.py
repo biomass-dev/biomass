@@ -2,6 +2,7 @@ import os
 import sys
 import re
 import numpy as np
+from math import fabs, log
 from scipy.integrate import simps
 
 from biomass.model.name2idx import parameters as C
@@ -24,6 +25,7 @@ def get_duration(time_course_vector):
     duration = np.argmax(time_course_vector[t_max:]) + t_max
 
     return duration
+
 
 def analyze_sensitivity(metric,num_reaction):
     """Compute sensitivity coefficients
@@ -90,9 +92,16 @@ def analyze_sensitivity(metric,num_reaction):
                 )
     sensitivity_coefficients = np.empty_like(signaling_metric)
     for i in range(n_file):
-        for k,_ in enumerate(observables):
-            for l,_ in enumerate(sim.conditions):
-                sensitivity_coefficients[i,:,k,l] = \
-                    np.log(signaling_metric[i,:,k,l]/signaling_metric[i,0,k,l])/np.log(rate)
-            
+        for j in range(num_reaction):
+            for k,_ in enumerate(observables):
+                for l,_ in enumerate(sim.conditions):
+                    if sensitivity_coefficients[i,j,k,l] < sys.float_info.epsilon or \
+                        (signaling_metric[i,j,k,l]/signaling_metric[i,0,k,l]) < 0:
+                        sensitivity_coefficients[i,j,k,l] = np.nan
+                    elif fabs(1 - signaling_metric[i,j,k,l]/signaling_metric[i,0,k,l]) < sys.float_info.epsilon:
+                        sensitivity_coefficients[i,j,k,l] = 0.0
+                    else:
+                        sensitivity_coefficients[i,j,k,l] = (
+                            log(signaling_metric[i,j,k,l]/signaling_metric[i,0,k,l])/log(rate)
+                        )
     return sensitivity_coefficients
