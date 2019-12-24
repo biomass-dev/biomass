@@ -99,6 +99,14 @@ where *v<sub>i</sub>* is the *i*<sup>th</sup> reaction rate, **v** is reaction v
 ```bash
 $ python analyze.py
 ```
+```metric```:
+- 'duration'
+    : The time it takes to decline below 10% of its maximum.
+- 'integral'
+    : The integral of concentration over the observation time.
+```python
+reaction.sensitivity_barplot(metric='integral')
+```
 ![sensitivity_PcFos](public/images/sensitivity_PcFos.png)
 
 Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HRG). Numbers above bars indicate the reaction indices, and error bars correspond to simulation standard deviation.
@@ -128,7 +136,7 @@ Select two individuals from the family. The first selected individual should be 
 
 1. **Application of ENDX/MGG**<br>
 To achieve a good search performance, ga_v2 optimizes a function, gradually narrowing the search space. For this purpose, the converging phase slightly converges the population by repeating the following procedure *N<sub>iter</sub>* times.
-    1. Select *m* individuals without replacement from the population. The selected individuals, expressed here as **p**<sub>1</sub>, **p**<sub>2</sub>, · · · , **p**<sub>*m*</sub>, are used as the parents for an extended unimodal normal distribution crossover (ENDX) applied in the next step.
+    1. Select *m* individuals without replacement from the population. The selected individuals, expressed here as **p**<sub>1</sub>, **p**<sub>2</sub>, · · · , **p**<sub>*m*</sub>, are used as the parents for an extended normal distribution crossover (ENDX) applied in the next step.
 
     1. Generate *N<sub>*c*</sub>* children by applying ENDX to the parents selected in the previous step. To reduce the computational cost, ga_v2 forgoes any computation of the objective values of the *N<sub>*c*</sub>* individuals generated here. Instead, the algorithm assigns the newly generated children a single objective value, one which is inferior to the objective values of any of the possible candidate solutions.
 
