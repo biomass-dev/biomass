@@ -86,6 +86,14 @@ simulate_all(viz_type='best',show_all=True,stdev=False)
 ```bash
 $ python analyze.py
 ```
+```metric```:　出力に用いる基準を設定します．
+- 'duration'
+    : 最大値の10%まで減少するまでにかかる時間．
+- 'integral'
+    : シミュレーション時間内における濃度の積分値．
+```python
+reaction.sensitivity_barplot(metric='integral')
+```
 ![sensitivity_PcFos](public/images/sensitivity_PcFos.png)
 
 pc-Fosの積分値に対する感度係数（青, EGF; 赤, HRG）．棒の上下の数字は反応番号を，エラーバーは標準偏差を表す．
