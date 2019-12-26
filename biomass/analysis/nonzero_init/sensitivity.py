@@ -28,7 +28,7 @@ def get_duration(time_course_vector):
 
 def analyze_sensitivity(metric,nonzero_idx):
     """Compute sensitivity coefficients
-    
+
     Parameters
     ----------
     metric: str
@@ -37,7 +37,7 @@ def analyze_sensitivity(metric,nonzero_idx):
     nonzero_idx: list
         for i in nonzero_idx:
             y0[i] != 0.0
-    
+
     Returns
     -------
     sensitivity_coefficients: numpy array
@@ -48,7 +48,7 @@ def analyze_sensitivity(metric,nonzero_idx):
 
     x = f_params()
     y0 = initial_values()
-    
+
     nonzero_idx = []
     for i,val in enumerate(y0):
         if val != 0.0:
@@ -117,7 +117,7 @@ def analyze_sensitivity(metric,nonzero_idx):
         for j,_ in enumerate(nonzero_idx):
             for k,_ in enumerate(observables):
                 for l,_ in enumerate(sim.conditions):
-                    if sensitivity_coefficients[i,j,k,l] < sys.float_info.epsilon or \
+                    if signaling_metric[i,j,k,l] < sys.float_info.epsilon or \
                         (signaling_metric[i,j,k,l]/signaling_metric[i,-1,k,l]) < 0:
                         sensitivity_coefficients[i,j,k,l] = np.nan
                     elif fabs(1 - signaling_metric[i,j,k,l]/signaling_metric[i,-1,k,l]) < sys.float_info.epsilon:
