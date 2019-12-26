@@ -118,6 +118,7 @@ def analyze_sensitivity(metric,nonzero_idx):
             for k,_ in enumerate(observables):
                 for l,_ in enumerate(sim.conditions):
                     if signaling_metric[i,j,k,l] < sys.float_info.epsilon or \
+                        signaling_metric[i,-1,k,l] < sys.float_info.epsilon or \
                         (signaling_metric[i,j,k,l]/signaling_metric[i,-1,k,l]) < 0:
                         sensitivity_coefficients[i,j,k,l] = np.nan
                     elif fabs(1 - signaling_metric[i,j,k,l]/signaling_metric[i,-1,k,l]) < sys.float_info.epsilon:
