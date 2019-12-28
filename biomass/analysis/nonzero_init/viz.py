@@ -107,8 +107,12 @@ def sensitivity_heatmap(metric):
                 for i in range(sensitivity_matrix.shape[0]):
                     if any(np.isnan(sensitivity_matrix[i,:])):
                         nan_idx.append(i)
-                    sensitivity_matrix[i,:] = \
-                        sensitivity_matrix[i,:]/np.nanmax(np.abs(sensitivity_matrix[i,:]))
+                    if np.nanmax(np.abs(sensitivity_matrix[i,:])) == 0.0:
+                        sensitivity_matrix[i,:] = \
+                            np.zeros(sensitivity_matrix.shape[1])
+                    else:
+                        sensitivity_matrix[i,:] = \
+                            sensitivity_matrix[i,:]/np.nanmax(np.abs(sensitivity_matrix[i,:]))
                 sensitivity_matrix = np.delete(
                     sensitivity_matrix, nan_idx, axis=0
                 )

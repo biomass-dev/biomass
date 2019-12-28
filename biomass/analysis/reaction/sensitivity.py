@@ -2,7 +2,7 @@ import os
 import sys
 import re
 import numpy as np
-from math import fabs, log
+from math import log
 from scipy.integrate import simps
 
 from biomass.model.name2idx import parameters as C
@@ -29,7 +29,7 @@ def get_duration(time_course_vector):
 
 def analyze_sensitivity(metric,num_reaction):
     """Compute sensitivity coefficients
-
+    
     Parameters
     ----------
     metric: str
@@ -37,7 +37,7 @@ def analyze_sensitivity(metric,num_reaction):
         - 'integral': The integral of concentration over the observation time.
     num_reaction: int
         len(v) in model/differential_equation.py
-
+    
     Returns
     -------
     sensitivity_coefficients: numpy array
@@ -95,10 +95,10 @@ def analyze_sensitivity(metric,num_reaction):
         for j in range(num_reaction):
             for k,_ in enumerate(observables):
                 for l,_ in enumerate(sim.conditions):
-                    if signaling_metric[i,j,k,l] < sys.float_info.epsilon or \
-                        (signaling_metric[i,j,k,l]/signaling_metric[i,0,k,l]) < 0:
+                    if np.isnan(signaling_metric[i,j,k,l]):
                         sensitivity_coefficients[i,j,k,l] = np.nan
-                    elif fabs(1 - signaling_metric[i,j,k,l]/signaling_metric[i,0,k,l]) < sys.float_info.epsilon:
+                    elif signaling_metric[i,0,k,l] < sys.float_info.epsilon or \
+                            (signaling_metric[i,j,k,l]/signaling_metric[i,0,k,l]) < 0:
                         sensitivity_coefficients[i,j,k,l] = 0.0
                     else:
                         sensitivity_coefficients[i,j,k,l] = (
