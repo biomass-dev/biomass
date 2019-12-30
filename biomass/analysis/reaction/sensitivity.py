@@ -45,6 +45,7 @@ def analyze_sensitivity(metric, num_reaction):
     sim = NumericalSimulation()
 
     rate = 1.01  # 1% change
+    epsilon = 1e-9
 
     x = f_params()
     y0 = initial_values()
@@ -98,7 +99,7 @@ def analyze_sensitivity(metric, num_reaction):
                 for l, _ in enumerate(sim.conditions):
                     if np.isnan(signaling_metric[i, j, k, l]):
                         sensitivity_coefficients[i, j, k, l] = np.nan
-                    elif fabs(signaling_metric[i, j, k, l] - signaling_metric[i, 0, k, l]) < sys.float_info.epsilon or \
+                    elif fabs(signaling_metric[i, j, k, l] - signaling_metric[i, 0, k, l]) < epsilon or \
                             (signaling_metric[i, j, k, l]/signaling_metric[i, 0, k, l]) < 0:
                         sensitivity_coefficients[i, j, k, l] = 0.0
                     else:
