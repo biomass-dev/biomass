@@ -60,7 +60,7 @@ def sensitivity_barplot(metric):
     color = ['mediumblue', 'red']
     for k, obs_name in enumerate(observables):
         plt.figure(figsize=(9, 5))
-        plt.hlines([0], -width, len(nonzero_idx)-1-width, 'k', lw=1)
+        plt.hlines([0], -width, len(nonzero_idx)-width, 'k', lw=1)
         for l, condition in enumerate(sim.conditions):
             sensitivity_matrix = sensitivity_coefficients[:, :, k, l]
             nan_idx = []
@@ -87,7 +87,7 @@ def sensitivity_barplot(metric):
             'Control coefficients on\n'+metric +
             ' ('+obs_name.replace('_', ' ')+')'
         )
-        plt.xlim(-width, len(nonzero_idx)-1-width)
+        plt.xlim(-width, len(nonzero_idx)-width)
         plt.legend(loc='upper left', frameon=False)
         plt.savefig(
             'figure/sensitivity/nonzero_init/{0}_{1}.pdf'.format(
