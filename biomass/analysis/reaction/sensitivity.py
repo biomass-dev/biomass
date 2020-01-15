@@ -33,6 +33,7 @@ def analyze_sensitivity(metric, num_reaction):
     Parameters
     ----------
     metric: str
+        - 'amplitude': The maximum value
         - 'duration': The time it takes to decline below 10% of its maximum.
         - 'integral': The integral of concentration over the observation time.
     num_reaction: int
@@ -62,11 +63,12 @@ def analyze_sensitivity(metric, num_reaction):
     search_idx = search_parameter_index()
     for i in range(n_file):
         if os.path.isfile('./out/%d/generation.npy' % (i+1)):
-            best_generation = \
-                np.load('./out/%d/generation.npy' % (i+1))
-            best_indiv = \
-                np.load('./out/%d/fit_param%d.npy' %
-                        (i+1, int(best_generation)))
+            best_generation = np.load(
+                './out/%d/generation.npy' % (i+1)
+            )
+            best_indiv = np.load(
+                './out/%d/fit_param%d.npy' % (i+1, int(best_generation))
+            )
             for m, n in enumerate(search_idx[0]):
                 x[n] = best_indiv[m]
             for m, n in enumerate(search_idx[1]):
@@ -77,7 +79,11 @@ def analyze_sensitivity(metric, num_reaction):
                 if sim.simulate(x, y0) is None:
                     for k, _ in enumerate(observables):
                         for l, _ in enumerate(sim.conditions):
-                            if metric == 'duration':
+                            if metric == 'amplitude':
+                                signaling_metric[i, j, k, l] = np.max(
+                                    sim.simulations[k, :, l]
+                                )
+                            elif metric == 'duration':
                                 signaling_metric[i, j, k, l] = get_duration(
                                     sim.simulations[k, :, l]
                                 )
@@ -87,7 +93,7 @@ def analyze_sensitivity(metric, num_reaction):
                                 )
                             else:
                                 raise ValueError(
-                                    "metric ∈ {'duration','integral'}"
+                                    "metric ∈ {'amplitude', 'duration', 'integral'}"
                                 )
                 sys.stdout.write(
                     '\r%d/%d' % (i*num_reaction+j+1, n_file*num_reaction)
