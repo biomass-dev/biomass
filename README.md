@@ -102,10 +102,13 @@ where *v<sub>i</sub>* is the *i*<sup>th</sup> reaction rate, **v** is reaction v
 $ python analyze.py
 ```
 ```metric```:
+- 'amplitude'
+    : The maximum value.
 - 'duration'
     : The time it takes to decline below 10% of its maximum.
 - 'integral'
     : The integral of concentration over the observation time.
+
 ```python
 reaction.sensitivity_barplot(metric='integral')
 ```

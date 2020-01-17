@@ -87,6 +87,8 @@ simulate_all(viz_type='best',show_all=True,stdev=False)
 $ python analyze.py
 ```
 ```metric```:　出力に用いる基準を設定します．
+- 'amplitude'
+    : 最大値．
 - 'duration'
     : 最大値の10%まで減少するまでにかかる時間．
 - 'integral'
