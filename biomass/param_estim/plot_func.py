@@ -8,8 +8,9 @@ from biomass.observable import observables, ExperimentalData
 
 
 def timecourse(sim, n_file, viz_type, show_all, stdev, simulations_all):
-    os.makedirs('./figure/simulation', exist_ok=True)
-
+    os.makedirs(
+        './figure/simulation/%s' % (viz_type), exist_ok=True
+    )
     exp = ExperimentalData()
 
     plt.rcParams['font.size'] = 20
@@ -87,8 +88,9 @@ def timecourse(sim, n_file, viz_type, show_all, stdev, simulations_all):
         plt.ylabel(obs_name.replace('_', ' '))
 
         plt.savefig(
-            './figure/simulation/{0}_{1}.pdf'.format(viz_type, obs_name),
-            bbox_inches='tight'
+            './figure/simulation/%s/%s.pdf' % (
+                viz_type, obs_name
+            ), bbox_inches='tight'
         )
         plt.close()
 
