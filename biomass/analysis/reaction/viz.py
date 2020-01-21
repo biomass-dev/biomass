@@ -14,10 +14,15 @@ width = 0.3
 
 def run_analysis(metric):
     os.makedirs(
-        './figure/sensitivity/reaction/%s/heatmap' % (metric), exist_ok=True
+        './figure/sensitivity/reaction/%s/heatmap' % (
+            metric
+        ), exist_ok=True
     )
     if not os.path.isfile(
-            'sensitivities_npy/reaction/%s/sensitivity_coefficients.npy' % (metric)):
+        'sensitivities_npy/reaction/%s/sensitivity_coefficients.npy' % (
+            metric
+        )
+    ):
         os.makedirs(
             './sensitivities_npy/reaction/%s' % (
                 metric
@@ -40,7 +45,7 @@ def run_analysis(metric):
 
 def get_sort_idx():
     reaction_module = get_reaction_module()
-    sort_idx = [0]*num_reaction
+    sort_idx = [0] * num_reaction
     left_end = 0
     for i, ith_module in enumerate(reaction_module):
         for j, k in enumerate(ith_module):
@@ -57,15 +62,16 @@ def get_reaction_number(sort_idx):
 
 def draw_vertical_span(width):
     reaction_module = get_reaction_module()
-    left_end = 0
-    for i, ith_module in enumerate(reaction_module):
-        if i % 2 == 0:
-            plt.axvspan(
-                left_end - width,
-                left_end - width + len(ith_module),
-                facecolor='k', alpha=0.1
-            )
-        left_end += len(ith_module)
+    if len(reaction_module) > 1:
+        left_end = 0
+        for i, ith_module in enumerate(reaction_module):
+            if i % 2 == 0:
+                plt.axvspan(
+                    left_end - width,
+                    left_end - width + len(ith_module),
+                    facecolor='k', alpha=0.1
+                )
+            left_end += len(ith_module)
 
 
 def sensitivity_barplot(metric):
@@ -86,7 +92,9 @@ def sensitivity_barplot(metric):
     for k, obs_name in enumerate(observables):
         plt.figure(figsize=(12, 5))
         draw_vertical_span(width)
-        plt.hlines([0], -width, num_reaction-1-width, 'k', lw=1)
+        plt.hlines(
+            [0], -width, num_reaction-1-width, 'k', lw=1
+        )
         sensitivity_array = sensitivity_coefficients[:, :, k, :]
         nan_idx = []
         for i in range(sensitivity_array.shape[0]):
@@ -162,12 +170,18 @@ def sensitivity_heatmap(metric):
                 if any(np.isnan(sensitivity_matrix[i, :])):
                     nan_idx.append(i)
                 if np.nanmax(np.abs(sensitivity_matrix[i, :])) == 0.0:
-                    sensitivity_matrix[i, :] = \
-                        np.zeros(sensitivity_matrix.shape[1])
+                    sensitivity_matrix[i, :] = np.zeros(
+                        sensitivity_matrix.shape[1]
+                    )
                 else:
-                    sensitivity_matrix[i, :] = \
-                        sensitivity_matrix[i, :] / \
-                        np.nanmax(np.abs(sensitivity_matrix[i, :]))
+                    sensitivity_matrix[i, :] = (
+                        sensitivity_matrix[i, :] / 
+                        np.nanmax(
+                            np.abs(
+                                sensitivity_matrix[i, :]
+                            )
+                        )
+                    )
             sensitivity_matrix = np.delete(
                 sensitivity_matrix, nan_idx, axis=0
             )
