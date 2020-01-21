@@ -7,29 +7,33 @@ from biomass.observable import observables, NumericalSimulation
 from .sensitivity import analyze_sensitivity
 from .reaction import *
 
-os.makedirs('./figure/sensitivity/reaction/heatmap', exist_ok=True)
 
 sim = NumericalSimulation()
 width = 0.3
 
 
 def run_analysis(metric):
+    os.makedirs(
+        './figure/sensitivity/reaction/%s/heatmap' % (metric), exist_ok=True
+    )
     if not os.path.isfile(
             'sensitivities_npy/reaction/%s/sensitivity_coefficients.npy' % (metric)):
         os.makedirs(
-            './sensitivities_npy/reaction/%s' % (metric),
-            exist_ok=True
+            './sensitivities_npy/reaction/%s' % (
+                metric
+            ), exist_ok=True
         )
         sensitivity_coefficients = analyze_sensitivity(metric, num_reaction)
         np.save(
             'sensitivities_npy/reaction/%s/sensitivity_coefficients' % (
-                metric),
-            sensitivity_coefficients
+                metric
+            ), sensitivity_coefficients
         )
     else:
         sensitivity_coefficients = np.load(
             'sensitivities_npy/reaction/%s/sensitivity_coefficients.npy' % (
-                metric)
+                metric
+            )
         )
     return sensitivity_coefficients
 
@@ -57,8 +61,8 @@ def draw_vertical_span(width):
     for i, ith_module in enumerate(reaction_module):
         if i % 2 == 0:
             plt.axvspan(
-                left_end-width,
-                left_end+len(ith_module)-width,
+                left_end - width,
+                left_end - width + len(ith_module),
                 facecolor='k', alpha=0.1
             )
         left_end += len(ith_module)
@@ -127,9 +131,9 @@ def sensitivity_barplot(metric):
             # plt.yticks([-1.2,-1.0,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6])
             plt.legend(loc='lower right', frameon=False)
             plt.savefig(
-                'figure/sensitivity/reaction/{0}_{1}.pdf'.format(
-                    obs_name, metric),
-                bbox_inches='tight'
+                'figure/sensitivity/reaction/%s/%s.pdf' % (
+                    metric, obs_name
+                ), bbox_inches='tight'
             )
             plt.close()
 
@@ -183,8 +187,8 @@ def sensitivity_heatmap(metric):
                     cbar_kws={"ticks": [-1, 0, 1]}
                 )
                 plt.savefig(
-                    'figure/sensitivity/reaction/heatmap/{0}_{1}_{2}.pdf'.format(
-                        condition, obs_name, metric),
-                    bbox_inches='tight'
+                    'figure/sensitivity/reaction/%s/heatmap/%s_%s.pdf' % (
+                        metric, condition, obs_name
+                    ), bbox_inches='tight'
                 )
                 plt.close()

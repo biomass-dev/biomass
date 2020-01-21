@@ -9,10 +9,8 @@ from biomass.model.initial_condition import initial_values
 from biomass.observable import observables, NumericalSimulation
 from .sensitivity import analyze_sensitivity
 
-os.makedirs('./figure/sensitivity/nonzero_init/heatmap', exist_ok=True)
 
 sim = NumericalSimulation()
-
 width = 0.3
 
 nonzero_idx = []
@@ -26,22 +24,27 @@ if len(nonzero_idx) == 0:
 
 
 def run_analysis(metric):
+    os.makedirs(
+        './figure/sensitivity/nonzero_init/%s/heatmap' % (metric), exist_ok=True
+    )
     if not os.path.isfile(
             'sensitivities_npy/nonzero_init/%s/sensitivity_coefficients.npy' % (metric)):
         os.makedirs(
-            './sensitivities_npy/nonzero_init/%s' % (metric),
-            exist_ok=True
+            './sensitivities_npy/nonzero_init/%s' % (
+                metric
+            ), exist_ok=True
         )
         sensitivity_coefficients = analyze_sensitivity(metric, nonzero_idx)
         np.save(
             'sensitivities_npy/nonzero_init/%s/sensitivity_coefficients' % (
-                metric),
-            sensitivity_coefficients
+                metric
+            ), sensitivity_coefficients
         )
     else:
         sensitivity_coefficients = np.load(
             'sensitivities_npy/nonzero_init/%s/sensitivity_coefficients.npy' % (
-                metric)
+                metric
+            )
         )
     return sensitivity_coefficients
 
@@ -90,9 +93,9 @@ def sensitivity_barplot(metric):
         plt.xlim(-width, len(nonzero_idx)-width)
         plt.legend(loc='upper left', frameon=False)
         plt.savefig(
-            'figure/sensitivity/nonzero_init/{0}_{1}.pdf'.format(
-                obs_name, metric),
-            bbox_inches='tight'
+            'figure/sensitivity/nonzero_init/%s/%s.pdf' % (
+                metric, obs_name
+            ), bbox_inches='tight'
         )
         plt.close()
 
@@ -140,8 +143,8 @@ def sensitivity_heatmap(metric):
                         cbar_kws={"ticks": [-1, 0, 1]}
                     )
                     plt.savefig(
-                        'figure/sensitivity/nonzero_init/heatmap/{0}_{1}_{2}.pdf'.format(
-                            condition, obs_name, metric),
-                        bbox_inches='tight'
+                        'figure/sensitivity/nonzero_init/%s/heatmap/%s_%s.pdf' % (
+                            metric, condition, obs_name
+                        ), bbox_inches='tight'
                     )
                     plt.close()
