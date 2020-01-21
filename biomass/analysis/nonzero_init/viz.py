@@ -25,10 +25,15 @@ if len(nonzero_idx) == 0:
 
 def run_analysis(metric):
     os.makedirs(
-        './figure/sensitivity/nonzero_init/%s/heatmap' % (metric), exist_ok=True
+        './figure/sensitivity/nonzero_init/%s/heatmap' % (
+            metric
+        ), exist_ok=True
     )
     if not os.path.isfile(
-            'sensitivities_npy/nonzero_init/%s/sensitivity_coefficients.npy' % (metric)):
+        'sensitivities_npy/nonzero_init/%s/sensitivity_coefficients.npy' % (
+            metric
+        )
+    ):
         os.makedirs(
             './sensitivities_npy/nonzero_init/%s' % (
                 metric
@@ -63,7 +68,9 @@ def sensitivity_barplot(metric):
     color = ['mediumblue', 'red']
     for k, obs_name in enumerate(observables):
         plt.figure(figsize=(9, 5))
-        plt.hlines([0], -width, len(nonzero_idx)-width, 'k', lw=1)
+        plt.hlines(
+            [0], -width, len(nonzero_idx)-width, 'k', lw=1
+        )
         for l, condition in enumerate(sim.conditions):
             sensitivity_matrix = sensitivity_coefficients[:, :, k, l]
             nan_idx = []
@@ -82,13 +89,13 @@ def sensitivity_barplot(metric):
                     align='center', label=condition
                 )
         plt.xticks(
-            np.arange(len(nonzero_idx))+width / 2,
+            np.arange(len(nonzero_idx)) + width/2,
             [V.var_names[i] for i in nonzero_idx],
             rotation=30
         )
         plt.ylabel(
-            'Control coefficients on\n'+metric +
-            ' ('+obs_name.replace('_', ' ')+')'
+            'Control coefficients on\n' + metric +
+            ' (' + obs_name.replace('_', ' ') + ')'
         )
         plt.xlim(-width, len(nonzero_idx)-width)
         plt.legend(loc='upper left', frameon=False)
@@ -120,12 +127,18 @@ def sensitivity_heatmap(metric):
                     if any(np.isnan(sensitivity_matrix[i, :])):
                         nan_idx.append(i)
                     if np.nanmax(np.abs(sensitivity_matrix[i, :])) == 0.0:
-                        sensitivity_matrix[i, :] = \
-                            np.zeros(sensitivity_matrix.shape[1])
+                        sensitivity_matrix[i, :] = np.zeros(
+                            sensitivity_matrix.shape[1]
+                        )
                     else:
-                        sensitivity_matrix[i, :] = \
-                            sensitivity_matrix[i, :] / \
-                            np.nanmax(np.abs(sensitivity_matrix[i, :]))
+                        sensitivity_matrix[i, :] = (
+                            sensitivity_matrix[i, :] / 
+                            np.nanmax(
+                                np.abs(
+                                    sensitivity_matrix[i, :]
+                                )
+                            )
+                        )
                 sensitivity_matrix = np.delete(
                     sensitivity_matrix, nan_idx, axis=0
                 )

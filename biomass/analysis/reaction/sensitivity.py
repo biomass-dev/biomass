@@ -116,7 +116,8 @@ def analyze_sensitivity(metric, num_reaction):
                         sensitivity_coefficients[i, j, k, l] = 0.0
                     else:
                         sensitivity_coefficients[i, j, k, l] = (
-                            log(signaling_metric[i, j, k, l] /
+                            log(
+                                signaling_metric[i, j, k, l] /
                                 signaling_metric[i, 0, k, l]
                             ) / log(rate)
                         )

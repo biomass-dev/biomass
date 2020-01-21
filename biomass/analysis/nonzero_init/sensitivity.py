@@ -143,7 +143,8 @@ def analyze_sensitivity(metric, nonzero_idx):
                         sensitivity_coefficients[i, j, k, l] = 0.0
                     else:
                         sensitivity_coefficients[i, j, k, l] = (
-                            log(signaling_metric[i, j, k, l] /
+                            log(
+                                signaling_metric[i, j, k, l] /
                                 signaling_metric[i, -1, k, l]
                             ) / log(rate)
                         )

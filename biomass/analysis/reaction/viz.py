@@ -132,7 +132,7 @@ def sensitivity_barplot(metric):
             plt.xticks([])
             plt.ylabel(
                 'Control coefficients on\n'+metric +
-                ' ('+obs_name.replace('_', ' ')+')'
+                ' (' + obs_name.replace('_', ' ') + ')'
             )
             plt.xlim(-width, num_reaction-1-width)
             # plt.ylim(-1.2,0.6)
