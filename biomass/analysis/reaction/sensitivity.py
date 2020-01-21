@@ -33,7 +33,7 @@ def analyze_sensitivity(metric, num_reaction):
     Parameters
     ----------
     metric: str
-        - 'amplitude': The maximum value
+        - 'amplitude': The maximum value.
         - 'duration': The time it takes to decline below 10% of its maximum.
         - 'integral': The integral of concentration over the observation time.
     num_reaction: int
@@ -42,11 +42,12 @@ def analyze_sensitivity(metric, num_reaction):
     Returns
     -------
     sensitivity_coefficients: numpy array
+    
     """
     sim = NumericalSimulation()
 
     rate = 1.01  # 1% change
-    epsilon = 1e-9
+    epsilon = 1e-9  # If |M - M*| < epsilon, sensitivity_coefficient = 0
 
     x = f_params()
     y0 = initial_values()
@@ -96,7 +97,9 @@ def analyze_sensitivity(metric, num_reaction):
                                     "metric ∈ {'amplitude', 'duration', 'integral'}"
                                 )
                 sys.stdout.write(
-                    '\r%d/%d' % (i*num_reaction+j+1, n_file*num_reaction)
+                    '\r%d / %d' % (
+                        i*num_reaction+j+1, n_file*num_reaction
+                    )
                 )
     sensitivity_coefficients = np.empty_like(signaling_metric)
     for i in range(n_file):
@@ -105,12 +108,16 @@ def analyze_sensitivity(metric, num_reaction):
                 for l, _ in enumerate(sim.conditions):
                     if np.isnan(signaling_metric[i, j, k, l]):
                         sensitivity_coefficients[i, j, k, l] = np.nan
-                    elif fabs(signaling_metric[i, j, k, l] - signaling_metric[i, 0, k, l]) < epsilon or \
-                            (signaling_metric[i, j, k, l]/signaling_metric[i, 0, k, l]) < 0:
+                    elif fabs(
+                        signaling_metric[i, j, k, l] - signaling_metric[i, 0, k, l]
+                    ) < epsilon or (
+                        signaling_metric[i, j, k, l] / signaling_metric[i, 0, k, l]
+                    ) < 0:
                         sensitivity_coefficients[i, j, k, l] = 0.0
                     else:
                         sensitivity_coefficients[i, j, k, l] = (
                             log(signaling_metric[i, j, k, l] /
-                                signaling_metric[i, 0, k, l])/log(rate)
+                                signaling_metric[i, 0, k, l]
+                            ) / log(rate)
                         )
     return sensitivity_coefficients
