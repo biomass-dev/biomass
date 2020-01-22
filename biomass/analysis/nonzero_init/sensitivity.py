@@ -81,6 +81,7 @@ def analyze_sensitivity(metric, nonzero_idx):
                 y0[n] = best_indiv[m+len(search_idx[0])]
             copy_y0 = y0[:]
             for j, idx in enumerate(nonzero_idx):
+                y0 = copy_y0[:]
                 y0[idx] = copy_y0[idx]*rate
                 if sim.simulate(x, y0) is None:
                     for k, _ in enumerate(observables):
