@@ -124,9 +124,7 @@ def analyze_sensitivity(metric, nonzero_idx):
                                 sim.simulations[k, :, l]
                             )
                         else:
-                            raise ValueError(
-                                "metric ∈ {'amplitude', 'duration', 'integral'}"
-                            )
+                            sys.exit()
     sensitivity_coefficients = np.empty(
         (n_file, len(nonzero_idx), len(observables), len(sim.conditions))
     )
