@@ -90,11 +90,9 @@ $ python analyze.py
 各反応における感度係数を求めるためには，[```model/differential_equation.py```](biomass/model/differential_equation.py)中で，反応速度を 'v' で表す場合，全ての反応式を記述した直後に，以下を書いておく必要があります．
 ```python
 global perturbation
-try:
+if 'perturbation' in globals():
     for i, original in enumerate(v):
         v[i] = original * perturbation[i]
-except NameError:
-    pass
 ```
 
 ```metric```:　出力に用いる基準を設定します．

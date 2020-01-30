@@ -71,11 +71,9 @@ def diffeq(t,y,x):
     v[63] = x[C.p63] * y[V.Fn]
     
     global perturbation
-    try:
-        for i,original in enumerate(v):
-            v[i] = original*perturbation[i]
-    except NameError:
-        pass
+    if 'perturbation' in globals():
+        for i, original in enumerate(v):
+            v[i] = original * perturbation[i]
     
 
     dydt = [0]*V.len_f_vars
