@@ -1,4 +1,4 @@
-param_names = [\
+param_names = [
     'V1',
     'Km1',
     'V2',
@@ -114,9 +114,10 @@ param_names = [\
     'Ligand',
     'EGF',
     'HRG',
+    'no_ligand',
     ##
     'len_f_params'\
 ]
 
-for idx,name in enumerate(param_names):
-    exec('%s=%d'%(name,idx))
+for idx, name in enumerate(param_names):
+    exec('%s=%d' % (name, idx))

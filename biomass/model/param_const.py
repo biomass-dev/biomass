@@ -1,5 +1,6 @@
 from .name2idx import parameters as C
 
+
 def f_params():
 
     x = [0]*C.len_f_params
@@ -13,7 +14,7 @@ def f_params():
     x[C.V4] = 6.48e-01
     x[C.Km4] = 6.00e+01
     x[C.V5] = 19.49872346
-    x[C.Km5]  =29.94073716
+    x[C.Km5] = 29.94073716
     x[C.V6] = x[C.V5]
     x[C.Km6] = x[C.Km5]
     x[C.KimERK] = 1.20e-02
@@ -117,7 +118,8 @@ def f_params():
     x[C.Vn] = 0.22
     x[C.Vc] = 0.94
 
-    x[C.EGF]= 0
-    x[C.HRG]= 1
+    x[C.EGF] = 0
+    x[C.HRG] = 1
+    x[C.no_ligand] = 2
 
     return x
