@@ -71,7 +71,7 @@ class NumericalSimulation(object):
                 T.append(sol.t)
                 Y.append(sol.y)
 
-        return np.array(Y[-1])
+        return np.array(T), np.array(Y)
 
     tspan = [0, 5400]  # [start, end] (Unit time: 1 sec.)
     t = np.arange(tspan[0], tspan[-1]+1)/60.  # sec. -> min. (plot_func.py)
@@ -84,7 +84,11 @@ class NumericalSimulation(object):
     def simulate(self, x, y0):
         # get steady state
         x[C.Ligand] = x[C.no_ligand]  # No ligand
-        y0 = self._get_steady_state(diffeq, y0, self.tspan, tuple(x))
+        (T0, Y0) = self._get_steady_state(diffeq, y0, self.tspan, tuple(x))
+        if T0[-1] < self.tspan[-1]:
+            return False
+        else:
+            y0 = Y0[-1, :]
         # add ligand
         for i, condition in enumerate(self.conditions):
             if condition == 'EGF':
