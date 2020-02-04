@@ -52,7 +52,8 @@ class NumericalSimulation(object):
 
         return np.array(T), np.array(Y)
 
-    def _get_steady_state(self, diffeq, y0, tspan, args, sstime=1000000, epsilon=1e-6):
+    def _get_steady_state(self, diffeq, y0, tspan, args,
+                          sstime=1000000, epsilon=1e-5):
         sol = ode(diffeq)
         sol.set_integrator(
             'vode', method='bdf', with_jacobian=True, min_step=1e-8
@@ -71,7 +72,7 @@ class NumericalSimulation(object):
                 T.append(sol.t)
                 Y.append(sol.y)
 
-        return np.array(T), np.array(Y)
+        return T[-1], Y[-1]
 
     tspan = [0, 5400]  # [start, end] (Unit time: 1 sec.)
     t = np.arange(tspan[0], tspan[-1]+1)/60.  # sec. -> min. (plot_func.py)
@@ -85,10 +86,10 @@ class NumericalSimulation(object):
         # get steady state
         x[C.Ligand] = x[C.no_ligand]  # No ligand
         (T0, Y0) = self._get_steady_state(diffeq, y0, self.tspan, tuple(x))
-        if T0[-1] < self.tspan[-1]:
+        if T0 < self.tspan[-1]:
             return False
         else:
-            y0 = Y0[-1, :]
+            y0 = Y0[:]
         # add ligand
         for i, condition in enumerate(self.conditions):
             if condition == 'EGF':
