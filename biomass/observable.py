@@ -53,7 +53,7 @@ class NumericalSimulation(object):
         return np.array(T), np.array(Y)
 
     def _get_steady_state(self, diffeq, y0, tspan, args,
-                          sstime=1000000, epsilon=1e-5):
+                          sstime=1000000, epsilon=1e-6):
         sol = ode(diffeq)
         sol.set_integrator(
             'vode', method='bdf', with_jacobian=True, min_step=1e-8
