@@ -37,12 +37,12 @@ sed 's/$/,/' |
 sed -e 's/^/	/g' |
 sed -e 's/    //g' > var_var_mid
 
-echo 'param_names = [\' > first_line
+echo 'var_names = [\' > first_line
 
 echo "	##
-	'len_f_params'\
+	'len_f_vars'\
 ]
-for idx,name in enumerate(param_names):
+for idx,name in enumerate(var_names):
     exec('%s=%d'%(name,idx))" > last_line
 
 
