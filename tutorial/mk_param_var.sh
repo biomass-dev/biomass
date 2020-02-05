@@ -6,7 +6,7 @@ awk '!seen[$0]++' | \
 sed -e 's/[[:space:]]\+//g' | \
 sed -e "s/\(.*\)/'\1'/" | \
 sed 's/$/,/' |
-sed -e 's/^/\t/g' > param_var_mid
+sed -e $'s/^/\t/g' > param_var_mid
 
 echo 'param_names = [\' > first_line
 
@@ -34,7 +34,7 @@ awk '!seen[$0]++' | \
 sed -e 's/[[:space:]]\+//g' | \
 sed -e "s/\(.*\)/'\1'/" | \
 sed 's/$/,/' |
-sed -e 's/^/\t/g' > var_var_mid
+sed -e $'s/^/\t/g' > var_var_mid
 
 echo 'param_names = [\' > first_line
 
