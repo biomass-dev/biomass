@@ -53,7 +53,7 @@ class NumericalSimulation(object):
         return np.array(T), np.array(Y)
 
     def _get_steady_state(self, diffeq, y0, tspan, args,
-                          sstime=1000000, epsilon=1e-6):
+                          steady_state_time=1000000, steady_state_eps=1e-6):
         sol = ode(diffeq)
         sol.set_integrator(
             'vode', method='bdf', with_jacobian=True, min_step=1e-8
@@ -64,9 +64,9 @@ class NumericalSimulation(object):
         T = [0]
         Y = [y0]
 
-        while sol.successful() and sol.t < sstime:
-            sol.integrate(sstime, step=True)
-            if tspan[-1] < sol.t and all(abs(Y0 - sol.y[i]) < epsilon for i, Y0 in enumerate(Y[-1])):
+        while sol.successful() and sol.t < steady_state_time:
+            sol.integrate(steady_state_time, step=True)
+            if tspan[-1] < sol.t and np.all(np.abs(sol.y - Y[-1]) < steady_state_eps):
                 break
             else:
                 T.append(sol.t)
@@ -85,11 +85,13 @@ class NumericalSimulation(object):
     def simulate(self, x, y0):
         # get steady state
         x[C.Ligand] = x[C.no_ligand]  # No ligand
-        (T0, Y0) = self._get_steady_state(diffeq, y0, self.tspan, tuple(x))
-        if T0 < self.tspan[-1]:
+        (T_steady_state, Y_steady_state) = self._get_steady_state(
+            diffeq, y0, self.tspan, tuple(x)
+        )
+        if T_steady_state < self.tspan[-1]:
             return False
         else:
-            y0 = Y0[:]
+            y0 = Y_steady_state[:]
         # add ligand
         for i, condition in enumerate(self.conditions):
             if condition == 'EGF':
