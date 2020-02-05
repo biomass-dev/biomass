@@ -6,12 +6,12 @@ awk '!seen[$0]++' | \
 sed -e 's/[[:space:]]\+//g' | \
 sed -e "s/\(.*\)/'\1'/" | \
 sed 's/$/,/' |
-sed -e $'s/^/\t/g' > param_var_mid
+sed -e 's/^/	/g' > param_var_mid
 
 echo 'param_names = [\' > first_line
 
-echo "    ##
-    'len_f_params'\
+echo "	##
+	'len_f_params'\
 ]
 
 for idx,name in enumerate(param_names):
@@ -27,19 +27,19 @@ rm last_line
 echo "done processing parameters"
 
 # script to extract variables from variables constant
-grep '\[V' ../biomass/model/differential_equation.py | \
+grep 'dydt\[V' ../biomass/model/differential_equation.py | \
 sed 's/dydt\[V\.//g' | \
 sed 's/\].*//g' | \
 awk '!seen[$0]++' | \
 sed -e 's/[[:space:]]\+//g' | \
 sed -e "s/\(.*\)/'\1'/" | \
 sed 's/$/,/' |
-sed -e $'s/^/\t/g' > var_var_mid
+sed -e 's/^/	/g' > var_var_mid
 
 echo 'param_names = [\' > first_line
 
-echo "    ##
-    'len_f_params'\
+echo "	##
+	'len_f_params'\
 ]
 
 for idx,name in enumerate(param_names):
