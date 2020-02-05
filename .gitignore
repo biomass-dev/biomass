@@ -14,6 +14,9 @@ __pycache__/
 # nohup
 nohup.out
 
+# figs
+figure/
+
 # fit_param
 out/
 
