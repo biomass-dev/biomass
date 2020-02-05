@@ -6,14 +6,14 @@ awk '!seen[$0]++' | \
 sed -e 's/[[:space:]]\+//g' | \
 sed -e "s/\(.*\)/'\1'/" | \
 sed 's/$/,/' |
-sed -e 's/^/	/g' > param_var_mid
+sed -e 's/^/	/g' |
+sed -e 's/    //g' > param_var_mid
 
 echo 'param_names = [\' > first_line
 
 echo "	##
 	'len_f_params'\
 ]
-
 for idx,name in enumerate(param_names):
     exec('%s=%d'%(name,idx))" > last_line
 
@@ -34,14 +34,14 @@ awk '!seen[$0]++' | \
 sed -e 's/[[:space:]]\+//g' | \
 sed -e "s/\(.*\)/'\1'/" | \
 sed 's/$/,/' |
-sed -e 's/^/	/g' > var_var_mid
+sed -e 's/^/	/g' |
+sed -e 's/    //g' > var_var_mid
 
 echo 'param_names = [\' > first_line
 
 echo "	##
 	'len_f_params'\
 ]
-
 for idx,name in enumerate(param_names):
     exec('%s=%d'%(name,idx))" > last_line
 
