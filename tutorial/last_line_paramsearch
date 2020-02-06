@@ -64,12 +64,6 @@ def get_search_region():
     # search_region[:,C.param_name] = [lower_bound,upper_bound]
     # search_region[:,V.var_name+len(x)] = [lower_bound,upper_bound]
 
-    # Hill coefficient
-    # search_region[:, C.n10] = [1.00, 4.00]
-    # search_region[:, C.n31] = [1.00, 4.00]
-    # search_region[:, C.n57] = [1.00, 4.00]
-    # search_region[:, C.nF31] = [1.00, 4.00]
-
     ''' Example ----------------------------------------------------------------
 
     search_region[:, C.V1] = [7.33e-2, 6.60e-01]
