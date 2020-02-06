@@ -303,7 +303,22 @@ You can then edit the parameter name and set the lower and upper limits.
 
 ### 5. Edit ```fitness.py``` file
 
-When there is no constraints assuming that some variables are equal to some other variables, the lines containing constraints can be removed.
+When the simulations don't seem to work well, it might be better to change the function used to calculate the difference between the simulation and the experimental data. The default used is RSS and you can change it to cosine distance by changing the following line (line 61) from:
+
+```python
+                error[i] = compute_objval_rss(
+```
+<br>
+
+to:
+
+```python
+                error[i] = compute_objval_cos(
+```
+<br>
+
+
+Furthermore, when there is no constraints assuming that some variables are equal to some other variables, the lines containing constraints can be removed.
 
 Remove/uncomment the following lines
 
