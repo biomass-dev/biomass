@@ -720,7 +720,7 @@ To visualize the simulation results you can then use the function ```run_sim.py`
     * ```average``` : average of the results with parameter sets in ```out/```
     * ```best``` : the best results (what is best?)
     * ```original```: original result before optimization
-    * ```n```: simulation wiht the parameter set in ```out/n```
+    * ```n```: simulation with the parameter set in ```out/n```
 
 * Show all: ```show_all``` 
 
