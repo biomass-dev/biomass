@@ -1,6 +1,5 @@
 
 # BioMASS tutorial
-## Johannes Nicolaus Wibisana  (2020/02/06)
 
 Biomass is a tool for parameter optimization. Users can supply BioMASS with differential equations, experimental conditions and experimental results to fit the equations to the experimental results. BioMASS can also perform sensitivity analysis to understand important components in complex biological network.
 
@@ -767,7 +766,10 @@ python analyze.py amplitude
 ```
 <br>
 
-The final results should be available in the folder ```/out```
+The final results should be available in the folder ```/figure```
 
 
 If you have any questions, please email us at nico@protein.osaka-u.ac.jp or himoto@protein.osaka-u.ac.jp
+
+## Author
+- Johannes Nicolaus Wibisana  (2020/02/06)
