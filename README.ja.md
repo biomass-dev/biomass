@@ -85,7 +85,7 @@ $ python run_sim.py best show_all
 ここで *v<sub>i</sub>* は*i*番目の反応速度を表し, **v** は反応速度のベクトル **v** = (*v<sub>1</sub>*, *v<sub>2</sub>*, ...)，*q*(**v**) は出力を定量する関数です（例：応答の積分値，最大値，持続時間など）． 感度係数は微分を1%の反応速度の変化で有限差分近似して計算されます．
 
 ```bash
-$ python analyze.py
+$ python analyze.py [metric]
 ```
 
 各反応における感度係数を求めるためには，[```model/differential_equation.py```](biomass/model/differential_equation.py)中で，反応速度を 'v' で表す場合，全ての反応式を記述した直後に，以下を書いておく必要があります．
@@ -103,8 +103,9 @@ if 'perturbation' in globals():
     : 最大値の10%まで減少するまでにかかる時間．
 - 'integral'
     : シミュレーション時間内における濃度の積分値．
-```python
-reaction.sensitivity_barplot(metric='integral')
+
+```bash
+$ python analyze.py integral
 ```
 ![sensitivity_PcFos](public/images/sensitivity_PcFos.png)
 
