@@ -6,7 +6,7 @@ from biomass.analysis import reaction, nonzero_init
 
 if not os.path.isdir('./figure'):
     os.mkdir('./figure')
-    
+
 if __name__ == '__main__':
     args = sys.argv
     if len(args) > 2:
@@ -16,12 +16,11 @@ if __name__ == '__main__':
         sys.exit()
     else:
         if str(args[1]) not in ['integral', 'amplitude', 'duration']:
-            print(
+            raise ValueError(
                 "Available arguments are: 'integral', 'amplitude', 'duration'"
             )
-            sys.exit()
-
-    reaction.sensitivity_barplot(metric=str(args[1]))
-#   reaction.sensitivity_heatmap(metric='integral')
-#    nonzero_init.sensitivity_barplot(metric=str(args[1]))
-#   nonzero_init.sensitivity_heatmap(metric='integral')
+        else:
+            reaction.sensitivity_barplot(metric=str(args[1]))
+#           reaction.sensitivity_heatmap(metric=str(args[1]))
+#           nonzero_init.sensitivity_barplot(metric=str(args[1]))
+#           nonzero_init.sensitivity_heatmap(metric=str(args[1])) 
