@@ -464,7 +464,7 @@ to:
 ```python
         # add ligand
         for i, condition in enumerate(self.conditions):
-            if condition == 'TNFA':
+            if condition == 'TNFa':
                 x[C.TNF] = 1.0
 ```
 
@@ -585,7 +585,7 @@ class ExperimentalData(object):
     t = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180]
 
     experiments[observables.index('Nuclear_NFkB')] = {
-        'TNFA': [0, 0.4, 1, 0.63, 0.28, 0.14, 0.16, 0.45, 0.64, 0.29, 0.14, 0.26, 0.6],
+        'TNFa': [0, 0.4, 1, 0.63, 0.28, 0.14, 0.16, 0.45, 0.64, 0.29, 0.14, 0.26, 0.6],
     }
 ```
 <br>
@@ -628,7 +628,7 @@ class ExperimentalData(object):
     t = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180]
 
     experiments[observables.index('Nuclear_NFkB')] = {
-        'TNFA': [0, 0.4, 1, 0.63, 0.28, 0.14, 0.16, 0.45, 0.64, 0.29, 0.14, 0.26, 0.6],
+        'TNFa': [0, 0.4, 1, 0.63, 0.28, 0.14, 0.16, 0.45, 0.64, 0.29, 0.14, 0.26, 0.6],
     }
 
     def get_timepoint(self, obs_idx):
