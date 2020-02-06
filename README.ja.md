@@ -50,9 +50,10 @@ $ nohup python optimize.py n1 n2 &
 #### シミュレーション結果の可視化
 パラメータ推定で得た複数のパラメータセットでのシミュレーション結果を出力します．結果は```figure/```に保存されます．
 ```bash
-$ python run_sim.py
+$ python run_sim.py [viz_type] [show_all] [stdev]
 ```
-```simulate_all```の引数を設定することで，出力されるグラフの表示法を変更することができます．
+
+コマンドライン引数を設定することで，出力されるグラフの表示法を変更することができます．
 
 ```viz_type```:
 - 'average': ```out/```にある複数のパラメータセットでのシミュレーション結果の平均を表示します．
@@ -63,13 +64,13 @@ $ python run_sim.py
 
 - 'n(=1,2,...)': ```out/n(=1,2,...)``` における最新のパラメータセットでのシミュレーション結果を表示します．
 
-```python
-simulate_all(viz_type='average',show_all=False,stdev=True)
+```bash
+$ python run_sim.py average stdev
 ```
 ![simulation_average](public/images/simulation_average.png)
 
-```python
-simulate_all(viz_type='best',show_all=True,stdev=False)
+```bash
+$ python run_sim.py best show_all
 ```
 ![simulation_best](public/images/simulation_best.png)
 

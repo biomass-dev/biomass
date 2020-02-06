@@ -61,9 +61,6 @@ $ nohup python optimize.py n1 n2 &
 
 ---
 #### Visualization of Simulation Results
-```bash
-$ python run_sim.py
-```
 ```viz_type```:
 
 - 'average'
@@ -78,13 +75,19 @@ $ python run_sim.py
 - 'n(=1,2,...)'
     : Use the parameter set in ```out/n/```
 
-```python
-simulate_all(viz_type='average',show_all=False,stdev=True)
+```show_all```: bool
+- Whether to show all simulation results
+
+```stdev```: bool
+- If True, the standard deviation of simulated values will be shown (only when viz_type == 'average')
+
+```bash
+$ python run_sim.py average stdev
 ```
 ![simulation_average](public/images/simulation_average.png)
 
-```python
-simulate_all(viz_type='best',show_all=True,stdev=False)
+```bash
+$ python run_sim.py best show_all
 ```
 ![simulation_best](public/images/simulation_best.png)
 
