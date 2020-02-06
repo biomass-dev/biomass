@@ -1,16 +1,14 @@
 
 # BioMASS tutorial
 ## Johannes Nicolaus Wibisana  (2020/02/06)
-<br>
 
-### Biomass is a tool for parameter optimization. Users can supply BioMASS with differential equations, experimental conditions and experimental results to fit the equations to the experimental results. BioMASS can also perform sensitivity analysis to understand important components in complex biological network.
+Biomass is a tool for parameter optimization. Users can supply BioMASS with differential equations, experimental conditions and experimental results to fit the equations to the experimental results. BioMASS can also perform sensitivity analysis to understand important components in complex biological network.
 
-### This tutorial is aimed for beginners and covers the basic setup required to run BioMASS as well as the steps needed to run BioMASS for custom differential equations.
+This tutorial is aimed for beginners and covers the basic setup required to run BioMASS as well as the steps needed to run BioMASS for custom differential equations.
 
-### This tutorial was made for the Laboratory of Cell Systems, Institute for Protein Research, Suita, Osaka, Japan.
-### For this tutorial, it will be helpful if users have basic background on bash command line.
+This tutorial was made for the Laboratory of Cell Systems, Institute for Protein Research, Suita, Osaka, Japan.
 
-<br>
+For this tutorial, it will be helpful if users have basic background on bash command line.
 
 ## Machine setup
 #
