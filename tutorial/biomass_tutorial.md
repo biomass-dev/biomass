@@ -656,8 +656,8 @@ $ cd ..
 <br>
 
 Then we can run the following to run simulations. Please take note of the following points:
-* ```nohup``` is not necessary but helpful so that the process can run in the background when logged out. 
-* ```&``` closes nohup.
+* ```nohup``` is not necessary but helpful so that the process can run when logged out. 
+* To run a program in the background, enter the command for that job, followed by the ```&``` sign.
 * ```python optimize.py``` is the optimization script
 * ```n``` is the set of random  
 
