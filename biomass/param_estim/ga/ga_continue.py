@@ -1,4 +1,3 @@
-import sys
 import time
 import numpy as np
 
@@ -151,13 +150,11 @@ def ga_v1_continue(nth_paramset, max_generation, n_population, n_children, n_gen
 def ga_v2_continue(nth_paramset, max_generation, n_population, n_children, n_gene,
                    allowable_error, search_idx, search_region, p0_bounds):
     if n_population < n_gene + 2:
-        print(
+        raise ValueError(
             'n_population must be larger than %d' % (
                 n_gene + 2
             )
         )
-        sys.exit()
-
     n_iter = 1
     n0 = np.empty(2*n_population)
 
