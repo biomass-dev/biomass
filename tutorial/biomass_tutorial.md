@@ -61,8 +61,7 @@ There are several files that needs editing prior to running the program:
 ```biomass/model/param_const.py```
 
 4. Names of parameters and state variables (automated using bash script)<br>
-```biomass/model/name2idx/parameters.py```
-<br>
+```biomass/model/name2idx/parameters.py```<br>
 ```biomass/model/variables.py```
 
 5. Functions to get the difference between experimental data and simulation<br>
