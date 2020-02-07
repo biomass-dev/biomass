@@ -19,10 +19,9 @@ if os.path.isdir('./out'):
 if __name__ == '__main__':
     args = sys.argv
     if len(args) == 1 or 4 < len(args):
-        print(
-                '\n$ python run_Sim.py [viz_type] [show_all] [stdev]\n'
-            )
-        sys.exit()
+        raise TypeError(
+            '\n$ python run_Sim.py [viz_type] [show_all] [stdev]\n'
+        )
     else:
         if str(args[1]) not in ['best', 'average', 'original']:
             try:

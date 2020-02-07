@@ -10,10 +10,9 @@ if not os.path.isdir('./figure'):
 if __name__ == '__main__':
     args = sys.argv
     if len(args) > 2:
-        print(
-                "Too many arguments! Try one of these: 'integral', 'amplitude', 'duration'"
-            )
-        sys.exit()
+        raise TypeError(
+            "Too many arguments! Try one of these: 'integral', 'amplitude', 'duration'"
+        )
     else:
         if str(args[1]) not in ['integral', 'amplitude', 'duration']:
             raise ValueError(
