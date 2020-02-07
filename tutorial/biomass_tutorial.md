@@ -749,7 +749,7 @@ There are 3 options available:
 * ```duration```: the time it takes to decline below 10% of its maximum.
 * ```integral```: the integral of concentration over the observation time.
 
-For example, to get the maximum value:
+For example, to use the maximum value as a signaling metric:
 
 ```bash
 $ python analyze.py amplitude
