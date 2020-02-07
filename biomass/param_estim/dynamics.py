@@ -66,7 +66,7 @@ def simulate_all(viz_type, show_all, stdev):
             else:
                 best_fitness_all[i] = np.inf
 
-        best_paramset = np.argmin(best_fitness_all) + 1
+        best_paramset = n_file[np.argmin(best_fitness_all)]
         write_best_fit_param(best_paramset, x, y0)
 
         if viz_type == 'average':
