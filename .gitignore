@@ -22,3 +22,6 @@ out/
 
 # sensitivity array
 sensitivities_npy/
+
+# swp
+*.swp
