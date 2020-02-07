@@ -206,8 +206,6 @@ def f_params():
     x[C.shuttle_RnaA20] = 0.0311
 
     return x
-
-#
 ```
 <br>
 
@@ -584,7 +582,7 @@ class ExperimentalData(object):
     t = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180]
 
     experiments[observables.index('Nuclear_NFkB')] = {
-        'TNFa': [0, 0.4, 1, 0.63, 0.28, 0.14, 0.16, 0.45, 0.64, 0.29, 0.14, 0.26, 0.6],
+        'TNFa': [0.00, 0.40, 1.00, 0.63, 0.28, 0.14, 0.16, 0.45, 0.64, 0.29, 0.18, 0.26, 0.40],
     }
 ```
 <br>
@@ -620,16 +618,6 @@ from:
 
 to:
 ```python
-class ExperimentalData(object):
-
-    experiments = [None]*len(observables)
-
-    t = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180]
-
-    experiments[observables.index('Nuclear_NFkB')] = {
-        'TNFa': [0.00, 0.40, 1.00, 0.63, 0.28, 0.14, 0.16, 0.45, 0.64, 0.29, 0.18, 0.26, 0.40],
-    }
-
     def get_timepoint(self, obs_idx):
         exp_t = self.t
 
