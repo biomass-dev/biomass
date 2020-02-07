@@ -313,7 +313,7 @@ to:
 <br>
 
 
-Furthermore, when there is no constraints assuming that some variables are equal to some other variables, the lines containing constraints can be removed.
+Furthermore, when there is no constraints assuming that some parameters are equal to some other parameters, the lines containing constraints can be removed.
 
 Remove/uncomment the following lines
 
