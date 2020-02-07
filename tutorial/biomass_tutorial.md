@@ -749,7 +749,7 @@ There are 3 options available:
 For example, to get the maximum value:
 
 ```bash
-python analyze.py amplitude
+$ python analyze.py amplitude
 ```
 <br>
 
