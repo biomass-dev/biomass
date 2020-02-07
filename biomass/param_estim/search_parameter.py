@@ -104,11 +104,9 @@ def get_search_region():
     search_idx = search_parameter_index()
 
     if len(search_idx[0]) != len(set(search_idx[0])):
-        print('Error: Duplicate param name.')
-        sys.exit()
+        raise ValueError('Duplicate param name.')
     elif len(search_idx[1]) != len(set(search_idx[1])):
-        print('Error: Duplicate var name.')
-        sys.exit()
+        raise ValueError('Error: Duplicate var name.')
     else:
         pass
 
@@ -134,7 +132,6 @@ def get_search_region():
                         V.var_names[int(idx)]
                     ) + message
                 )
-        sys.exit()
 
     search_region = np.zeros((2, len(x)+len(y0)))
 
@@ -288,19 +285,17 @@ def lin2log(search_idx, search_region, n_param_const, n_search_param):
         message = 'in both search_idx_const and search_region'
         for i, j in enumerate(difference):
             if j <= n_param_const:
-                print(
+                raise ValueError(
                     'Set "C.%s" ' % (
                         C.param_names[int(j)]
                     ) + message
                 )
             else:
-                print(
+                raise ValueError(
                     'Set "V.%s" ' % (
                         V.var_names[int(j-n_param_const)]
                     ) + message
                 )
-        sys.exit()
-
     search_region = search_region[:, np.any(search_region != 0., axis=0)]
 
     return np.log10(search_region)
