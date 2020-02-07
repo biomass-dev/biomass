@@ -9,12 +9,12 @@ if not os.path.isdir('./figure'):
 
 from  biomass.param_estim.dynamics import simulate_all
 
-n_file = 0
+n_file = []
 if os.path.isdir('./out'):
     fit_param_files = os.listdir('./out')
     for file in fit_param_files:
         if re.match(r'\d', file):
-            n_file += 1
+            n_file.append(int(file))
                 
 if __name__ == '__main__':
     args = sys.argv
@@ -30,10 +30,10 @@ if __name__ == '__main__':
                 print(
                     "viz_type ∈ {'best','average','original','n(=1,2,...)'}"
                 )
-            if n_file < int(args[1]):
+            if len(n_file) < int(args[1]):
                 raise ValueError(
                     'n (%d) must be smaller than n_fit_param (%d)' % (
-                        int(args[1]), n_file
+                        int(args[1]), len(n_file)
                     )
                 )
         if len(args) == 2:

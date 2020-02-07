@@ -52,23 +52,27 @@ def analyze_sensitivity(metric, num_reaction):
     x = f_params()
     y0 = initial_values()
 
-    n_file = 0
+    n_file = []
     fitparam_files = os.listdir('./out')
     for file in fitparam_files:
         if re.match(r'\d', file):
-            n_file += 1
+            n_file.append(int(file))
 
     signaling_metric = np.full(
-        (n_file, num_reaction, len(observables), len(sim.conditions)), np.nan
+        (len(n_file), num_reaction, len(observables), len(sim.conditions)), np.nan
     )
     search_idx = search_parameter_index()
-    for i in range(n_file):
-        if os.path.isfile('./out/%d/generation.npy' % (i+1)):
+    for i, nth_paramset in enumerate(n_file):
+        if os.path.isfile('./out/%d/generation.npy' % (nth_paramset)):
             best_generation = np.load(
-                './out/%d/generation.npy' % (i+1)
+                './out/%d/generation.npy' % (
+                    nth_paramset
+                )
             )
             best_indiv = np.load(
-                './out/%d/fit_param%d.npy' % (i+1, int(best_generation))
+                './out/%d/fit_param%d.npy' % (
+                    nth_paramset, int(best_generation)
+                )
             )
             for m, n in enumerate(search_idx[0]):
                 x[n] = best_indiv[m]
@@ -98,11 +102,11 @@ def analyze_sensitivity(metric, num_reaction):
                                 )
                 sys.stdout.write(
                     '\r%d / %d' % (
-                        i*num_reaction+j+1, n_file*num_reaction
+                        i*num_reaction+j+1, len(n_file)*num_reaction
                     )
                 )
     sensitivity_coefficients = np.empty_like(signaling_metric)
-    for i in range(n_file):
+    for i, _ in enumerate(n_file):
         for j in range(num_reaction):
             for k, _ in enumerate(observables):
                 for l, _ in enumerate(sim.conditions):

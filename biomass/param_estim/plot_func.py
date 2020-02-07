@@ -33,7 +33,7 @@ def timecourse(sim, n_file, viz_type, show_all, stdev, simulations_all):
         plt.gca().spines['top'].set_visible(False)
 
         if show_all:
-            for j in range(n_file):
+            for j, _ in enumerate(n_file):
                 for l, _ in enumerate(sim.conditions):
                     plt.plot(
                         sim.t, simulations_all[i, j, :, l] /
@@ -42,7 +42,7 @@ def timecourse(sim, n_file, viz_type, show_all, stdev, simulations_all):
                     )
         if viz_type == 'average':
             normalized = np.empty_like(simulations_all)
-            for j in range(n_file):
+            for j, _ in enumerate(n_file):
                 for l, _ in enumerate(sim.conditions):
                     normalized[i, j, :, l] = (
                         simulations_all[i, j, :, l] /
