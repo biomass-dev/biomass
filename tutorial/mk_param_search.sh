@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # script to extract the parameter index for optimization
 grep '\[C' ../biomass/model/param_const.py | \
 sed 's/x\[C\.//g' | \
