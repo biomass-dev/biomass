@@ -55,7 +55,7 @@ def simulate_all(viz_type, show_all, stdev):
                 for j, _ in enumerate(observables):
                     simulations_all[j, i, :, :] = sim.simulations[j, :, :]
 
-        best_fitness_all = np.empty_like(n_file, dtype=np.float)
+        best_fitness_all = np.full(len(n_file), np.inf)
         for i, nth_paramset in enumerate(n_file):
             if os.path.isfile('./out/%d/best_fitness.npy' % (nth_paramset)):
                 best_fitness_all[i] = np.load(
@@ -63,9 +63,6 @@ def simulate_all(viz_type, show_all, stdev):
                         nth_paramset
                     )
                 )
-            else:
-                best_fitness_all[i] = np.inf
-
         best_paramset = n_file[np.argmin(best_fitness_all)]
         write_best_fit_param(best_paramset, x, y0)
 
