@@ -25,13 +25,6 @@ def simulate_all(viz_type, show_all, stdev):
         (only when viz_type == 'average')
         
     """
-    if not viz_type in ['best', 'average', 'original']:
-        try:
-            int(viz_type)
-        except ValueError:
-            print(
-                "viz_type ∈ {'best','average','original','n(=1,2,...)'}"
-            )
     x = model.f_params()
     y0 = model.initial_values()
     sim = NumericalSimulation()
@@ -70,14 +63,9 @@ def simulate_all(viz_type, show_all, stdev):
             pass
         elif viz_type == 'best':
             sim = validate(int(best_paramset), x, y0)[0]
-        elif int(viz_type) <= len(n_file):
-            sim = validate(int(viz_type), x, y0)[0]
         else:
-            raise ValueError(
-                '%d is larger than n_fit_param(%d)' % (
-                    int(viz_type), len(n_file)
-                )
-            )
+            sim = validate(int(viz_type), x, y0)[0]
+
         if len(n_file) >= 2:
             save_param_range(n_file, x, y0, portrait=True)
     else:
