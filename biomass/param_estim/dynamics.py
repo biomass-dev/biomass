@@ -96,8 +96,7 @@ def update_param(paramset, x, y0):
             x[j] = best_indiv[i]
         for i, j in enumerate(search_idx[1]):
             y0[j] = best_indiv[i+len(search_idx[0])]
-    else:
-        pass
+
     return x, y0
 
 
