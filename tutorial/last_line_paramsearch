@@ -15,11 +15,9 @@ def get_search_region():
     search_idx = search_parameter_index()
 
     if len(search_idx[0]) != len(set(search_idx[0])):
-        print('Error: Duplicate param name.')
-        sys.exit()
+        raise ValueError('Duplicate param name.')
     elif len(search_idx[1]) != len(set(search_idx[1])):
-        print('Error: Duplicate var name.')
-        sys.exit()
+        raise ValueError('Duplicate var name.')
     else:
         pass
 

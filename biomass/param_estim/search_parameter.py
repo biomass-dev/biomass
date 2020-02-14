@@ -106,7 +106,7 @@ def get_search_region():
     if len(search_idx[0]) != len(set(search_idx[0])):
         raise ValueError('Duplicate param name.')
     elif len(search_idx[1]) != len(set(search_idx[1])):
-        raise ValueError('Error: Duplicate var name.')
+        raise ValueError('Duplicate var name.')
     else:
         pass
 
