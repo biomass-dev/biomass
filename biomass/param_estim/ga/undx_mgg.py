@@ -4,7 +4,7 @@ from biomass.param_estim.fitness import objective
 
 
 def mgg_alternation(population, n_population, n_children, n_gene, search_idx, search_region):
-    ip = [0]*3
+    ip = [None for _ in range(3)]
     ip[:2] = np.random.choice(n_population, 2, replace=False)
     idx = [True]*n_population
     idx[ip[0]] = False
