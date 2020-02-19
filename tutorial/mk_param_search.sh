@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # script to extract the parameter index for optimization
 grep '\[C' ../biomass/model/param_const.py | \

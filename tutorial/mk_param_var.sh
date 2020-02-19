@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # script to extract parameters from parameter constant
 grep '\[C' ../biomass/model/param_const.py | \
