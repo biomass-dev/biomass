@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# script to extract parameters from parameter constant
+# script to extract parameters from param_const.py
 grep '\[C' ../biomass/model/param_const.py | \
 sed 's/x\[C\.//g' | \
 sed 's/\].*//g' | \
@@ -28,7 +28,7 @@ rm last_line
 
 echo "done processing parameters"
 
-# script to extract variables from variables constant
+# script to extract variables from differential_equation.py
 grep 'dydt\[V' ../biomass/model/differential_equation.py | \
 sed 's/dydt\[V\.//g' | \
 sed 's/\].*//g' | \
