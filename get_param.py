@@ -4,7 +4,7 @@ import csv
 import numpy as np
 
 from biomass import model
-from biomass.param_estim.search_parameter import search_parameter_index
+from biomass.param_estim import search_parameter_index
 
 
 def get_param():
