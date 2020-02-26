@@ -137,15 +137,15 @@ def get_search_region():
 
     # Default: 0.1 ~ 10
     for i, j in enumerate(search_idx[0]):
-        search_region[0, j] = search_param[i]*0.1  # lower bound
-        search_region[1, j] = search_param[i]*10.  # upper bound
+        search_region[0, j] = search_param[i] * 0.1  # lower bound
+        search_region[1, j] = search_param[i] * 10.  # upper bound
 
     # Default: 0.5 ~ 2
     for i, j in enumerate(search_idx[1]):
         search_region[0, j+len(x)] = \
-            search_param[i+len(search_idx[0])]*0.5  # lower bound
+            search_param[i+len(search_idx[0])] * 0.5  # lower bound
         search_region[1, j+len(x)] = \
-            search_param[i+len(search_idx[0])]*2.0  # upper bound
+            search_param[i+len(search_idx[0])] * 2.0  # upper bound
 
     # search_region[:,C.param_name] = [lower_bound,upper_bound]
     # search_region[:,V.var_name+len(x)] = [lower_bound,upper_bound]
@@ -251,38 +251,50 @@ def lin2log(search_idx, search_region, n_param_const, n_search_param):
             message = 'search_region[lb,ub] must be positive.'
             if i <= n_param_const:
                 raise ValueError(
-                    '"C.%s": ' % (C.param_names[i]) + message
+                    '"C.%s": ' % (
+                        C.param_names[i]
+                    ) + message
                 )
             else:
                 raise ValueError(
-                    '"V.%s": ' % (V.var_names[i-n_param_const]) + message
+                    '"V.%s": ' % (
+                        V.var_names[i-n_param_const]
+                    ) + message
                 )
         elif np.min(search_region[:, i]) == 0.0 and np.max(search_region[:, i]) != 0:
             message = 'lower_bound must be larger than 0.'
             if i <= n_param_const:
                 raise ValueError(
-                    '"C.%s" ' % (C.param_names[i]) + message
+                    '"C.%s" ' % (
+                        C.param_names[i]
+                    ) + message
                 )
             else:
                 raise ValueError(
-                    '"V.%s" ' % (V.var_names[i-n_param_const]) + message
+                    '"V.%s" ' % (
+                        V.var_names[i-n_param_const]
+                    ) + message
                 )
         elif search_region[1, i] - search_region[0, i] < 0.0:
             message = 'lower_bound < upper_bound'
             if i <= n_param_const:
                 raise ValueError(
-                    '"C.%s" : ' % (C.param_names[i]) + message
+                    '"C.%s" : ' % (
+                        C.param_names[i]
+                    ) + message
                 )
             else:
                 raise ValueError(
-                    '"V.%s" : ' % (V.var_names[i-n_param_const]) + message
+                    '"V.%s" : ' % (
+                        V.var_names[i-n_param_const]
+                    ) + message
                 )
     difference = list(
         set(np.where(np.any(search_region != 0., axis=0))[0]) ^
         set(np.append(search_idx[0], n_param_const+search_idx[1]))
     )
     if len(difference) > 0:
-        message = 'in both search_idx_const and search_region'
+        message = 'in both search_idx and search_region'
         for i, j in enumerate(difference):
             if j <= n_param_const:
                 raise ValueError(
