@@ -2,14 +2,14 @@ from math import fabs, log
 import numpy as np
 
 
-def get_duration(time_course_vector):
+def get_duration(temporal_dynamics):
     """Calculation of the duration as the time it takes to decline below 10% of its maximum
     """
-    maximum_value = np.max(time_course_vector)
-    t_max = np.argmax(time_course_vector)
-    time_course_vector = time_course_vector - 0.1*maximum_value
-    time_course_vector[time_course_vector > 0.0] = -np.inf
-    duration = np.argmax(time_course_vector[t_max:]) + t_max
+    maximum_value = np.max(temporal_dynamics)
+    t_max = np.argmax(temporal_dynamics)
+    temporal_dynamics = temporal_dynamics - 0.1*maximum_value
+    temporal_dynamics[temporal_dynamics > 0.0] = -np.inf
+    duration = np.argmax(temporal_dynamics[t_max:]) + t_max
 
     return duration
 
