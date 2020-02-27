@@ -1,9 +1,21 @@
-from math import fabs, log
 import numpy as np
+from math import fabs, log
+from scipy.integrate import simps
 
 
-def get_duration(temporal_dynamics):
-    """Calculation of the duration as the time it takes to decline below 10% of its maximum
+def _get_duration(temporal_dynamics):
+    """
+    Calculation of the duration as the time it takes to decline below 10% of its maximum.
+
+    Parameters
+    ----------
+    temporal_dynamics: array
+        Simulated time course data
+    
+    Returns
+    -------
+    duration: int
+    
     """
     maximum_value = np.max(temporal_dynamics)
     t_max = np.argmax(temporal_dynamics)
@@ -14,10 +26,46 @@ def get_duration(temporal_dynamics):
     return duration
 
 
+def compute_signaling_metric(metric, temporal_dynamics):
+    """Quantification of cellular response.
+
+    Parameters
+    ----------
+    metric: str
+        'amplitude', 'duration' or 'integral'
+    temporal_dynamics: array
+        Simulated time course data
+
+    Returns
+    -------
+    M*: float
+        signaling_metric[i, j, k, l]
+    
+    """
+    if metric == 'amplitude':
+        return np.max(
+            temporal_dynamics
+        )
+    elif metric == 'duration':
+        return _get_duration(
+            temporal_dynamics
+        )
+    elif metric == 'integral':
+        return simps(
+            temporal_dynamics
+        )
+    else:
+        raise ValueError(
+            "metric ∈ {'amplitude', 'duration', 'integral'}"
+        )
+
+
 def compute_sensitivity_coefficients(signaling_metric, n_file, perturbed_idx,
                                         observables, conditions, rate, metric_idx,
                                         epsilon=1e-9):
-    """Numerical computation of sensitivities
+    """
+    Numerical computation of sensitivities using finite difference approximations
+    with 1% changes in the reaction rates or non-zero initial values.
 
     Parameters
     ----------
