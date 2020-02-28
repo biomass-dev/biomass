@@ -1,9 +1,9 @@
 import numpy as np
-from scipy.integrate import ode
 
 from .model.name2idx import parameters as C
 from .model.name2idx import variables as V
 from .model.differential_equation import diffeq
+from .solver import solveode, get_steady_state
 
 
 observables = [
@@ -20,46 +20,6 @@ observables = [
 
 class NumericalSimulation(object):
 
-    def _solveode(self, diffeq, y0, tspan, args):
-        sol = ode(diffeq)
-        sol.set_integrator(
-            'vode', method='bdf', with_jacobian=True, min_step=1e-8
-        )
-        sol.set_initial_value(y0, tspan[0])
-        sol.set_f_params(args)
-
-        T = [tspan[0]]
-        Y = [y0]
-
-        while sol.successful() and sol.t < tspan[-1]:
-            sol.integrate(sol.t+1.)
-            T.append(sol.t)
-            Y.append(sol.y)
-
-        return np.array(T), np.array(Y)
-
-    def _get_steady_state(self, diffeq, y0, tspan, args,
-                          steady_state_time=1000000, steady_state_eps=1e-6):
-        sol = ode(diffeq)
-        sol.set_integrator(
-            'vode', method='bdf', with_jacobian=True, min_step=1e-8
-        )
-        sol.set_initial_value(y0, 0)
-        sol.set_f_params(args)
-
-        T = [0]
-        Y = [y0]
-
-        while sol.successful() and sol.t < steady_state_time:
-            sol.integrate(steady_state_time, step=True)
-            if tspan[-1] < sol.t and np.all(np.abs(sol.y - Y[-1]) < steady_state_eps):
-                break
-            else:
-                T.append(sol.t)
-                Y.append(sol.y)
-
-        return T[-1], Y[-1]
-
     tspan = [0, 5400]  # [start, end] (Unit time: 1 sec.)
     t = np.arange(tspan[0], tspan[-1]+1)/60.  # sec. -> min. (plot_func.py)
 
@@ -71,7 +31,7 @@ class NumericalSimulation(object):
     def simulate(self, x, y0):
         # get steady state
         x[C.Ligand] = x[C.no_ligand]  # No ligand
-        (T_steady_state, Y_steady_state) = self._get_steady_state(
+        (T_steady_state, Y_steady_state) = get_steady_state(
             diffeq, y0, self.tspan, tuple(x)
         )
         if T_steady_state < self.tspan[-1]:
@@ -85,7 +45,7 @@ class NumericalSimulation(object):
             elif condition == 'HRG':
                 x[C.Ligand] = x[C.HRG]
 
-            (T, Y) = self._solveode(diffeq, y0, self.tspan, tuple(x))
+            (T, Y) = solveode(diffeq, y0, self.tspan, tuple(x))
 
             if T[-1] < self.tspan[-1]:
                 return False
