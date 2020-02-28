@@ -18,20 +18,6 @@ observables = [
 ]
 
 
-def diff_sim_and_exp(sim_matrix, exp_dict, exp_timepoint, conditions,
-                     sim_norm_max=1, exp_norm_max=1):
-    sim_val = []
-    exp_val = []
-
-    for condition in conditions:
-        if condition in exp_dict.keys():
-            sim_val.extend(
-                sim_matrix[exp_timepoint, conditions.index(condition)])
-            exp_val.extend(exp_dict[condition])
-
-    return np.array(sim_val)/sim_norm_max, np.array(exp_val)/exp_norm_max
-
-
 class NumericalSimulation(object):
 
     def _solveode(self, diffeq, y0, tspan, args):
