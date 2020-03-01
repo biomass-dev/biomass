@@ -8,9 +8,11 @@ warnings.filterwarnings('ignore')
 from biomass.param_estim import optimize, optimize_continue
 
 def run_ga_continue(nth_paramset):
-    if not os.path.isdir('./out/{}'.format(nth_paramset)):
+    if not os.path.isdir('./out/{:d}'.format(nth_paramset)):
         os.mkdir(
-            './out/{}'.format(nth_paramset)
+            './out/{:d}'.format(
+                nth_paramset
+            )
         )
         optimize(nth_paramset)
     else:
