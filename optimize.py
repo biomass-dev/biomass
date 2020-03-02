@@ -14,18 +14,22 @@ def run_ga(nth_paramset):
         os.mkdir('./out')
     try:
         files = os.listdir(
-            './out/{}'.format(nth_paramset)
+            './out/{:d}'.format(
+                nth_paramset
+            )
         )
         for file in files:
             if any(map(file.__contains__, ('.npy', '.log'))):
                 os.remove(
-                    './out/%d/%s' % (
+                    './out/{:d}/{}'.format(
                         nth_paramset, file
                     )
                 )
     except FileNotFoundError:
         os.mkdir(
-            './out/{}'.format(nth_paramset)
+            './out/{:d}'.format(
+                nth_paramset
+            )
         )
 
     optimize(nth_paramset)
