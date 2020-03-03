@@ -121,14 +121,14 @@ def get_search_region():
         for _, idx in enumerate(search_idx[0]):
             if x[int(idx)] == 0.:
                 raise ValueError(
-                    '"C.%s" in search_idx_const: ' % (
+                    '"C.{}" in search_idx_const: '.format(
                         C.param_names[int(idx)]
                     ) + message
                 )
         for _, idx in enumerate(search_idx[1]):
             if y0[int(idx)] == 0.:
                 raise ValueError(
-                    '"V.%s" in search_idx_init: ' % (
+                    '"V.{}" in search_idx_init: '.format(
                         V.var_names[int(idx)]
                     ) + message
                 )
@@ -251,13 +251,13 @@ def lin2log(search_idx, search_region, n_param_const, n_search_param):
             message = 'search_region[lb,ub] must be positive.'
             if i <= n_param_const:
                 raise ValueError(
-                    '"C.%s": ' % (
+                    '"C.{}": '.format(
                         C.param_names[i]
                     ) + message
                 )
             else:
                 raise ValueError(
-                    '"V.%s": ' % (
+                    '"V.{}": '.format(
                         V.var_names[i-n_param_const]
                     ) + message
                 )
@@ -265,13 +265,13 @@ def lin2log(search_idx, search_region, n_param_const, n_search_param):
             message = 'lower_bound must be larger than 0.'
             if i <= n_param_const:
                 raise ValueError(
-                    '"C.%s" ' % (
+                    '"C.{}" '.format(
                         C.param_names[i]
                     ) + message
                 )
             else:
                 raise ValueError(
-                    '"V.%s" ' % (
+                    '"V.{}" '.format(
                         V.var_names[i-n_param_const]
                     ) + message
                 )
@@ -279,13 +279,13 @@ def lin2log(search_idx, search_region, n_param_const, n_search_param):
             message = 'lower_bound < upper_bound'
             if i <= n_param_const:
                 raise ValueError(
-                    '"C.%s" : ' % (
+                    '"C.{}" : '.format(
                         C.param_names[i]
                     ) + message
                 )
             else:
                 raise ValueError(
-                    '"V.%s" : ' % (
+                    '"V.{}" : '.format(
                         V.var_names[i-n_param_const]
                     ) + message
                 )
@@ -298,13 +298,13 @@ def lin2log(search_idx, search_region, n_param_const, n_search_param):
         for i, j in enumerate(difference):
             if j <= n_param_const:
                 raise ValueError(
-                    'Set "C.%s" ' % (
+                    'Set "C.{}" '.format(
                         C.param_names[int(j)]
                     ) + message
                 )
             else:
                 raise ValueError(
-                    'Set "V.%s" ' % (
+                    'Set "V.{}" '.format(
                         V.var_names[int(j-n_param_const)]
                     ) + message
                 )
