@@ -182,8 +182,9 @@ def ga_v2(nth_paramset, max_generation, n_population, n_children, n_gene,
         (iii) Select two individuals from a family containing the two parents, 
             i.e., p1 and p2, and their children. The first selected individual 
             should be the one with the best objective value, and the second 
-            should be selected randomly.Then, replace the two parents with 
+            should be selected randomly. Then, replace the two parents with 
             the selected individuals.
+            
     7. Adaptation of Niter
         If the best individual has not improved during the last np generations, 
         Niter ← 2 × Niter. Otherwise, set Niter to 1.
