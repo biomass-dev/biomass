@@ -6,7 +6,7 @@ from biomass.param_estim.fitness import objective
 def mgg_alternation(population, n_population, n_children, n_gene, search_idx, search_region):
     ip = [None for _ in range(3)]
     ip[:2] = np.random.choice(n_population, 2, replace=False)
-    idx = [True]*n_population
+    idx = [True] * n_population
     idx[ip[0]] = False
     idx[ip[1]] = False
 
@@ -53,20 +53,20 @@ def undx(parents, n_gene):
     """
     child = np.empty(n_gene+1)
     ALPHA = 0.5
-    BETA = 0.35/(n_gene**0.5)
+    BETA = 0.35 / (n_gene**0.5)
 
     p1 = parents[0, :n_gene]
     p2 = parents[1, :n_gene]
     p3 = parents[2, :n_gene]
     d1 = np.linalg.norm(p2-p1)
     d2 = np.linalg.norm(
-        (p3-p1) - (np.dot((p3-p1), (p2-p1))/(d1**2))*(p2-p1)
+        (p3-p1) - (np.dot((p3-p1), (p2-p1))/(d1**2)) * (p2-p1)
     )
     e1 = p1/d1
 
-    t = np.random.normal(scale=BETA, size=n_gene)*d2
-    t = t - np.dot(t, e1)*e1
-    t = t + np.random.normal(scale=ALPHA)*d1*e1
+    t = np.random.normal(scale=BETA, size=n_gene) * d2
+    t = t - np.dot(t, e1) * e1
+    t = t + np.random.normal(scale=ALPHA) * d1 * e1
 
     child[:n_gene] = t + (parents[0, :n_gene]+parents[1, :n_gene])/2.
 
@@ -77,7 +77,7 @@ def rank_selection(n_family):
     ranking = np.repeat(
         np.arange(1, n_family), np.arange(1, n_family)[-1::-1]
     )
-    np.random.shuffle(ranking)
+    # np.random.shuffle(ranking)
     idx = np.random.randint(len(ranking))
 
     return ranking[idx]
