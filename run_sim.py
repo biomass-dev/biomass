@@ -23,16 +23,16 @@ if __name__ == '__main__':
             '\n$ python run_sim.py [viz_type] [show_all] [stdev]\n'
         )
     else:
-        if str(args[1]) not in ['best', 'average', 'original']:
+        if str(args[1]) not in ['best', 'average', 'original', 'experiment']:
             try:
                 int(args[1])
             except ValueError:
                 print(
-                    "viz_type ∈ {'best','average','original','n(=1,2,...)'}"
+                    "viz_type ∈ {'best','average','original','experiment',n(=1,2,...)'}"
                 )
             if len(n_file) < int(args[1]):
                 raise ValueError(
-                    'n (%d) must be smaller than n_fit_param (%d)' % (
+                    'n ({:d}) must be smaller than n_fit_param ({:d})'.format(
                         int(args[1]), len(n_file)
                     )
                 )

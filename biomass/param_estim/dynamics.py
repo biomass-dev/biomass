@@ -37,42 +37,44 @@ def simulate_all(viz_type, show_all, stdev):
                 if re.match(r'\d', file):
                     n_file.append(int(file))
     simulations_all = np.full(
-        (len(observables), len(n_file), len(sim.t), len(sim.conditions)), np.nan
+        (len(observables), len(n_file), len(sim.t), len(sim.conditions)),
+        np.nan
     )
-    if len(n_file) > 0:
-        if len(n_file) == 1 and viz_type == 'average':
-            viz_type = 'best'
-        for i, nth_paramset in enumerate(n_file):
-            (sim, successful) = validate(nth_paramset, x, y0)
-            if successful:
-                for j, _ in enumerate(observables):
-                    simulations_all[j, i, :, :] = sim.simulations[j, :, :]
+    if viz_type != 'experiment':
+        if len(n_file) > 0:
+            if len(n_file) == 1 and viz_type == 'average':
+                viz_type = 'best'
+            for i, nth_paramset in enumerate(n_file):
+                (sim, successful) = validate(nth_paramset, x, y0)
+                if successful:
+                    for j, _ in enumerate(observables):
+                        simulations_all[j, i, :, :] = sim.simulations[j, :, :]
 
-        best_fitness_all = np.full(len(n_file), np.inf)
-        for i, nth_paramset in enumerate(n_file):
-            if os.path.isfile('./out/{:d}/best_fitness.npy'.format(nth_paramset)):
-                best_fitness_all[i] = np.load(
-                    './out/{:d}/best_fitness.npy'.format(
-                        nth_paramset
+            best_fitness_all = np.full(len(n_file), np.inf)
+            for i, nth_paramset in enumerate(n_file):
+                if os.path.isfile('./out/{:d}/best_fitness.npy'.format(nth_paramset)):
+                    best_fitness_all[i] = np.load(
+                        './out/{:d}/best_fitness.npy'.format(
+                            nth_paramset
+                        )
                     )
-                )
-        best_paramset = n_file[np.argmin(best_fitness_all)]
-        write_best_fit_param(best_paramset, x, y0)
+            best_paramset = n_file[np.argmin(best_fitness_all)]
+            write_best_fit_param(best_paramset, x, y0)
 
-        if viz_type == 'average':
-            pass
-        elif viz_type == 'best':
-            sim = validate(int(best_paramset), x, y0)[0]
+            if viz_type == 'average':
+                pass
+            elif viz_type == 'best':
+                sim = validate(int(best_paramset), x, y0)[0]
+            else:
+                sim = validate(int(viz_type), x, y0)[0]
+
+            if len(n_file) >= 2:
+                save_param_range(n_file, x, y0, portrait=True)
         else:
-            sim = validate(int(viz_type), x, y0)[0]
-
-        if len(n_file) >= 2:
-            save_param_range(n_file, x, y0, portrait=True)
-    else:
-        if sim.simulate(x, y0) is not None:
-            print(
-                'Simulation failed.'
-            )
+            if sim.simulate(x, y0) is not None:
+                print(
+                    'Simulation failed.'
+                )
     plot_func.timecourse(
         sim, n_file, viz_type, show_all, stdev, simulations_all
     )
