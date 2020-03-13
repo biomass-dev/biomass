@@ -11,7 +11,7 @@ from biomass.model.initial_condition import initial_values
 def search_parameter_index():
 
     # Write param index for optimization
-    search_idx_const = np.array([
+    search_idx_const = [
         C.V1,
         C.Km1,
         C.V5,
@@ -87,12 +87,12 @@ def search_parameter_index():
         C.KF31,
         C.nF31,
         C.a,
-    ])
+    ]
 
     # initialvalues
-    search_idx_init = np.array([
+    search_idx_init = [
         # V.(variable name)
-    ])
+    ]
 
     return search_idx_const, search_idx_init
 
@@ -261,7 +261,7 @@ def lin2log(search_idx, search_region, n_param_const, n_search_param):
                         V.var_names[i-n_param_const]
                     ) + message
                 )
-        elif np.min(search_region[:, i]) == 0.0 and np.max(search_region[:, i]) != 0:
+        elif np.min(search_region[:, i]) == 0 and np.max(search_region[:, i]) != 0:
             message = 'lower_bound must be larger than 0.'
             if i <= n_param_const:
                 raise ValueError(
@@ -290,8 +290,16 @@ def lin2log(search_idx, search_region, n_param_const, n_search_param):
                     ) + message
                 )
     difference = list(
-        set(np.where(np.any(search_region != 0., axis=0))[0]) ^
-        set(np.append(search_idx[0], n_param_const+search_idx[1]))
+        set(
+            np.where(
+                np.any(search_region != 0., axis=0)
+            )[0]
+        ) ^ set(
+            np.append(
+                search_idx[0],
+                [n_param_const + idx for (_, idx) in enumerate(search_idx[1])]
+            )
+        )
     )
     if len(difference) > 0:
         message = 'in both search_idx and search_region'
