@@ -26,7 +26,7 @@ from biomass.model.initial_condition import initial_values
 def search_parameter_index():
 
 	# Write param index
-    search_idx_const = np.array([" > first_line
+    search_idx_const = [" > first_line
 
 
 

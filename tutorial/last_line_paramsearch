@@ -1,9 +1,9 @@
-    ])
+    ]
 
     # initialvalues
-    search_idx_init = np.array([
+    search_idx_init = [
         # V.(variable name)
-    ])
+    ]
 
     return search_idx_const, search_idx_init
 
@@ -196,8 +196,16 @@ def lin2log(search_idx, search_region, n_param_const, n_search_param):
                     ) + message
                 )
     difference = list(
-        set(np.where(np.any(search_region != 0., axis=0))[0]) ^
-        set(np.append(search_idx[0], n_param_const+search_idx[1]))
+        set(
+            np.where(
+                np.any(search_region != 0., axis=0)
+            )[0]
+        ) ^ set(
+            np.append(
+                search_idx[0],
+                [n_param_const + idx for (_, idx) in enumerate(search_idx[1])]
+            )
+        )
     )
     if len(difference) > 0:
         message = 'in both search_idx and search_region'
