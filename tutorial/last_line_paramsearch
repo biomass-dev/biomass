@@ -43,7 +43,6 @@ def get_search_region():
                         V.var_names[int(idx)]
                     ) + message
                 )
-        sys.exit()
 
     search_region = np.zeros((2, len(x)+len(y0)))
 

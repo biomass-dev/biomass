@@ -13,9 +13,7 @@ sed -e 's/    //g' > param_search_mid
 
 # print the header 
 
-echo "import os
-import sys
-import numpy as np
+echo "import numpy as np
 
 from biomass.model.name2idx import parameters as C
 from biomass.model.name2idx import variables as V
