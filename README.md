@@ -86,11 +86,6 @@ $ python run_sim.py average stdev
 ```
 ![simulation_average](public/images/simulation_average.png)
 
-```bash
-$ python run_sim.py best show_all
-```
-![simulation_best](public/images/simulation_best.png)
-
 Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid lines denote simulations
 
 ---
