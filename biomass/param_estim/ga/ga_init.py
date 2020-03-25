@@ -37,8 +37,8 @@ def optimize(nth_paramset):
 
 
 def ga_v1(nth_paramset, max_generation, n_population, n_children, n_gene,
-          allowable_error, search_idx, search_region):
-    population = get_initial_population(
+            allowable_error, search_idx, search_region):
+    population = _get_initial_population(
         nth_paramset, n_population, n_gene, search_idx, search_region
     )
     with open('./out/{:d}/out.log'.format(nth_paramset), mode='w') as f:
@@ -127,7 +127,7 @@ def ga_v1(nth_paramset, max_generation, n_population, n_children, n_gene,
 
 
 def ga_v2(nth_paramset, max_generation, n_population, n_children, n_gene,
-          allowable_error, search_idx, search_region):
+            allowable_error, search_idx, search_region):
     """ga_v2 optimizes an objective function through the following procedure.
 
     1. Initialization
@@ -202,7 +202,7 @@ def ga_v2(nth_paramset, max_generation, n_population, n_children, n_gene,
     n_iter = 1
     n0 = np.empty(2*n_population)
 
-    population = get_initial_population(
+    population = _get_initial_population(
         nth_paramset, n_population, n_gene, search_idx, search_region
     )
     n0[0] = population[0, -1]
@@ -254,10 +254,7 @@ def ga_v2(nth_paramset, max_generation, n_population, n_children, n_gene,
             ip, population = converging(
                 ip, population, n_population, n_gene, search_idx, search_region
             )
-        if generation % len(n0) == 0:
-            n0 = np.empty_like(n0)
-            n0[0] = population[0, -1]
-        elif generation % len(n0) == len(n0)-1:
+        if generation % len(n0) == len(n0) - 1:
             n0[-1] = population[0, -1]
             if n0[0] == n0[-1]:
                 n_iter *= 2
@@ -314,7 +311,7 @@ def ga_v2(nth_paramset, max_generation, n_population, n_children, n_gene,
     return best_indiv, best_fitness
 
 
-def get_initial_population(nth_paramset, n_population, n_gene, search_idx, search_region):
+def _get_initial_population(nth_paramset, n_population, n_gene, search_idx, search_region):
     population = np.full((n_population, n_gene+1), np.inf)
 
     with open('./out/{:d}/initpop.log'.format(nth_paramset), mode='w') as f:
@@ -329,7 +326,7 @@ def get_initial_population(nth_paramset, n_population, n_gene, search_idx, searc
             )
         with open('./out/{:d}/initpop.log'.format(nth_paramset), mode='a') as f:
             f.write(
-                '{:d}/{:d}\n'.format(
+                '{:d} / {:d}\n'.format(
                     i + 1, n_population
                 )
             )
