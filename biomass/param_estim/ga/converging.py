@@ -9,7 +9,7 @@ def converging(ip, population, n_population, n_gene, search_idx, search_region):
 
     for i in range(n_children):
         ip[2:] = np.random.choice(n_population, n_gene, replace=False)
-        children[i, :] = xover(population[ip, :], n_gene)
+        children[i, :] = _xover(population[ip, :], n_gene)
 
     family = np.empty((n_children+2, n_gene+1))
     family[:n_children, :] = children
@@ -32,21 +32,25 @@ def converging(ip, population, n_population, n_gene, search_idx, search_region):
     return ip, population
 
 
-def xover(parents, n_gene):
+def _xover(parents, n_gene):
+    """
     MAXITER = 100
     for _ in range(MAXITER):
-        child = endx(parents, n_gene)
+        child = _endx(parents, n_gene)
         if 0. <= np.min(child[:n_gene]) and np.max(child[:n_gene]) <= 1.:
             break
     else:
         child[:n_gene] = np.clip(child[:n_gene], 0., 1.)
+    """
+    child = _endx(parents, n_gene)
+    child[:n_gene] = np.clip(child[:n_gene], 0., 1.)
 
     child[-1] = np.inf  # assigns the worst objective value to the children.
 
     return child
 
 
-def endx(parents, n_gene):
+def _endx(parents, n_gene):
     """Extended Normal Distribution Xover
     """
     ALPHA = (1.-2*0.35**2)**0.5/2.

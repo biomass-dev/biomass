@@ -13,7 +13,7 @@ def local_search(ip, population, n_population, n_children, n_gene, search_idx, s
         ip[1:] = np.random.choice(
             np.arange(n_population)[idx], n_gene+1, replace=False
         )
-        children[i, :] = mutation(
+        children[i, :] = _mutation(
             population[ip, :], n_gene, search_idx, search_region
         )
     family = np.empty((n_children+1, n_gene+1))
@@ -29,21 +29,25 @@ def local_search(ip, population, n_population, n_children, n_gene, search_idx, s
     return ip, population
 
 
-def mutation(parents, n_gene, search_idx, search_region):
+def _mutation(parents, n_gene, search_idx, search_region):
+    """
     MAXITER = 100
     for _ in range(MAXITER):
-        child = ndm(parents, n_gene)
+        child = _ndm(parents, n_gene)
         if 0. <= np.min(child[:n_gene]) and np.max(child[:n_gene]) <= 1.:
             break
     else:
         child[:n_gene] = np.clip(child[:n_gene], 0., 1.)
+    """
+    child = _ndm(parents, n_gene)
+    child[:n_gene] = np.clip(child[:n_gene], 0., 1.)
 
     child[-1] = objective(child[:n_gene], search_idx, search_region)
 
     return child
 
 
-def ndm(parents, n_gene):
+def _ndm(parents, n_gene):
     """Normal Distribution Mutation
     """
     GAMMA = 0.35/n_gene**0.5
