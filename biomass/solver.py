@@ -5,7 +5,8 @@ from scipy.integrate import ode
 def solveode(diffeq, y0, tspan, args):
     sol = ode(diffeq)
     sol.set_integrator(
-        'vode', method='bdf', with_jacobian=True, min_step=1e-8
+        'vode', method='bdf', with_jacobian=True,
+        atol=1e-9, rtol=1e-9, min_step=1e-8
     )
     sol.set_initial_value(y0, tspan[0])
     sol.set_f_params(args)
@@ -21,24 +22,14 @@ def solveode(diffeq, y0, tspan, args):
     return np.array(T), np.array(Y)
 
 
-def get_steady_state(diffeq, y0, tspan, args,
-                     steady_state_time=1000000, steady_state_eps=1e-6):
-    sol = ode(diffeq)
-    sol.set_integrator(
-        'vode', method='bdf', with_jacobian=True, min_step=1e-8
-    )
-    sol.set_initial_value(y0, 0)
-    sol.set_f_params(args)
-
-    T = [0]
-    Y = [y0]
-
-    while sol.successful() and sol.t < steady_state_time:
-        sol.integrate(steady_state_time, step=True)
-        if tspan[-1] < sol.t and np.all(np.abs(sol.y - Y[-1]) < steady_state_eps):
+def get_steady_state(diffeq, y0, tspan, args, steady_state_eps=1e-6):
+    iter_ = 0
+    while iter_ < 100:
+        (T, Y) = solveode(diffeq, y0, tspan, args)
+        if T[-1] < tspan[-1] or np.all(np.abs(Y[-1, :] - y0) < steady_state_eps):
             break
         else:
-            T.append(sol.t)
-            Y.append(sol.y)
-
-    return T[-1], Y[-1]
+            y0 = Y[-1, :].tolist()
+            iter_ += 1
+    
+    return T[-1], y0
