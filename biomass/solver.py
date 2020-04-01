@@ -24,7 +24,7 @@ def solveode(diffeq, y0, tspan, args):
 
 def get_steady_state(diffeq, y0, tspan, args, steady_state_eps=1e-6):
     iter_ = 0
-    while iter_ < 100:
+    while iter_ < 10:
         (T, Y) = solveode(diffeq, y0, tspan, args)
         if T[-1] < tspan[-1] or np.all(np.abs(Y[-1, :] - y0) < steady_state_eps):
             break
