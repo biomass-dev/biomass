@@ -156,7 +156,7 @@ def ga_v2_continue(nth_paramset, max_generation, n_population, n_children, n_gen
             )
         )
     n_iter = 1
-    n0 = np.empty(2*n_population)
+    n0 = np.empty(3*n_population)
 
     count_num = np.load(
         './out/{:d}/count_num.npy'.format(

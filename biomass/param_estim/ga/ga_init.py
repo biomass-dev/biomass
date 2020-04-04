@@ -200,7 +200,7 @@ def ga_v2(nth_paramset, max_generation, n_population, n_children, n_gene,
             )
         )
     n_iter = 1
-    n0 = np.empty(2*n_population)
+    n0 = np.empty(3*n_population)
 
     population = _get_initial_population(
         nth_paramset, n_population, n_gene, search_idx, search_region
