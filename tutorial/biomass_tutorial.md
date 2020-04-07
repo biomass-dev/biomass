@@ -714,8 +714,8 @@ To visualize the simulation results you can then use the function ```run_sim.py`
 * Standard deviation: ```stdev``` to plot the standard deviation. (only available for ```average``` visualization type)
 
 ```bash
-# to get the average, show all and visualize standard deviation by error bars
-$ python run_sim.py best show_all stdev
+# to get the average and visualize standard deviation by error bars
+$ python run_sim.py average stdev
 ```
 <br>
 
