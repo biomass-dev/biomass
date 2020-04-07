@@ -28,7 +28,7 @@ if __name__ == '__main__':
                 int(args[1])
             except ValueError:
                 print(
-                    "viz_type ∈ {'best','average','original','experiment',n(=1,2,...)'}"
+                    "Avairable viz_type are: 'best','average','original','experiment',n(=1,2,...)"
                 )
             if len(n_file) < int(args[1]):
                 raise ValueError(
