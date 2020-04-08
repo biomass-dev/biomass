@@ -417,7 +417,7 @@ from:
     def simulate(self, x, y0):
         # get steady state
         x[C.Ligand] = x[C.no_ligand]  # No ligand
-        (T_steady_state, Y_steady_state) = self._get_steady_state(
+        (T_steady_state, Y_steady_state) = get_steady_state(
             diffeq, y0, self.tspan, tuple(x)
         )
         if T_steady_state < self.tspan[-1]:
@@ -433,7 +433,7 @@ to:
         '''
         # get steady state
         x[C.TNF] = 0.0  # No ligand
-        (T_steady_state, Y_steady_state) = self._get_steady_state(
+        (T_steady_state, Y_steady_state) = get_steady_state(
             diffeq, y0, self.tspan, tuple(x)
         )
         if T_steady_state < self.tspan[-1]:
@@ -471,7 +471,7 @@ The following equation means that NF-kB observable includes the total of phospho
 
 from:
 ```python
-            (T, Y) = self._solveode(diffeq, y0, self.tspan, tuple(x))
+            (T, Y) = solveode(diffeq, y0, self.tspan, tuple(x))
 
             if T[-1] < self.tspan[-1]:
                 return False
@@ -505,7 +505,7 @@ from:
 
 to:
 ```python
-            (T, Y) = self._solveode(diffeq, y0, self.tspan, tuple(x))
+            (T, Y) = solveode(diffeq, y0, self.tspan, tuple(x))
 
             if T[-1] < self.tspan[-1]:
                 return False
