@@ -12,7 +12,7 @@ from biomass.param_estim.dynamics import update_param
 from biomass.analysis.signaling_metric import *
 
 
-def analyze_sensitivity(metric, nonzero_idx):
+def get_sensitivity_coefficients(metric, nonzero_idx):
     """Compute sensitivity coefficients
 
     Parameters
@@ -52,7 +52,7 @@ def analyze_sensitivity(metric, nonzero_idx):
         np.nan
     )
     for i, nth_paramset in enumerate(n_file):
-        if os.path.isfile('./out/%d/generation.npy' % (nth_paramset)):
+        if os.path.isfile('./out/{:d}/generation.npy'.format(nth_paramset)):
             (x, y0) = update_param(nth_paramset, x, y0)
             copy_y0 = y0[:]
             for j, idx in enumerate(nonzero_idx):
@@ -65,7 +65,7 @@ def analyze_sensitivity(metric, nonzero_idx):
                                 metric, sim.simulations[k, :, l]
                             )
                 sys.stdout.write(
-                    '\r%d / %d' % (
+                    '\r{:d} / {:d}'.format(
                         i*len(nonzero_idx)+j+1, len(n_file)*len(nonzero_idx)
                     )
                 )
