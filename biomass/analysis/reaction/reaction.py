@@ -38,3 +38,16 @@ def get_reaction_module():
     reaction_module[15] = [i for i in range(57,64)]
 
     return reaction_module
+
+
+def get_sort_idx():
+    reaction_module = get_reaction_module()
+    sort_idx = [0] * num_reaction
+    left_end = 0
+    for i, ith_module in enumerate(reaction_module):
+        for j, k in enumerate(ith_module):
+            if i != 0 and j == 0:
+                left_end += len(reaction_module[i-1])
+            sort_idx[left_end+j] = k
+            
+    return sort_idx
