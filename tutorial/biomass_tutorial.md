@@ -725,34 +725,37 @@ You can calculate sensitivity coefficients on rate equations and non-zero initia
 
 To obtain values for sensitivity of the rate equations, the time derivatives of state variables must be described via rate equations (See ```differential_equation.py```) and you need to edit ```biomass/analysis/reaction/reaction.py```
 
-In this case, we just have to change the following (line 24) of ```analyze.py``` from:
+In this case, we just have to change the following (line 25) of ```analyze.py``` from:
 
 ```python
-    reaction.sensitivity_barplot(metric=str(args[1]))
-#   reaction.sensitivity_heatmap(metric='args[1]')
-#   nonzero_init.sensitivity_barplot(metric=str(args[1]))
-#   nonzero_init.sensitivity_heatmap(metric='args[1]')
+        reaction.analyze(metric=str(args[1]), style=str(args[2]))
+#       nonzero_init.analyze(metric=str(args[1]), style=str(args[2]))
 ```
 <br>
 
 to:
 ```python
-#   reaction.sensitivity_barplot(metric=str(args[1]))
-#   reaction.sensitivity_heatmap(metric='args[1]')
-    nonzero_init.sensitivity_barplot(metric=str(args[1]))
-#   nonzero_init.sensitivity_heatmap(metric='args[1]')
+#       reaction.analyze(metric=str(args[1]), style=str(args[2]))
+        nonzero_init.analyze(metric=str(args[1]), style=str(args[2]))
 ```
 <br>
 
-There are 3 options available:
-* ```amplitude```: the maximum value.
-* ```duration```: the time it takes to decline below 10% of its maximum.
-* ```integral```: the integral of concentration over the observation time.
+```metric```: 3 options available
+- ```amplitude```
+    : The maximum value.
+- ```duration```
+    : The time it takes to decline below 10% of its maximum.
+- ```integral```
+    : The integral of concentration over the observation time.
 
-For example, to use the maximum value as a signaling metric:
+```style```: 2 options available
+- ```barplot```
+- ```heatmap```
+
+For example, to use the maximum value as a signaling metric and save barplot:
 
 ```bash
-$ python analyze.py amplitude
+$ python analyze.py amplitude barplot
 ```
 <br>
 
