@@ -61,18 +61,21 @@ $ nohup python optimize.py n1 n2 &
 
 ---
 #### Visualization of Simulation Results
+```bash
+$ python run_sim.py [viz_type] [show_all] [stdev]
+```
 ```viz_type```:
 
-- 'average'
+- ```average```
     : The average of simulation results with parameter sets in ```out/```.
 
-- 'best'
+- ```best```
     : The best simulation result in ```out/```, simulation with ```best_fit_param```.
 
-- 'original'
+- ```original```
     : Simulation with the default parameters and initial values defined in ```biomass/model/```.
 
-- 'n(=1,2,...)'
+- ```n(=1,2,...)```
     : Use the parameter set in ```out/n/```.
 
 ```show_all```: bool
@@ -96,16 +99,24 @@ The single parameter sensitivity of each reaction is defined by<br>
 
 where *v<sub>i</sub>* is the *i*<sup>th</sup> reaction rate, **v** is reaction vector **v** = (*v<sub>1</sub>*, *v<sub>2</sub>*, ...) and *q*(**v**) is a target function, e.g., time-integrated response, duration. Sensitivity coefficients were calculated using finite difference approximations with 1% changes in the reaction rates.
 
+```bash
+$ python analyze.py [metric] [style]
+```
+
 ```metric```:
-- 'amplitude'
+- ```amplitude```
     : The maximum value.
-- 'duration'
+- ```duration```
     : The time it takes to decline below 10% of its maximum.
-- 'integral'
+- ```integral```
     : The integral of concentration over the observation time.
 
+```style```:
+- ```barplot```
+- ```heatmap```
+
 ```bash
-$ python analyze.py integral
+$ python analyze.py integral barplot
 ```
 ![sensitivity_PcFos](public/images/sensitivity_PcFos.png)
 
