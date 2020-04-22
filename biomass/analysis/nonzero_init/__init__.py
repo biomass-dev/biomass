@@ -1,1 +1,1 @@
-from .viz import sensitivity_barplot, sensitivity_heatmap
+from .viz import analyze
