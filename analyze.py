@@ -9,17 +9,18 @@ if not os.path.isdir('./figure'):
 
 if __name__ == '__main__':
     args = sys.argv
-    if len(args) > 2:
+    if len(args) > 3:
         raise TypeError(
-            "Too many arguments! Try one of these: 'integral', 'amplitude', 'duration'"
+            "Too many arguments!"
         )
     else:
         if str(args[1]) not in ['integral', 'amplitude', 'duration']:
             raise ValueError(
                 "Available arguments are: 'integral', 'amplitude', 'duration'"
             )
-        else:
-            reaction.sensitivity_barplot(metric=str(args[1]))
-#           reaction.sensitivity_heatmap(metric=str(args[1]))
-#           nonzero_init.sensitivity_barplot(metric=str(args[1]))
-#           nonzero_init.sensitivity_heatmap(metric=str(args[1])) 
+        if str(args[2]) not in ['barplot', 'heatmap']:
+            raise ValueError(
+                "Available arguments are: 'barplot', 'heatmap'"
+            )
+        reaction.analyze(metric=str(args[1]), style=str(args[2]))
+#       nonzero_init.analyze(metric=str(args[1]), style=str(args[2]))
