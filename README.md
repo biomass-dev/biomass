@@ -21,7 +21,7 @@ This mechanistic model describes the activation of immediate early genes such as
 > - seaborn
 
 ## Usage
-#### Parameter Estimation of ODE Models (*n* = 1, 2, 3, · · ·)
+## Parameter Estimation of ODE Models (*n* = 1, 2, 3, · · ·)
 The temporary result will be saved in ```out/n/``` after each iteration.
 ```bash
 $ nohup python optimize.py n &
@@ -59,8 +59,7 @@ $ nohup python optimize_continue.py n &
 $ nohup python optimize.py n1 n2 &
 ```
 
----
-#### Visualization of Simulation Results
+## Visualization of Simulation Results
 ```bash
 $ python run_sim.py [viz_type] [show_all] [stdev]
 ```
@@ -91,8 +90,7 @@ $ python run_sim.py average stdev
 
 Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid lines denote simulations
 
----
-#### Sensitivity Analysis
+## Sensitivity Analysis
 The single parameter sensitivity of each reaction is defined by<br>
 
 *s<sub>i</sub>*(*q*(**v**),*v<sub>i</sub>*) = *∂* ln(*q*(**v**)) / *∂* ln(*v<sub>i</sub>*) = *∂*_q_(**v**) / *∂*_v<sub>i</sub>_ · *v<sub>i</sub>* / *q*(**v**)
