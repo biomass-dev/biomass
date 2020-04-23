@@ -19,7 +19,7 @@ def _get_duration(temporal_dynamics):
     """
     maximum_value = np.max(temporal_dynamics)
     t_max = np.argmax(temporal_dynamics)
-    temporal_dynamics = temporal_dynamics - 0.1*maximum_value
+    temporal_dynamics = temporal_dynamics - 0.1 * maximum_value  # 0.1 -> 10 %
     temporal_dynamics[temporal_dynamics > 0.0] = -np.inf
     duration = np.argmax(temporal_dynamics[t_max:]) + t_max
 
@@ -112,7 +112,9 @@ def compute_sensitivity_coefficients(signaling_metric, n_file, perturbed_idx,
                             log(
                                 signaling_metric[i, j, k, l] /
                                 signaling_metric[i, metric_idx, k, l]
-                            ) / log(rate)
+                            ) / log(
+                                rate
+                            )
                         )
 
     return sensitivity_coefficients
