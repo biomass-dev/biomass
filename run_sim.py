@@ -7,7 +7,7 @@ warnings.filterwarnings('ignore')
 if not os.path.isdir('./figure'):
     os.mkdir('./figure')
 
-from  biomass.param_estim.dynamics import simulate_all
+from biomass.param_estim.dynamics import simulate_all
 
 n_file = []
 if os.path.isdir('./out'):
