@@ -56,7 +56,7 @@ def compute_signaling_metric(metric, temporal_dynamics):
         )
     else:
         raise ValueError(
-            "metric ∈ {'amplitude', 'duration', 'integral'}"
+            "Available metrics are: 'amplitude', 'duration', 'integral'"
         )
 
 
