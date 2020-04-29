@@ -388,12 +388,12 @@ observables = [
 
 * We also need to change the time span, which is the total time span of the experiments. In this case, the data is from 0 to 5400 seconds, so, change the following from:
 ```python
-    tspan = [0, 180]  # [start, end] (Unit time: 1 sec.)
+    tspan = [0, 5400]  # [start, end] (Unit time: 1 sec.)
 ```
 
 to:
 ```python
-    tspan = [0, 5400]  # [start, end] (Unit time: 1 sec.)
+    tspan = [0, 180]  # [start, end] (Unit time: 1 sec.)
 ```
 <br>
 
@@ -703,19 +703,28 @@ to:
 
 To visualize the simulation results you can then use the function ```run_sim.py``` with several visualization options:
 
-* Visualization type: 
-    * ```average``` : average of the results with parameter sets in ```out/```
-    * ```best``` : the best results (what is best?)
-    * ```original```: original result before optimization
-    * ```n```: simulation with the parameter set in ```out/n```
+* **Visualization type**: 
+    * ```'average'``` : average of the results with parameter sets in ```out/```
+    * ```'best'``` : the best results (what is best?)
+    * ```'original'```: original result before optimization
+    * ```'n'```: simulation with the parameter set in ```out/n```
 
-* Show all: ```show_all``` 
+* **Show all**: ```show_all``` 
 
-* Standard deviation: ```stdev``` to plot the standard deviation. (only available for ```average``` visualization type)
+* **Standard deviation**: ```stdev``` to plot the standard deviation. (only available for ```average``` visualization type)
 
-```bash
+```python
+import os
+
+if not os.path.isdir('./figure'):
+    os.mkdir('./figure')
+
+from biomass.param_estim.dynamics import simulate_all
+
 # to get the average and visualize standard deviation by error bars
-$ python run_sim.py average stdev
+simulate_all(
+    viz_type='average', show_all=False, stdev=True
+)
 ```
 <br>
 
@@ -725,37 +734,31 @@ You can calculate sensitivity coefficients on rate equations and non-zero initia
 
 To obtain values for sensitivity of the rate equations, the time derivatives of state variables must be described via rate equations (See ```differential_equation.py```) and you need to edit ```biomass/analysis/reaction/reaction.py```
 
-In this case, we just have to change the following (line 25) of ```analyze.py``` from:
-
-```python
-        reaction.analyze(metric=str(args[1]), style=str(args[2]))
-#       nonzero_init.analyze(metric=str(args[1]), style=str(args[2]))
-```
-<br>
-
-to:
-```python
-#       reaction.analyze(metric=str(args[1]), style=str(args[2]))
-        nonzero_init.analyze(metric=str(args[1]), style=str(args[2]))
-```
-<br>
-
-```metric```: 3 options available
-- ```amplitude```
+**metric**: 3 options available
+- ```'amplitude'```
     : The maximum value.
-- ```duration```
+- ```'duration'```
     : The time it takes to decline below 10% of its maximum.
-- ```integral```
+- ```'integral'```
     : The integral of concentration over the observation time.
 
-```style```: 2 options available
-- ```barplot```
-- ```heatmap```
+**style**: 2 options available
+- ```'barplot'```
+- ```'heatmap'```
 
 For example, to use the maximum value as a signaling metric and save barplot:
 
-```bash
-$ python analyze.py amplitude barplot
+```python
+import os
+
+if not os.path.isdir('./figure'):
+    os.mkdir('./figure')
+    
+from biomass.analysis import reaction, nonzero_init
+
+nonzero_init.analyze(
+    metric='integral', style='barplot'
+)
 ```
 <br>
 
