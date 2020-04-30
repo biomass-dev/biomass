@@ -20,7 +20,6 @@ This mechanistic model describes the activation of immediate early genes such as
 > - matplotlib
 > - seaborn
 
-## Usage
 ## Parameter Estimation of ODE Models (*n* = 1, 2, 3, · · ·)
 The temporary result will be saved in ```out/n/``` after each iteration.
 ```bash
@@ -54,37 +53,46 @@ Generation20: Best Fitness = 1.171606e+00
 ```bash
 $ nohup python optimize_continue.py n &
 ```
-- If you want to search multiple parameter sets (from *n1* to *n2*) simutaneously,
+- If you want to search multiple parameter sets (from *n1* to *n2*) simultaneously,
 ```bash
 $ nohup python optimize.py n1 n2 &
 ```
 
 ## Visualization of Simulation Results
-```bash
-$ python run_sim.py [viz_type] [show_all] [stdev]
+```python
+simulate_all(viz_type, show_all, stdev)
 ```
-```viz_type```:
+**viz_type** : str
 
-- ```average```
+- ```'average'```
     : The average of simulation results with parameter sets in ```out/```.
 
-- ```best```
+- ```'best'```
     : The best simulation result in ```out/```, simulation with ```best_fit_param```.
 
-- ```original```
+- ```'original'```
     : Simulation with the default parameters and initial values defined in ```biomass/model/```.
 
-- ```n(=1,2,...)```
+- ```'n(=1,2,...)'```
     : Use the parameter set in ```out/n/```.
 
-```show_all```: bool
+**show_all** : bool
 - Whether to show all simulation results.
 
-```stdev```: bool
+**stdev** : bool
 - If True, the standard deviation of simulated values will be shown (only when viz_type == 'average').
 
-```bash
-$ python run_sim.py average stdev
+```python
+import os
+
+if not os.path.isdir('./figure'):
+    os.mkdir('./figure')
+
+from biomass.param_estim.dynamics import simulate_all
+            
+simulate_all(
+    viz_type='average', show_all=False, stdev=True
+)
 ```
 ![simulation_average](public/images/simulation_average.png)
 
@@ -97,24 +105,33 @@ The single parameter sensitivity of each reaction is defined by<br>
 
 where *v<sub>i</sub>* is the *i*<sup>th</sup> reaction rate, **v** is reaction vector **v** = (*v<sub>1</sub>*, *v<sub>2</sub>*, ...) and *q*(**v**) is a target function, e.g., time-integrated response, duration. Sensitivity coefficients were calculated using finite difference approximations with 1% changes in the reaction rates.
 
-```bash
-$ python analyze.py [metric] [style]
+```python
+analyze(metric, style)
 ```
 
-```metric```:
-- ```amplitude```
+**metric** : str
+- ```'amplitude'```
     : The maximum value.
-- ```duration```
+- ```'duration'```
     : The time it takes to decline below 10% of its maximum.
-- ```integral```
+- ```'integral'```
     : The integral of concentration over the observation time.
 
-```style```:
-- ```barplot```
-- ```heatmap```
+**style** : str
+- ```'barplot'```
+- ```'heatmap'```
 
-```bash
-$ python analyze.py integral barplot
+```python
+import os
+
+if not os.path.isdir('./figure'):
+    os.mkdir('./figure')
+    
+from biomass.analysis import reaction, nonzero_init
+
+reaction.analyze(
+    metric='integral', style='barplot'
+)
 ```
 ![sensitivity_PcFos](public/images/sensitivity_PcFos.png)
 
