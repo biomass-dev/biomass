@@ -12,8 +12,8 @@ from biomass.param_estim.dynamics import update_param
 from biomass.analysis.signaling_metric import *
 
 
-def get_sensitivity_coefficients(metric, nonzero_idx):
-    """Compute sensitivity coefficients
+def calc_sensitivity_coefficients(metric, nonzero_idx):
+    """ Calculating Sensitivity Coefficients
 
     Parameters
     ----------
