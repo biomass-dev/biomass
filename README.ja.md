@@ -49,28 +49,38 @@ $ nohup python optimize.py n1 n2 &
 ---
 #### シミュレーション結果の可視化
 パラメータ推定で得た複数のパラメータセットでのシミュレーション結果を出力します．結果は```figure/```に保存されます．
-```bash
-$ python run_sim.py [viz_type] [show_all] [stdev]
+```python
+simulate_all(viz_type, show_all, stdev)
 ```
 
 コマンドライン引数を設定することで，出力されるグラフの表示法を変更することができます．
 
-```viz_type```:
-- ```average```: ```out/```にある複数のパラメータセットでのシミュレーション結果の平均を表示します．
+**viz_type** : str
+- ```'average'```: ```out/```にある複数のパラメータセットでのシミュレーション結果の平均を表示します．
 
-- ```best```: ```out/```にある複数のパラメータセットでのシミュレーション結果のうち，最良のものを表示します．
+- ```'best'```: ```out/```にある複数のパラメータセットでのシミュレーション結果のうち，最良のものを表示します．
 
-- ```original```: ```model/param_const.py```, ```initial_condition.py```に記述されているパラメータ，初期値を使用したシミュレーション結果を表示します．
+- ```'original'```: ```model/param_const.py```, ```initial_condition.py```に記述されているパラメータ，初期値を使用したシミュレーション結果を表示します．
 
-- ```n(=1,2,...)```: ```out/n(=1,2,...)``` における最新のパラメータセットでのシミュレーション結果を表示します．
+- ```'n(=1,2,...)'```: ```out/n(=1,2,...)``` における最新のパラメータセットでのシミュレーション結果を表示します．
 
-```bash
-$ python run_sim.py average stdev
-```
-![simulation_average](public/images/simulation_average.png)
+**show_all** : bool
+- ```out/n(=1,2,...)```に格納されたパラメータセットでの全てのシミュレーション結果を表示します．
 
-```bash
-$ python run_sim.py best show_all
+**stdev** : bool
+- ```viz_type == 'average'```の際，標準偏差も含めて表示します．
+
+```python
+import os
+
+if not os.path.isdir('./figure'):
+    os.mkdir('./figure')
+
+from biomass.param_estim.dynamics import simulate_all
+            
+simulate_all(
+    viz_type='best', show_all=True, stdev=False
+)
 ```
 ![simulation_best](public/images/simulation_best.png)
 
@@ -78,15 +88,14 @@ $ python run_sim.py best show_all
 
 ---
 #### 感度解析
+```python
+analyze(metric, style)
+```
 感度係数は以下の式で記述されます．
 
 *s<sub>i</sub>*(*q*(**v**),*v<sub>i</sub>*) = *∂* ln(*q*(**v**)) / *∂* ln(*v<sub>i</sub>*) = *∂*_q_(**v**) / *∂*_v<sub>i</sub>_ · *v<sub>i</sub>* / *q*(**v**)
 
 ここで *v<sub>i</sub>* は*i*番目の反応速度を表し, **v** は反応速度のベクトル **v** = (*v<sub>1</sub>*, *v<sub>2</sub>*, ...)，*q*(**v**) は出力を定量する関数です（例：応答の積分値，最大値，持続時間など）． 感度係数は微分を1%の反応速度の変化で有限差分近似して計算されます．
-
-```bash
-$ python analyze.py [metric] [style]
-```
 
 各反応における感度係数を求めるためには，[```model/differential_equation.py```](biomass/model/differential_equation.py)中で，反応速度を 'v' で表す場合，全ての反応式を記述した直後に，以下を書いておく必要があります．
 ```python
@@ -107,8 +116,18 @@ if 'perturbation' in globals():
 ```style```: グラフを選択します．
 - ```barplot```
 - ```heatmap```
-```bash
-$ python analyze.py integral barplot
+
+```python
+import os
+
+if not os.path.isdir('./figure'):
+    os.mkdir('./figure')
+    
+from biomass.analysis import reaction, nonzero_init
+
+reaction.analyze(
+    metric='integral', style='barplot'
+)
 ```
 ![sensitivity_PcFos](public/images/sensitivity_PcFos.png)
 
