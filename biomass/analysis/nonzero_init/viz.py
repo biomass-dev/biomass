@@ -7,7 +7,7 @@ import seaborn as sns
 from biomass.model.name2idx import variables as V
 from biomass.model.initial_condition import initial_values
 from biomass.observable import observables, NumericalSimulation
-from .sensitivity import get_sensitivity_coefficients
+from .sensitivity import calc_sensitivity_coefficients
 
 
 sim = NumericalSimulation()
@@ -129,6 +129,10 @@ def analyze(metric, style):
                             ), bbox_inches='tight'
                         )
                         plt.close()
+    else:
+        raise ValueError(
+            "Available styles are: 'barplot', 'heatmap'"
+    )
 
 
 def _load_sc(metric):
@@ -147,7 +151,7 @@ def _load_sc(metric):
                 metric
             ), exist_ok=True
         )
-        sensitivity_coefficients = get_sensitivity_coefficients(
+        sensitivity_coefficients = calc_sensitivity_coefficients(
             metric, nonzero_idx
         )
         np.save(
