@@ -722,7 +722,7 @@ simulate_all(
 
 You can calculate sensitivity coefficients on rate equations and non-zero initial values using ```analyze.py```
 
-To obtain values for sensitivity of the rate equations, the time derivatives of state variables must be described via rate equations (See ```differential_equation.py```) and you need to edit ```biomass/analysis/reaction/reaction.py```
+To obtain values for sensitivity of the rate equations, the time derivatives of state variables must be described via rate equations (See ```biomass/model/set_model.py```) and you need to edit ```biomass/analysis/reaction/reaction.py```
 
 **metric**: 3 options available
 - ```'amplitude'```
