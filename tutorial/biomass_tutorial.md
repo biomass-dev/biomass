@@ -51,23 +51,17 @@ Congrats! You should have a working python.
 There are several files that needs editing prior to running the program: 
 <br>
 
-1. Differential equations <br> 
-```biomass/model/differential_equation.py```
+1. Differential equations, Parameters, Initial values <br> 
+```biomass/model/set_model.py```
 
-2. Initial values <br>
-```biomass/model/initial_condition.py```
-
-3. Parameters <br>
-```biomass/model/param_const.py```
-
-4. Names of parameters and state variables (automated using bash script)<br>
+1. Names of parameters and state variables (automated using bash script)<br>
 ```biomass/model/name2idx/parameters.py```<br>
-```biomass/model/variables.py```
+```biomass/model/name2idx/variables.py```
 
-5. Functions to get the difference between experimental data and simulation<br>
+1. Functions to get the difference between experimental data and simulation<br>
 ```biomass/param_estim/fitness.py```
 
-6. Observables, experimental data<br>
+1. Observables, experimental data<br>
 ```biomass/biomass/observable.py```
 
 
@@ -80,7 +74,7 @@ To edit these files, go to the Biomass directory. We will be using the paper
 <br>
 
 ### 1. Edit differential equations:
-```biomass/model/differential_equation.py```
+```biomass/model/set_model.py```
 
 ```python
 from .name2idx import parameters as C
@@ -129,11 +123,9 @@ def diffeq(t,y,x):
 <br>
 
 ### 2. Edit initial values: 
-```biomass/model/initial_condition.py```
+```biomass/model/set_model.py```
 
 ```python
-from .name2idx import variables as V
-
 def initial_values():
     y0 = [0]*V.len_f_vars
 
@@ -163,13 +155,11 @@ def initial_values():
 <br>
 
 ### 3. Edit model parameters (From table S9): 
-```biomass/model/param_const.py```
+```biomass/model/set_model.py```
 
 Make sure to change the line ```def f_params_noDCF():``` to ```def f_params:``` 
 
 ```python
-from .name2idx import parameters as C
-
 def f_params():
     x = [0]*C.len_f_params
 
@@ -237,7 +227,7 @@ $ sh mk_param_search.sh
 ```
 <br>
 
-After running the script, you will have a new ```search_parameter.py``` which contains the parameters you have specified in ```param_const.py```.
+After running the script, you will have a new ```search_parameter.py``` which contains the parameters you have specified in ```set_model.py```.
 
 If you only need to optimize several parameters, you can open the ```search_parameter.py``` and **remove** the unwanted lines containing the parameters you don't want. The following lines will represent the parameter indices for optimization.
 
@@ -444,7 +434,7 @@ to:
 ```
 <br>
 
-* Then, change the ligand input from EGF and HRG to TNF only, where the TNF is equal to the value of TNF specified in ```param_const.py```
+* Then, change the ligand input from EGF and HRG to TNF only
 
 from:
 ```python
