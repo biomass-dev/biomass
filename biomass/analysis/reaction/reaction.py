@@ -1,4 +1,4 @@
-# Num. of Rate Equations (len(v) in model/differential_equations.py)
+# Num. of Rate Equations (len(v) in diffeq in model/set_model.py)
 num_reaction = 64
 
 def get_reaction_module():
