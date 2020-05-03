@@ -1,9 +1,6 @@
 import numpy as np
 
-from biomass.model.name2idx import parameters as C
-from biomass.model.name2idx import variables as V
-from biomass.model.param_const import f_params
-from biomass.model.initial_condition import initial_values
+from biomass.model import C, V, f_params, initial_values
 
 
 def search_parameter_index():

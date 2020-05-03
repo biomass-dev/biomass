@@ -3,10 +3,7 @@ import sys
 import re
 import numpy as np
 
-from biomass.model.name2idx import parameters as C
-from biomass.model.name2idx import variables as V
-from biomass.model.param_const import f_params
-from biomass.model.initial_condition import initial_values
+from biomass.model import C, V, f_params, initial_values
 from biomass.observable import observables, NumericalSimulation
 from biomass.param_estim.dynamics import update_param
 from biomass.analysis.signaling_metric import *

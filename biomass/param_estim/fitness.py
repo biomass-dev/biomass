@@ -1,12 +1,10 @@
 import numpy as np
 from scipy.spatial.distance import cosine
 
-from biomass.model.name2idx import parameters as C
-from biomass.model.name2idx import variables as V
-from biomass.model.param_const import f_params
-from biomass.model.initial_condition import initial_values
+
+from biomass.model import C, V, f_params, initial_values
 from biomass.observable import *
-from .ga.converter import decode_gene2variable
+from biomass.param_estim.ga.converter import decode_gene2variable
 
 def compute_objval_rss(sim_data,exp_data):
     """Residual Sum of Squares"""
@@ -21,7 +19,7 @@ def compute_objval_cos(sim_data,exp_data):
 
 
 def diff_sim_and_exp(sim_matrix, exp_dict, exp_timepoint, conditions,
-                     sim_norm_max=1, exp_norm_max=1):
+                        sim_norm_max=1, exp_norm_max=1):
     sim_val = []
     exp_val = []
 

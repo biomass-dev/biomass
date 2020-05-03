@@ -4,8 +4,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-from biomass.model.name2idx import variables as V
-from biomass.model.initial_condition import initial_values
+from biomass.model import V, initial_values
 from biomass.observable import observables, NumericalSimulation
 from .sensitivity import calc_sensitivity_coefficients
 

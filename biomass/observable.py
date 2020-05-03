@@ -1,8 +1,6 @@
 import numpy as np
 
-from .model.name2idx import parameters as C
-from .model.name2idx import variables as V
-from .model.differential_equation import diffeq
+from .model import C, V, diffeq
 from .solver import solveode, get_steady_state
 
 
