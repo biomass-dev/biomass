@@ -80,19 +80,19 @@ simulate_all(viz_type, show_all, stdev)
 - Whether to show all simulation results.
 
 **stdev** : bool
-- If True, the standard deviation of simulated values will be shown (only when viz_type == 'average').
+- If True, the standard deviation of simulated values will be shown (only when ```viz_type == 'average'```).
 
 ```python
 import os
+import warnings
+warnings.filterwarnings('ignore')
 
 if not os.path.isdir('./figure'):
     os.mkdir('./figure')
 
-from biomass.param_estim.dynamics import simulate_all
+from biomass.param_estim import simulate_all
             
-simulate_all(
-    viz_type='average', show_all=False, stdev=True
-)
+simulate_all(viz_type='average', show_all=False, stdev=True)
 ```
 ![simulation_average](public/images/simulation_average.png)
 
@@ -129,9 +129,7 @@ if not os.path.isdir('./figure'):
     
 from biomass.analysis import reaction, nonzero_init
 
-reaction.analyze(
-    metric='integral', style='barplot'
-)
+reaction.analyze(metric='integral', style='barplot')
 ```
 ![sensitivity_PcFos](public/images/sensitivity_PcFos.png)
 

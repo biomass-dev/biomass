@@ -72,15 +72,15 @@ simulate_all(viz_type, show_all, stdev)
 
 ```python
 import os
+import warnings
+warnings.filterwarnings('ignore')
 
 if not os.path.isdir('./figure'):
     os.mkdir('./figure')
 
-from biomass.param_estim.dynamics import simulate_all
+from biomass.param_estim import simulate_all
             
-simulate_all(
-    viz_type='best', show_all=True, stdev=False
-)
+simulate_all(viz_type='best', show_all=True, stdev=False)
 ```
 ![simulation_best](public/images/simulation_best.png)
 
@@ -125,9 +125,7 @@ if not os.path.isdir('./figure'):
     
 from biomass.analysis import reaction, nonzero_init
 
-reaction.analyze(
-    metric='integral', style='barplot'
-)
+reaction.analyze(metric='integral', style='barplot')
 ```
 ![sensitivity_PcFos](public/images/sensitivity_PcFos.png)
 
