@@ -45,7 +45,7 @@ def simulate_all(viz_type, show_all, stdev):
             if len(n_file) == 1 and viz_type == 'average':
                 viz_type = 'best'
             for i, nth_paramset in enumerate(n_file):
-                (sim, successful) = validate(nth_paramset, x, y0)
+                (sim, successful) = _validate(nth_paramset, x, y0)
                 if successful:
                     for j, _ in enumerate(observables):
                         simulations_all[j, i, :, :] = sim.simulations[j, :, :]
@@ -64,9 +64,9 @@ def simulate_all(viz_type, show_all, stdev):
             if viz_type == 'average':
                 pass
             elif viz_type == 'best':
-                sim = validate(int(best_paramset), x, y0)[0]
+                sim = _validate(int(best_paramset), x, y0)[0]
             else:
-                sim = validate(int(viz_type), x, y0)[0]
+                sim = _validate(int(viz_type), x, y0)[0]
 
             if len(n_file) >= 2:
                 save_param_range(n_file, x, y0, portrait=True)
@@ -102,7 +102,7 @@ def update_param(paramset, x, y0):
     return x, y0
 
 
-def validate(nth_paramset, x, y0):
+def _validate(nth_paramset, x, y0):
     """Validates the dynamical viability of a set of estimated parameter values.
     """
     sim = NumericalSimulation()
