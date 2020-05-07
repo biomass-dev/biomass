@@ -115,9 +115,13 @@ param_names = [
     'EGF',
     'HRG',
     'no_ligand',
-    ##
-    'len_f_params'\
 ]
 
 for idx, name in enumerate(param_names):
-    exec('%s=%d' % (name, idx))
+    exec(
+        '{} = {:d}'.format(
+            name, idx
+        )
+    )
+
+len_f_params = len(param_names)
