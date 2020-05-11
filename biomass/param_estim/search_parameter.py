@@ -4,9 +4,10 @@ from biomass.model import C, V, f_params, initial_values
 
 
 def search_parameter_index():
-
-    # Write param index for optimization
-    search_idx_const = [
+    """Specify model parameters and/or initial values to optimize
+    """
+    # parameters
+    search_idx_params = [
         C.V1,
         C.Km1,
         C.V5,
@@ -84,12 +85,12 @@ def search_parameter_index():
         C.a,
     ]
 
-    # initialvalues
-    search_idx_init = [
+    # initial values
+    search_idx_initvars = [
         # V.(variable name)
     ]
 
-    return search_idx_const, search_idx_init
+    return search_idx_params, search_idx_initvars
 
 
 def get_search_region():
@@ -97,44 +98,13 @@ def get_search_region():
     y0 = initial_values()
 
     search_idx = search_parameter_index()
-
-    if len(search_idx[0]) != len(set(search_idx[0])):
-        raise ValueError('Duplicate param name.')
-    elif len(search_idx[1]) != len(set(search_idx[1])):
-        raise ValueError('Duplicate var name.')
-    else:
-        pass
-
-    search_param = np.empty(len(search_idx[0])+len(search_idx[1]))
-    for i, j in enumerate(search_idx[0]):
-        search_param[i] = x[j]
-    for i, j in enumerate(search_idx[1]):
-        search_param[i+len(search_idx[0])] = y0[j]
-
-    if np.any(search_param == 0.):
-        message = 'search_param must not contain zero.'
-        for _, idx in enumerate(search_idx[0]):
-            if x[int(idx)] == 0.:
-                raise ValueError(
-                    '"C.{}" in search_idx_const: '.format(
-                        C.param_names[int(idx)]
-                    ) + message
-                )
-        for _, idx in enumerate(search_idx[1]):
-            if y0[int(idx)] == 0.:
-                raise ValueError(
-                    '"V.{}" in search_idx_init: '.format(
-                        V.var_names[int(idx)]
-                    ) + message
-                )
+    search_param = _init_search_param(search_idx, x, y0)
 
     search_region = np.zeros((2, len(x)+len(y0)))
-
     # Default: 0.1 ~ 10
     for i, j in enumerate(search_idx[0]):
         search_region[0, j] = search_param[i] * 0.1  # lower bound
         search_region[1, j] = search_param[i] * 10.  # upper bound
-
     # Default: 0.5 ~ 2
     for i, j in enumerate(search_idx[1]):
         search_region[0, j+len(x)] = \
@@ -232,13 +202,51 @@ def get_search_region():
     ----------------------------------------------------------------------------
     '''
 
-    search_region = lin2log(
-        search_idx, search_region, len(x), len(search_param)
+    search_region = _conv_lin2log(
+        search_region, search_idx, len(x), len(search_param)
     )
     return search_region
 
 
-def lin2log(search_idx, search_region, n_param_const, n_search_param):
+def _init_search_param(search_idx, x, y0):
+    """Initialize search_param
+    """
+    if len(search_idx[0]) != len(set(search_idx[0])):
+        raise ValueError('Duplicate param name.')
+    elif len(search_idx[1]) != len(set(search_idx[1])):
+        raise ValueError('Duplicate var name.')
+    else:
+        pass
+
+    search_param = np.empty(
+        len(search_idx[0]) + len(search_idx[1])
+    )
+    for i, j in enumerate(search_idx[0]):
+        search_param[i] = x[j]
+    for i, j in enumerate(search_idx[1]):
+        search_param[i+len(search_idx[0])] = y0[j]
+
+    if np.any(search_param == 0.):
+        message = 'search_param must not contain zero.'
+        for _, idx in enumerate(search_idx[0]):
+            if x[int(idx)] == 0.:
+                raise ValueError(
+                    '"C.{}" in search_idx_params: '.format(
+                        C.param_names[int(idx)]
+                    ) + message
+                )
+        for _, idx in enumerate(search_idx[1]):
+            if y0[int(idx)] == 0.:
+                raise ValueError(
+                    '"V.{}" in search_idx_initvars: '.format(
+                        V.var_names[int(idx)]
+                    ) + message
+                )
+    
+    return search_param
+
+
+def _conv_lin2log(search_region, search_idx, n_param_const, n_search_param):
     """Convert Linear scale to Logarithmic scale
     """
     for i in range(search_region.shape[1]):
