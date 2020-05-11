@@ -23,5 +23,8 @@ out/
 # sensitivity array
 sensitivities_npy/
 
+# optimized_params
+*.csv
+
 # swp
 *.swp
