@@ -4,8 +4,7 @@ import numpy as np
 
 from biomass import model
 from biomass.observable import observables, NumericalSimulation
-from biomass.param_estim import plot_func
-from biomass.param_estim.search_parameter import search_parameter_index
+from biomass.param_estim import plot_func, search_parameter_index
 
 
 def simulate_all(viz_type, show_all, stdev):
@@ -20,7 +19,7 @@ def simulate_all(viz_type, show_all, stdev):
         - 'n(=1,2,...)': Use the parameter set in "out/n/".
     show_all : bool
         Whether to show all simulation results.
-    stdev: bool
+    stdev : bool
         If True, the standard deviation of simulated values will be shown
         (only available for 'average' visualization type).
         
@@ -64,9 +63,9 @@ def simulate_all(viz_type, show_all, stdev):
             if viz_type == 'average':
                 pass
             elif viz_type == 'best':
-                sim = _validate(int(best_paramset), x, y0)[0]
+                sim, _ = _validate(int(best_paramset), x, y0)
             else:
-                sim = _validate(int(viz_type), x, y0)[0]
+                sim, _ = _validate(int(viz_type), x, y0)
 
             if len(n_file) >= 2:
                 save_param_range(n_file, x, y0, portrait=True)
