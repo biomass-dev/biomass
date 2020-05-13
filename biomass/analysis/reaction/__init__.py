@@ -1,1 +1,1 @@
-from .viz import analyze
+from .analyze import analyze
