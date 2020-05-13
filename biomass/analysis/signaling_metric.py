@@ -26,7 +26,7 @@ def _get_duration(temporal_dynamics):
     return duration
 
 
-def compute_signaling_metric(metric, temporal_dynamics):
+def get_signaling_metric(metric, temporal_dynamics):
     """Quantification of cellular response.
 
     Parameters
@@ -60,9 +60,9 @@ def compute_signaling_metric(metric, temporal_dynamics):
         )
 
 
-def compute_sensitivity_coefficients(signaling_metric, n_file, perturbed_idx,
-                                        observables, conditions, rate, metric_idx,
-                                        epsilon=1e-9):
+def dlnyi_dlnxj(signaling_metric, n_file, perturbed_idx,
+                observables, conditions, rate, metric_idx,
+                epsilon=1e-9):
     """
     Numerical computation of sensitivities using finite difference approximations
     with 1% changes in the reaction rates or non-zero initial values.
