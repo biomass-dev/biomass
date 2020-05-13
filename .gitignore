@@ -21,7 +21,7 @@ figure/
 out/
 
 # sensitivity array
-sensitivities_npy/
+sc_npy/
 
 # optimized_params
 *.csv
