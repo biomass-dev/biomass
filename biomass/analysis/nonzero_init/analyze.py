@@ -1,8 +1,6 @@
 import os
 import sys
 import numpy as np
-from matplotlib import pyplot as plt
-import seaborn as sns
 
 from biomass.model import initial_values
 from .sensitivity import calc_sensitivity_coefficients
