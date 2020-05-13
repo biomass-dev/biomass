@@ -3,11 +3,10 @@ import sys
 import re
 import numpy as np
 
-from biomass.model import set_model as ode
-from biomass.model import C, V, f_params, initial_values
+from biomass.model import C, V, set_model, f_params, initial_values
 from biomass.observable import observables, NumericalSimulation
-from biomass.param_estim.dynamics import update_param
-from biomass.analysis.signaling_metric import *
+from biomass.param_estim import update_param
+from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
 
 
 def calc_sensitivity_coefficients(metric, num_reaction):
@@ -48,12 +47,12 @@ def calc_sensitivity_coefficients(metric, num_reaction):
         if os.path.isfile('./out/{:d}/generation.npy'.format(nth_paramset)):
             (x, y0) = update_param(nth_paramset, x, y0)
             for j in range(num_reaction):
-                ode.perturbation = [1] * num_reaction
-                ode.perturbation[j] = rate
+                set_model.perturbation = [1] * num_reaction
+                set_model.perturbation[j] = rate
                 if sim.simulate(x, y0) is None:
                     for k, _ in enumerate(observables):
                         for l, _ in enumerate(sim.conditions):
-                            signaling_metric[i, j, k, l] = compute_signaling_metric(
+                            signaling_metric[i, j, k, l] = get_signaling_metric(
                                 metric, sim.simulations[k, :, l]
                             )
                 sys.stdout.write(
@@ -61,7 +60,7 @@ def calc_sensitivity_coefficients(metric, num_reaction):
                         i*num_reaction+j+1, len(n_file)*num_reaction
                     )
                 )
-    sensitivity_coefficients = compute_sensitivity_coefficients(
+    sensitivity_coefficients = dlnyi_dlnxj(
         signaling_metric, n_file, range(num_reaction),
         observables, sim.conditions, rate, metric_idx=0
     )

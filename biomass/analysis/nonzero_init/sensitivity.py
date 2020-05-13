@@ -5,8 +5,8 @@ import numpy as np
 
 from biomass.model import C, V, f_params, initial_values
 from biomass.observable import observables, NumericalSimulation
-from biomass.param_estim.dynamics import update_param
-from biomass.analysis.signaling_metric import *
+from biomass.param_estim import update_param
+from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
 
 
 def calc_sensitivity_coefficients(metric, nonzero_idx):
@@ -58,7 +58,7 @@ def calc_sensitivity_coefficients(metric, nonzero_idx):
                 if sim.simulate(x, y0) is None:
                     for k, _ in enumerate(observables):
                         for l, _ in enumerate(sim.conditions):
-                            signaling_metric[i, j, k, l] = compute_signaling_metric(
+                            signaling_metric[i, j, k, l] = get_signaling_metric(
                                 metric, sim.simulations[k, :, l]
                             )
                 sys.stdout.write(
@@ -71,10 +71,10 @@ def calc_sensitivity_coefficients(metric, nonzero_idx):
             if sim.simulate(x, y0) is None:
                 for k, _ in enumerate(observables):
                     for l, _ in enumerate(sim.conditions):
-                        signaling_metric[i, -1, k, l] = compute_signaling_metric(
+                        signaling_metric[i, -1, k, l] = get_signaling_metric(
                             metric, sim.simulations[k, :, l]
                         )
-    sensitivity_coefficients = compute_sensitivity_coefficients(
+    sensitivity_coefficients = dlnyi_dlnxj(
         signaling_metric, n_file, nonzero_idx,
         observables, sim.conditions, rate, metric_idx=-1
     )
