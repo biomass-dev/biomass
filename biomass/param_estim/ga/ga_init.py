@@ -6,8 +6,7 @@ from .undx_mgg import mgg_alternation
 from .converging import converging
 from .local_search import local_search
 from biomass.param_estim.fitness import objective
-from biomass.param_estim.search_parameter import search_parameter_index
-from biomass.param_estim.search_parameter import get_search_region
+from biomass.param_estim.search_parameter import *
 
 
 def optimize(nth_paramset):
