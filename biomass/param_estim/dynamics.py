@@ -2,9 +2,28 @@ import os
 import re
 import numpy as np
 
-from biomass import model
+from biomass.model import f_params, initial_values
 from biomass.observable import observables, NumericalSimulation
-from biomass.param_estim import plot_func, search_parameter_index
+from biomass.param_estim import plot_func
+from .load_param import update_param, write_best_fit_param, get_search_param_matrix
+
+
+def _validate(nth_paramset, x, y0):
+    """Validates the dynamical viability of a set of estimated parameter values.
+    """
+    sim = NumericalSimulation()
+
+    (x, y0) = update_param(nth_paramset, x, y0)
+
+    if sim.simulate(x, y0) is None:
+        return sim, True
+    else:
+        print(
+            'Simulation failed.\nparameter_set #{:d}'.format(
+                nth_paramset
+            )
+        )
+        return sim, False
 
 
 def simulate_all(viz_type, show_all, stdev):
@@ -24,8 +43,8 @@ def simulate_all(viz_type, show_all, stdev):
         (only available for 'average' visualization type).
         
     """
-    x = model.f_params()
-    y0 = model.initial_values()
+    x = f_params()
+    y0 = initial_values()
     sim = NumericalSimulation()
 
     n_file = []
@@ -68,7 +87,9 @@ def simulate_all(viz_type, show_all, stdev):
                 sim, _ = _validate(int(viz_type), x, y0)
 
             if len(n_file) >= 2:
-                save_param_range(n_file, x, y0, portrait=True)
+                plot_func.param_range(
+                    *get_search_param_matrix(n_file, x, y0), portrait=True
+                )
         else:
             if sim.simulate(x, y0) is not None:
                 print(
@@ -76,108 +97,4 @@ def simulate_all(viz_type, show_all, stdev):
                 )
     plot_func.timecourse(
         sim, n_file, viz_type, show_all, stdev, simulations_all
-    )
-
-
-def update_param(paramset, x, y0):
-    search_idx = search_parameter_index()
-
-    if os.path.isfile('./out/{:d}/generation.npy'.format(paramset)):
-        best_generation = np.load(
-            './out/{:d}/generation.npy'.format(
-                paramset
-            )
-        )
-        best_indiv = np.load(
-            './out/{:d}/fit_param{:d}.npy'.format(
-                paramset, int(best_generation)
-            )
-        )
-        for i, j in enumerate(search_idx[0]):
-            x[j] = best_indiv[i]
-        for i, j in enumerate(search_idx[1]):
-            y0[j] = best_indiv[i+len(search_idx[0])]
-
-    return x, y0
-
-
-def _validate(nth_paramset, x, y0):
-    """Validates the dynamical viability of a set of estimated parameter values.
-    """
-    sim = NumericalSimulation()
-
-    (x, y0) = update_param(nth_paramset, x, y0)
-
-    if sim.simulate(x, y0) is None:
-        return sim, True
-    else:
-        print(
-            'Simulation failed.\nparameter_set #{:d}'.format(
-                nth_paramset
-            )
-        )
-        return sim, False
-
-
-def write_best_fit_param(best_paramset, x, y0):
-
-    (x, y0) = update_param(best_paramset, x, y0)
-
-    with open('./out/best_fit_param.txt', mode='w') as f:
-        f.write(
-            '# param set: {:d}\n'.format(
-                best_paramset
-            )
-        )
-        f.write(
-            '\n### Param. const\n'
-        )
-        for i in range(model.C.len_f_params):
-            f.write(
-                'x[C.{}] = {:8.3e}\n'.format(
-                    model.C.param_names[i], x[i]
-                )
-            )
-        f.write(
-            '\n### Non-zero initial conditions\n'
-        )
-        for i in range(model.V.len_f_vars):
-            if y0[i] != 0:
-                f.write(
-                    'y0[V.{}] = {:8.3e}\n'.format(
-                        model.V.var_names[i], y0[i]
-                    )
-                )
-
-
-def save_param_range(n_file, x, y0, portrait):
-    search_idx = search_parameter_index()
-    search_param_matrix = np.empty(
-        (len(n_file), len(search_idx[0]) + len(search_idx[1]))
-    )
-    for k, nth_paramset in enumerate(n_file):
-        if os.path.isfile('./out/{:d}/generation.npy'.format(nth_paramset)):
-            best_generation = np.load(
-                './out/{:d}/generation.npy'.format(
-                    nth_paramset
-                )
-            )
-            best_indiv = np.load(
-                './out/{:d}/fit_param{:d}.npy'.format(
-                    nth_paramset, int(best_generation)
-                )
-            )
-        else:
-            best_indiv = np.empty(
-                len(search_idx[0]) + len(search_idx[1])
-            )
-            for i, j in enumerate(search_idx[0]):
-                best_indiv[i] = x[j]
-            for i, j in enumerate(search_idx[1]):
-                best_indiv[i+len(search_idx[0])] = y0[j]
-
-        search_param_matrix[k, :] = best_indiv
-
-    plot_func.param_range(
-        search_idx, search_param_matrix, portrait
     )
