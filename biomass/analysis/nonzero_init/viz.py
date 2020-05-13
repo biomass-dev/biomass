@@ -9,20 +9,55 @@ from biomass.observable import observables, NumericalSimulation
 from .sensitivity import calc_sensitivity_coefficients
 
 
-sim = NumericalSimulation()
-width = 0.3
+def get_nonzero_idx():
+    nonzero_idx = []
+    y0 = initial_values()
+    for i, val in enumerate(y0):
+        if val != 0.0:
+            nonzero_idx.append(i)
+    if len(nonzero_idx) == 0:
+        print('No nonzero initial values')
+        sys.exit()
+    
+    return nonzero_idx
 
-nonzero_idx = []
-y0 = initial_values()
-for i, val in enumerate(y0):
-    if val != 0.0:
-        nonzero_idx.append(i)
-if len(nonzero_idx) == 0:
-    print('No nonzero initial values')
-    sys.exit()
+
+def _load_sc(metric):
+    nonzero_idx = get_nonzero_idx()
+    os.makedirs(
+        './figure/sensitivity/nonzero_init/{}/heatmap'.format(
+            metric
+        ), exist_ok=True
+    )
+    if not os.path.isfile('sc_npy/nonzero_init/{}/sc.npy'.format(metric)):
+        os.makedirs(
+            './sc_npy/nonzero_init/{}'.format(
+                metric
+            ), exist_ok=True
+        )
+        sensitivity_coefficients = calc_sensitivity_coefficients(
+            metric, nonzero_idx
+        )
+        np.save(
+            'sc_npy/nonzero_init/{}/sc'.format(
+                metric
+            ), sensitivity_coefficients
+        )
+    else:
+        sensitivity_coefficients = np.load(
+            'sc_npy/nonzero_init/{}/sc.npy'.format(
+                metric
+            )
+        )
+        
+    return sensitivity_coefficients
 
 
 def analyze(metric, style):
+    sim = NumericalSimulation()
+    width = 0.3
+
+    nonzero_idx = get_nonzero_idx()
     if style == 'barplot':
         sensitivity_coefficients = _load_sc(metric)
         # rcParams
@@ -132,36 +167,3 @@ def analyze(metric, style):
         raise ValueError(
             "Available styles are: 'barplot', 'heatmap'"
     )
-
-
-def _load_sc(metric):
-    os.makedirs(
-        './figure/sensitivity/nonzero_init/{}/heatmap'.format(
-            metric
-        ), exist_ok=True
-    )
-    if not os.path.isfile(
-        'sensitivities_npy/nonzero_init/{}/sensitivity_coefficients.npy'.format(
-            metric
-        )
-    ):
-        os.makedirs(
-            './sensitivities_npy/nonzero_init/{}'.format(
-                metric
-            ), exist_ok=True
-        )
-        sensitivity_coefficients = calc_sensitivity_coefficients(
-            metric, nonzero_idx
-        )
-        np.save(
-            'sensitivities_npy/nonzero_init/{}/sensitivity_coefficients'.format(
-                metric
-            ), sensitivity_coefficients
-        )
-    else:
-        sensitivity_coefficients = np.load(
-            'sensitivities_npy/nonzero_init/{}/sensitivity_coefficients.npy'.format(
-                metric
-            )
-        )
-    return sensitivity_coefficients
