@@ -20,8 +20,7 @@ def get_nonzero_idx():
     return nonzero_idx
 
 
-def _load_sc(metric):
-    nonzero_idx = get_nonzero_idx()
+def _load_sc(metric, nonzero_idx):
     os.makedirs(
         './figure/sensitivity/nonzero_init/{}/heatmap'.format(
             metric
@@ -52,8 +51,8 @@ def _load_sc(metric):
 
 
 def analyze(metric, style):
-    sensitivity_coefficients = _load_sc(metric)
     nonzero_idx = get_nonzero_idx()
+    sensitivity_coefficients = _load_sc(metric, nonzero_idx)
     if style == 'barplot':
         barplot_sensitivity(
             metric, sensitivity_coefficients, nonzero_idx
