@@ -301,52 +301,6 @@ to:
 ```
 <br>
 
-
-Furthermore, when there is no constraints assuming that some parameters are equal to some other parameters, the lines containing constraints can be removed.
-
-Remove/uncomment the following lines
-
-from:
-```python
-    # constraints --------------------------------------------------------------
-    x[C.V6] = x[C.V5]
-    x[C.Km6] = x[C.Km5]
-    x[C.KimpDUSP] = x[C.KimDUSP]
-    x[C.KexpDUSP] = x[C.KexDUSP]
-    x[C.KimpcFOS] = x[C.KimFOS]
-    x[C.KexpcFOS] = x[C.KexFOS]
-    x[C.p52] = x[C.p47]
-    x[C.m52] = x[C.m47]
-    x[C.p53] = x[C.p48]
-    x[C.p54] = x[C.p49]
-    x[C.m54] = x[C.m49]
-    x[C.p55] = x[C.p50]
-    x[C.p56] = x[C.p51]
-    x[C.m56] = x[C.m51]
-    # --------------------------------------------------------------------------
-```
-
-to:
-```python
-    # constraints --------------------------------------------------------------
-    '''x[C.V6] = x[C.V5]
-    x[C.Km6] = x[C.Km5]
-    x[C.KimpDUSP] = x[C.KimDUSP]
-    x[C.KexpDUSP] = x[C.KexDUSP]
-    x[C.KimpcFOS] = x[C.KimFOS]
-    x[C.KexpcFOS] = x[C.KexFOS]
-    x[C.p52] = x[C.p47]
-    x[C.m52] = x[C.m47]
-    x[C.p53] = x[C.p48]
-    x[C.p54] = x[C.p49]
-    x[C.m54] = x[C.m49]
-    x[C.p55] = x[C.p50]
-    x[C.p56] = x[C.p51]
-    x[C.m56] = x[C.m51]'''
-    # --------------------------------------------------------------------------
-```
-<br>
-
 ### 6. Edit observables file<br>
 Finally, you have to input the properties of the simulation, experimental information and data onto the observables file. <br>
 ```biomass/biomass/observable.py```
