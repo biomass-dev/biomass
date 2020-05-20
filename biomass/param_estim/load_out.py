@@ -2,10 +2,10 @@ import os
 import numpy as np
 
 from biomass.model import C, V
-from biomass.param_estim import search_parameter_index
+from .search_parameter import search_parameter_index, update_param
 
 
-def update_param(paramset, x, y0):
+def load_best_param(paramset, x, y0):
     search_idx = search_parameter_index()
 
     if os.path.isfile('./out/{:d}/generation.npy'.format(paramset)):
@@ -19,16 +19,14 @@ def update_param(paramset, x, y0):
                 paramset, int(best_generation)
             )
         )
-        for i, j in enumerate(search_idx[0]):
-            x[j] = best_indiv[i]
-        for i, j in enumerate(search_idx[1]):
-            y0[j] = best_indiv[i+len(search_idx[0])]
+        
+        (x, y0) = update_param(best_indiv, x, y0)
 
     return x, y0
 
 
 def write_best_fit_param(best_paramset, x, y0):
-    (x, y0) = update_param(best_paramset, x, y0)
+    (x, y0) = load_best_param(best_paramset, x, y0)
     with open('./out/best_fit_param.txt', mode='w') as f:
         f.write(
             '# param set: {:d}\n'.format(
