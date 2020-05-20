@@ -10,12 +10,12 @@ awk '!seen[$0]++' | \
 sed -e 's/[[:space:]]\+//g' | \
 sed -e "s/\(.*\)/'\1'/" | \
 sed 's/$/,/' |
-sed -e 's/^/	/g' |
+sed -e 's/^/    /g' |
 sed -e 's/    //g' > param_var_mid
 
-echo 'param_names = [' > first_line
+printf 'param_names = [\n' > first_line
 
-echo "]	
+printf "]	
 
 for idx, name in enumerate(param_names):
     exec(
@@ -44,12 +44,12 @@ awk '!seen[$0]++' | \
 sed -e 's/[[:space:]]\+//g' | \
 sed -e "s/\(.*\)/'\1'/" | \
 sed 's/$/,/' |
-sed -e 's/^/	/g' |
+sed -e 's/^/   /g' |
 sed -e 's/    //g' > var_var_mid
 
-echo 'var_names = [' > first_line
+printf 'var_names = [\n' > first_line
 
-echo "]
+printf "]
 
 for idx, name in enumerate(var_names):
     exec(
