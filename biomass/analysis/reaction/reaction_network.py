@@ -67,10 +67,11 @@ def _is_duplicate(biological_processes):
                 if i in process:
                     which_process.append(j)
             raise ValueError(
-                'Duplicate reaction:{:d} found in process:{}.'.format(
+                'Duplicate reaction:{:d} found in processes {}.'.format(
                     i, which_process
                 )
             )
+
 
 def rxn2proc():
     """
