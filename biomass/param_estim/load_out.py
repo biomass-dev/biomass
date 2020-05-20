@@ -6,8 +6,6 @@ from .search_parameter import search_parameter_index, update_param
 
 
 def load_best_param(paramset, x, y0):
-    search_idx = search_parameter_index()
-
     if os.path.isfile('./out/{:d}/generation.npy'.format(paramset)):
         best_generation = np.load(
             './out/{:d}/generation.npy'.format(
