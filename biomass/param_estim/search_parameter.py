@@ -208,6 +208,34 @@ def get_search_region():
     return search_region
 
 
+def update_param(indiv, x, y0):
+    search_idx = search_parameter_index()
+
+    for i, j in enumerate(search_idx[0]):
+        x[j] = indiv[i]
+    for i, j in enumerate(search_idx[1]):
+        y0[j] = indiv[i+len(search_idx[0])]
+
+    # constraints --------------------------------------------------------------
+    x[C.V6] = x[C.V5]
+    x[C.Km6] = x[C.Km5]
+    x[C.KimpDUSP] = x[C.KimDUSP]
+    x[C.KexpDUSP] = x[C.KexDUSP]
+    x[C.KimpcFOS] = x[C.KimFOS]
+    x[C.KexpcFOS] = x[C.KexFOS]
+    x[C.p52] = x[C.p47]
+    x[C.m52] = x[C.m47]
+    x[C.p53] = x[C.p48]
+    x[C.p54] = x[C.p49]
+    x[C.m54] = x[C.m49]
+    x[C.p55] = x[C.p50]
+    x[C.p56] = x[C.p51]
+    x[C.m56] = x[C.m51]
+    # --------------------------------------------------------------------------
+
+    return x, y0
+
+
 def _init_search_param(search_idx, x, y0):
     """Initialize search_param
     """

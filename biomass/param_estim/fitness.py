@@ -3,7 +3,8 @@ from scipy.spatial.distance import cosine
 
 from biomass.model import C, V, f_params, initial_values
 from biomass.observable import *
-from biomass.param_estim.ga.converter import decode_gene2variable
+from .search_parameter import update_param
+from .ga.converter import decode_gene2variable
 
 
 def _compute_objval_rss(sim_data, exp_data):
@@ -41,27 +42,7 @@ def objective(individual_gene, search_idx, search_region):
 
     indiv = decode_gene2variable(individual_gene, search_region)
 
-    for i, j in enumerate(search_idx[0]):
-        x[j] = indiv[i]
-    for i, j in enumerate(search_idx[1]):
-        y0[j] = indiv[i+len(search_idx[0])]
-
-    # constraints --------------------------------------------------------------
-    x[C.V6] = x[C.V5]
-    x[C.Km6] = x[C.Km5]
-    x[C.KimpDUSP] = x[C.KimDUSP]
-    x[C.KexpDUSP] = x[C.KexDUSP]
-    x[C.KimpcFOS] = x[C.KimFOS]
-    x[C.KexpcFOS] = x[C.KexFOS]
-    x[C.p52] = x[C.p47]
-    x[C.m52] = x[C.m47]
-    x[C.p53] = x[C.p48]
-    x[C.p54] = x[C.p49]
-    x[C.m54] = x[C.m49]
-    x[C.p55] = x[C.p50]
-    x[C.p56] = x[C.p51]
-    x[C.m56] = x[C.m51]
-    # --------------------------------------------------------------------------
+    (x, y0) = update_param(indiv, x, y0)
 
     exp = ExperimentalData()
     sim = NumericalSimulation()
