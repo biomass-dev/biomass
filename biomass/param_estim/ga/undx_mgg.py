@@ -3,55 +3,6 @@ import numpy as np
 from biomass.param_estim.fitness import objective
 
 
-def mgg_alternation(population, n_population, n_children, n_gene, search_idx, search_region):
-    ip = [None for _ in range(3)]
-    ip[:2] = np.random.choice(n_population, 2, replace=False)
-    idx = [True] * n_population
-    idx[ip[0]] = False
-    idx[ip[1]] = False
-
-    children = np.empty((n_children, n_gene+1))
-
-    for i in range(n_children):
-        ip[2] = np.random.choice(np.arange(n_population)[idx])
-        children[i, :] = _get_new_child(
-            population[ip, :], n_gene, search_idx, search_region
-        )
-    family = np.empty((n_children+2, n_gene+1))
-    family[:n_children, :] = children
-    family[-2, :] = population[ip[0], :]
-    family[-1, :] = population[ip[1], :]
-
-    family = family[np.argsort(family[:, -1]), :]
-    # Elite
-    population[ip[0], :] = family[0, :]
-    # Rank-based Roulette Selection
-    ic1 = _rank_selection(n_children+2)
-    population[ip[1], :] = family[ic1, :]
-
-    population = population[np.argsort(population[:, -1]), :]
-
-    return population
-
-
-def _get_new_child(parents, n_gene, search_idx, search_region):
-    """
-    MAXITER = 100
-    for _ in range(MAXITER):
-        child = _undx(parents, n_gene)
-        if 0. <= np.min(child[:n_gene]) and np.max(child[:n_gene]) <= 1.:
-            break
-    else:
-        child[:n_gene] = np.clip(child[:n_gene], 0., 1.)
-    """
-    child = _undx(parents, n_gene)
-    child[:n_gene] = np.clip(child[:n_gene], 0., 1.)
-
-    child[-1] = objective(child[:n_gene], search_idx, search_region)
-
-    return child
-
-
 def _undx(parents, n_gene):
     """Unimodal Normal Distribution Xover
     """
@@ -77,6 +28,24 @@ def _undx(parents, n_gene):
     return child
 
 
+def _get_new_child(parents, n_gene, search_region):
+    """
+    MAXITER = 100
+    for _ in range(MAXITER):
+        child = _undx(parents, n_gene)
+        if 0. <= np.min(child[:n_gene]) and np.max(child[:n_gene]) <= 1.:
+            break
+    else:
+        child[:n_gene] = np.clip(child[:n_gene], 0., 1.)
+    """
+    child = _undx(parents, n_gene)
+    child[:n_gene] = np.clip(child[:n_gene], 0., 1.)
+
+    child[-1] = objective(child[:n_gene], search_region)
+
+    return child
+
+
 def _rank_selection(n_family):
     ranking = np.repeat(
         np.arange(1, n_family), np.arange(1, n_family)[-1::-1]
@@ -85,3 +54,34 @@ def _rank_selection(n_family):
     idx = np.random.randint(len(ranking))
 
     return ranking[idx]
+
+
+def mgg_alternation(population, n_population, n_children, n_gene, search_region):
+    ip = [None for _ in range(3)]
+    ip[:2] = np.random.choice(n_population, 2, replace=False)
+    idx = [True] * n_population
+    idx[ip[0]] = False
+    idx[ip[1]] = False
+
+    children = np.empty((n_children, n_gene+1))
+
+    for i in range(n_children):
+        ip[2] = np.random.choice(np.arange(n_population)[idx])
+        children[i, :] = _get_new_child(
+            population[ip, :], n_gene, search_region
+        )
+    family = np.empty((n_children+2, n_gene+1))
+    family[:n_children, :] = children
+    family[-2, :] = population[ip[0], :]
+    family[-1, :] = population[ip[1], :]
+
+    family = family[np.argsort(family[:, -1]), :]
+    # Elite
+    population[ip[0], :] = family[0, :]
+    # Rank-based Roulette Selection
+    ic1 = _rank_selection(n_children+2)
+    population[ip[1], :] = family[ic1, :]
+
+    population = population[np.argsort(population[:, -1]), :]
+
+    return population
