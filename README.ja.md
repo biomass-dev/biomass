@@ -71,12 +71,8 @@ simulate_all(viz_type, show_all, stdev)
 - ```viz_type == 'average'```の際，標準偏差も含めて表示します．
 
 ```python
-import os
 import warnings
 warnings.filterwarnings('ignore')
-
-if not os.path.isdir('./figure'):
-    os.mkdir('./figure')
 
 from biomass.param_estim import simulate_all
             
@@ -105,7 +101,7 @@ if 'perturbation' in globals():
         v[i] = original * perturbation[i]
 ```
 
-```metric```:　出力に用いる基準を設定します．
+```metric```: 出力に用いる基準を設定します．
 - ```amplitude```
     : 最大値．
 - ```duration```
@@ -118,11 +114,6 @@ if 'perturbation' in globals():
 - ```heatmap```
 
 ```python
-import os
-
-if not os.path.isdir('./figure'):
-    os.mkdir('./figure')
-    
 from biomass.analysis import reaction, nonzero_init
 
 reaction.analyze(metric='integral', style='barplot')

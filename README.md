@@ -83,12 +83,8 @@ simulate_all(viz_type, show_all, stdev)
 - If True, the standard deviation of simulated values will be shown (only when ```viz_type == 'average'```).
 
 ```python
-import os
 import warnings
 warnings.filterwarnings('ignore')
-
-if not os.path.isdir('./figure'):
-    os.mkdir('./figure')
 
 from biomass.param_estim import simulate_all
             
@@ -122,11 +118,6 @@ analyze(metric, style)
 - ```'heatmap'```
 
 ```python
-import os
-
-if not os.path.isdir('./figure'):
-    os.mkdir('./figure')
-    
 from biomass.analysis import reaction, nonzero_init
 
 reaction.analyze(metric='integral', style='barplot')
