@@ -9,7 +9,7 @@ from biomass.param_estim import update_param
 from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
 
 
-def calc_sensitivity_coefficients(metric, num_reaction):
+def calc_sensitivity_coefficients(metric, n_reaction):
     """ Calculating Sensitivity Coefficients
 
     Parameters
@@ -18,7 +18,7 @@ def calc_sensitivity_coefficients(metric, num_reaction):
         - 'amplitude': The maximum value.
         - 'duration': The time it takes to decline below 10% of its maximum.
         - 'integral': The integral of concentration over the observation time.
-    num_reaction: int
+    n_reaction: int
         len(v) in model/differential_equation.py
 
     Returns
@@ -40,14 +40,14 @@ def calc_sensitivity_coefficients(metric, num_reaction):
             n_file.append(int(file))
 
     signaling_metric = np.full(
-        (len(n_file), num_reaction, len(observables), len(sim.conditions)),
+        (len(n_file), n_reaction, len(observables), len(sim.conditions)),
         np.nan
     )
     for i, nth_paramset in enumerate(n_file):
         if os.path.isfile('./out/{:d}/generation.npy'.format(nth_paramset)):
             (x, y0) = update_param(nth_paramset, x, y0)
-            for j in range(num_reaction):
-                set_model.perturbation = [1] * num_reaction
+            for j in range(n_reaction):
+                set_model.perturbation = [1] * n_reaction
                 set_model.perturbation[j] = rate
                 if sim.simulate(x, y0) is None:
                     for k, _ in enumerate(observables):
@@ -57,11 +57,11 @@ def calc_sensitivity_coefficients(metric, num_reaction):
                             )
                 sys.stdout.write(
                     '\r{:d} / {:d}'.format(
-                        i*num_reaction+j+1, len(n_file)*num_reaction
+                        i*n_reaction+j+1, len(n_file)*n_reaction
                     )
                 )
     sensitivity_coefficients = dlnyi_dlnxj(
-        signaling_metric, n_file, range(num_reaction),
+        signaling_metric, n_file, range(n_reaction),
         observables, sim.conditions, rate, metric_idx=0
     )
 

@@ -6,8 +6,8 @@ import seaborn as sns
 from biomass.observable import observables, NumericalSimulation
 
 
-def barplot_sensitivity(metric, sensitivity_coefficients, num_reaction,
-                        reaction_module, sort_idx, reaction_number):
+def barplot_sensitivity(metric, sensitivity_coefficients, biological_processes, 
+                        n_reaction, sort_idx, reaction_indices):
     sim = NumericalSimulation()
     width = 0.3
 
@@ -24,9 +24,9 @@ def barplot_sensitivity(metric, sensitivity_coefficients, num_reaction,
     for k, obs_name in enumerate(observables):
         plt.figure(figsize=(12, 5))
         # draw_vertical_span
-        if len(reaction_module) > 1:
+        if len(biological_processes) > 1:
             left_end = 0
-            for i, ith_module in enumerate(reaction_module):
+            for i, ith_module in enumerate(biological_processes):
                 if i % 2 == 0:
                     plt.axvspan(
                         left_end - width,
@@ -35,7 +35,7 @@ def barplot_sensitivity(metric, sensitivity_coefficients, num_reaction,
                     )
                 left_end += len(ith_module)
         plt.hlines(
-            [0], -width, num_reaction-1-width, 'k', lw=1
+            [0], -width, n_reaction-1-width, 'k', lw=1
         )
         sensitivity_array = sensitivity_coefficients[:, :, k, :]
         nan_idx = []
@@ -51,7 +51,7 @@ def barplot_sensitivity(metric, sensitivity_coefficients, num_reaction,
             stdev = np.std(sensitivity_array, axis=0, ddof=1)
             for l, condition in enumerate(sim.conditions):
                 plt.bar(
-                    np.arange(num_reaction) + l * width,
+                    np.arange(n_reaction) + l * width,
                     average[sort_idx, l], yerr=stdev[sort_idx, l],
                     ecolor=colors[l], capsize=2, width=width, color=colors[l],
                     align='center', label=condition
@@ -64,12 +64,12 @@ def barplot_sensitivity(metric, sensitivity_coefficients, num_reaction,
                     yerr = stdev[j, np.argmax(stdev[j, :])]
                     if yp > 0:
                         plt.text(
-                            xp, yp + yerr + distance, reaction_number[i],
+                            xp, yp + yerr + distance, reaction_indices[i],
                             ha='center', va='bottom', fontsize=10, rotation=90
                         )
                     else:
                         plt.text(
-                            xp, yp - yerr - distance, reaction_number[i],
+                            xp, yp - yerr - distance, reaction_indices[i],
                             ha='center', va='top', fontsize=10, rotation=90
                         )
             plt.xticks([])
@@ -77,7 +77,7 @@ def barplot_sensitivity(metric, sensitivity_coefficients, num_reaction,
                 'Control coefficients on\n'+metric +
                 ' (' + obs_name.replace('_', ' ') + ')'
             )
-            plt.xlim(-width, num_reaction-1-width)
+            plt.xlim(-width, n_reaction-1-width)
             # plt.ylim(-1.2,0.6)
             # plt.yticks([-1.2,-1.0,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6])
             plt.legend(loc='lower right', frameon=False)
@@ -89,8 +89,8 @@ def barplot_sensitivity(metric, sensitivity_coefficients, num_reaction,
             plt.close()
 
 
-def heatmap_sensitivity(metric, sensitivity_coefficients, num_reaction,
-                        reaction_module, sort_idx, reaction_number):
+def heatmap_sensitivity(metric, sensitivity_coefficients, biological_processes,
+                        n_reaction, sort_idx, reaction_indices):
         sim = NumericalSimulation()
 
         # rcParams
@@ -137,7 +137,7 @@ def heatmap_sensitivity(metric, sensitivity_coefficients, num_reaction,
                         col_cluster=False,
                         figsize=(16, 8),
                         xticklabels=[
-                            reaction_number[i] for i in range(num_reaction-1)
+                            reaction_indices[i] for i in range(n_reaction-1)
                         ],
                         yticklabels=[],
                         cbar_kws={"ticks": [-1, 0, 1]}

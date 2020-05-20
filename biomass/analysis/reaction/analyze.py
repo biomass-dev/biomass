@@ -2,11 +2,11 @@ import os
 import numpy as np
 
 from .sensitivity import calc_sensitivity_coefficients
-from .reaction import *
+from .reaction_network import rxn2proc
 from .viz import *
 
 
-def _load_sc(metric):
+def _load_sc(metric, n_reaction):
     os.makedirs(
         './figure/sensitivity/reaction/{}/heatmap'.format(
             metric
@@ -19,7 +19,7 @@ def _load_sc(metric):
             ), exist_ok=True
         )
         sensitivity_coefficients = calc_sensitivity_coefficients(
-            metric, num_reaction
+            metric, n_reaction
         )
         np.save(
             'sc_npy/reaction/{}/sc'.format(
@@ -37,10 +37,9 @@ def _load_sc(metric):
 
 
 def analyze(metric, style):
-    sensitivity_coefficients = _load_sc(metric)
-    reaction_module = get_reaction_module()
-    sort_idx = get_sort_idx()
-    reaction_number = list(
+    biological_processes, n_reaction, sort_idx = rxn2proc()
+    sensitivity_coefficients = _load_sc(metric, n_reaction)
+    reaction_indices = list(
         map(
             lambda x: str(x), sort_idx
         )
@@ -48,13 +47,13 @@ def analyze(metric, style):
     
     if style == 'barplot':
         barplot_sensitivity(
-            metric, sensitivity_coefficients, num_reaction,
-            reaction_module, sort_idx, reaction_number
+            metric, sensitivity_coefficients, biological_processes,
+            n_reaction, sort_idx, reaction_indices
         )
     elif style == 'heatmap':
         heatmap_sensitivity(
-            metric, sensitivity_coefficients, num_reaction,
-            reaction_module, sort_idx, reaction_number
+            metric, sensitivity_coefficients, biological_processes,
+            n_reaction, sort_idx, reaction_indices
         )
     else:
         raise ValueError(
