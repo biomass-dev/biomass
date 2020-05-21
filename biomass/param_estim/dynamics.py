@@ -8,12 +8,12 @@ from biomass.param_estim import search_parameter_index, plot_func
 from .load_out import load_best_param, write_best_fit_param, get_optimized_param
 
 
-def _validate(nth_paramset, x, y0):
+def _validate(nth_paramset):
     """Validates the dynamical viability of a set of estimated parameter values.
     """
     sim = NumericalSimulation()
 
-    (x, y0) = load_best_param(nth_paramset, x, y0)
+    (x, y0) = load_best_param(nth_paramset)
 
     if sim.simulate(x, y0) is None:
         return sim, True
@@ -43,8 +43,6 @@ def simulate_all(viz_type, show_all, stdev):
         (only available for 'average' visualization type).
         
     """
-    x = f_params()
-    y0 = initial_values()
     sim = NumericalSimulation()
 
     n_file = []
@@ -63,7 +61,7 @@ def simulate_all(viz_type, show_all, stdev):
             if len(n_file) == 1 and viz_type == 'average':
                 viz_type = 'best'
             for i, nth_paramset in enumerate(n_file):
-                (sim, successful) = _validate(nth_paramset, x, y0)
+                (sim, successful) = _validate(nth_paramset)
                 if successful:
                     for j, _ in enumerate(observables):
                         simulations_all[j, i, :, :] = sim.simulations[j, :, :]
@@ -77,22 +75,24 @@ def simulate_all(viz_type, show_all, stdev):
                         )
                     )
             best_paramset = n_file[np.argmin(best_fitness_all)]
-            write_best_fit_param(best_paramset, x, y0)
+            write_best_fit_param(best_paramset)
 
             if viz_type == 'average':
                 pass
             elif viz_type == 'best':
-                sim, _ = _validate(int(best_paramset), x, y0)
+                sim, _ = _validate(int(best_paramset))
             else:
-                sim, _ = _validate(int(viz_type), x, y0)
+                sim, _ = _validate(int(viz_type))
 
             if 2 <= len(n_file):
                 search_idx = search_parameter_index()
-                popt = get_optimized_param(n_file, search_idx, x, y0)
+                popt = get_optimized_param(n_file, search_idx)
                 plot_func.param_range(
                     search_idx, popt, portrait=True
                 )
         else:
+            x = f_params()
+            y0 = initial_values()
             if sim.simulate(x, y0) is not None:
                 print(
                     'Simulation failed.'

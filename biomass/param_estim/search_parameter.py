@@ -208,7 +208,10 @@ def get_search_region():
     return search_region
 
 
-def update_param(indiv, x, y0):
+def update_param(indiv):
+    x = f_params()
+    y0 = initial_values()
+
     search_idx = search_parameter_index()
 
     for i, j in enumerate(search_idx[0]):
