@@ -4,8 +4,8 @@ import numpy as np
 
 from biomass.model import f_params, initial_values
 from biomass.observable import observables, NumericalSimulation
-from biomass.param_estim import plot_func
-from .load_out import load_best_param, write_best_fit_param, get_search_param_matrix
+from biomass.param_estim import search_parameter_index, plot_func
+from .load_out import load_best_param, write_best_fit_param, get_optimized_param
 
 
 def _validate(nth_paramset, x, y0):
@@ -86,9 +86,11 @@ def simulate_all(viz_type, show_all, stdev):
             else:
                 sim, _ = _validate(int(viz_type), x, y0)
 
-            if len(n_file) >= 2:
+            if 2 <= len(n_file):
+                search_idx = search_parameter_index()
+                popt = get_optimized_param(n_file, search_idx, x, y0)
                 plot_func.param_range(
-                    *get_search_param_matrix(n_file, x, y0), portrait=True
+                    search_idx, popt, portrait=True
                 )
         else:
             if sim.simulate(x, y0) is not None:

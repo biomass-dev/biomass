@@ -2,7 +2,7 @@ import os
 import numpy as np
 
 from biomass.model import C, V
-from .search_parameter import search_parameter_index, update_param
+from .search_parameter import update_param
 
 
 def load_best_param(paramset, x, y0):
@@ -52,9 +52,8 @@ def write_best_fit_param(best_paramset, x, y0):
                 )
 
 
-def get_search_param_matrix(n_file, x, y0):
-    search_idx = search_parameter_index()
-    search_param_matrix = np.empty(
+def get_optimized_param(n_file, search_idx, x, y0):
+    popt = np.empty(
         (len(n_file), len(search_idx[0]) + len(search_idx[1]))
     )
     for k, nth_paramset in enumerate(n_file):
@@ -78,6 +77,6 @@ def get_search_param_matrix(n_file, x, y0):
             for i, j in enumerate(search_idx[1]):
                 best_indiv[i+len(search_idx[0])] = y0[j]
 
-        search_param_matrix[k, :] = best_indiv
+        popt[k, :] = best_indiv
 
-    return search_idx, search_param_matrix
+    return popt
