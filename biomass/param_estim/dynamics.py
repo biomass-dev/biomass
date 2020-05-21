@@ -45,6 +45,8 @@ def simulate_all(viz_type, show_all, stdev):
     """
     sim = NumericalSimulation()
 
+    search_idx = search_parameter_index()
+    
     n_file = []
     if viz_type != 'original':
         if os.path.isdir('./out'):
@@ -75,7 +77,7 @@ def simulate_all(viz_type, show_all, stdev):
                         )
                     )
             best_paramset = n_file[np.argmin(best_fitness_all)]
-            write_best_fit_param(best_paramset)
+            write_best_fit_param(best_paramset, search_idx)
 
             if viz_type == 'average':
                 pass
@@ -85,7 +87,6 @@ def simulate_all(viz_type, show_all, stdev):
                 sim, _ = _validate(int(viz_type))
 
             if 2 <= len(n_file):
-                search_idx = search_parameter_index()
                 popt = get_optimized_param(n_file, search_idx)
                 plot_func.param_range(
                     search_idx, popt, portrait=True
