@@ -5,7 +5,7 @@ import numpy as np
 
 from biomass.model import initial_values
 from biomass.observable import observables, NumericalSimulation
-from biomass.param_estim import load_best_param
+from biomass.param_estim import load_param
 from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
 
 
@@ -49,7 +49,7 @@ def calc_sensitivity_coefficients(metric, nonzero_idx):
     )
     for i, nth_paramset in enumerate(n_file):
         if os.path.isfile('./out/{:d}/generation.npy'.format(nth_paramset)):
-            (x, y0) = load_best_param(nth_paramset)
+            (x, y0) = load_param(nth_paramset)
             copy_y0 = y0[:]
             for j, idx in enumerate(nonzero_idx):
                 y0 = copy_y0[:]

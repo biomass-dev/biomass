@@ -5,7 +5,7 @@ from biomass.model import C, V, f_params, initial_values
 from .search_parameter import update_param
 
 
-def load_best_param(paramset):
+def _get_indiv(paramset):
     best_generation = np.load(
         './out/{:d}/generation.npy'.format(
             paramset
@@ -16,6 +16,12 @@ def load_best_param(paramset):
             paramset, int(best_generation)
         )
     )
+
+    return best_indiv
+
+
+def load_param(paramset):
+    best_indiv = _get_indiv(paramset)
     
     (x, y0) = update_param(best_indiv)
 
@@ -26,16 +32,8 @@ def write_best_fit_param(best_paramset, search_idx):
     x = f_params()
     y0 = initial_values()
 
-    best_generation = np.load(
-        './out/{:d}/generation.npy'.format(
-            best_paramset
-        )
-    )
-    best_indiv = np.load(
-        './out/{:d}/fit_param{:d}.npy'.format(
-            best_paramset, int(best_generation)
-        )
-    )
+    best_indiv = _get_indiv(best_paramset)
+
     for i, j in enumerate(search_idx[0]):
         x[j] = best_indiv[i]
     for i, j in enumerate(search_idx[1]):
@@ -72,18 +70,16 @@ def get_optimized_param(n_file, search_idx):
     popt = np.empty(
         (len(n_file), len(search_idx[0]) + len(search_idx[1]))
     )
+    empty_folder = []
     for k, nth_paramset in enumerate(n_file):
-        best_generation = np.load(
-            './out/{:d}/generation.npy'.format(
-                nth_paramset
-            )
+        if not os.path.isfile('./out/{:d}/generation.npy'.format(nth_paramset)):
+            empty_folder.append(k)
+        else:
+            best_indiv = _get_indiv(nth_paramset)
+            popt[k, :] = best_indiv
+    if len(empty_folder) > 0:
+        popt = np.delete(
+            popt, empty_folder, axis=0
         )
-        best_indiv = np.load(
-            './out/{:d}/fit_param{:d}.npy'.format(
-                nth_paramset, int(best_generation)
-            )
-        )
-
-        popt[k, :] = best_indiv
 
     return popt

@@ -5,7 +5,7 @@ import numpy as np
 from biomass.model import f_params, initial_values
 from biomass.observable import observables, NumericalSimulation
 from biomass.param_estim import search_parameter_index, plot_func
-from .load_out import load_best_param, write_best_fit_param, get_optimized_param
+from .load_out import load_param, write_best_fit_param, get_optimized_param
 
 
 def _validate(nth_paramset):
@@ -13,7 +13,7 @@ def _validate(nth_paramset):
     """
     sim = NumericalSimulation()
 
-    (x, y0) = load_best_param(nth_paramset)
+    (x, y0) = load_param(nth_paramset)
 
     if sim.simulate(x, y0) is None:
         return sim, True
