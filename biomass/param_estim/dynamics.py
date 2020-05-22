@@ -36,8 +36,10 @@ def simulate_all(viz_type, show_all, stdev):
         - 'best': The best simulation result in "out/", simulation with "best_fit_param".
         - 'original': Simulation with the default parameters and initial values defined in "biomass/model/".
         - 'n(=1,2,...)': Use the parameter set in "out/n/".
+
     show_all : bool
         Whether to show all simulation results.
+        
     stdev : bool
         If True, the standard deviation of simulated values will be shown
         (only available for 'average' visualization type).
@@ -63,10 +65,13 @@ def simulate_all(viz_type, show_all, stdev):
             if len(n_file) == 1 and viz_type == 'average':
                 viz_type = 'best'
             for i, nth_paramset in enumerate(n_file):
-                (sim, successful) = _validate(nth_paramset)
-                if successful:
-                    for j, _ in enumerate(observables):
-                        simulations_all[j, i, :, :] = sim.simulations[j, :, :]
+                if os.path.isfile('./out/{:d}/generation.npy'.format(nth_paramset)):
+                    (sim, successful) = _validate(nth_paramset)
+                    if successful:
+                        for j, _ in enumerate(observables):
+                            simulations_all[j, i, :, :] = sim.simulations[j, :, :]
+                else:
+                    continue
 
             best_fitness_all = np.full(len(n_file), np.inf)
             for i, nth_paramset in enumerate(n_file):
