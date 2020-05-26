@@ -1,8 +1,9 @@
 import os
 import numpy as np
 
-from biomass.model import C, V, f_params, initial_values
-from .search_parameter import update_param
+from biomass.model.name2idx import C, V
+from biomass.model.set_model import f_params, initial_values
+from biomass.model.set_search_param import update_param
 
 
 def _get_indiv(paramset):

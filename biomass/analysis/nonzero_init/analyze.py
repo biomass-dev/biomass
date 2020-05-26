@@ -2,7 +2,7 @@ import os
 import sys
 import numpy as np
 
-from biomass.model import initial_values
+from biomass.model.set_model import initial_values
 from .sensitivity import calc_sensitivity_coefficients
 from .viz import *
 

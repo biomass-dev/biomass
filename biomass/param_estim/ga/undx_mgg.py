@@ -1,6 +1,6 @@
 import numpy as np
 
-from biomass.param_estim.fitness import objective
+from biomass.model.fitness import objective
 
 
 def _undx(parents, n_gene):
@@ -28,7 +28,7 @@ def _undx(parents, n_gene):
     return child
 
 
-def _get_new_child(parents, n_gene, search_region):
+def _get_new_child(parents, n_gene, search_rgn):
     """
     MAXITER = 100
     for _ in range(MAXITER):
@@ -41,7 +41,7 @@ def _get_new_child(parents, n_gene, search_region):
     child = _undx(parents, n_gene)
     child[:n_gene] = np.clip(child[:n_gene], 0., 1.)
 
-    child[-1] = objective(child[:n_gene], search_region)
+    child[-1] = objective(child[:n_gene], search_rgn)
 
     return child
 
@@ -56,7 +56,7 @@ def _rank_selection(n_family):
     return ranking[idx]
 
 
-def mgg_alternation(population, n_population, n_children, n_gene, search_region):
+def mgg_alternation(population, n_population, n_children, n_gene, search_rgn):
     ip = [None for _ in range(3)]
     ip[:2] = np.random.choice(n_population, 2, replace=False)
     idx = [True] * n_population
@@ -68,7 +68,7 @@ def mgg_alternation(population, n_population, n_children, n_gene, search_region)
     for i in range(n_children):
         ip[2] = np.random.choice(np.arange(n_population)[idx])
         children[i, :] = _get_new_child(
-            population[ip, :], n_gene, search_region
+            population[ip, :], n_gene, search_rgn
         )
     family = np.empty((n_children+2, n_gene+1))
     family[:n_children, :] = children

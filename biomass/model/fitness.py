@@ -1,9 +1,9 @@
 import numpy as np
 from scipy.spatial.distance import cosine
 
-from biomass.observable import *
-from .search_parameter import update_param
-from .ga.converter import decode_gene2variable
+from .observable import observables, ExperimentalData, NumericalSimulation
+from .set_search_param import update_param
+from biomass.param_estim.ga.converter import decode_gene2variable
 
 
 def _compute_objval_rss(sim_data, exp_data):
@@ -33,10 +33,10 @@ def _diff_sim_and_exp(sim_matrix, exp_dict, exp_timepoint, conditions,
     return np.array(sim_val)/sim_norm_max, np.array(exp_val)/exp_norm_max
 
 
-def objective(individual_gene, search_region):
+def objective(individual_gene, search_rgn):
     """Define an objective function to be minimized
     """
-    indiv = decode_gene2variable(individual_gene, search_region)
+    indiv = decode_gene2variable(individual_gene, search_rgn)
 
     (x, y0) = update_param(indiv)
 

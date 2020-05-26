@@ -1,6 +1,6 @@
 import numpy as np
 
-from biomass.param_estim.fitness import objective
+from biomass.model.fitness import objective
 
 
 def _ndm(parents, n_gene):
@@ -23,7 +23,7 @@ def _ndm(parents, n_gene):
     return child
 
 
-def _mutation(parents, n_gene, search_region):
+def _mutation(parents, n_gene, search_rgn):
     """
     MAXITER = 100
     for _ in range(MAXITER):
@@ -36,12 +36,12 @@ def _mutation(parents, n_gene, search_region):
     child = _ndm(parents, n_gene)
     child[:n_gene] = np.clip(child[:n_gene], 0., 1.)
 
-    child[-1] = objective(child[:n_gene], search_region)
+    child[-1] = objective(child[:n_gene], search_rgn)
 
     return child
 
 
-def local_search(ip, population, n_population, n_children, n_gene, search_region):
+def local_search(ip, population, n_population, n_children, n_gene, search_rgn):
     idx = [True]*n_population
     idx[ip[0]] = False
 
@@ -52,7 +52,7 @@ def local_search(ip, population, n_population, n_children, n_gene, search_region
             np.arange(n_population)[idx], n_gene+1, replace=False
         )
         children[i, :] = _mutation(
-            population[ip, :], n_gene, search_region
+            population[ip, :], n_gene, search_rgn
         )
     family = np.empty((n_children+1, n_gene+1))
     family[:n_children, :] = children

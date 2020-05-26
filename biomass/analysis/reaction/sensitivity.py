@@ -4,7 +4,7 @@ import re
 import numpy as np
 
 from biomass.model import set_model
-from biomass.observable import observables, NumericalSimulation
+from biomass.model.observable import observables, NumericalSimulation
 from biomass.param_estim import load_param
 from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
 

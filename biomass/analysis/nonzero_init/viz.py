@@ -3,8 +3,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-from biomass.model import V
-from biomass.observable import observables, NumericalSimulation
+from biomass.model.name2idx import V
+from biomass.model.observable import observables, NumericalSimulation
 
 
 def barplot_sensitivity(metric, sensitivity_coefficients, nonzero_idx):

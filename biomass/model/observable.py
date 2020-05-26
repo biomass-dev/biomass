@@ -1,7 +1,8 @@
 import numpy as np
 
-from .model import C, V, diffeq
-from .solver import solveode, get_steady_state
+from .name2idx import C, V
+from .set_model import diffeq
+from biomass.solver import solveode, get_steady_state
 
 
 observables = [
@@ -55,7 +56,7 @@ class NumericalSimulation(object):
                     Y[:, V.pERKc] + Y[:, V.ppERKc]
                 )
                 self.simulations[observables.index('Phosphorylated_RSKw'), :, i] = (
-                    Y[:, V.pRSKc] + Y[:, V.pRSKn]*(x[C.Vn]/x[C.Vc])
+                    Y[:, V.pRSKc] + Y[:, V.pRSKn] * (x[C.Vn]/x[C.Vc])
                 )
                 self.simulations[observables.index('Phosphorylated_CREBw'), :, i] = (
                     Y[:, V.pCREBn]*(x[C.Vn]/x[C.Vc])
@@ -67,17 +68,17 @@ class NumericalSimulation(object):
                     Y[:, V.cfosmRNAc]
                 )
                 self.simulations[observables.index('cFos_Protein'), :, i] = (
-                    (Y[:, V.pcFOSn] + Y[:, V.cFOSn])*(x[C.Vn]/x[C.Vc])
+                    (Y[:, V.pcFOSn] + Y[:, V.cFOSn]) * (x[C.Vn]/x[C.Vc])
                     + Y[:, V.cFOSc] + Y[:, V.pcFOSc]
                 )
                 self.simulations[observables.index('Phosphorylated_cFos'), :, i] = (
-                    Y[:, V.pcFOSn]*(x[C.Vn]/x[C.Vc]) + Y[:, V.pcFOSc]
+                    Y[:, V.pcFOSn] * (x[C.Vn]/x[C.Vc]) + Y[:, V.pcFOSc]
                 )
 
 
 class ExperimentalData(object):
 
-    experiments = [None]*len(observables)
+    experiments = [None] * len(observables)
 
     t2 = [0, 300, 600, 900, 1800, 2700, 3600, 5400]
 

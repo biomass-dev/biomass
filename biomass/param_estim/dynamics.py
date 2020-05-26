@@ -2,9 +2,10 @@ import os
 import re
 import numpy as np
 
-from biomass.model import f_params, initial_values
-from biomass.observable import observables, NumericalSimulation
-from biomass.param_estim import search_parameter_index, plot_func
+from biomass.model.set_model import f_params, initial_values
+from biomass.model.observable import observables, NumericalSimulation
+from biomass.model.set_search_param import get_search_index
+from biomass.param_estim import plot_func
 from .load_out import load_param, write_best_fit_param, get_optimized_param
 
 
@@ -47,7 +48,7 @@ def simulate_all(viz_type, show_all, stdev):
     """
     sim = NumericalSimulation()
 
-    search_idx = search_parameter_index()
+    search_idx = get_search_index()
     
     n_file = []
     if viz_type != 'original':

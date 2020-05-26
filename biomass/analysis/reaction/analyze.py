@@ -1,8 +1,8 @@
 import os
 import numpy as np
 
+from biomass.model.reaction_network import rxn2proc
 from .sensitivity import calc_sensitivity_coefficients
-from .reaction_network import rxn2proc
 from .viz import *
 
 
