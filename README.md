@@ -1,7 +1,11 @@
 # BioMASS
+
 ## Modeling and Analysis of Signaling Systems
+
 <img align="left" src=public/images/logo.png width="300">
-Mathematical modeling is a powerful method for the analysis of complex biological systems. Although there are many researches devoted on producing models to describe dynamical cellular signaling systems, most of these models are limited and do not cover multiple pathways. Therefore, there is a challenge to combine these models to enable understanding at a larger scale. Nevertheless, larger network means that it gets more difficult to estimate parameters to reproduce dynamic experimental data needed for deeper understanding of a system.<br>
+
+Mathematical modeling is a powerful method for the analysis of complex biological systems. Although there are many researches devoted on producing models to describe dynamical cellular signaling systems, most of these models are limited and do not cover multiple pathways. Therefore, there is a challenge to combine these models to enable understanding at a larger scale. Nevertheless, larger network means that it gets more difficult to estimate parameters to reproduce dynamic experimental data needed for deeper understanding of a system.
+
 To overcome this problem, we developed BioMASS, a modeling platform tailored to optimizing mathematical models of biological processes. By using BioMASS, users can efficiently optimize kinetic parameters to fit user-defined models to experimental data, while performing analysis on reaction networks to predict critical components affecting cellular output.
 
 ## Description
@@ -11,8 +15,6 @@ BioMASS is a biological modeling environment tailored to
 1. Sensitivity Analysis
 
 currently implimented for modeling immediate-early gene response ([Nakakuki *et al.*, ***Cell***, 2010](https://doi.org/10.1016/j.cell.2010.03.054)).
-
-This mechanistic model describes the activation of immediate early genes such as cFos after epidermal growth factor (EGF) or heregulin (HRG) stimulation of the MAPK pathway. Phosphorylated cFos is a key transcription factor triggering downstream cascades of cell fate determination. The model can explain how the switch-like response of p-cFos emerges from the spatiotemporal dynamics. This mechanistic model comprises the explicit reaction kinetics of the signal transduction pathway, the transcriptional and the posttranslational feedback and feedforward loops. In the article, two different mechanistic models have been studied, the first one based on previously known interactions but failing to account for the experimental data and the second one including additional interactions which were discovered and confirmed by new experiments. The mechanistic model encoded here is the second one, the extended and at the time of creation most complete model of cell fate decision making in response to different doses of EGF or HRG stimulation.
 
 ## Dependencies
 > - numpy
