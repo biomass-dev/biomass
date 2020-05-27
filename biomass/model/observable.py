@@ -1,8 +1,8 @@
 import numpy as np
+from scipy.integrate import ode
 
 from .name2idx import C, V
 from .set_model import diffeq
-from biomass.solver import solveode, get_steady_state
 
 
 observables = [
@@ -30,7 +30,7 @@ class NumericalSimulation(object):
     def simulate(self, x, y0):
         # get steady state
         x[C.Ligand] = x[C.no_ligand]  # No ligand
-        (T_steady_state, Y_steady_state) = get_steady_state(
+        (T_steady_state, Y_steady_state) = self._get_steady_state(
             diffeq, y0, self.tspan, tuple(x)
         )
         if T_steady_state < self.tspan[-1]:
@@ -44,7 +44,7 @@ class NumericalSimulation(object):
             elif condition == 'HRG':
                 x[C.Ligand] = x[C.HRG]
 
-            (T, Y) = solveode(diffeq, y0, self.tspan, tuple(x))
+            (T, Y) = self._solveode(diffeq, y0, self.tspan, tuple(x))
 
             if T[-1] < self.tspan[-1]:
                 return False
@@ -74,7 +74,38 @@ class NumericalSimulation(object):
                 self.simulations[observables.index('Phosphorylated_cFos'), :, i] = (
                     Y[:, V.pcFOSn] * (x[C.Vn]/x[C.Vc]) + Y[:, V.pcFOSc]
                 )
+    
+    @staticmethod
+    def _solveode(diffeq, y0, tspan, args):
+        sol = ode(diffeq)
+        sol.set_integrator(
+            'vode', method='bdf', with_jacobian=True,
+            atol=1e-9, rtol=1e-9, min_step=1e-8
+        )
+        sol.set_initial_value(y0, tspan[0])
+        sol.set_f_params(args)
 
+        T = [tspan[0]]
+        Y = [y0]
+
+        while sol.successful() and sol.t < tspan[-1]:
+            sol.integrate(sol.t+1.)
+            T.append(sol.t)
+            Y.append(sol.y)
+
+        return np.array(T), np.array(Y)
+    
+    def _get_steady_state(self, diffeq, y0, tspan, args, steady_state_eps=1e-6):
+        iter_ = 0
+        while iter_ < 10:
+            (T, Y) = self._solveode(diffeq, y0, tspan, args)
+            if T[-1] < tspan[-1] or np.all(np.abs(Y[-1, :] - y0) < steady_state_eps):
+                break
+            else:
+                y0 = Y[-1, :].tolist()
+                iter_ += 1
+
+        return T[-1], y0
 
 class ExperimentalData(object):
 
