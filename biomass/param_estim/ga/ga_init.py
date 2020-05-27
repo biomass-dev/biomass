@@ -1,9 +1,8 @@
 import time
 import numpy as np
 
-from biomass.model.fitness import objective
+from biomass.model.fitness import decode_gene2variable, objective
 from biomass.model.set_search_param import get_search_region
-from .converter import decode_gene2variable
 from .undx_mgg import mgg_alternation
 from .converging import converging
 from .local_search import local_search
