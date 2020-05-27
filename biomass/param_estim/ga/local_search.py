@@ -1,6 +1,6 @@
 import numpy as np
 
-from biomass.model.fitness import objective
+from biomass.models import objective
 
 
 def _ndm(parents, n_gene):

@@ -1,6 +1,6 @@
 import numpy as np
 
-from biomass.model.fitness import objective
+from biomass.models import objective
 
 
 def _endx(parents, n_gene):

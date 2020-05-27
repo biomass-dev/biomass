@@ -3,8 +3,7 @@ import re
 import csv
 import numpy as np
 
-from biomass.model.name2idx import C, V
-from biomass.model.set_search_param import get_search_index
+from biomass.models import C, V, get_search_index
 
 
 def get_param():

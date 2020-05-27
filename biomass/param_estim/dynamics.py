@@ -2,9 +2,8 @@ import os
 import re
 import numpy as np
 
-from biomass.model.set_model import f_params, initial_values
-from biomass.model.observable import observables, NumericalSimulation
-from biomass.model.set_search_param import get_search_index
+from biomass.models import (f_params, initial_values, observables,
+                            NumericalSimulation, get_search_index)
 from biomass.param_estim import plot_func
 from .load_out import load_param, write_best_fit_param, get_optimized_param
 

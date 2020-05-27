@@ -3,8 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-from biomass.model.name2idx import C, V
-from biomass.model.observable import observables, ExperimentalData
+from biomass.models import C, V, observables, ExperimentalData
 
 
 def timecourse(sim, n_file, viz_type, show_all, stdev, simulations_all):
