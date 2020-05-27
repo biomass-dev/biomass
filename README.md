@@ -71,7 +71,7 @@ simulate_all(viz_type, show_all, stdev)
     : The best simulation result in ```out/```, simulation with ```best_fit_param```.
 
 - ```'original'```
-    : Simulation with the default parameters and initial values defined in ```biomass/model/```.
+    : Simulation with the default parameters and initial values defined in ```set_model.py```.
 
 - ```'n(=1,2,...)'```
     : Use the parameter set in ```out/n/```.

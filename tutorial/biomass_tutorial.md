@@ -49,8 +49,11 @@ Congrats! You should have a working python.
 ## BioMASS setup
 There are several files that needs editing prior to running the program: 
 
+```bash
+$ cd biomass/models/[your_model]
+```
 ### 1. Edit names of model parameters and variables:
-- ```biomass/model/name2idx/```
+- ```name2idx/```
 
     - ```parameters.py```
         - Write names of model parameters in ```param_names``` as string
@@ -67,7 +70,7 @@ There are several files that needs editing prior to running the program:
     ```
 
 ### 2. Edit differential equations, paramters, initial condition:
-- ```biomass/model/set_model.py```
+- ```set_model.py```
 
     - ```diffeq(t, y, x)```
         - Computes the derivative of ```y``` at ```t```.
@@ -80,13 +83,13 @@ There are several files that needs editing prior to running the program:
 
 ### 3. Edit observables, simulations and experimental data
 
-- ```biomass/model/observable.py```
+- ```observable.py```
 
     This is the file to define the simulations you want to run and input the experimental data that you are going to use to try and fit the parameters to.
 
 
 ### 4. Edit an objective function for parameter estimation
-- ```biomass/model/fitness.py```
+- ```fitness.py```
 
     - ```objective(individual_gene, search_rgn)``` : An objective function to be minimized, i.e., the distance between model simulation and experimental data 
 
@@ -99,85 +102,75 @@ There are several files that needs editing prior to running the program:
         exp = ExperimentalData()
         sim = NumericalSimulation()
         
-        error = np.zeros(16)
+        error = np.zeros(14)
         # sum of squared differences between the experimental data and the simulated values 
 
-        norm_max = np.max(sim.simulations[observables.index('Phosphorylated_MEKc')])
-        error[0] = _compute_objval_rss(
-            sim.simulations[observables.index('Phosphorylated_MEKc'), exp.t2, sim.conditions.index('EGF')]/norm_max, 
-            exp.experiments[observables.index('Phosphorylated_MEKc')]['EGF']
-        )
-        error[1] = _compute_objval_rss(
-            sim.simulations[observables.index('Phosphorylated_MEKc'), exp.t2, sim.conditions.index('HRG')]/norm_max, 
-            exp.experiments[observables.index('Phosphorylated_MEKc')]['HRG']
-        )
-
         norm_max = np.max(sim.simulations[observables.index('Phosphorylated_ERKc')])
-        error[2] = _compute_objval_rss(
+        error[0] = _compute_objval_rss(
             sim.simulations[observables.index('Phosphorylated_ERKc'), exp.t2, sim.conditions.index('EGF')]/norm_max, 
             exp.experiments[observables.index('Phosphorylated_ERKc')]['EGF']
         )
-        error[3] = _compute_objval_rss(
+        error[1] = _compute_objval_rss(
             sim.simulations[observables.index('Phosphorylated_ERKc'), exp.t2, sim.conditions.index('HRG')]/norm_max, 
             exp.experiments[observables.index('Phosphorylated_ERKc')]['HRG']
         )
 
         norm_max = np.max(sim.simulations[observables.index('Phosphorylated_RSKw')])
-        error[4] = _compute_objval_rss(
+        error[2] = _compute_objval_rss(
             sim.simulations[observables.index('Phosphorylated_RSKw'), exp.t2, sim.conditions.index('EGF')]/norm_max, 
             exp.experiments[observables.index('Phosphorylated_RSKw')]['EGF']
         )
-        error[5] = _compute_objval_rss(
+        error[3] = _compute_objval_rss(
             sim.simulations[observables.index('Phosphorylated_RSKw'), exp.t2, sim.conditions.index('HRG')]/norm_max, 
             exp.experiments[observables.index('Phosphorylated_RSKw')]['HRG']
         )
 
         norm_max = np.max(sim.simulations[observables.index('Phosphorylated_CREBw')])
-        error[6] = _compute_objval_rss(
+        error[4] = _compute_objval_rss(
             sim.simulations[observables.index('Phosphorylated_CREBw'), exp.t3, sim.conditions.index('EGF')]/norm_max, 
             exp.experiments[observables.index('Phosphorylated_CREBw')]['EGF']
         )
-        error[7] = _compute_objval_rss(
+        error[5] = _compute_objval_rss(
             sim.simulations[observables.index('Phosphorylated_CREBw'), exp.t3, sim.conditions.index('HRG')]/norm_max, 
             exp.experiments[observables.index('Phosphorylated_CREBw')]['HRG']
         )
 
         norm_max = np.max(sim.simulations[observables.index('dusp_mRNA')])
-        error[8] = _compute_objval_rss(
+        error[6] = _compute_objval_rss(
             sim.simulations[observables.index('dusp_mRNA'), exp.t5, sim.conditions.index('EGF')]/norm_max, 
             exp.experiments[observables.index('dusp_mRNA')]['EGF']
         )
-        error[9] = _compute_objval_rss(
+        error[7] = _compute_objval_rss(
             sim.simulations[observables.index('dusp_mRNA'), exp.t5, sim.conditions.index('HRG')]/norm_max, 
             exp.experiments[observables.index('dusp_mRNA')]['HRG']
         )
 
         norm_max = np.max(sim.simulations[observables.index('cfos_mRNA')])
-        error[10] = _compute_objval_rss(
+        error[8] = _compute_objval_rss(
             sim.simulations[observables.index('cfos_mRNA'), exp.t4, sim.conditions.index('EGF')]/norm_max, 
             exp.experiments[observables.index('cfos_mRNA')]['EGF']
         )
-        error[11] = _compute_objval_rss(
+        error[9] = _compute_objval_rss(
             sim.simulations[observables.index('cfos_mRNA'), exp.t4, sim.conditions.index('HRG')]/norm_max, 
             exp.experiments[observables.index('cfos_mRNA')]['HRG']
         )
 
         norm_max = np.max(sim.simulations[observables.index('cFos_Protein')])
-        error[12] = _compute_objval_rss(
+        error[10] = _compute_objval_rss(
             sim.simulations[observables.index('cFos_Protein'), exp.t5, sim.conditions.index('EGF')]/norm_max, 
             exp.experiments[observables.index('cFos_Protein')]['EGF']
         )
-        error[13] = _compute_objval_rss(
+        error[11] = _compute_objval_rss(
             sim.simulations[observables.index('cFos_Protein'), exp.t5, sim.conditions.index('HRG')]/norm_max, 
             exp.experiments[observables.index('cFos_Protein')]['HRG']
         )
 
         norm_max = np.max(sim.simulations[observables.index('Phosphorylated_cFos')])
-        error[14] = _compute_objval_rss(
+        error[12] = _compute_objval_rss(
             sim.simulations[observables.index('Phosphorylated_cFos'), exp.t2, sim.conditions.index('EGF')]/norm_max, 
             exp.experiments[observables.index('Phosphorylated_cFos')]['EGF']
         )
-        error[15] = _compute_objval_rss(
+        error[13] = _compute_objval_rss(
             sim.simulations[observables.index('Phosphorylated_cFos'), exp.t2, sim.conditions.index('HRG')]/norm_max, 
             exp.experiments[observables.index('Phosphorylated_cFos')]['HRG']
         )
@@ -185,7 +178,7 @@ There are several files that needs editing prior to running the program:
 
 
 ### 5. Specify parameters to optimize and search region
-- ```biomass/model/set_search_param.py```
+- ```set_search_param.py```
 
     - ```get_search_index```
 
@@ -250,10 +243,18 @@ There are several files that needs editing prior to running the program:
             return x, y0
         ```
 
-### Grouping reactions according to biological processes
-- ```biomass/model/reaction_network.py```
+### 6. Group reactions according to biological processes
+- ```reaction_network.py```
 
     - For visualizing the result of sensitivity analysis
+
+### 7. Edit ```__init__.py``` to make your model executable
+- ```biomass/models/__init__.py__```
+
+    ```python
+    # from .Nakakuki_Cell_2010 import *
+    from .[your_model] import *
+    ```
 
 ## Running BioMASS
 
@@ -312,7 +313,7 @@ simulate_all(viz_type='average', show_all=False, stdev=True)
 
 You can calculate sensitivity coefficients on rate equations and non-zero initial values using ```analyze```.
 
-To obtain values for sensitivity of the rate equations, the time derivatives of state variables must be described via rate equations (See ```biomass/model/set_model.py```) and you need to edit ```biomass/model/reaction_network.py```
+To obtain values for sensitivity of the rate equations, the time derivatives of state variables must be described via rate equations (See ```set_model.py```) and you need to edit ```reaction_network.py```
 
 **metric**: 3 options available
 - ```'amplitude'```
