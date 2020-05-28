@@ -1,7 +1,7 @@
 import time
 import numpy as np
 
-from biomass.models import decode_gene2variable, objective, get_search_region
+from biomass.models import objective, get_search_region, decode_gene2variable
 from .undx_mgg import mgg_alternation
 from .converging import converging
 from .local_search import local_search
@@ -27,14 +27,37 @@ def optimize(nth_paramset):
         n_children,
         n_gene,
         allowable_error,
-        search_rgn
     )
 
 
-def ga_v1(nth_paramset, max_generation, n_population, n_children, n_gene,
-            allowable_error, search_rgn):
+def _get_initial_population(nth_paramset, n_population, n_gene):
+    population = np.full((n_population, n_gene+1), np.inf)
+
+    with open('./out/{:d}/initpop.log'.format(nth_paramset), mode='w') as f:
+        f.write(
+            'Generating the initial population. . .\n'
+        )
+    for i in range(n_population):
+        while not np.isfinite(population[i, -1]):
+            population[i, :n_gene] = np.random.rand(n_gene)
+            population[i, -1] = objective(
+                population[i, :n_gene]
+            )
+        with open('./out/{:d}/initpop.log'.format(nth_paramset), mode='a') as f:
+            f.write(
+                '{:d} / {:d}\n'.format(
+                    i + 1, n_population
+                )
+            )
+    population = population[np.argsort(population[:, -1]), :]
+
+    return population
+
+
+def ga_v1(nth_paramset, max_generation, n_population, 
+            n_children, n_gene, allowable_error):
     population = _get_initial_population(
-        nth_paramset, n_population, n_gene, search_rgn
+        nth_paramset, n_population, n_gene
     )
     with open('./out/{:d}/out.log'.format(nth_paramset), mode='w') as f:
         f.write(
@@ -43,7 +66,7 @@ def ga_v1(nth_paramset, max_generation, n_population, n_children, n_gene,
             )
         )
     best_indiv = decode_gene2variable(
-        population[0, :n_gene], search_rgn
+        population[0, :n_gene]
     )
     best_fitness = population[0, -1]
 
@@ -64,7 +87,7 @@ def ga_v1(nth_paramset, max_generation, n_population, n_children, n_gene,
     )
     if population[0, -1] <= allowable_error:
         best_indiv = decode_gene2variable(
-            population[0, :n_gene], search_rgn
+            population[0, :n_gene]
         )
         best_fitness = population[0, -1]
         return best_indiv, best_fitness
@@ -72,10 +95,10 @@ def ga_v1(nth_paramset, max_generation, n_population, n_children, n_gene,
     generation = 1
     while generation < max_generation:
         population = mgg_alternation(
-            population, n_population, n_children, n_gene, search_rgn
+            population, n_population, n_children, n_gene
         )
         best_indiv = decode_gene2variable(
-            population[0, :n_gene], search_rgn
+            population[0, :n_gene]
         )
         if population[0, -1] < best_fitness:
             np.save(
@@ -107,7 +130,7 @@ def ga_v1(nth_paramset, max_generation, n_population, n_children, n_gene,
             )
         if population[0, -1] <= allowable_error:
             best_indiv = decode_gene2variable(
-                population[0, :n_gene], search_rgn
+                population[0, :n_gene]
             )
             best_fitness = population[0, -1]
             return best_indiv, best_fitness
@@ -115,15 +138,15 @@ def ga_v1(nth_paramset, max_generation, n_population, n_children, n_gene,
         generation += 1
 
     best_indiv = decode_gene2variable(
-        population[0, :n_gene], search_rgn
+        population[0, :n_gene]
     )
     best_fitness = population[0, -1]
 
     return best_indiv, best_fitness
 
 
-def ga_v2(nth_paramset, max_generation, n_population, n_children, n_gene,
-            allowable_error, search_rgn):
+def ga_v2(nth_paramset, max_generation, n_population,
+            n_children, n_gene, allowable_error):
     """ga_v2 optimizes an objective function through the following procedure.
 
     1. Initialization
@@ -199,7 +222,7 @@ def ga_v2(nth_paramset, max_generation, n_population, n_children, n_gene,
     n0 = np.empty(3*n_population)
 
     population = _get_initial_population(
-        nth_paramset, n_population, n_gene, search_rgn
+        nth_paramset, n_population, n_gene
     )
     n0[0] = population[0, -1]
 
@@ -210,7 +233,7 @@ def ga_v2(nth_paramset, max_generation, n_population, n_children, n_gene,
             )
         )
     best_indiv = decode_gene2variable(
-        population[0, :n_gene], search_rgn
+        population[0, :n_gene]
     )
     best_fitness = population[0, -1]
 
@@ -231,7 +254,7 @@ def ga_v2(nth_paramset, max_generation, n_population, n_children, n_gene,
     )
     if population[0, -1] <= allowable_error:
         best_indiv = decode_gene2variable(
-            population[0, :n_gene], search_rgn
+            population[0, :n_gene]
         )
         best_fitness = population[0, -1]
         return best_indiv, best_fitness
@@ -240,15 +263,15 @@ def ga_v2(nth_paramset, max_generation, n_population, n_children, n_gene,
     while generation < max_generation:
         ip = np.random.choice(n_population, n_gene+2, replace=False)
         ip, population = converging(
-            ip, population, n_population, n_gene, search_rgn
+            ip, population, n_population, n_gene
         )
         ip, population = local_search(
-            ip, population, n_population, n_children, n_gene, search_rgn
+            ip, population, n_population, n_children, n_gene
         )
         for _ in range(n_iter-1):
             ip = np.random.choice(n_population, n_gene+2, replace=False)
             ip, population = converging(
-                ip, population, n_population, n_gene, search_rgn
+                ip, population, n_population, n_gene
             )
         if generation % len(n0) == len(n0) - 1:
             n0[-1] = population[0, -1]
@@ -260,7 +283,7 @@ def ga_v2(nth_paramset, max_generation, n_population, n_children, n_gene,
             n0[generation % len(n0)] = population[0, -1]
 
         best_indiv = decode_gene2variable(
-            population[0, :n_gene], search_rgn
+            population[0, :n_gene]
         )
         if population[0, -1] < best_fitness:
             np.save(
@@ -292,7 +315,7 @@ def ga_v2(nth_paramset, max_generation, n_population, n_children, n_gene,
             )
         if population[0, -1] <= allowable_error:
             best_indiv = decode_gene2variable(
-                population[0, :n_gene], search_rgn
+                population[0, :n_gene]
             )
             best_fitness = population[0, -1]
             return best_indiv, best_fitness
@@ -300,32 +323,8 @@ def ga_v2(nth_paramset, max_generation, n_population, n_children, n_gene,
         generation += 1
 
     best_indiv = decode_gene2variable(
-        population[0, :n_gene], search_rgn
+        population[0, :n_gene]
     )
     best_fitness = population[0, -1]
 
     return best_indiv, best_fitness
-
-
-def _get_initial_population(nth_paramset, n_population, n_gene, search_rgn):
-    population = np.full((n_population, n_gene+1), np.inf)
-
-    with open('./out/{:d}/initpop.log'.format(nth_paramset), mode='w') as f:
-        f.write(
-            'Generating the initial population. . .\n'
-        )
-    for i in range(n_population):
-        while not np.isfinite(population[i, -1]):
-            population[i, :n_gene] = np.random.rand(n_gene)
-            population[i, -1] = objective(
-                population[i, :n_gene], search_rgn
-            )
-        with open('./out/{:d}/initpop.log'.format(nth_paramset), mode='a') as f:
-            f.write(
-                '{:d} / {:d}\n'.format(
-                    i + 1, n_population
-                )
-            )
-    population = population[np.argsort(population[:, -1]), :]
-
-    return population

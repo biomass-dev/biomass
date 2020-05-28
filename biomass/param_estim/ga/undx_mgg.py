@@ -39,7 +39,7 @@ def _undx(parents, n_gene):
     return child
 
 
-def _get_new_child(parents, n_gene, search_rgn):
+def _get_new_child(parents, n_gene):
     """
     MAXITER = 100
     for _ in range(MAXITER):
@@ -52,7 +52,7 @@ def _get_new_child(parents, n_gene, search_rgn):
     child = _undx(parents, n_gene)
     child[:n_gene] = np.clip(child[:n_gene], 0., 1.)
 
-    child[-1] = objective(child[:n_gene], search_rgn)
+    child[-1] = objective(child[:n_gene])
 
     return child
 
@@ -67,7 +67,7 @@ def _rank_selection(n_family):
     return ranking[idx]
 
 
-def mgg_alternation(population, n_population, n_children, n_gene, search_rgn):
+def mgg_alternation(population, n_population, n_children, n_gene):
     ip = [None for _ in range(3)]
     ip[:2] = np.random.choice(n_population, 2, replace=False)
     idx = [True] * n_population
@@ -79,7 +79,7 @@ def mgg_alternation(population, n_population, n_children, n_gene, search_rgn):
     for i in range(n_children):
         ip[2] = np.random.choice(np.arange(n_population)[idx])
         children[i, :] = _get_new_child(
-            population[ip, :], n_gene, search_rgn
+            population[ip, :], n_gene
         )
     family = np.empty((n_children+2, n_gene+1))
     family[:n_children, :] = children
