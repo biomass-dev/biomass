@@ -240,6 +240,43 @@ def update_param(indiv):
     return x, y0
 
 
+def decode_gene2variable(indiv_gene):
+    search_rgn = get_search_region()
+    indiv = 10**(
+        indiv_gene * (
+            search_rgn[1, :] - search_rgn[0, :]
+        ) + search_rgn[0, :]
+    )
+
+    return indiv
+
+
+def encode_variable2gene(indiv):
+    search_rgn = get_search_region()
+    indiv_gene = (
+        np.log10(indiv) - search_rgn[0, :]
+    ) / (
+        search_rgn[1, :] - search_rgn[0, :]
+    )
+
+    return indiv_gene
+
+
+def encode_bestindiv2randgene(best_indiv, p0_bounds):
+    search_rgn = get_search_region()
+    rand_gene = (
+        np.log10(
+            best_indiv * 10**(
+                np.random.rand(len(best_indiv))
+                * np.log10(p0_bounds[1]/p0_bounds[0])
+                + np.log10(p0_bounds[0])
+            )
+        ) - search_rgn[0, :]
+    ) / (search_rgn[1, :] - search_rgn[0, :])
+
+    return rand_gene
+
+
 def _init_search_param(search_idx, x, y0):
     """Initialize search_param
     """
