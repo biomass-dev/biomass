@@ -91,11 +91,13 @@ $ cd biomass/models/[your_model]
 ### 4. Edit an objective function for parameter estimation
 - ```fitness.py```
 
-    - ```objective(individual_gene, search_rgn)``` : An objective function to be minimized, i.e., the distance between model simulation and experimental data 
+    - ```objective(indiv_gene)``` : An objective function to be minimized, i.e., the distance between model simulation and experimental data 
 
     ```python
-    def objective(individual_gene, search_rgn):
-        indiv = decode_gene2variable(individual_gene, search_rgn)
+    def objective(indiv_gene):
+        """Define an objective function to be minimized
+        """
+        indiv = decode_gene2variable(indiv_gene)
 
         (x, y0) = update_param(indiv)
 
