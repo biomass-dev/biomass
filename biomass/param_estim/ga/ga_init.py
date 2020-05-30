@@ -1,7 +1,7 @@
 import time
 import numpy as np
 
-from biomass.models import objective, get_search_region, decode_gene2variable
+from biomass.models import objective, get_search_region, decode_gene2val
 from .undx_mgg import mgg_alternation
 from .converging import converging
 from .local_search import local_search
@@ -65,7 +65,7 @@ def ga_v1(nth_paramset, max_generation, n_population,
                 population[0, -1]
             )
         )
-    best_indiv = decode_gene2variable(
+    best_indiv = decode_gene2val(
         population[0, :n_gene]
     )
     best_fitness = population[0, -1]
@@ -86,7 +86,7 @@ def ga_v1(nth_paramset, max_generation, n_population,
         ), best_fitness
     )
     if population[0, -1] <= allowable_error:
-        best_indiv = decode_gene2variable(
+        best_indiv = decode_gene2val(
             population[0, :n_gene]
         )
         best_fitness = population[0, -1]
@@ -97,7 +97,7 @@ def ga_v1(nth_paramset, max_generation, n_population,
         population = mgg_alternation(
             population, n_population, n_children, n_gene
         )
-        best_indiv = decode_gene2variable(
+        best_indiv = decode_gene2val(
             population[0, :n_gene]
         )
         if population[0, -1] < best_fitness:
@@ -129,7 +129,7 @@ def ga_v1(nth_paramset, max_generation, n_population,
                 )
             )
         if population[0, -1] <= allowable_error:
-            best_indiv = decode_gene2variable(
+            best_indiv = decode_gene2val(
                 population[0, :n_gene]
             )
             best_fitness = population[0, -1]
@@ -137,7 +137,7 @@ def ga_v1(nth_paramset, max_generation, n_population,
 
         generation += 1
 
-    best_indiv = decode_gene2variable(
+    best_indiv = decode_gene2val(
         population[0, :n_gene]
     )
     best_fitness = population[0, -1]
@@ -232,7 +232,7 @@ def ga_v2(nth_paramset, max_generation, n_population,
                 population[0, -1]
             )
         )
-    best_indiv = decode_gene2variable(
+    best_indiv = decode_gene2val(
         population[0, :n_gene]
     )
     best_fitness = population[0, -1]
@@ -253,7 +253,7 @@ def ga_v2(nth_paramset, max_generation, n_population,
         ), best_fitness
     )
     if population[0, -1] <= allowable_error:
-        best_indiv = decode_gene2variable(
+        best_indiv = decode_gene2val(
             population[0, :n_gene]
         )
         best_fitness = population[0, -1]
@@ -282,7 +282,7 @@ def ga_v2(nth_paramset, max_generation, n_population,
         else:
             n0[generation % len(n0)] = population[0, -1]
 
-        best_indiv = decode_gene2variable(
+        best_indiv = decode_gene2val(
             population[0, :n_gene]
         )
         if population[0, -1] < best_fitness:
@@ -314,7 +314,7 @@ def ga_v2(nth_paramset, max_generation, n_population,
                 )
             )
         if population[0, -1] <= allowable_error:
-            best_indiv = decode_gene2variable(
+            best_indiv = decode_gene2val(
                 population[0, :n_gene]
             )
             best_fitness = population[0, -1]
@@ -322,7 +322,7 @@ def ga_v2(nth_paramset, max_generation, n_population,
 
         generation += 1
 
-    best_indiv = decode_gene2variable(
+    best_indiv = decode_gene2val(
         population[0, :n_gene]
     )
     best_fitness = population[0, -1]

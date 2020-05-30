@@ -1,8 +1,7 @@
 import time
 import numpy as np
 
-from biomass.models import (objective, get_search_region, decode_gene2variable, 
-                            encode_variable2gene, encode_bestindiv2randgene)
+from biomass.models import objective, get_search_region, decode_gene2val
 from .undx_mgg import mgg_alternation
 from .converging import converging
 from .local_search import local_search
@@ -33,8 +32,33 @@ def optimize_continue(nth_paramset):
     )
 
 
-def _get_initial_population_continue(nth_paramset, n_population, n_gene,
-                                        p0_bounds):
+def _encode_val2gene(indiv):
+    search_rgn = get_search_region()
+    indiv_gene = (
+        np.log10(indiv) - search_rgn[0, :]
+    ) / (
+        search_rgn[1, :] - search_rgn[0, :]
+    )
+
+    return indiv_gene
+
+
+def _encode_bestIndivVal2randGene(best_indiv, p0_bounds):
+    search_rgn = get_search_region()
+    rand_gene = (
+        np.log10(
+            best_indiv * 10**(
+                np.random.rand(len(best_indiv))
+                * np.log10(p0_bounds[1]/p0_bounds[0])
+                + np.log10(p0_bounds[0])
+            )
+        ) - search_rgn[0, :]
+    ) / (search_rgn[1, :] - search_rgn[0, :])
+
+    return rand_gene
+
+
+def _get_initial_population_continue(nth_paramset, n_population, n_gene, p0_bounds):
     best_generation = np.load(
         './out/{:d}/generation.npy'.format(
             nth_paramset
@@ -53,7 +77,7 @@ def _get_initial_population_continue(nth_paramset, n_population, n_gene,
         )
     for i in range(n_population):
         while not np.isfinite(population[i, -1]):
-            population[i, :n_gene] = encode_bestindiv2randgene(
+            population[i, :n_gene] = _encode_bestIndivVal2randGene(
                 best_indiv, p0_bounds
             )
             population[i, :n_gene] = np.clip(population[i, :n_gene], 0., 1.)
@@ -89,18 +113,18 @@ def ga_v1_continue(nth_paramset, max_generation, n_population, n_children, n_gen
         )
     )
     best_fitness = objective(
-        encode_variable2gene(best_indiv)
+        _encode_val2gene(best_indiv)
     )
     population = _get_initial_population_continue(
         nth_paramset, n_population, n_gene, p0_bounds
     )
     if best_fitness < population[0, -1]:
         population[0, :n_gene] = (
-            encode_variable2gene(best_indiv)
+            _encode_val2gene(best_indiv)
         )
         population[0, -1] = best_fitness
     else:
-        best_indiv = decode_gene2variable(
+        best_indiv = decode_gene2val(
             population[0, :n_gene]
         )
         best_fitness = population[0, -1]
@@ -117,7 +141,7 @@ def ga_v1_continue(nth_paramset, max_generation, n_population, n_children, n_gen
             )
         )
     if population[0, -1] <= allowable_error:
-        best_indiv = decode_gene2variable(
+        best_indiv = decode_gene2val(
             population[0, :n_gene]
         )
         best_fitness = population[0, -1]
@@ -128,7 +152,7 @@ def ga_v1_continue(nth_paramset, max_generation, n_population, n_children, n_gen
         population = mgg_alternation(
             population, n_population, n_children, n_gene
         )
-        best_indiv = decode_gene2variable(
+        best_indiv = decode_gene2val(
             population[0, :n_gene]
         )
         if population[0, -1] < best_fitness:
@@ -161,7 +185,7 @@ def ga_v1_continue(nth_paramset, max_generation, n_population, n_children, n_gen
                 )
             )
         if population[0, -1] <= allowable_error:
-            best_indiv = decode_gene2variable(
+            best_indiv = decode_gene2val(
                 population[0, :n_gene]
             )
             best_fitness = population[0, -1]
@@ -169,7 +193,7 @@ def ga_v1_continue(nth_paramset, max_generation, n_population, n_children, n_gen
 
         generation += 1
 
-    best_indiv = decode_gene2variable(
+    best_indiv = decode_gene2val(
         population[0, :n_gene]
     )
     best_fitness = population[0, -1]
@@ -204,18 +228,18 @@ def ga_v2_continue(nth_paramset, max_generation, n_population, n_children, n_gen
         )
     )
     best_fitness = objective(
-        encode_variable2gene(best_indiv)
+        _encode_val2gene(best_indiv)
     )
     population = _get_initial_population_continue(
         nth_paramset, n_population, n_gene, p0_bounds
     )
     if best_fitness < population[0, -1]:
         population[0, :n_gene] = (
-            encode_variable2gene(best_indiv)
+            _encode_val2gene(best_indiv)
         )
         population[0, -1] = best_fitness
     else:
-        best_indiv = decode_gene2variable(
+        best_indiv = decode_gene2val(
             population[0, :n_gene]
         )
         best_fitness = population[0, -1]
@@ -234,7 +258,7 @@ def ga_v2_continue(nth_paramset, max_generation, n_population, n_children, n_gen
     n0[0] = population[0, -1]
 
     if population[0, -1] <= allowable_error:
-        best_indiv = decode_gene2variable(
+        best_indiv = decode_gene2val(
             population[0, :n_gene]
         )
         best_fitness = population[0, -1]
@@ -263,7 +287,7 @@ def ga_v2_continue(nth_paramset, max_generation, n_population, n_children, n_gen
         else:
             n0[generation % len(n0)] = population[0, -1]
 
-        best_indiv = decode_gene2variable(
+        best_indiv = decode_gene2val(
             population[0, :n_gene]
         )
         if population[0, -1] < best_fitness:
@@ -296,7 +320,7 @@ def ga_v2_continue(nth_paramset, max_generation, n_population, n_children, n_gen
                 )
             )
         if population[0, -1] <= allowable_error:
-            best_indiv = decode_gene2variable(
+            best_indiv = decode_gene2val(
                 population[0, :n_gene]
             )
             best_fitness = population[0, -1]
@@ -304,7 +328,7 @@ def ga_v2_continue(nth_paramset, max_generation, n_population, n_children, n_gen
 
         generation += 1
 
-    best_indiv = decode_gene2variable(
+    best_indiv = decode_gene2val(
         population[0, :n_gene]
     )
     best_fitness = population[0, -1]
