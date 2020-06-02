@@ -3,12 +3,29 @@ import re
 import csv
 import numpy as np
 
-from biomass.models import C, V, get_search_index
+from biomass.models.Nakakuki_Cell_2010 import *
 
 
-def get_param():
+def get_model_properties():
+    """ Get number of model reactions, species and parameters
     """
-    Get optimized parameters as CSV file format
+    rxn = ReactionNetwork()
+    biological_processes = rxn.group()
+    model_reactions = 0
+    for reactions_in_process in biological_processes:
+        model_reactions += len(reactions_in_process)
+    model_species = len(V.var_names)
+    model_parameters = len(C.param_names)
+
+    print(
+        "{:d} reactions\n{:d} species\n{:d} parameters".format(
+            model_reactions, model_species, model_parameters
+        )
+    )
+
+
+def get_optimization_results():
+    """ Get optimized parameters as CSV file format
 
     Output
     ------
@@ -85,7 +102,3 @@ def get_param():
         with open('optimized_inital_varlues.csv', 'w') as f:
             writer = csv.writer(f, lineterminator='\n')
             writer.writerows(optimized_initvars)
-
-
-if __name__ == '__main__':
-    get_param()

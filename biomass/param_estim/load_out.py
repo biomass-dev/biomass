@@ -1,7 +1,7 @@
 import os
 import numpy as np
 
-from biomass.models import C, V, f_params, initial_values, update_param
+from biomass.current_model import C, V, f_params, initial_values, update_param
 
 def _get_indiv(paramset):
     best_generation = np.load(

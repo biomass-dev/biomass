@@ -1,6 +1,6 @@
 import numpy as np
 
-from biomass.models import objective
+from biomass.current_model import objective
 
 
 def _undx(parents, n_gene):

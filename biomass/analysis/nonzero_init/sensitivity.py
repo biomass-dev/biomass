@@ -3,7 +3,7 @@ import sys
 import re
 import numpy as np
 
-from biomass.models import initial_values, observables, NumericalSimulation
+from biomass.current_model import initial_values, observables, NumericalSimulation
 from biomass.param_estim import load_param
 from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
 

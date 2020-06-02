@@ -1,1 +1,1 @@
-from .get_param import get_param
+from . import current_model
