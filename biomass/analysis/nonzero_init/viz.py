@@ -20,6 +20,10 @@ def barplot_sensitivity(metric, sensitivity_coefficients, nonzero_idx):
     plt.rcParams['ytick.major.width'] = 1.2
 
     colors = ['mediumblue', 'red']
+    if len(colors) < len(sim.conditions):
+        raise ValueError(
+            'len(colors) must be equal to or greater than len(sim.conditions).'
+        )
     for k, obs_name in enumerate(observables):
         plt.figure(figsize=(9, 5))
         plt.hlines(
