@@ -250,7 +250,7 @@ $ cd biomass/models/[your_model]
 
     - For visualizing the result of sensitivity analysis
 
-### 7. Edit ```__init__.py``` to make your model executable
+### 7. Make your model executable
 - ```biomass/current_model.py```
 
     ```python
