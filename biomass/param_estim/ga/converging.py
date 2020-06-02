@@ -1,6 +1,6 @@
 import numpy as np
 
-from biomass.models import objective
+from biomass.current_model import objective
 
 
 def _endx(parents, n_gene):
@@ -65,9 +65,8 @@ def converging(ip, population, n_population, n_gene):
         family[np.random.randint(low=1, high=n_children+2, dtype=np.int), :]
 
     if not np.isfinite(population[ip[1], -1]):
-        population[ip[1], -1] = objective(
-            population[ip[1], :n_gene]
-        )
+        population[ip[1], -1] = objective(population[ip[1], :n_gene])
+    
     population = population[np.argsort(population[:, -1]), :]
 
-    return ip, population
+    return population

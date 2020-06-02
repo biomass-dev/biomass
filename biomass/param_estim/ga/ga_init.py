@@ -1,7 +1,7 @@
 import time
 import numpy as np
 
-from biomass.models import objective, get_search_region, decode_gene2val
+from biomass.current_model import objective, get_search_region, decode_gene2val
 from .undx_mgg import mgg_alternation
 from .converging import converging
 from .local_search import local_search
@@ -225,15 +225,15 @@ def ga_v2(nth_paramset, max_generation, n_population, n_children, n_gene, allowa
     generation = 1
     while generation < max_generation:
         ip = np.random.choice(n_population, n_gene+2, replace=False)
-        ip, population = converging(
+        population = converging(
             ip, population, n_population, n_gene
         )
-        ip, population = local_search(
+        population = local_search(
             ip, population, n_population, n_children, n_gene
         )
         for _ in range(n_iter-1):
             ip = np.random.choice(n_population, n_gene+2, replace=False)
-            ip, population = converging(
+            population = converging(
                 ip, population, n_population, n_gene
             )
         if generation % len(n0) == len(n0) - 1:

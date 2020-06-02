@@ -1,6 +1,6 @@
 import numpy as np
 
-from biomass.models import objective
+from biomass.current_model import objective
 
 
 def _ndm(parents, n_gene):
@@ -64,4 +64,4 @@ def local_search(ip, population, n_population, n_children, n_gene):
 
     population = population[np.argsort(population[:, -1]), :]
 
-    return ip, population
+    return population
