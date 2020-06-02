@@ -15,10 +15,10 @@ def timecourse(sim, n_file, viz_type, show_all, stdev, simulations_all):
     exp = ExperimentalData()
 
     plt.rcParams['font.size'] = 20
-    plt.rcParams['axes.linewidth'] = 1.2
-    plt.rcParams['xtick.major.width'] = 1.2
-    plt.rcParams['ytick.major.width'] = 1.2
-    plt.rcParams['lines.linewidth'] = 2
+    plt.rcParams['axes.linewidth'] = 1.5
+    plt.rcParams['xtick.major.width'] = 1.5
+    plt.rcParams['ytick.major.width'] = 1.5
+    plt.rcParams['lines.linewidth'] = 1.8
     plt.rcParams['lines.markersize'] = 12
     plt.rcParams['font.family'] = 'Arial'
     plt.rcParams['mathtext.fontset'] = 'custom'
@@ -26,6 +26,10 @@ def timecourse(sim, n_file, viz_type, show_all, stdev, simulations_all):
 
     cmap = ['goldenrod', 'seagreen']
     shape = ['^', 'o']
+    if len(cmap) < len(sim.conditions) or len(shape) < len(sim.conditions):
+        raise ValueError(
+            'len(cmap), len(shape) must be equal to or greater than len(sim.conditions).'
+        )
 
     for i, obs_name in enumerate(observables):
 
