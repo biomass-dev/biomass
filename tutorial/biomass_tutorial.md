@@ -251,11 +251,11 @@ $ cd biomass/models/[your_model]
     - For visualizing the result of sensitivity analysis
 
 ### 7. Edit ```__init__.py``` to make your model executable
-- ```biomass/models/__init__.py__```
+- ```biomass/current_model.py```
 
     ```python
-    # from .Nakakuki_Cell_2010 import *
-    from .[your_model] import *
+    # from biomass.models.Nakakuki_Cell_2010 import *
+    from biomass.models.[your_model] import *
     ```
 
 ## Running BioMASS
