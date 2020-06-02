@@ -1,7 +1,7 @@
 import os
 import numpy as np
 
-from biomass.models import rxn2proc
+from biomass.current_model import ReactionNetwork
 from .sensitivity import calc_sensitivity_coefficients
 from .viz import *
 
@@ -37,14 +37,20 @@ def _load_sc(metric, n_reaction):
 
 
 def analyze(metric, style):
-    biological_processes, n_reaction, sort_idx = rxn2proc()
-    sensitivity_coefficients = _load_sc(metric, n_reaction)
+    rxn = ReactionNetwork()
+    biological_processes = rxn.group()
+    n_reaction = 1
+    for reactions_in_process in biological_processes:
+        n_reaction += len(reactions_in_process)
+    sort_idx = [0] * n_reaction
+    sort_idx[:-1] = np.sum(biological_processes, axis=0)
     reaction_indices = list(
         map(
             lambda x: str(x), sort_idx
         )
     )
-    
+    sensitivity_coefficients = _load_sc(metric, n_reaction)
+
     if style == 'barplot':
         barplot_sensitivity(
             metric, sensitivity_coefficients, biological_processes,
