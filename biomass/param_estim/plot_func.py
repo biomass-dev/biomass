@@ -78,18 +78,33 @@ def timecourse(sim, n_file, viz_type, show_all, stdev, simulations_all):
                     )
         if exp.experiments[i] is not None:
             exp_t = exp.get_timepoint(i)
-            for l, condition in enumerate(sim.conditions):
-                if condition in exp.experiments[i]:
-                    plt.plot(
-                        np.array(exp_t) / 60., exp.experiments[i][condition],
-                        shape[l], markerfacecolor='None', markeredgecolor=cmap[l],
-                        color=cmap[l], clip_on=False
-                    )
+            if exp.standard_error[i] is not None:
+                for l, condition in enumerate(sim.conditions):
+                    if condition in exp.experiments[i]:
+                        exp_data = plt.errorbar(
+                            np.array(exp_t) / 60., exp.experiments[i][condition],
+                            yerr=exp.standard_error[i][condition], color=cmap[l],
+                            ecolor=cmap[l], elinewidth=1, capsize=8,
+                            markerfacecolor='None', markeredgecolor=cmap[l],
+                            fmt=shape[l], clip_on=False
+                        )
+                        for capline in exp_data[1]:
+                            capline.set_clip_on(False)
+                        for barlinecol in exp_data[2]:
+                            barlinecol.set_clip_on(False)
+            else:
+                for l, condition in enumerate(sim.conditions):
+                    if condition in exp.experiments[i]:
+                        plt.plot(
+                            np.array(exp_t) / 60., exp.experiments[i][condition],
+                            shape[l], markerfacecolor='None', markeredgecolor=cmap[l],
+                            color=cmap[l], clip_on=False
+                        )
 
-        plt.xlim(0, 90)
+        plt.xlim(-5, 95)
         plt.xticks([0, 30, 60, 90])
         plt.yticks([0, 0.3, 0.6, 0.9, 1.2])
-        plt.ylim(0, 1.2)
+        plt.ylim(-0.1, 1.3)
         plt.xlabel('Time (min)')
         plt.ylabel(obs_name.replace('_', ' '))
 
