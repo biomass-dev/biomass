@@ -1,7 +1,7 @@
 import os
 import numpy as np
 
-from biomass.current_model import C, V, f_params, initial_values, update_param
+from biomass.current_model import C, V, update_param
 
 def _get_indiv(paramset):
     best_generation = np.load(
@@ -26,16 +26,8 @@ def load_param(paramset):
     return x, y0
 
 
-def write_best_fit_param(best_paramset, search_idx):
-    x = f_params()
-    y0 = initial_values()
-
-    best_indiv = _get_indiv(best_paramset)
-
-    for i, j in enumerate(search_idx[0]):
-        x[j] = best_indiv[i]
-    for i, j in enumerate(search_idx[1]):
-        y0[j] = best_indiv[i+len(search_idx[0])]
+def write_best_fit_param(best_paramset):
+    (x, y0) = load_param(best_paramset)
     
     with open('./out/best_fit_param.txt', mode='w') as f:
         f.write(

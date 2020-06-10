@@ -155,7 +155,7 @@ def diffeq(t, y, x):
     return dydt
 
 
-def f_params():
+def param_values():
 
     x = [0] * C.len_f_params
 

@@ -1,7 +1,7 @@
 import numpy as np
 
 from .name2idx import C, V
-from .set_model import f_params, initial_values
+from .set_model import param_values, initial_values
 
 
 def get_search_index():
@@ -87,15 +87,15 @@ def get_search_index():
     ]
 
     # initial values
-    search_idx_initvars = [
+    search_idx_initials = [
         # V.(variable name)
     ]
 
-    return search_idx_params, search_idx_initvars
+    return search_idx_params, search_idx_initials
 
 
 def get_search_region():
-    x = f_params()
+    x = param_values()
     y0 = initial_values()
 
     search_idx = get_search_index()
@@ -210,7 +210,7 @@ def get_search_region():
 
 
 def update_param(indiv):
-    x = f_params()
+    x = param_values()
     y0 = initial_values()
 
     search_idx = get_search_index()
@@ -282,7 +282,7 @@ def _init_search_param(search_idx, x, y0):
         for _, idx in enumerate(search_idx[1]):
             if y0[int(idx)] == 0.:
                 raise ValueError(
-                    '"V.{}" in search_idx_initvars: '.format(
+                    '"V.{}" in search_idx_initials: '.format(
                         V.var_names[int(idx)]
                     ) + message
                 )

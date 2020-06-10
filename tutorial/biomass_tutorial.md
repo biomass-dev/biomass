@@ -75,7 +75,7 @@ $ cd biomass/models/[your_model]
     - ```diffeq(t, y, x)```
         - Computes the derivative of ```y``` at ```t```.
 
-    - ```f_params()```
+    - ```param_values()```
         - Return model parameters.
 
     - ```initial_values()```
@@ -215,7 +215,7 @@ $ cd biomass/models/[your_model]
 
         ```python
         def update_param(indiv):
-            x = f_params()
+            x = param_values()
             y0 = initial_values()
 
             search_idx = get_search_index()

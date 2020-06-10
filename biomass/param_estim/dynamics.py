@@ -2,7 +2,7 @@ import os
 import re
 import numpy as np
 
-from biomass.current_model import (f_params, initial_values, observables,
+from biomass.current_model import (param_values, initial_values, observables,
                                     NumericalSimulation, get_search_index)
 from biomass.param_estim import plot_func
 from .load_out import load_param, write_best_fit_param, get_optimized_param
@@ -82,7 +82,7 @@ def simulate_all(viz_type, show_all, stdev):
                         )
                     )
             best_paramset = n_file[np.argmin(best_fitness_all)]
-            write_best_fit_param(best_paramset, search_idx)
+            write_best_fit_param(best_paramset)
 
             if viz_type == 'average':
                 pass
@@ -97,7 +97,7 @@ def simulate_all(viz_type, show_all, stdev):
                     search_idx, popt, portrait=True
                 )
         else:
-            x = f_params()
+            x = param_values()
             y0 = initial_values()
             if sim.simulate(x, y0) is not None:
                 print(
