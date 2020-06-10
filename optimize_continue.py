@@ -5,25 +5,19 @@ import multiprocessing
 import warnings
 warnings.filterwarnings('ignore')
 
-from biomass.param_estim import optimize, optimize_continue
-
-def run_ga_continue(nth_paramset):
-    if not os.path.isdir('./out/{:d}'.format(nth_paramset)):
-        os.mkdir(
-            './out/{:d}'.format(
-                nth_paramset
-            )
-        )
-        optimize(nth_paramset)
-    else:
-        optimize_continue(nth_paramset)
+from biomass.models.Nakakuki_Cell_2010 import (get_search_region,
+                                                decode_gene2val, objective)
+from biomass.ga import GeneticAlgorithmContinue
 
 if __name__ == '__main__':
+    ga_continue = GeneticAlgorithmContinue(
+        get_search_region, decode_gene2val, objective
+    )
     args = sys.argv
     if len(args) == 2:
-        run_ga_continue(int(args[1]))
+        ga_continue.run(int(args[1]))
     elif len(args) == 3:
         n_proc = max(1, multiprocessing.cpu_count() - 1)
         p = multiprocessing.Pool(processes=n_proc)
-        p.map(run_ga_continue, range(int(args[1]), int(args[2]) + 1))
+        p.map(ga_continue.run, range(int(args[1]), int(args[2]) + 1))
         p.close()
