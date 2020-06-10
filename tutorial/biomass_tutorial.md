@@ -97,9 +97,9 @@ $ cd biomass/models/[your_model]
     def objective(indiv_gene):
         """Define an objective function to be minimized
         """
-        indiv = decode_gene2val(indiv_gene)
-
-        (x, y0) = update_param(indiv)
+        sp = SearchParam()
+        indiv = sp.gene2val(indiv_gene)
+        (x, y0) = sp.update(indiv)
 
         exp = ExperimentalData()
         sim = NumericalSimulation()
@@ -182,7 +182,7 @@ $ cd biomass/models/[your_model]
 ### 5. Specify parameters to optimize and search region
 - ```set_search_param.py```
 
-    - ```get_search_index```
+    - ```idx_params```, ```idx_initials```
 
         - Specify names of model parameters and/or initial values to optimize.
 
@@ -194,7 +194,7 @@ $ cd biomass/models/[your_model]
 
             ```python
             # search_idx[0] : model parameters
-            for i, j in enumerate(search_idx[0]):
+            for i, j in enumerate(self.idx_params):
                 search_rgn[0, j] = search_param[i] * 0.1  # lower bound
                 search_rgn[1, j] = search_param[i] * 10.  # upper bound
             ```
@@ -214,16 +214,14 @@ $ cd biomass/models/[your_model]
         - To impose parameter value constraints,
 
         ```python
-        def update_param(indiv):
+        def update(self, indiv):
             x = param_values()
             y0 = initial_values()
 
-            search_idx = get_search_index()
-
-            for i, j in enumerate(search_idx[0]):
+            for i, j in enumerate(self.idx_params):
                 x[j] = indiv[i]
-            for i, j in enumerate(search_idx[1]):
-                y0[j] = indiv[i+len(search_idx[0])]
+            for i, j in enumerate(self.idx_initials):
+                y0[j] = indiv[i+len(self.idx_params)]
 
             # constraints --------------------------------------------------------------
             x[C.V6] = x[C.V5]
@@ -301,13 +299,23 @@ To visualize the simulation results you can then use the function ```simulate_al
 * **Standard deviation** : ```stdev``` to plot the standard deviation. (only available for ```average``` visualization type)
 
 ```python
-import warnings
-warnings.filterwarnings('ignore')
+from biomass.models.Nakakuki_Cell_2010 import *
 
-from biomass.param_estim import simulate_all
+from biomass.dynamics import SignalingSystems
+
+erbb_network = SignalingSystems(
+    parameters=C.parameters,
+    species=V.species,
+    pval=param_values,
+    ival=initial_values,
+    obs=observables,
+    sim=NumericalSimulation(),
+    exp=ExperimentalData(),
+    sp=SearchParam()
+)
 
 # to get the average and visualize standard deviation by error bars
-simulate_all(viz_type='average', show_all=False, stdev=True)
+erbb_network.simulate_all(viz_type='average', show_all=False, stdev=True)
 ```
 <br>
 
@@ -332,9 +340,17 @@ To obtain values for sensitivity of the rate equations, the time derivatives of 
 For example, to calculate sensitivity coefficients on rate equations, use the maximum value as a signaling metric and save barplot:
 
 ```python
-from biomass.analysis import reaction, nonzero_init
+from biomass.models.Nakakuki_Cell_2010 import *
 
-reaction.analyze(metric='amplitude', style='barplot')
+from biomass.analysis.reaction import ReactionSensitivity
+reaction = ReactionSensitivity(
+    reaction_system=set_model,
+    obs=observables,
+    sim=NumericalSimulation(),
+    sp=SearchParam(),
+    rxn=ReactionNetwork()
+)
+reaction.analyze(metric='integral', style='barplot')
 ```
 <br>
 
