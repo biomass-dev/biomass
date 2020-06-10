@@ -1,6 +1,5 @@
 import os
 import re
-from copy import copy
 import numpy as np
 
 from . import plot_func
@@ -19,19 +18,17 @@ class SignalingSystems(object):
         self.sp = sp
     
     def _validate(self, nth_paramset):
-        """Validates the dynamical viability of a set of estimated parameter values.
+        """
+        Validates the dynamical viability of a set of estimated parameter values.
         """
         (x, y0) = load_param(nth_paramset, self.sp.update)
-        sim_out = copy(self.sim)
-        if sim_out.simulate(x, y0) is None:
-            return sim_out, True
+        if self.sim.simulate(x, y0) is None:
+            return self.sim, True
         else:
             print(
-                'Simulation failed.\nparameter_set #{:d}'.format(
-                    nth_paramset
-                )
+                'Simulation failed. #{:d}\n'.format(nth_paramset)
             )
-            return sim_out, False
+            return self.sim, False
 
 
     def simulate_all(self, viz_type, show_all, stdev):
@@ -90,9 +87,7 @@ class SignalingSystems(object):
                 for i, nth_paramset in enumerate(n_file):
                     if os.path.isfile('./out/{:d}/best_fitness.npy'.format(nth_paramset)):
                         best_fitness_all[i] = np.load(
-                            './out/{:d}/best_fitness.npy'.format(
-                                nth_paramset
-                            )
+                            './out/{:d}/best_fitness.npy'.format(nth_paramset)
                         )
                 best_paramset = n_file[np.argmin(best_fitness_all)]
                 write_best_fit_param(
