@@ -36,7 +36,7 @@ rm last_line
 
 echo "done processing parameters"
 
-# script to extract variables from differential_equation.py
+# script to extract species from differential_equation.py
 grep 'dydt\[V' ../biomass/model/set_model.py | \
 sed 's/dydt\[V\.//g' | \
 sed 's/\].*//g' | \
@@ -61,10 +61,10 @@ for idx, name in enumerate(species):
 n_species = len(species)" > last_line
 
 
-cat first_line var_var_mid last_line > ../biomass/model/name2idx/variables.py
+cat first_line var_var_mid last_line > ../biomass/model/name2idx/species.py
 
 rm first_line
 rm var_var_mid
 rm last_line
 
-echo "done processing variables"
+echo "done processing speceis"

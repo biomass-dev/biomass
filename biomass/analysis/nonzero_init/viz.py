@@ -48,7 +48,7 @@ def barplot_sensitivity(metric, sensitivity_coefficients, nonzero_idx):
                 )
         plt.xticks(
             np.arange(len(nonzero_idx)) + width/2,
-            [V.var_names[i] for i in nonzero_idx],
+            [V.species[i] for i in nonzero_idx],
             rotation=30
         )
         plt.ylabel(
@@ -107,7 +107,7 @@ def heatmap_sensitivity(metric, sensitivity_coefficients, nonzero_idx):
                     linewidth=.5,
                     col_cluster=False,
                     figsize=(16, 8),
-                    xticklabels=[V.var_names[i] for i in nonzero_idx],
+                    xticklabels=[V.species[i] for i in nonzero_idx],
                     yticklabels=[],
                     cbar_kws={"ticks": [-1, 0, 1]}
                 )

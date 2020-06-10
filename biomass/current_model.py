@@ -14,8 +14,8 @@ def get_model_properties():
     model_reactions = 0
     for reactions_in_process in biological_processes:
         model_reactions += len(reactions_in_process)
-    model_species = len(V.var_names)
-    model_parameters = len(C.param_names)
+    model_species = V.n_species
+    model_parameters = C.n_parameters
 
     print(
         "{:d} reactions\n{:d} species\n{:d} parameters".format(
@@ -72,10 +72,10 @@ def get_optimization_results():
             writer.writerows(optimized_params)
 
     if len(search_idx[1]) > 0:
-        optimized_initvars = np.empty(
+        optimized_initials = np.empty(
             (len(search_idx[1])+2, len(n_file)+1), dtype='<U21'
         )
-        for i, var_index in enumerate(search_idx[1]):
+        for i, specie_index in enumerate(search_idx[1]):
             for j, nth_paramset in enumerate(n_file):
                 best_generation = np.load(
                     './out/{:d}/generation.npy'.format(
@@ -92,13 +92,13 @@ def get_optimization_results():
                         nth_paramset
                     )
                 )
-                optimized_initvars[0, 0] = ''
-                optimized_initvars[1, 0] = '*Error*'
-                optimized_initvars[i+2, 0] = V.var_names[var_index]
-                optimized_initvars[0, nth_paramset] = str(nth_paramset)
-                optimized_initvars[1, nth_paramset] = '{:8.3e}'.format(error)
-                optimized_initvars[i+2, nth_paramset] = \
+                optimized_initials[0, 0] = ''
+                optimized_initials[1, 0] = '*Error*'
+                optimized_initials[i+2, 0] = V.species[specie_index]
+                optimized_initials[0, nth_paramset] = str(nth_paramset)
+                optimized_initials[1, nth_paramset] = '{:8.3e}'.format(error)
+                optimized_initials[i+2, nth_paramset] = \
                     '{:8.3e}'.format(best_indiv[i+len(search_idx[0])])
         with open('optimized_inital_varlues.csv', 'w') as f:
             writer = csv.writer(f, lineterminator='\n')
-            writer.writerows(optimized_initvars)
+            writer.writerows(optimized_initials)

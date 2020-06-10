@@ -52,16 +52,16 @@ There are several files that needs editing prior to running the program:
 ```bash
 $ cd biomass/models/[your_model]
 ```
-### 1. Edit names of model parameters and variables:
+### 1. Edit names of model parameters and species:
 - ```name2idx/```
 
     - ```parameters.py```
-        - Write names of model parameters in ```param_names``` as string
+        - Write names of model parameters in ```parameters``` as string
 
-    - ```variables.py```
-        - Write names of model variables in ```var_names``` as string
+    - ```species.py```
+        - Write names of model species in ```species``` as string
 
-- Or you can use bash script to produce file of parameters and variables after editing ```set_model.py```.
+- Or you can use bash script to produce file of parameters and species after editing ```set_model.py```.
     ```bash
     # navigate to the tutorial folder 
     $ cd biomass/tutorial
@@ -97,7 +97,7 @@ $ cd biomass/models/[your_model]
     def objective(indiv_gene):
         """Define an objective function to be minimized
         """
-        indiv = decode_gene2variable(indiv_gene)
+        indiv = decode_gene2val(indiv_gene)
 
         (x, y0) = update_param(indiv)
 
