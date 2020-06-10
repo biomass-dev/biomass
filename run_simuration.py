@@ -1,10 +1,7 @@
 import warnings
 warnings.filterwarnings('ignore')
 
-from biomass.models.Nakakuki_Cell_2010 import (
-    C, V, param_values, initial_values, observables,
-    NumericalSimulation, ExperimentalData, SearchParam
-)
+from biomass.models.Nakakuki_Cell_2010 import *
 from biomass.dynamics import SignalingSystems
 
 if __name__ == '__main__':
