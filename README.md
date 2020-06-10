@@ -85,12 +85,21 @@ simulate_all(viz_type, show_all, stdev)
 - If True, the standard deviation of simulated values will be shown (only when ```viz_type == 'average'```).
 
 ```python
-import warnings
-warnings.filterwarnings('ignore')
+from biomass.models.Nakakuki_Cell_2010 import *
 
-from biomass.param_estim import simulate_all
-            
-simulate_all(viz_type='average', show_all=False, stdev=True)
+from biomass.dynamics import SignalingSystems
+
+erbb_network = SignalingSystems(
+    parameters=C.parameters,
+    species=V.species,
+    pval=param_values,
+    ival=initial_values,
+    obs=observables,
+    sim=NumericalSimulation(),
+    exp=ExperimentalData(),
+    sp=SearchParam()
+)
+erbb_network.simulate_all(viz_type='average', show_all=False, stdev=True)
 ```
 ![simulation_average](public/images/simulation_average.png)
 
@@ -120,8 +129,17 @@ analyze(metric, style)
 - ```'heatmap'```
 
 ```python
-from biomass.analysis import reaction, nonzero_init
+from biomass.models.Nakakuki_Cell_2010 import *
 
+from biomass.analysis.reaction import ReactionSensitivity
+
+reaction = ReactionSensitivity(
+    model=set_model,
+    obs=observables,
+    sim=NumericalSimulation(),
+    sp=SearchParam(),
+    rxn=ReactionNetwork()
+)
 reaction.analyze(metric='integral', style='barplot')
 ```
 ![sensitivity_PcFos](public/images/sensitivity_PcFos.png)
