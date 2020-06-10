@@ -1,7 +1,6 @@
 import time
 import numpy as np
 
-from .initial_population import InitialPopulation
 from .rcga import (UnimodalNormalDistributionXover,
                    DistanceIndependentDiversityControl)
 
@@ -18,7 +17,7 @@ class GeneticAlgorithmContinue(object):
         )
         search_rgn = self.get_region()
 
-        (best_indiv, best_fitness) = self._ga_v2_continue()(
+        (best_indiv, best_fitness) = self._ga_v2_continue(
             nth_paramset,
             max_generation=10000,
             n_population=int(5*search_rgn.shape[1]),
@@ -27,6 +26,48 @@ class GeneticAlgorithmContinue(object):
             allowable_error=0.35,
             p0_bounds=[0.1, 10.0]  # [lower_bounds, upper bounds]
         )
+
+    def _set_continue(self, nth_paramset, n_population, n_gene, p0_bounds):
+        best_generation = np.load(
+            './out/{:d}/generation.npy'.format(nth_paramset)
+        )
+        best_indiv = np.load(
+            './out/{:d}/fit_param{:d}.npy'.format(nth_paramset, int(best_generation))
+        )
+        population = np.full((n_population, n_gene+1), np.inf)
+
+        with open('./out/{:d}/initpop.log'.format(nth_paramset), mode='w') as f:
+            f.write(
+                'Generating the initial population. . .\n'
+            )
+        for i in range(n_population):
+            while not np.isfinite(population[i, -1]):
+                population[i, :n_gene] = self._encode_bestIndivVal2randGene(
+                    best_indiv, p0_bounds
+                )
+                population[i, :n_gene] = np.clip(population[i, :n_gene], 0., 1.)
+                population[i, -1] = self.objective(population[i, :n_gene])
+            with open('./out/{:d}/initpop.log'.format(nth_paramset), mode='a') as f:
+                f.write(
+                    '{:d} / {:d}\n'.format(i + 1, n_population)
+                )
+        population = population[np.argsort(population[:, -1]), :]
+
+        return population
+
+    def _encode_bestIndivVal2randGene(self, best_indiv, p0_bounds):
+        search_rgn = self.get_region()
+        rand_gene = (
+            np.log10(
+                best_indiv * 10**(
+                    np.random.rand(len(best_indiv))
+                    * np.log10(p0_bounds[1]/p0_bounds[0])
+                    + np.log10(p0_bounds[0])
+                )
+            ) - search_rgn[0, :]
+        ) / (search_rgn[1, :] - search_rgn[0, :])
+
+        return rand_gene
 
     def _encode_val2gene(self, indiv):
         search_rgn = self.get_region()
@@ -41,7 +82,6 @@ class GeneticAlgorithmContinue(object):
     def _ga_v1_continue(self, nth_paramset, max_generation, n_population,
                         n_children, n_gene, allowable_error, p0_bounds):
         undx = UnimodalNormalDistributionXover(self.objective)
-        initpop = InitialPopulation(self.get_region, self.objective)
         count_num = np.load(
             './out/{:d}/count_num.npy'.format(nth_paramset)
         )
@@ -56,7 +96,7 @@ class GeneticAlgorithmContinue(object):
         best_indiv_gene = self._encode_val2gene(best_indiv)
         best_fitness = self.objective(best_indiv_gene)
 
-        population = initpop.set_continu(
+        population = self._set_continu(
             nth_paramset, n_population, n_gene, p0_bounds
         )
         if best_fitness < population[0, -1]:
@@ -134,7 +174,6 @@ class GeneticAlgorithmContinue(object):
     def _ga_v2_continue(self, nth_paramset, max_generation, n_population,
                         n_children, n_gene, allowable_error, p0_bounds):
         didc = DistanceIndependentDiversityControl(self.objective)
-        initpop = InitialPopulation(self.get_region, self.objective)
         if n_population < n_gene + 2:
             raise ValueError(
                 'n_population must be larger than {:d}'.format(n_gene + 2)
@@ -156,7 +195,7 @@ class GeneticAlgorithmContinue(object):
         best_indiv_gene = self._encode_val2gene(best_indiv)
         best_fitness = self.objective(best_indiv_gene)
 
-        population = initpop.set_continu(
+        population = self._set_continu(
             nth_paramset, n_population, n_gene, p0_bounds
         )
         if best_fitness < population[0, -1]:

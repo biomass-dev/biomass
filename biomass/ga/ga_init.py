@@ -2,7 +2,6 @@ import os
 import time
 import numpy as np
 
-from .initial_population import InitialPopulation
 from .rcga import (UnimodalNormalDistributionXover,
                    DistanceIndependentDiversityControl)
 
@@ -48,12 +47,28 @@ class GeneticAlgorithmInit(object):
             allowable_error=0.35
         )
 
+    def _set_initial(self, nth_paramset, n_population, n_gene):
+        population = np.full((n_population, n_gene+1), np.inf)
+        with open('./out/{:d}/initpop.log'.format(nth_paramset), mode='w') as f:
+            f.write(
+                'Generating the initial population. . .\n'
+            )
+        for i in range(n_population):
+            while not np.isfinite(population[i, -1]):
+                population[i, :n_gene] = np.random.rand(n_gene)
+                population[i, -1] = self.objective(population[i, :n_gene])
+            with open('./out/{:d}/initpop.log'.format(nth_paramset), mode='a') as f:
+                f.write(
+                    '{:d} / {:d}\n'.format(i + 1, n_population)
+                )
+        population = population[np.argsort(population[:, -1]), :]
+
+        return population
 
     def _ga_v1(self, nth_paramset, max_generation, n_population,
                n_children, n_gene, allowable_error):
         undx = UnimodalNormalDistributionXover(self.objective)
-        initpop = InitialPopulation(self.get_region, self.objective)
-        population = initpop.set_initial(nth_paramset, n_population, n_gene)
+        population = self._set_initial(nth_paramset, n_population, n_gene)
         with open('./out/{:d}/out.log'.format(nth_paramset), mode='w') as f:
             f.write(
                 'Generation1: Best Fitness = {:e}\n'.format(population[0, -1])
@@ -198,7 +213,6 @@ class GeneticAlgorithmInit(object):
             Otherwise, Generation <- Generation + 1, and return to the step 2.
         """
         didc = DistanceIndependentDiversityControl(self.objective)
-        initpop = InitialPopulation(self.get_region, self.objective)
         if n_population < n_gene + 2:
             raise ValueError(
                 'n_population must be larger than {:d}'.format(n_gene + 2)
@@ -206,7 +220,7 @@ class GeneticAlgorithmInit(object):
         n_iter = 1
         n0 = np.empty(3*n_population)
 
-        population = initpop.set_initial(nth_paramset, n_population, n_gene)
+        population = self._set_initial(nth_paramset, n_population, n_gene)
         n0[0] = population[0, -1]
 
         with open('./out/{:d}/out.log'.format(nth_paramset), mode='w') as f:
