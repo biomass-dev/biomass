@@ -3,12 +3,11 @@ import sys
 import re
 import numpy as np
 
-from biomass.current_model import initial_values, observables, NumericalSimulation
-from biomass.param_estim import load_param
+from biomass.dynamics import load_param
 from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
 
 
-def calc_sensitivity_coefficients(metric, nonzero_idx):
+def calc_sensitivity_coefficients(metric, nonzero_idx, ival, obs, sim, sp):
     """ Calculating Sensitivity Coefficients
 
     Parameters
@@ -26,11 +25,10 @@ def calc_sensitivity_coefficients(metric, nonzero_idx):
     sensitivity_coefficients: numpy array
     
     """
-    sim = NumericalSimulation()
 
     rate = 1.01  # 1% change
 
-    y0 = initial_values()
+    y0 = ival()
 
     nonzero_idx = []
     for i, val in enumerate(y0):
@@ -43,18 +41,18 @@ def calc_sensitivity_coefficients(metric, nonzero_idx):
             n_file.append(int(file))
 
     signaling_metric = np.full(
-        (len(n_file), len(nonzero_idx)+1, len(observables), len(sim.conditions)),
+        (len(n_file), len(nonzero_idx)+1, len(obs), len(sim.conditions)),
         np.nan
     )
     for i, nth_paramset in enumerate(n_file):
         if os.path.isfile('./out/{:d}/generation.npy'.format(nth_paramset)):
-            (x, y0) = load_param(nth_paramset)
+            (x, y0) = load_param(nth_paramset, sp.update)
             copy_y0 = y0[:]
             for j, idx in enumerate(nonzero_idx):
                 y0 = copy_y0[:]
                 y0[idx] = copy_y0[idx] * rate
                 if sim.simulate(x, y0) is None:
-                    for k, _ in enumerate(observables):
+                    for k, _ in enumerate(obs):
                         for l, _ in enumerate(sim.conditions):
                             signaling_metric[i, j, k, l] = get_signaling_metric(
                                 metric, sim.simulations[k, :, l]
@@ -67,14 +65,14 @@ def calc_sensitivity_coefficients(metric, nonzero_idx):
             # Signaling metric without perturbation (j=-1)
             y0 = copy_y0[:]
             if sim.simulate(x, y0) is None:
-                for k, _ in enumerate(observables):
+                for k, _ in enumerate(obs):
                     for l, _ in enumerate(sim.conditions):
                         signaling_metric[i, -1, k, l] = get_signaling_metric(
                             metric, sim.simulations[k, :, l]
                         )
     sensitivity_coefficients = dlnyi_dlnxj(
         signaling_metric, n_file, nonzero_idx,
-        observables, sim.conditions, rate, metric_idx=-1
+        obs, sim.conditions, rate, metric_idx=-1
     )
 
     return sensitivity_coefficients

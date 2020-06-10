@@ -3,11 +3,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-from biomass.current_model import V, observables, NumericalSimulation
 
-
-def barplot_sensitivity(metric, sensitivity_coefficients, nonzero_idx):
-    sim = NumericalSimulation()
+def barplot_sensitivity(metric, sensitivity_coefficients, nonzero_idx, species, obs, sim):
     width = 0.3
 
     # rcParams
@@ -24,7 +21,7 @@ def barplot_sensitivity(metric, sensitivity_coefficients, nonzero_idx):
         raise ValueError(
             'len(colors) must be equal to or greater than len(sim.conditions).'
         )
-    for k, obs_name in enumerate(observables):
+    for k, obs_name in enumerate(obs):
         plt.figure(figsize=(9, 5))
         plt.hlines(
             [0], -width, len(nonzero_idx)-width, 'k', lw=1
@@ -48,7 +45,7 @@ def barplot_sensitivity(metric, sensitivity_coefficients, nonzero_idx):
                 )
         plt.xticks(
             np.arange(len(nonzero_idx)) + width/2,
-            [V.species[i] for i in nonzero_idx],
+            [species[i] for i in nonzero_idx],
             rotation=30
         )
         plt.ylabel(
@@ -64,8 +61,8 @@ def barplot_sensitivity(metric, sensitivity_coefficients, nonzero_idx):
         )
         plt.close()
 
-def heatmap_sensitivity(metric, sensitivity_coefficients, nonzero_idx):
-    sim = NumericalSimulation()
+
+def heatmap_sensitivity(metric, sensitivity_coefficients, nonzero_idx, species, obs, sim):
     width = 0.3
 
     # rcParams
@@ -74,7 +71,7 @@ def heatmap_sensitivity(metric, sensitivity_coefficients, nonzero_idx):
     plt.rcParams['mathtext.fontset'] = 'custom'
     plt.rcParams['mathtext.it'] = 'Arial:italic'
 
-    for k, obs_name in enumerate(observables):
+    for k, obs_name in enumerate(obs):
         for l, condition in enumerate(sim.conditions):
             sensitivity_matrix = sensitivity_coefficients[:, :, k, l]
             # Normalize from -1 to 1
@@ -107,7 +104,7 @@ def heatmap_sensitivity(metric, sensitivity_coefficients, nonzero_idx):
                     linewidth=.5,
                     col_cluster=False,
                     figsize=(16, 8),
-                    xticklabels=[V.species[i] for i in nonzero_idx],
+                    xticklabels=[species[i] for i in nonzero_idx],
                     yticklabels=[],
                     cbar_kws={"ticks": [-1, 0, 1]}
                 )

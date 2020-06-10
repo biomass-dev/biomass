@@ -3,12 +3,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-from biomass.current_model import observables, NumericalSimulation
-
 
 def barplot_sensitivity(metric, sensitivity_coefficients, biological_processes, 
-                        n_reaction, sort_idx, reaction_indices):
-    sim = NumericalSimulation()
+                        n_reaction, sort_idx, reaction_indices, obs, sim):
     width = 0.3
 
     # rcParams
@@ -25,7 +22,7 @@ def barplot_sensitivity(metric, sensitivity_coefficients, biological_processes,
         raise ValueError(
             'len(colors) must be equal to or greater than len(sim.conditions).'
         )
-    for k, obs_name in enumerate(observables):
+    for k, obs_name in enumerate(obs):
         plt.figure(figsize=(12, 5))
         # draw_vertical_span
         if len(biological_processes) > 1:
@@ -94,9 +91,7 @@ def barplot_sensitivity(metric, sensitivity_coefficients, biological_processes,
 
 
 def heatmap_sensitivity(metric, sensitivity_coefficients, biological_processes,
-                        n_reaction, sort_idx, reaction_indices):
-        sim = NumericalSimulation()
-
+                        n_reaction, sort_idx, reaction_indices, obs, sim):
         # rcParams
         plt.rcParams['font.size'] = 8
         plt.rcParams['font.family'] = 'Arial'
@@ -106,7 +101,7 @@ def heatmap_sensitivity(metric, sensitivity_coefficients, biological_processes,
         plt.rcParams['xtick.major.width'] = 1.2
         plt.rcParams['ytick.major.width'] = 1.2
 
-        for k, obs_name in enumerate(observables):
+        for k, obs_name in enumerate(obs):
             for l, condition in enumerate(sim.conditions):
                 sensitivity_matrix = \
                     sensitivity_coefficients[:, sort_idx[:-1], k, l]
