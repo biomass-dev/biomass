@@ -2,7 +2,7 @@ import numpy as np
 from scipy.spatial.distance import cosine
 
 from .observable import observables, ExperimentalData, NumericalSimulation
-from .set_search_param import update_param, decode_gene2val
+from .set_search_param import SearchParam
 
 
 def _compute_objval_rss(sim_data, exp_data):
@@ -35,9 +35,9 @@ def _diff_sim_and_exp(sim_matrix, exp_dict, exp_timepoint, conditions,
 def objective(indiv_gene):
     """Define an objective function to be minimized
     """
-    indiv = decode_gene2val(indiv_gene)
-
-    (x, y0) = update_param(indiv)
+    sp = SearchParam()
+    indiv = sp.gene2val(indiv_gene)
+    (x, y0) = sp.update(indiv)
 
     exp = ExperimentalData()
     sim = NumericalSimulation()

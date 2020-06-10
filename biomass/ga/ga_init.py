@@ -6,9 +6,8 @@ from .rcga import (UnimodalNormalDistributionXover,
                    DistanceIndependentDiversityControl)
 
 class GeneticAlgorithmInit(object):
-    def __init__(self, get_region, gene2val, objective):
-        self.get_region = get_region
-        self.gene2val = gene2val
+    def __init__(self, sp, objective):
+        self.sp = sp
         self.objective = objective
 
     def run(self, nth_paramset):
@@ -36,7 +35,7 @@ class GeneticAlgorithmInit(object):
         np.random.seed(
             time.time_ns()*nth_paramset % 2**32
         )
-        search_rgn = self.get_region()
+        search_rgn = self.sp.get_region()
 
         (best_indiv, best_fitness) = self._ga_v2(
             nth_paramset,
@@ -73,7 +72,7 @@ class GeneticAlgorithmInit(object):
             f.write(
                 'Generation1: Best Fitness = {:e}\n'.format(population[0, -1])
             )
-        best_indiv = self.gene2val(population[0, :n_gene])
+        best_indiv = self.sp.gene2val(population[0, :n_gene])
         best_fitness = population[0, -1]
 
         np.save(
@@ -86,7 +85,7 @@ class GeneticAlgorithmInit(object):
             './out/{:d}/best_fitness.npy'.format(nth_paramset), best_fitness
         )
         if population[0, -1] <= allowable_error:
-            best_indiv = self.gene2val(population[0, :n_gene])
+            best_indiv = self.sp.gene2val(population[0, :n_gene])
             best_fitness = population[0, -1]
 
             return best_indiv, best_fitness
@@ -96,7 +95,7 @@ class GeneticAlgorithmInit(object):
             population = undx.mgg_alternation(
                 population, n_population, n_children, n_gene
             )
-            best_indiv = self.gene2val(population[0, :n_gene])
+            best_indiv = self.sp.gene2val(population[0, :n_gene])
             if population[0, -1] < best_fitness:
                 np.save(
                     './out/{:d}/generation.npy'.format(
@@ -126,14 +125,14 @@ class GeneticAlgorithmInit(object):
                     )
                 )
             if population[0, -1] <= allowable_error:
-                best_indiv = self.gene2val(population[0, :n_gene])
+                best_indiv = self.sp.gene2val(population[0, :n_gene])
                 best_fitness = population[0, -1]
 
                 return best_indiv, best_fitness
 
             generation += 1
 
-        best_indiv = self.gene2val(
+        best_indiv = self.sp.gene2val(
             population[0, :n_gene]
         )
         best_fitness = population[0, -1]
@@ -227,7 +226,7 @@ class GeneticAlgorithmInit(object):
             f.write(
                 'Generation1: Best Fitness = {:e}\n'.format(population[0, -1])
             )
-        best_indiv = self.gene2val(population[0, :n_gene])
+        best_indiv = self.sp.gene2val(population[0, :n_gene])
         best_fitness = population[0, -1]
 
         np.save(
@@ -240,7 +239,7 @@ class GeneticAlgorithmInit(object):
             './out/{:d}/best_fitness.npy'.format(nth_paramset), best_fitness
         )
         if population[0, -1] <= allowable_error:
-            best_indiv = self.gene2val(population[0, :n_gene])
+            best_indiv = self.sp.gene2val(population[0, :n_gene])
             best_fitness = population[0, -1]
 
             return best_indiv, best_fitness
@@ -268,7 +267,7 @@ class GeneticAlgorithmInit(object):
             else:
                 n0[generation % len(n0)] = population[0, -1]
 
-            best_indiv = self.gene2val(population[0, :n_gene])
+            best_indiv = self.sp.gene2val(population[0, :n_gene])
             if population[0, -1] < best_fitness:
                 np.save(
                     './out/{:d}/generation.npy'.format(
@@ -298,14 +297,14 @@ class GeneticAlgorithmInit(object):
                     )
                 )
             if population[0, -1] <= allowable_error:
-                best_indiv = self.gene2val(population[0, :n_gene])
+                best_indiv = self.sp.gene2val(population[0, :n_gene])
                 best_fitness = population[0, -1]
 
                 return best_indiv, best_fitness
 
             generation += 1
 
-        best_indiv = self.gene2val(population[0, :n_gene])
+        best_indiv = self.sp.gene2val(population[0, :n_gene])
         best_fitness = population[0, -1]
 
         return best_indiv, best_fitness

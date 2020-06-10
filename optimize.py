@@ -6,14 +6,11 @@ import multiprocessing
 import warnings
 warnings.filterwarnings('ignore')
 
-from biomass.models.Nakakuki_Cell_2010 import (get_search_region,
-                                                decode_gene2val, objective)
+from biomass.models.Nakakuki_Cell_2010 import SearchParam, objective
 from biomass.ga import GeneticAlgorithmInit
 
 if __name__ == '__main__':
-    ga_init = GeneticAlgorithmInit(
-        get_search_region, decode_gene2val, objective
-    )
+    ga_init = GeneticAlgorithmInit(SearchParam(), objective)
     args = sys.argv
     if len(args) == 2:
         ga_init.run(int(args[1]))
