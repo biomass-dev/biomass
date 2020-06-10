@@ -2,7 +2,16 @@ import numpy as np
 
 
 class UnimodalNormalDistributionXover(object):
-    """ UNDX + MGG
+    """ - UNDX: 
+            Ono I., Kita H., Kobayashi S.. A robust real-coded genetic 
+            algorithm using unimodal normal distribution crossover augmented by 
+            uniform crossover: effects of self-adaptation of crossover 
+            probabilities. in Proceedings of the 1st Annual Conference on 
+            Genetic and Evolutionary Computation 1, 496–503 (1999).
+        - MGG:
+            Sato, H., Ono, I. & Kobayashi, S. A new generation alternation model 
+            of genetic algorithms and its assesment. J. Jpn Soc. Artif. Intell. 
+            12, 734–744 (1997).
     """
     def __init__(self, objective):
         self.objective = objective
@@ -101,7 +110,10 @@ class UnimodalNormalDistributionXover(object):
 
 
 class DistanceIndependentDiversityControl(object):
-    """Modified
+    """ DIDC:
+            Kimura, S. & Konagaya, A. A Genetic Algorithm with Distance 
+            Independent Diversity Control for High Dimensional Function 
+            Optimization. J. Japanese Soc. Artif. Intell. 18, 193–202 (2003).
     """
     def __init__(self, objective):
         self.objective = objective
