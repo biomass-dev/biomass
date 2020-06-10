@@ -24,7 +24,7 @@ def timecourse(sim, n_file, viz_type, show_all, stdev,
     shape = ['^', 'o']
     if len(cmap) < len(sim.conditions) or len(shape) < len(sim.conditions):
         raise ValueError(
-            'len(cmap), len(shape) must be equal to or sgreater than len(sim.conditions).'
+            'len(cmap), len(shape) must be equal to or greater than len(sim.conditions).'
         )
 
     for i, obs_name in enumerate(obs):
