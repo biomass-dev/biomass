@@ -3,16 +3,12 @@ import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-from biomass.current_model import C, V, observables, ExperimentalData
 
-
-def timecourse(sim, n_file, viz_type, show_all, stdev, simulations_all):
+def timecourse(sim, n_file, viz_type, show_all, stdev,
+               simulations_all, obs, exp):
     os.makedirs(
-        './figure/simulation/{}'.format(
-            viz_type
-        ), exist_ok=True
+        './figure/simulation/{}'.format(viz_type), exist_ok=True
     )
-    exp = ExperimentalData()
 
     plt.rcParams['font.size'] = 20
     plt.rcParams['axes.linewidth'] = 1.5
@@ -28,10 +24,10 @@ def timecourse(sim, n_file, viz_type, show_all, stdev, simulations_all):
     shape = ['^', 'o']
     if len(cmap) < len(sim.conditions) or len(shape) < len(sim.conditions):
         raise ValueError(
-            'len(cmap), len(shape) must be equal to or greater than len(sim.conditions).'
+            'len(cmap), len(shape) must be equal to or sgreater than len(sim.conditions).'
         )
 
-    for i, obs_name in enumerate(observables):
+    for i, obs_name in enumerate(obs):
 
         plt.figure(figsize=(4, 3))
         plt.gca().spines['right'].set_visible(False)
@@ -116,7 +112,7 @@ def timecourse(sim, n_file, viz_type, show_all, stdev, simulations_all):
         plt.close()
 
 
-def param_range(search_idx, popt, portrait):
+def param_range(search_idx, popt, parameters, species, sp, portrait):
     os.makedirs('./figure/param_range', exist_ok=True)
 
     plt.rcParams['font.size'] = 12
@@ -128,10 +124,12 @@ def param_range(search_idx, popt, portrait):
     plt.rcParams['mathtext.it'] = 'Arial:italic'
 
     if portrait:
-        if len(search_idx[0]) > 0:
-            fig = plt.figure(figsize=(8, len(search_idx[0])/2.5))
+        if len(sp.idx_params) > 0:
+            fig = plt.figure(
+                figsize=(8, len(sp.idx_params) / 2.5)
+            )
             ax = sns.boxenplot(
-                data=popt[:, :len(search_idx[0])],
+                data=popt[:, :len(sp.idx_params)],
                 orient='h',
                 linewidth=0.5,
                 palette='Set2'
@@ -139,7 +137,7 @@ def param_range(search_idx, popt, portrait):
             sns.despine()
             ax.set_xlabel('Parameter value')
             ax.set_ylabel('')
-            ax.set_yticklabels([C.parameters[i] for i in search_idx[0]])
+            ax.set_yticklabels([parameters[i] for i in sp.idx_params])
             ax.set_xscale('log')
 
             plt.savefig(
@@ -147,10 +145,12 @@ def param_range(search_idx, popt, portrait):
                 bbox_inches='tight'
             )
             plt.close(fig)
-        if len(search_idx[1]) > 0:
-            fig = plt.figure(figsize=(8, len(search_idx[1])/2.5))
+        if len(sp.idx_initials) > 0:
+            fig = plt.figure(
+                figsize=(8, len(sp.idx_initials) / 2.5)
+            )
             ax = sns.boxenplot(
-                data=popt[:, len(search_idx[0]):],
+                data=popt[:, len(sp.idx_params):],
                 orient='h',
                 linewidth=0.5,
                 palette='Set2'
@@ -158,7 +158,7 @@ def param_range(search_idx, popt, portrait):
             sns.despine()
             ax.set_xlabel('Initial value')
             ax.set_ylabel('')
-            ax.set_yticklabels([V.species[i] for i in search_idx[1]])
+            ax.set_yticklabels([species[i] for i in sp.idx_initials])
             ax.set_xscale('log')
 
             plt.savefig(
@@ -167,17 +167,19 @@ def param_range(search_idx, popt, portrait):
             )
             plt.close(fig)
     else:
-        if len(search_idx[0]) > 0:
-            fig = plt.figure(figsize=(len(search_idx[0])/2.2, 6))
+        if len(sp.idx_params) > 0:
+            fig = plt.figure(
+                figsize=(len(sp.idx_params) / 2.2, 6)
+            )
             ax = sns.boxenplot(
-                data=popt[:, :len(search_idx[0])],
+                data=popt[:, :len(sp.idx_params)],
                 linewidth=0.5,
                 palette='Set2'
             )
             sns.despine()
             ax.set_xlabel('')
             ax.set_xticklabels(
-                [C.parameters[i] for i in search_idx[0]], rotation=45
+                [parameters[i] for i in sp.idx_params], rotation=45
             )
             ax.set_ylabel('Parameter value')
             ax.set_yscale('log')
@@ -187,16 +189,18 @@ def param_range(search_idx, popt, portrait):
                 bbox_inches='tight'
             )
             plt.close(fig)
-        if len(search_idx[1]) > 0:
-            fig = plt.figure(figsize=(len(search_idx[1])/2.2, 6))
+        if len(sp.idx_initials) > 0:
+            fig = plt.figure(
+                figsize=(len(sp.idx_initials) / 2.2, 6)
+            )
             ax = sns.boxenplot(
-                data=popt[:, len(search_idx[0]):],
+                data=popt[:, len(sp.idx_params):],
                 linewidth=0.5,
                 palette='Set2'
             )
             ax.set_xlabel('')
             ax.set_xticklabels(
-                [V.species[i] for i in search_idx[1]], rotation=45
+                [species[i] for i in sp.idx_initials], rotation=45
             )
             sns.despine()
             ax.set_ylabel('Initial value')

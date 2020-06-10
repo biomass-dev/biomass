@@ -1,7 +1,6 @@
 import os
 import numpy as np
 
-from biomass.current_model import C, V, update_param
 
 def _get_indiv(paramset):
     best_generation = np.load(
@@ -18,16 +17,15 @@ def _get_indiv(paramset):
     return best_indiv
 
 
-def load_param(paramset):
+def load_param(paramset, update):
     best_indiv = _get_indiv(paramset)
-    
-    (x, y0) = update_param(best_indiv)
+    (x, y0) = update(best_indiv)
 
     return x, y0
 
 
-def write_best_fit_param(best_paramset):
-    (x, y0) = load_param(best_paramset)
+def write_best_fit_param(best_paramset, parameters, species, update):
+    (x, y0) = load_param(best_paramset, update)
     
     with open('./out/best_fit_param.txt', mode='w') as f:
         f.write(
@@ -38,22 +36,14 @@ def write_best_fit_param(best_paramset):
         f.write(
             '\n### f_params\n'
         )
-        for i in range(C.n_parameters):
-            f.write(
-                'x[C.{}] = {:8.3e}\n'.format(
-                    C.parameters[i], x[i]
-                )
-            )
+        for i, param in enumerate(parameters):
+            f.write('x[C.{}] = {:8.3e}\n'.format(param, x[i]))
         f.write(
             '\n### initial_values\n'
         )
-        for i in range(V.n_species):
+        for i, specie in enumerate(species):
             if y0[i] != 0:
-                f.write(
-                    'y0[V.{}] = {:8.3e}\n'.format(
-                        V.species[i], y0[i]
-                    )
-                )
+                f.write('y0[V.{}] = {:8.3e}\n'.format(specie, y0[i]))
 
 
 def get_optimized_param(n_file, search_idx):
