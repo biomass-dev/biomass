@@ -13,8 +13,8 @@ class UnimodalNormalDistributionXover(object):
             of genetic algorithms and its assesment. J. Jpn Soc. Artif. Intell. 
             12, 734–744 (1997).
     """
-    def __init__(self, objective):
-        self.objective = objective
+    def __init__(self, obj_func):
+        self.obj_func = obj_func
 
     @staticmethod
     def _undx(parents, n_gene):
@@ -64,7 +64,7 @@ class UnimodalNormalDistributionXover(object):
         """
         child = self._undx(parents, n_gene)
         child[:n_gene] = np.clip(child[:n_gene], 0., 1.)
-        child[-1] = self.objective(child[:n_gene])
+        child[-1] = self.obj_func(child[:n_gene])
 
         return child
 
@@ -115,8 +115,8 @@ class DistanceIndependentDiversityControl(object):
             Independent Diversity Control for High Dimensional Function 
             Optimization. J. Japanese Soc. Artif. Intell. 18, 193–202 (2003).
     """
-    def __init__(self, objective):
-        self.objective = objective
+    def __init__(self, obj_func):
+        self.obj_func = obj_func
 
     @staticmethod
     def _endx(parents, n_gene):
@@ -180,7 +180,7 @@ class DistanceIndependentDiversityControl(object):
             family[np.random.randint(low=1, high=n_children+2, dtype=np.int), :]
 
         if not np.isfinite(population[ip[1], -1]):
-            population[ip[1], -1] = self.objective(population[ip[1], :n_gene])
+            population[ip[1], -1] = self.obj_func(population[ip[1], :n_gene])
 
         population = population[np.argsort(population[:, -1]), :]
 
@@ -219,7 +219,7 @@ class DistanceIndependentDiversityControl(object):
         child = self._ndm(parents, n_gene)
         child[:n_gene] = np.clip(child[:n_gene], 0., 1.)
 
-        child[-1] = self.objective(child[:n_gene])
+        child[-1] = self.obj_func(child[:n_gene])
 
         return child
 

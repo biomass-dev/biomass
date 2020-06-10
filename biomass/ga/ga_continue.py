@@ -5,9 +5,9 @@ from .rcga import (UnimodalNormalDistributionXover,
                    DistanceIndependentDiversityControl)
 
 class GeneticAlgorithmContinue(object):
-    def __init__(self, sp, objective):
+    def __init__(self, sp, obj_func):
         self.sp = sp
-        self.objective = objective
+        self.obj_func = obj_func
 
     def run(self, nth_paramset):
 
@@ -45,7 +45,7 @@ class GeneticAlgorithmContinue(object):
                     best_indiv, p0_bounds
                 )
                 population[i, :n_gene] = np.clip(population[i, :n_gene], 0., 1.)
-                population[i, -1] = self.objective(population[i, :n_gene])
+                population[i, -1] = self.obj_func(population[i, :n_gene])
             with open('./out/{:d}/initpop.log'.format(nth_paramset), mode='a') as f:
                 f.write(
                     '{:d} / {:d}\n'.format(i + 1, n_population)
@@ -80,7 +80,7 @@ class GeneticAlgorithmContinue(object):
 
     def _ga_v1_continue(self, nth_paramset, max_generation, n_population,
                         n_children, n_gene, allowable_error, p0_bounds):
-        undx = UnimodalNormalDistributionXover(self.objective)
+        undx = UnimodalNormalDistributionXover(self.obj_func)
         count_num = np.load(
             './out/{:d}/count_num.npy'.format(nth_paramset)
         )
@@ -93,7 +93,7 @@ class GeneticAlgorithmContinue(object):
             )
         )
         best_indiv_gene = self._encode_val2gene(best_indiv)
-        best_fitness = self.objective(best_indiv_gene)
+        best_fitness = self.obj_func(best_indiv_gene)
 
         population = self._set_continu(
             nth_paramset, n_population, n_gene, p0_bounds
@@ -172,7 +172,7 @@ class GeneticAlgorithmContinue(object):
 
     def _ga_v2_continue(self, nth_paramset, max_generation, n_population,
                         n_children, n_gene, allowable_error, p0_bounds):
-        didc = DistanceIndependentDiversityControl(self.objective)
+        didc = DistanceIndependentDiversityControl(self.obj_func)
         if n_population < n_gene + 2:
             raise ValueError(
                 'n_population must be larger than {:d}'.format(n_gene + 2)
@@ -192,7 +192,7 @@ class GeneticAlgorithmContinue(object):
             )
         )
         best_indiv_gene = self._encode_val2gene(best_indiv)
-        best_fitness = self.objective(best_indiv_gene)
+        best_fitness = self.obj_func(best_indiv_gene)
 
         population = self._set_continu(
             nth_paramset, n_population, n_gene, p0_bounds

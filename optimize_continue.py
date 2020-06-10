@@ -9,7 +9,7 @@ from biomass.models.Nakakuki_Cell_2010 import SearchParam, objective
 from biomass.ga import GeneticAlgorithmContinue
 
 if __name__ == '__main__':
-    ga_continue = GeneticAlgorithmContinue(SearchParam(), objective)
+    ga_continue = GeneticAlgorithmContinue(sp=SearchParam(), obj_func=objective)
     args = sys.argv
     if len(args) == 2:
         ga_continue.run(int(args[1]))
