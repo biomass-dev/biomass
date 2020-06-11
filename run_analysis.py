@@ -1,3 +1,5 @@
+import warnings
+
 from biomass.models.Nakakuki_Cell_2010 import *
 
 if __name__ == '__main__':
@@ -9,6 +11,7 @@ if __name__ == '__main__':
         sp=SearchParam(),
         rxn=ReactionNetwork()
     )
+    warnings.filterwarnings('ignore')
     reaction.analyze(metric='integral', style='barplot')
 
     """
@@ -20,5 +23,6 @@ if __name__ == '__main__':
         sim = NumericalSimulation(),
         sp = SearchParam()
     )
+    warnings.filterwarnings('ignore')
     nonzero_init.analyze(metric='integral', style='barplot')
     """

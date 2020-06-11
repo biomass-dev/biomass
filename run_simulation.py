@@ -1,6 +1,3 @@
-import warnings
-warnings.filterwarnings('ignore')
-
 from biomass.models.Nakakuki_Cell_2010 import *
 from biomass.dynamics import SignalingSystems
 
