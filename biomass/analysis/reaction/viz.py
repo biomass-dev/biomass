@@ -115,18 +115,11 @@ def _remove_nan(sensitivity_matrix, normalize):
                 sensitivity_matrix.shape[1]
             )
         else:
-            if normalize:
-                sensitivity_matrix[i, :] = (
-                    sensitivity_matrix[i, :] / 
-                    np.nanmax(
-                        np.abs(
-                            sensitivity_matrix[i, :]
-                        )
-                    )
-                )
+            sensitivity_matrix[i, :] = sensitivity_matrix[i, :] / (
+                np.nanmax(np.abs(sensitivity_matrix[i, :])) if normalize else 1
+            )
     
     return np.delete(sensitivity_matrix, nan_idx, axis=0)
-
 
 
 def heatmap_sensitivity(metric, sensitivity_coefficients, biological_processes,
