@@ -4,6 +4,38 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 
 
+def _draw_vertical_span(biological_processes, width):
+    if len(biological_processes) > 1:
+        left_end = 0
+        for i, proc in enumerate(biological_processes):
+            if i % 2 == 0:
+                plt.axvspan(
+                    left_end - width,
+                    left_end - width + len(proc),
+                    facecolor='k', alpha=0.1
+                )
+            left_end += len(proc)
+
+
+def _write_reaction_indices(sort_idx, reaction_indices, average, stdev, width):
+    distance = np.max(average) * 0.05
+    for i, j in enumerate(sort_idx):
+        if j != 0:
+            xp = i + width/2
+            yp = average[j, np.argmax(np.abs(average[j, :]))]
+            yerr = stdev[j, np.argmax(stdev[j, :])]
+            if yp > 0:
+                plt.text(
+                    xp, yp + yerr + distance, reaction_indices[i],
+                    ha='center', va='bottom', fontsize=10, rotation=90
+                )
+            else:
+                plt.text(
+                    xp, yp - yerr - distance, reaction_indices[i],
+                    ha='center', va='top', fontsize=10, rotation=90
+                )
+
+
 def barplot_sensitivity(metric, sensitivity_coefficients, biological_processes, 
                         n_reaction, sort_idx, reaction_indices, obs, sim):
     width = 0.3
@@ -24,21 +56,9 @@ def barplot_sensitivity(metric, sensitivity_coefficients, biological_processes,
         )
     for k, obs_name in enumerate(obs):
         plt.figure(figsize=(12, 5))
-        # draw_vertical_span
-        if len(biological_processes) > 1:
-            left_end = 0
-            for i, ith_module in enumerate(biological_processes):
-                if i % 2 == 0:
-                    plt.axvspan(
-                        left_end - width,
-                        left_end - width + len(ith_module),
-                        facecolor='k', alpha=0.1
-                    )
-                left_end += len(ith_module)
-        plt.hlines(
-            [0], -width, n_reaction-1-width, 'k', lw=1
-        )
+        _draw_vertical_span(biological_processes, width)
         sensitivity_array = sensitivity_coefficients[:, :, k, :]
+        # Remove NaN
         nan_idx = []
         for i in range(sensitivity_array.shape[0]):
             for j in range(sensitivity_array.shape[1]):
@@ -49,7 +69,12 @@ def barplot_sensitivity(metric, sensitivity_coefficients, biological_processes,
         )
         if sensitivity_array.size != 0:
             average = np.mean(sensitivity_array, axis=0)
-            stdev = np.std(sensitivity_array, axis=0, ddof=1)
+            if sensitivity_array.shape[0] == 1:
+                stdev = np.zeros(
+                    (sensitivity_array.shape[1], sensitivity_array.shape[2])
+                )
+            else:
+                stdev = np.std(sensitivity_array, axis=0, ddof=1)
             for l, condition in enumerate(sim.conditions):
                 plt.bar(
                     np.arange(n_reaction) + l * width,
@@ -57,22 +82,10 @@ def barplot_sensitivity(metric, sensitivity_coefficients, biological_processes,
                     ecolor=colors[l], capsize=2, width=width, color=colors[l],
                     align='center', label=condition
                 )
-            distance = np.max(average) * 0.05
-            for i, j in enumerate(sort_idx):
-                if j != 0:
-                    xp = i + width/2
-                    yp = average[j, np.argmax(np.abs(average[j, :]))]
-                    yerr = stdev[j, np.argmax(stdev[j, :])]
-                    if yp > 0:
-                        plt.text(
-                            xp, yp + yerr + distance, reaction_indices[i],
-                            ha='center', va='bottom', fontsize=10, rotation=90
-                        )
-                    else:
-                        plt.text(
-                            xp, yp - yerr - distance, reaction_indices[i],
-                            ha='center', va='top', fontsize=10, rotation=90
-                        )
+            _write_reaction_indices(
+                sort_idx, reaction_indices, average, stdev, width
+            )
+            plt.hlines([0], -width, n_reaction-1-width, 'k', lw=1)
             plt.xticks([])
             plt.ylabel(
                 'Control coefficients on\n'+metric +
@@ -90,6 +103,32 @@ def barplot_sensitivity(metric, sensitivity_coefficients, biological_processes,
             plt.close()
 
 
+def _remove_nan(sensitivity_matrix, normalize):
+    nan_idx = []
+    for i in range(sensitivity_matrix.shape[0]):
+        if any(np.isnan(sensitivity_matrix[i, :])):
+            nan_idx.append(i)
+        else:
+            pass
+        if np.nanmax(np.abs(sensitivity_matrix[i, :])) == 0.0:
+            sensitivity_matrix[i, :] = np.zeros(
+                sensitivity_matrix.shape[1]
+            )
+        else:
+            if normalize:
+                sensitivity_matrix[i, :] = (
+                    sensitivity_matrix[i, :] / 
+                    np.nanmax(
+                        np.abs(
+                            sensitivity_matrix[i, :]
+                        )
+                    )
+                )
+    
+    return np.delete(sensitivity_matrix, nan_idx, axis=0)
+
+
+
 def heatmap_sensitivity(metric, sensitivity_coefficients, biological_processes,
                         n_reaction, sort_idx, reaction_indices, obs, sim):
         # rcParams
@@ -103,33 +142,16 @@ def heatmap_sensitivity(metric, sensitivity_coefficients, biological_processes,
 
         for k, obs_name in enumerate(obs):
             for l, condition in enumerate(sim.conditions):
-                sensitivity_matrix = \
-                    sensitivity_coefficients[:, sort_idx[:-1], k, l]
-                # Normalize from -1 to 1
-                nan_idx = []
-                for i in range(sensitivity_matrix.shape[0]):
-                    if any(np.isnan(sensitivity_matrix[i, :])):
-                        nan_idx.append(i)
-                    if np.nanmax(np.abs(sensitivity_matrix[i, :])) == 0.0:
-                        sensitivity_matrix[i, :] = np.zeros(
-                            sensitivity_matrix.shape[1]
-                        )
-                    else:
-                        sensitivity_matrix[i, :] = (
-                            sensitivity_matrix[i, :] / 
-                            np.nanmax(
-                                np.abs(
-                                    sensitivity_matrix[i, :]
-                                )
-                            )
-                        )
-                sensitivity_matrix = np.delete(
-                    sensitivity_matrix, nan_idx, axis=0
+                sensitivity_matrix = _remove_nan(
+                    sensitivity_coefficients[:, sort_idx[:-1], k, l],
+                    normalize=False
                 )
-                if sensitivity_matrix.size != 0 and not np.all(sensitivity_matrix == 0.0):
+                if sensitivity_matrix.shape[0] > 1 and \
+                        not np.all(sensitivity_matrix == 0.0):
                     sns.clustermap(
-                        sensitivity_matrix,
+                        data=sensitivity_matrix,
                         center=0,
+                        robust=True,
                         method='ward',
                         cmap='RdBu_r',
                         linewidth=.5,
@@ -139,7 +161,7 @@ def heatmap_sensitivity(metric, sensitivity_coefficients, biological_processes,
                             reaction_indices[i] for i in range(n_reaction-1)
                         ],
                         yticklabels=[],
-                        cbar_kws={"ticks": [-1, 0, 1]}
+                        #cbar_kws={"ticks": [-1, 0, 1]}
                     )
                     plt.savefig(
                         'figure/sensitivity/reaction/{}/heatmap/{}_{}.pdf'.format(
