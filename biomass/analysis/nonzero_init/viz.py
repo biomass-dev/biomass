@@ -4,7 +4,8 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 
 
-def barplot_sensitivity(metric, sensitivity_coefficients, nonzero_idx, species, obs, sim):
+def barplot_sensitivity(metric, sensitivity_coefficients, nonzero_idx,
+                        species, obs, sim):
     width = 0.3
 
     # rcParams
@@ -37,7 +38,10 @@ def barplot_sensitivity(metric, sensitivity_coefficients, nonzero_idx, species, 
             )
             if sensitivity_matrix.size != 0:
                 average = np.mean(sensitivity_matrix, axis=0)
-                stdev = np.std(sensitivity_matrix, axis=0, ddof=1)
+                if sensitivity_matrix.shape[0] == 1:
+                    stdev = np.zeros(sensitivity_matrix.shape[1])
+                else:
+                    stdev = np.std(sensitivity_matrix, axis=0, ddof=1)
                 plt.bar(
                     np.arange(len(nonzero_idx))+l*width, average, yerr=stdev,
                     ecolor=colors[l], capsize=2, width=width, color=colors[l],
@@ -62,7 +66,27 @@ def barplot_sensitivity(metric, sensitivity_coefficients, nonzero_idx, species, 
         plt.close()
 
 
-def heatmap_sensitivity(metric, sensitivity_coefficients, nonzero_idx, species, obs, sim):
+def _remove_nan(sensitivity_matrix, normalize):
+    nan_idx = []
+    for i in range(sensitivity_matrix.shape[0]):
+        if any(np.isnan(sensitivity_matrix[i, :])):
+            nan_idx.append(i)
+        else:
+            pass
+        if np.nanmax(np.abs(sensitivity_matrix[i, :])) == 0.0:
+            sensitivity_matrix[i, :] = np.zeros(
+                sensitivity_matrix.shape[1]
+            )
+        else:
+            sensitivity_matrix[i, :] = sensitivity_matrix[i, :] / (
+                np.nanmax(np.abs(sensitivity_matrix[i, :])) if normalize else 1
+            )
+
+    return np.delete(sensitivity_matrix, nan_idx, axis=0)
+
+
+def heatmap_sensitivity(metric, sensitivity_coefficients, nonzero_idx,
+                        species, obs, sim):
     width = 0.3
 
     # rcParams
@@ -73,32 +97,15 @@ def heatmap_sensitivity(metric, sensitivity_coefficients, nonzero_idx, species, 
 
     for k, obs_name in enumerate(obs):
         for l, condition in enumerate(sim.conditions):
-            sensitivity_matrix = sensitivity_coefficients[:, :, k, l]
-            # Normalize from -1 to 1
-            nan_idx = []
-            for i in range(sensitivity_matrix.shape[0]):
-                if any(np.isnan(sensitivity_matrix[i, :])):
-                    nan_idx.append(i)
-                if np.nanmax(np.abs(sensitivity_matrix[i, :])) == 0.0:
-                    sensitivity_matrix[i, :] = np.zeros(
-                        sensitivity_matrix.shape[1]
-                    )
-                else:
-                    sensitivity_matrix[i, :] = (
-                        sensitivity_matrix[i, :] / 
-                        np.nanmax(
-                            np.abs(
-                                sensitivity_matrix[i, :]
-                            )
-                        )
-                    )
-            sensitivity_matrix = np.delete(
-                sensitivity_matrix, nan_idx, axis=0
+            sensitivity_matrix = _remove_nan(
+                sensitivity_coefficients[:, :, k, l], normalize=False
             )
-            if sensitivity_matrix.size != 0 and not np.all(sensitivity_matrix == 0.0):
+            if sensitivity_matrix.shape[0] > 1 and \
+                    not np.all(sensitivity_matrix == 0.0):
                 sns.clustermap(
-                    sensitivity_matrix,
+                    data=sensitivity_matrix,
                     center=0,
+                    robust=True,
                     method='ward',
                     cmap='RdBu_r',
                     linewidth=.5,
@@ -106,7 +113,7 @@ def heatmap_sensitivity(metric, sensitivity_coefficients, nonzero_idx, species, 
                     figsize=(16, 8),
                     xticklabels=[species[i] for i in nonzero_idx],
                     yticklabels=[],
-                    cbar_kws={"ticks": [-1, 0, 1]}
+                    #cbar_kws={"ticks": [-1, 0, 1]}
                 )
                 plt.savefig(
                     'figure/sensitivity/nonzero_init/{}/heatmap/{}_{}.pdf'.format(
