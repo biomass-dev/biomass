@@ -30,7 +30,6 @@ class SignalingSystems(object):
             )
             return self.sim, False
 
-
     def simulate_all(self, viz_type, show_all, stdev):
         """Simulate ODE model with estimated parameter values.
 
@@ -56,7 +55,12 @@ class SignalingSystems(object):
             (only available for 'average' visualization type).
             
         """
-
+        if not viz_type in ['best', 'average', 'original', 'experiment'] and \
+                not viz_type.isdecimal():
+            raise ValueError(
+                "Avairable viz_type are: " \
+                "'best','average','original','experiment','n(=1, 2, ...)'"
+            )
         search_idx = (self.sp.idx_params, self.sp.idx_initials)
         n_file = [] if viz_type == 'original' else get_executable()
         simulations_all = np.full(
