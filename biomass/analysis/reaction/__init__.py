@@ -1,1 +1,1 @@
-from .analyze import ReactionSensitivity
+from .sensitivity import ReactionSensitivity

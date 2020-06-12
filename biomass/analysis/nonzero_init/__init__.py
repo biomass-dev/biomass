@@ -1,1 +1,1 @@
-from .analyze import NonZeroInitSensitivity
+from .sensitivity import NonZeroInitSensitivity
