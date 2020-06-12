@@ -1,4 +1,5 @@
 import os
+import re
 import numpy as np
 
 
@@ -50,16 +51,24 @@ def get_optimized_param(n_file, search_idx):
     popt = np.empty(
         (len(n_file), len(search_idx[0]) + len(search_idx[1]))
     )
-    empty_folder = []
     for k, nth_paramset in enumerate(n_file):
-        if not os.path.isfile('./out/{:d}/generation.npy'.format(nth_paramset)):
-            empty_folder.append(k)
-        else:
-            best_indiv = _get_indiv(nth_paramset)
-            popt[k, :] = best_indiv
-    if len(empty_folder) > 0:
-        popt = np.delete(
-            popt, empty_folder, axis=0
-        )
+        best_indiv = _get_indiv(nth_paramset)
+        popt[k, :] = best_indiv
 
     return popt
+
+
+def get_executable():
+    n_file = []
+    fitparam_files = os.listdir('./out')
+    for file in fitparam_files:
+        if re.match(r'\d', file):
+            n_file.append(int(file))
+    empty_folder = []
+    for i, nth_paramset in enumerate(n_file):
+        if not os.path.isfile('./out/{:d}/generation.npy'.format(nth_paramset)):
+            empty_folder.append(i)
+    for i in sorted(empty_folder, reverse=True):
+        n_file.pop(i)
+    
+    return n_file

@@ -4,6 +4,7 @@ import csv
 import numpy as np
 
 from biomass.models.Nakakuki_Cell_2010 import *
+from biomass.dynamics import get_executable
 
 class CurrentModel(object):
     def __init__(self,
@@ -55,18 +56,7 @@ class CurrentModel(object):
         optimized_params.csv
         optimized_initial_values.csv
         """
-        n_file = []
-        fitparam_files = os.listdir('./out')
-        for file in fitparam_files:
-            if re.match(r'\d', file):
-                n_file.append(int(file))
-        empty_folder = []
-        for i, nth_paramset in enumerate(n_file):
-            if not os.path.isfile('./out/{:d}/generation.npy'.format(nth_paramset)):
-                empty_folder.append(i)
-    
-        for i in sorted(empty_folder, reverse=True):
-            n_file.pop(i)
+        n_file = get_executable()
 
         if len(self.sp.idx_params) > 0:
             optimized_params = np.empty(

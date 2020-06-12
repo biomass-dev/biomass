@@ -3,7 +3,7 @@ import re
 import numpy as np
 
 from . import plot_func
-from .load_out import load_param, write_best_fit_param, get_optimized_param
+from .load_out import *
 
 
 class SignalingSystems(object):
@@ -58,14 +58,7 @@ class SignalingSystems(object):
         """
 
         search_idx = (self.sp.idx_params, self.sp.idx_initials)
-        
-        n_file = []
-        if viz_type != 'original':
-            if os.path.isdir('./out'):
-                fit_param_files = os.listdir('./out')
-                for file in fit_param_files:
-                    if re.match(r'\d', file):
-                        n_file.append(int(file))
+        n_file = [] if viz_type == 'original' else get_executable()
         simulations_all = np.full(
             (len(self.obs), len(n_file), len(self.sim.t), len(self.sim.conditions)),
             np.nan
@@ -75,14 +68,10 @@ class SignalingSystems(object):
                 if len(n_file) == 1 and viz_type == 'average':
                     viz_type = 'best'
                 for i, nth_paramset in enumerate(n_file):
-                    if os.path.isfile('./out/{:d}/generation.npy'.format(nth_paramset)):
-                        (sim, successful) = self._validate(nth_paramset)
-                        if successful:
-                            for j, _ in enumerate(self.obs):
-                                simulations_all[j, i, :, :] = sim.simulations[j, :, :]
-                    else:
-                        continue
-
+                    (sim, successful) = self._validate(nth_paramset)
+                    if successful:
+                        for j, _ in enumerate(self.obs):
+                            simulations_all[j, i, :, :] = sim.simulations[j, :, :]
                 best_fitness_all = np.full(len(n_file), np.inf)
                 for i, nth_paramset in enumerate(n_file):
                     if os.path.isfile('./out/{:d}/best_fitness.npy'.format(nth_paramset)):
@@ -112,9 +101,7 @@ class SignalingSystems(object):
                 x = self.pval()
                 y0 = self.ival()
                 if self.sim.simulate(x, y0) is not None:
-                    print(
-                        'Simulation failed.'
-                    )
+                    print('Simulation failed.')
         plot_func.timecourse(
             sim, n_file, viz_type, show_all, stdev,
             simulations_all, self.obs, self.exp
