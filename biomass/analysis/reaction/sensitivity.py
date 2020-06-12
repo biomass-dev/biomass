@@ -39,7 +39,7 @@ class ReactionSensitivity(object):
         rate = 1.01  # 1% change
         n_file = get_executable()
         signaling_metric = np.full(
-            (len(n_file), n_reaction, len(obs), len(sim.conditions)),
+            (len(n_file), n_reaction, len(self.obs), len(self.sim.conditions)),
             np.nan
         )
         for i, nth_paramset in enumerate(n_file):
@@ -52,7 +52,7 @@ class ReactionSensitivity(object):
                         for l, _ in enumerate(self.sim.conditions):
                             signaling_metric[i, j, k, l] = \
                                 get_signaling_metric(
-                                    metric, sim.simulations[k, :, l]
+                                    metric, self.sim.simulations[k, :, l]
                                 )
                 sys.stdout.write(
                     '\r{:d} / {:d}'.format(

@@ -63,9 +63,10 @@ class NonZeroInitSensitivity(object):
                 if self.sim.simulate(x, y0) is None:
                     for k, _ in enumerate(self.obs):
                         for l, _ in enumerate(self.sim.conditions):
-                            signaling_metric[i, j, k, l] = get_signaling_metric(
-                                metric, sim.simulations[k, :, l]
-                            )
+                            signaling_metric[i, j, k, l] = \
+                                get_signaling_metric(
+                                    metric, self.sim.simulations[k, :, l]
+                                )
                 sys.stdout.write(
                     '\r{:d} / {:d}'.format(
                         i*len(nonzero_idx)+j+1, len(n_file)*len(nonzero_idx)
@@ -77,7 +78,7 @@ class NonZeroInitSensitivity(object):
                 for k, _ in enumerate(self.obs):
                     for l, _ in enumerate(self.sim.conditions):
                         signaling_metric[i, -1, k, l] = get_signaling_metric(
-                            metric, sim.simulations[k, :, l]
+                            metric, self.sim.simulations[k, :, l]
                         )
         sensitivity_coefficients = dlnyi_dlnxj(
             signaling_metric, n_file, nonzero_idx,
