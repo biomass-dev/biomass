@@ -68,28 +68,26 @@ class ReactionSensitivity(object):
 
     def _load_sc(self, metric, n_reaction):
         os.makedirs(
-            './figure/sensitivity/reaction/{}/heatmap'.format(
-                metric
-            ), exist_ok=True
+            './figure/sensitivity/' \
+            'reaction/{}/heatmap'.format(metric), exist_ok=True
         )
-        if not os.path.isfile('sc_npy/reaction/{}/sc.npy'.format(metric)):
+        if not os.path.isfile(
+                './sensitivity_coefficients/' \
+                'reaction/{}/sc.npy'.format(metric)):
             os.makedirs(
-                './sc_npy/reaction/{}'.format(
-                    metric
-                ), exist_ok=True
+                './sensitivity_coefficients/' \
+                'reaction/{}'.format(metric), exist_ok=True
             )
             sensitivity_coefficients = \
                 self._calc_sensitivity_coefficients(metric, n_reaction)
             np.save(
-                'sc_npy/reaction/{}/sc'.format(
-                    metric
-                ), sensitivity_coefficients
+                './sensitivity_coefficients/' \
+                'reaction/{}/sc'.format(metric), sensitivity_coefficients
             )
         else:
             sensitivity_coefficients = np.load(
-                'sc_npy/reaction/{}/sc.npy'.format(
-                    metric
-                )
+                './sensitivity_coefficients/' \
+                'reaction/{}/sc.npy'.format(metric)
             )
             
         return sensitivity_coefficients
@@ -119,6 +117,4 @@ class ReactionSensitivity(object):
                 n_reaction, sort_idx, reaction_indices, self.obs, self.sim
             )
         else:
-            raise ValueError(
-                "Available styles are: 'barplot', 'heatmap'"
-        )
+            raise ValueError("Available styles are: 'barplot', 'heatmap'")

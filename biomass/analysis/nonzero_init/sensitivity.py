@@ -56,10 +56,10 @@ class NonZeroInitSensitivity(object):
         )
         for i, nth_paramset in enumerate(n_file):
             (x, y0) = load_param(nth_paramset, self.sp.update)
-            copy_y0 = y0[:]
+            y_init = y0[:]
             for j, idx in enumerate(nonzero_idx):
-                y0 = copy_y0[:]
-                y0[idx] = copy_y0[idx] * rate
+                y0 = y_init[:]
+                y0[idx] = y_init[idx] * rate
                 if self.sim.simulate(x, y0) is None:
                     for k, _ in enumerate(self.obs):
                         for l, _ in enumerate(self.sim.conditions):
@@ -73,7 +73,7 @@ class NonZeroInitSensitivity(object):
                     )
                 )
             # Signaling metric without perturbation (j=-1)
-            y0 = copy_y0[:]
+            y0 = y_init[:]
             if self.sim.simulate(x, y0) is None:
                 for k, _ in enumerate(self.obs):
                     for l, _ in enumerate(self.sim.conditions):
@@ -89,28 +89,26 @@ class NonZeroInitSensitivity(object):
 
     def _load_sc(self, metric, nonzero_idx):
         os.makedirs(
-            './figure/sensitivity/nonzero_init/{}/heatmap'.format(
-                metric
-            ), exist_ok=True
+            './figure/sensitivity/' \
+            'nonzero_init/{}/heatmap'.format(metric), exist_ok=True
         )
-        if not os.path.isfile('sc_npy/nonzero_init/{}/sc.npy'.format(metric)):
+        if not os.path.isfile(
+                './sensitivity_coefficients/' \
+                'nonzero_init/{}/sc.npy'.format(metric)):
             os.makedirs(
-                './sc_npy/nonzero_init/{}'.format(
-                    metric
-                ), exist_ok=True
+                './sensitivity_coefficients/' \
+                'nonzero_init/{}'.format(metric), exist_ok=True
             )
             sensitivity_coefficients = \
                 self._calc_sensitivity_coefficients(metric, nonzero_idx)
             np.save(
-                'sc_npy/nonzero_init/{}/sc'.format(
-                    metric
-                ), sensitivity_coefficients
+                './sensitivity_coefficients/' \
+                'nonzero_init/{}/sc'.format(metric), sensitivity_coefficients
             )
         else:
             sensitivity_coefficients = np.load(
-                'sc_npy/nonzero_init/{}/sc.npy'.format(
-                    metric
-                )
+                './sensitivity_coefficients/' \
+                'nonzero_init/{}/sc.npy'.format(metric)
             )
             
         return sensitivity_coefficients
@@ -132,6 +130,4 @@ class NonZeroInitSensitivity(object):
                     self.species, self.obs, self.sim
                 )
         else:
-            raise ValueError(
-                "Available styles are: 'barplot', 'heatmap'"
-        )
+            raise ValueError("Available styles are: 'barplot', 'heatmap'")
