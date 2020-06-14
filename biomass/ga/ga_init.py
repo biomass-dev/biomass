@@ -10,6 +10,20 @@ class GeneticAlgorithmInit(object):
         self.sp = sp
         self.obj_func = obj_func
 
+        search_rgn = self.sp.get_region()
+        self.max_generation = 10000
+        self.n_population = int(5*search_rgn.shape[1])
+        self.n_children = 50
+        self.n_gene = search_rgn.shape[1]
+        self.allowable_error = 0.35
+    
+        if self.n_population < self.n_gene + 2:
+            raise ValueError(
+                'n_population must be larger than {:d}'.format(
+                    self.n_gene + 2
+                )
+            )
+
     def run(self, nth_paramset):
         if not os.path.isdir('./out'):
             os.mkdir('./out')
@@ -35,44 +49,36 @@ class GeneticAlgorithmInit(object):
         np.random.seed(
             time.time_ns()*nth_paramset % 2**32
         )
-        search_rgn = self.sp.get_region()
+        (best_indiv, best_fitness) = self._ga_v2(nth_paramset)
 
-        (best_indiv, best_fitness) = self._ga_v2(
-            nth_paramset,
-            max_generation=10000,
-            n_population=int(5*search_rgn.shape[1]),
-            n_children=50,
-            n_gene=search_rgn.shape[1],
-            allowable_error=0.35
-        )
-
-    def _set_initial(self, nth_paramset, n_population, n_gene):
-        population = np.full((n_population, n_gene+1), np.inf)
+    def _set_initial(self, nth_paramset):
+        population = np.full((self.n_population, self.n_gene+1), np.inf)
         with open('./out/{:d}/initpop.log'.format(nth_paramset), mode='w') as f:
             f.write(
                 'Generating the initial population. . .\n'
             )
-        for i in range(n_population):
+        for i in range(self.n_population):
             while not np.isfinite(population[i, -1]):
-                population[i, :n_gene] = np.random.rand(n_gene)
-                population[i, -1] = self.obj_func(population[i, :n_gene])
+                population[i, :self.n_gene] = np.random.rand(self.n_gene)
+                population[i, -1] = self.obj_func(population[i, :self.n_gene])
             with open('./out/{:d}/initpop.log'.format(nth_paramset), mode='a') as f:
                 f.write(
-                    '{:d} / {:d}\n'.format(i + 1, n_population)
+                    '{:d} / {:d}\n'.format(i + 1, self.n_population)
                 )
         population = population[np.argsort(population[:, -1]), :]
 
         return population
 
-    def _ga_v1(self, nth_paramset, max_generation, n_population,
-               n_children, n_gene, allowable_error):
-        undx = UnimodalNormalDistributionXover(self.obj_func)
-        population = self._set_initial(nth_paramset, n_population, n_gene)
+    def _ga_v1(self, nth_paramset):
+        undx = UnimodalNormalDistributionXover(
+            self.obj_func, self.n_population, self.n_children, self.n_gene
+        )
+        population = self._set_initial(nth_paramset)
         with open('./out/{:d}/out.log'.format(nth_paramset), mode='w') as f:
             f.write(
                 'Generation1: Best Fitness = {:e}\n'.format(population[0, -1])
             )
-        best_indiv = self.sp.gene2val(population[0, :n_gene])
+        best_indiv = self.sp.gene2val(population[0, :self.n_gene])
         best_fitness = population[0, -1]
 
         np.save(
@@ -84,18 +90,16 @@ class GeneticAlgorithmInit(object):
         np.save(
             './out/{:d}/best_fitness.npy'.format(nth_paramset), best_fitness
         )
-        if population[0, -1] <= allowable_error:
-            best_indiv = self.sp.gene2val(population[0, :n_gene])
+        if population[0, -1] <= self.allowable_error:
+            best_indiv = self.sp.gene2val(population[0, :self.n_gene])
             best_fitness = population[0, -1]
 
             return best_indiv, best_fitness
 
         generation = 1
-        while generation < max_generation:
-            population = undx.mgg_alternation(
-                population, n_population, n_children, n_gene
-            )
-            best_indiv = self.sp.gene2val(population[0, :n_gene])
+        while generation < self.max_generation:
+            population = undx.mgg_alternation(population)
+            best_indiv = self.sp.gene2val(population[0, :self.n_gene])
             if population[0, -1] < best_fitness:
                 np.save(
                     './out/{:d}/generation.npy'.format(
@@ -124,8 +128,8 @@ class GeneticAlgorithmInit(object):
                         generation + 1, best_fitness
                     )
                 )
-            if population[0, -1] <= allowable_error:
-                best_indiv = self.sp.gene2val(population[0, :n_gene])
+            if population[0, -1] <= self.allowable_error:
+                best_indiv = self.sp.gene2val(population[0, :self.n_gene])
                 best_fitness = population[0, -1]
 
                 return best_indiv, best_fitness
@@ -133,14 +137,13 @@ class GeneticAlgorithmInit(object):
             generation += 1
 
         best_indiv = self.sp.gene2val(
-            population[0, :n_gene]
+            population[0, :self.n_gene]
         )
         best_fitness = population[0, -1]
 
         return best_indiv, best_fitness
 
-    def _ga_v2(self, nth_paramset, max_generation, n_population,
-               n_children, n_gene, allowable_error):
+    def _ga_v2(self, nth_paramset):
         """ga_v2 optimizes an objective function through the following procedure.
 
         1. Initialization
@@ -211,22 +214,20 @@ class GeneticAlgorithmInit(object):
             Stop if the halting criteria are satisfied.
             Otherwise, Generation <- Generation + 1, and return to the step 2.
         """
-        didc = DistanceIndependentDiversityControl(self.obj_func)
-        if n_population < n_gene + 2:
-            raise ValueError(
-                'n_population must be larger than {:d}'.format(n_gene + 2)
-            )
+        didc = DistanceIndependentDiversityControl(
+            self.obj_func, self.n_population, self.n_children, self.n_gene
+        )
         n_iter = 1
-        n0 = np.empty(3*n_population)
+        n0 = np.empty(3*self.n_population)
 
-        population = self._set_initial(nth_paramset, n_population, n_gene)
+        population = self._set_initial(nth_paramset)
         n0[0] = population[0, -1]
 
         with open('./out/{:d}/out.log'.format(nth_paramset), mode='w') as f:
             f.write(
                 'Generation1: Best Fitness = {:e}\n'.format(population[0, -1])
             )
-        best_indiv = self.sp.gene2val(population[0, :n_gene])
+        best_indiv = self.sp.gene2val(population[0, :self.n_gene])
         best_fitness = population[0, -1]
 
         np.save(
@@ -238,26 +239,24 @@ class GeneticAlgorithmInit(object):
         np.save(
             './out/{:d}/best_fitness.npy'.format(nth_paramset), best_fitness
         )
-        if population[0, -1] <= allowable_error:
-            best_indiv = self.sp.gene2val(population[0, :n_gene])
+        if population[0, -1] <= self.allowable_error:
+            best_indiv = self.sp.gene2val(population[0, :self.n_gene])
             best_fitness = population[0, -1]
 
             return best_indiv, best_fitness
 
         generation = 1
-        while generation < max_generation:
-            ip = np.random.choice(n_population, n_gene+2, replace=False)
-            population = didc.converging(
-                ip, population, n_population, n_gene
+        while generation < self.max_generation:
+            ip = np.random.choice(
+                self.n_population, self.n_gene+2, replace=False
             )
-            population = didc.local_search(
-                ip, population, n_population, n_children, n_gene
-            )
+            population = didc.converging(ip, population)
+            population = didc.local_search(ip, population)
             for _ in range(n_iter-1):
-                ip = np.random.choice(n_population, n_gene+2, replace=False)
-                population = didc.converging(
-                    ip, population, n_population, n_gene
+                ip = np.random.choice(
+                    self.n_population, self.n_gene+2, replace=False
                 )
+                population = didc.converging(ip, population)
             if generation % len(n0) == len(n0) - 1:
                 n0[-1] = population[0, -1]
                 if n0[0] == n0[-1]:
@@ -267,7 +266,7 @@ class GeneticAlgorithmInit(object):
             else:
                 n0[generation % len(n0)] = population[0, -1]
 
-            best_indiv = self.sp.gene2val(population[0, :n_gene])
+            best_indiv = self.sp.gene2val(population[0, :self.n_gene])
             if population[0, -1] < best_fitness:
                 np.save(
                     './out/{:d}/generation.npy'.format(
@@ -296,15 +295,15 @@ class GeneticAlgorithmInit(object):
                         generation + 1, best_fitness
                     )
                 )
-            if population[0, -1] <= allowable_error:
-                best_indiv = self.sp.gene2val(population[0, :n_gene])
+            if population[0, -1] <= self.allowable_error:
+                best_indiv = self.sp.gene2val(population[0, :self.n_gene])
                 best_fitness = population[0, -1]
 
                 return best_indiv, best_fitness
 
             generation += 1
 
-        best_indiv = self.sp.gene2val(population[0, :n_gene])
+        best_indiv = self.sp.gene2val(population[0, :self.n_gene])
         best_fitness = population[0, -1]
 
         return best_indiv, best_fitness
