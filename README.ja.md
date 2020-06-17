@@ -85,7 +85,7 @@ erbb_network = SignalingSystems(
     exp=ExperimentalData(),
     sp=SearchParam()
 )
-erbb_network.simulate_all(viz_type='average', show_all=False, stdev=True)
+erbb_network.simulate_all(viz_type='best', show_all=True, stdev=False)
 ```
 ![simulation_best](public/images/simulation_best.png)
 
