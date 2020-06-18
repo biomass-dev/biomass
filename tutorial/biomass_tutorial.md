@@ -56,10 +56,10 @@ $ cd biomass/models/[your_model]
 - ```name2idx/```
 
     - ```parameters.py```
-        - Write names of model parameters in ```parameters``` as string
+        - Write names of model parameters in ```NAMES``` as string
 
     - ```species.py```
-        - Write names of model species in ```species``` as string
+        - Write names of model species in ```NAMES``` as string
 
 - Or you can use bash script to produce file of parameters and species after editing ```set_model.py```.
     ```bash

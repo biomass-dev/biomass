@@ -13,18 +13,18 @@ sed 's/$/,/' |
 sed -e 's/^/	/g' |
 sed -e 's/    //g' > param_var_mid
 
-printf 'parameters = [\n' > first_line
+printf 'NAMES = [\n' > first_line
 
 printf "]	
 
-for idx, name in enumerate(parameters):
+for idx, name in enumerate(NAMES):
     exec(
         '{} = {:d}'.format(
             name, idx
         )
     )
 
-n_parameters = len(parameters)" > last_line
+NUM = len(NAMES)" > last_line
 
 
 cat first_line param_var_mid last_line > ../biomass/model/name2idx/parameters.py
@@ -47,18 +47,18 @@ sed 's/$/,/' |
 sed -e 's/^/	/g' |
 sed -e 's/    //g' > var_var_mid
 
-printf 'species = [\n' > first_line
+printf 'NAMES = [\n' > first_line
 
 printf "]
 
-for idx, name in enumerate(species):
+for idx, name in enumerate(NAMES):
     exec(
         '{} = {:d}'.format(
             name, idx
         )
     )
 
-n_species = len(species)" > last_line
+NUM = len(NAMES)" > last_line
 
 
 cat first_line var_var_mid last_line > ../biomass/model/name2idx/species.py
