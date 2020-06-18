@@ -8,8 +8,8 @@ from biomass.dynamics import get_executable
 
 class CurrentModel(object):
     def __init__(self,
-                 parameters=C.parameters,
-                 species=V.species,
+                 parameters=C.NAMES,
+                 species=V.NAMES,
                  reaction_system=set_model,
                  pval=param_values,
                  ival=initial_values,

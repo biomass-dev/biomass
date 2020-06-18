@@ -3,8 +3,8 @@ from biomass.dynamics import SignalingSystems
 
 if __name__ == '__main__':
     erbb_network = SignalingSystems(
-        parameters=C.parameters,
-        species=V.species,
+        parameters=C.NAMES,
+        species=V.NAMES,
         pval=param_values,
         ival=initial_values,
         obs=observables,

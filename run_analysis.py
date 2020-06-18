@@ -17,7 +17,7 @@ if __name__ == '__main__':
     """
     from biomass.analysis.nonzero_init import NonZeroInitSensitivity
     nonzero_init = NonZeroInitSensitivity(
-        species = V.species,
+        species = V.NAMES,
         ival = initial_values,
         obs = observables,
         sim = NumericalSimulation(),

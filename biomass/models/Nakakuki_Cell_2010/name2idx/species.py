@@ -1,4 +1,4 @@
-species = [
+NAMES = [
     'ppMEKc',
     'CREBn',
     'pCREBn',
@@ -37,11 +37,11 @@ species = [
     'PreFmRNAn',
 ]
 
-for idx, name in enumerate(species):
+for idx, name in enumerate(NAMES):
     exec(
         '{} = {:d}'.format(
             name, idx
         )
     )
 
-n_species = len(species)
+NUM = len(NAMES)

@@ -1,4 +1,4 @@
-parameters = [
+NAMES = [
     'V1',
     'Km1',
     'V2',
@@ -117,11 +117,11 @@ parameters = [
     'no_ligand',
 ]
 
-for idx, name in enumerate(parameters):
+for idx, name in enumerate(NAMES):
     exec(
         '{} = {:d}'.format(
             name, idx
         )
     )
 
-n_parameters = len(parameters)
+NUM = len(NAMES)
