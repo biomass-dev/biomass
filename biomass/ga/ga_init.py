@@ -9,12 +9,11 @@ class GeneticAlgorithmInit(object):
     def __init__(self, sp, obj_func):
         self.sp = sp
         self.obj_func = obj_func
-
-        search_rgn = self.sp.get_region()
+        self.search_rgn = self.sp.get_region()
         self.max_generation = 10000
-        self.n_population = int(5*search_rgn.shape[1])
+        self.n_population = int(5*self.search_rgn.shape[1])
         self.n_children = 50
-        self.n_gene = search_rgn.shape[1]
+        self.n_gene = self.search_rgn.shape[1]
         self.allowable_error = 0.35
     
         if self.n_population < self.n_gene + 2:

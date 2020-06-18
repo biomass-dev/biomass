@@ -8,12 +8,11 @@ class GeneticAlgorithmContinue(object):
     def __init__(self, sp, obj_func):
         self.sp = sp
         self.obj_func = obj_func
-
-        search_rgn = self.sp.get_region()
+        self.search_rgn = self.sp.get_region()
         self.max_generation = 10000
-        self.n_population = int(5*search_rgn.shape[1])
+        self.n_population = int(5*self.search_rgn.shape[1])
         self.n_children = 50
-        self.n_gene = search_rgn.shape[1]
+        self.n_gene = self.search_rgn.shape[1]
         self.allowable_error = 0.35
         self.p0_bounds = [0.1, 10]  # [lower_bounds, upper bounds]
 
@@ -29,8 +28,6 @@ class GeneticAlgorithmContinue(object):
         np.random.seed(
             time.time_ns()*nth_paramset % 2**32
         )
-        search_rgn = self.sp.get_region()
-
         (best_indiv, best_fitness) = self._ga_v2_continue(nth_paramset)
 
     def _set_continue(self, nth_paramset):
@@ -69,7 +66,6 @@ class GeneticAlgorithmContinue(object):
         return population
 
     def _encode_bestIndivVal2randGene(self, best_indiv):
-        search_rgn = self.sp.get_region()
         rand_gene = (
             np.log10(
                 best_indiv * 10**(
@@ -77,17 +73,16 @@ class GeneticAlgorithmContinue(object):
                     * np.log10(self.p0_bounds[1]/self.p0_bounds[0])
                     + np.log10(self.p0_bounds[0])
                 )
-            ) - search_rgn[0, :]
-        ) / (search_rgn[1, :] - search_rgn[0, :])
+            ) - self.search_rgn[0, :]
+        ) / (self.search_rgn[1, :] - self.search_rgn[0, :])
 
         return rand_gene
 
     def _encode_val2gene(self, indiv):
-        search_rgn = self.sp.get_region()
         indiv_gene = (
-            np.log10(indiv) - search_rgn[0, :]
+            np.log10(indiv) - self.search_rgn[0, :]
         ) / (
-            search_rgn[1, :] - search_rgn[0, :]
+            self.search_rgn[1, :] - self.search_rgn[0, :]
         )
 
         return indiv_gene
