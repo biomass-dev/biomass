@@ -325,14 +325,14 @@ class SearchParam(object):
         )
         if len(difference) > 0:
             message = 'in both search_idx and search_rgn'
-            for i, j in enumerate(difference):
-                if j <= C.NUM:
+            for _, idx in enumerate(difference):
+                if idx <= C.NUM:
                     raise ValueError(
-                        'Set "C.{}" '.format(C.NAMES[int(j)]) + message
+                        'Set "C.{}" '.format(C.NAMES[int(idx)]) + message
                     )
                 else:
                     raise ValueError(
-                        'Set "V.{}" '.format(V.NAMES[int(j-C.NUM)]) + message
+                        'Set "V.{}" '.format(V.NAMES[int(idx-C.NUM)]) + message
                     )
         search_rgn = search_rgn[:, np.any(search_rgn != 0., axis=0)]
 
