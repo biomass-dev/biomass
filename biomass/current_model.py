@@ -3,22 +3,11 @@ import re
 import csv
 import numpy as np
 
-from biomass.models.Nakakuki_Cell_2010 import *
 from biomass.dynamics import get_executable
 
 class CurrentModel(object):
-    def __init__(self,
-                 parameters=C.NAMES,
-                 species=V.NAMES,
-                 reaction_system=set_model,
-                 pval=param_values,
-                 ival=initial_values,
-                 obs=observables,
-                 sim=NumericalSimulation(),
-                 exp=ExperimentalData(),
-                 sp=SearchParam(),
-                 obj_func=objective,
-                 rxn=ReactionNetwork()):
+    def __init__(self, parameters, species, reaction_system,
+                 pval, ival, obs, sim, exp, sp, obj_func, rxn):
         self.parameters = parameters
         self.species = species
         self.reaction_system = reaction_system
@@ -120,3 +109,14 @@ class CurrentModel(object):
             with open('optimized_inital_varlues.csv', 'w') as f:
                 writer = csv.writer(f, lineterminator='\n')
                 writer.writerows(optimized_initials)
+
+'''
+from biomass.models.Nakakuki_Cell_2010 import *
+
+model = CurrentModel(
+    parameters=C.NAMES, species=V.NAMES, reaction_system=set_model,
+    pval=param_values, ival=initial_values, obs=observables,
+    sim=NumericalSimulation(), exp=ExperimentalData(),
+    sp=SearchParam(), obj_func=objective, rxn=ReactionNetwork()
+)
+'''
