@@ -1,4 +1,3 @@
-import os
 import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
@@ -87,10 +86,8 @@ def _remove_nan(sensitivity_matrix, normalize):
 
 def heatmap_sensitivity(metric, sensitivity_coefficients, nonzero_idx,
                         species, obs, sim):
-    width = 0.3
-
     # rcParams
-    plt.rcParams['font.size'] = 8
+    plt.rcParams['font.size'] = 12
     plt.rcParams['font.family'] = 'Arial'
     plt.rcParams['mathtext.fontset'] = 'custom'
     plt.rcParams['mathtext.it'] = 'Arial:italic'
@@ -102,7 +99,7 @@ def heatmap_sensitivity(metric, sensitivity_coefficients, nonzero_idx,
             )
             if sensitivity_matrix.shape[0] > 1 and \
                     not np.all(sensitivity_matrix == 0.0):
-                sns.clustermap(
+                g=sns.clustermap(
                     data=sensitivity_matrix,
                     center=0,
                     robust=True,
@@ -110,11 +107,13 @@ def heatmap_sensitivity(metric, sensitivity_coefficients, nonzero_idx,
                     cmap='RdBu_r',
                     linewidth=.5,
                     col_cluster=False,
-                    figsize=(16, 8),
+                    figsize=(sensitivity_matrix.shape[0]*0.5,
+                             sensitivity_matrix.shape[0]*0.35),
                     xticklabels=[species[i] for i in nonzero_idx],
                     yticklabels=[],
                     #cbar_kws={"ticks": [-1, 0, 1]}
                 )
+                plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90)
                 plt.savefig(
                     'figure/sensitivity/nonzero_init/{}/heatmap/{}_{}.pdf'.format(
                         metric, condition, obs_name
