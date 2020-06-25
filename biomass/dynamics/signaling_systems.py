@@ -58,10 +58,10 @@ class SignalingSystems(object):
                 if len(n_file) == 1 and viz_type == 'average':
                     viz_type = 'best'
                 for i, nth_paramset in enumerate(n_file):
-                    (sim, successful) = self._validate(nth_paramset)
+                    (dynamic, successful) = self._validate(nth_paramset)
                     if successful:
                         for j, _ in enumerate(self.obs):
-                            simulations_all[j, i, :, :] = sim.simulations[j, :, :]
+                            simulations_all[j, i, :, :] = dynamic.simulations[j, :, :]
                 best_fitness_all = np.full(len(n_file), np.inf)
                 for i, nth_paramset in enumerate(n_file):
                     if os.path.isfile('./out/{:d}/best_fitness.npy'.format(nth_paramset)):
@@ -73,9 +73,9 @@ class SignalingSystems(object):
                 if viz_type == 'average':
                     pass
                 elif viz_type == 'best':
-                    sim, _ = self._validate(int(best_paramset))
+                    dynamic, _ = self._validate(int(best_paramset))
                 else:
-                    sim, _ = self._validate(int(viz_type))
+                    dynamic, _ = self._validate(int(viz_type))
 
                 if 2 <= len(n_file):
                     popt = np.empty(
@@ -92,8 +92,10 @@ class SignalingSystems(object):
                 y0 = self.ival()
                 if self.sim.simulate(x, y0) is not None:
                     print('Simulation failed.')
+                else:
+                    dynamic = self.sim
         plot_func.timecourse(
-            sim, n_file, viz_type, show_all, stdev,
+            dynamic, n_file, viz_type, show_all, stdev,
             simulations_all, self.obs, self.exp
         )
     
