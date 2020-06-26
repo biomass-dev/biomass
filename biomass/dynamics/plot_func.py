@@ -50,8 +50,8 @@ def timecourse(sim, n_file, viz_type, show_all, stdev,
                             simulations_all[i, j, :, l] /
                             np.max(simulations_all[i, j, :, :])
                         )
-                normalized[i,:,:,:] = normalized[i,:,:,:] / np.max(
-                    np.nanmean(normalized[i,:,:,:], axis=0)
+                normalized[i, :, :, :] = normalized[i, :, :, :] / np.max(
+                    np.nanmean(normalized[i, :, :, :], axis=0)
                 )
                 for l, _ in enumerate(sim.conditions):
                     plt.plot(
@@ -60,13 +60,13 @@ def timecourse(sim, n_file, viz_type, show_all, stdev,
                     )
                 if stdev:
                     for l, _ in enumerate(sim.conditions):
-                        mean = np.nanmean(normalized[i, :, :, l], axis=0)
-                        yerr = [
+                        y_mean = np.nanmean(normalized[i, :, :, l], axis=0)
+                        y_std = [
                             np.nanstd(normalized[i, :, k, l], ddof=1)
                             for k, _ in enumerate(sim.t)
                         ]
                         plt.fill_between(
-                            sim.t, mean - yerr, mean + yerr,
+                            sim.t, y_mean - y_std, y_mean + y_std,
                             lw=0, color=cmap[l], alpha=0.1
                         )
             else:
@@ -104,7 +104,7 @@ def timecourse(sim, n_file, viz_type, show_all, stdev,
         plt.yticks([0, 0.3, 0.6, 0.9, 1.2])
         plt.ylim(-0.1, 1.3)
         plt.xlabel('Time (min)')
-        plt.ylabel(obs_name.replace('_', ' '))
+        plt.ylabel(obs_name.replace('__', '\n').replace('_', ' '))
 
         plt.savefig(
             './figure/simulation/{}/{}.pdf'.format(
