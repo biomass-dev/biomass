@@ -22,7 +22,8 @@ class ReactionNetwork(object):
     }
 
     def _is_duplicate(self, biological_processes):
-        reaction_indices = np.sum(biological_processes, axis=0)
+        reaction_indices = np.sum(biological_processes, axis=0) \
+            if len(self.reactions) > 1 else biological_processes[0]
         duplicate_reaction = \
             [i for i in set(reaction_indices) if reaction_indices.count(i) > 1]
         if not duplicate_reaction:
