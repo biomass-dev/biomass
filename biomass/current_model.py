@@ -6,17 +6,12 @@ import numpy as np
 from biomass.dynamics import get_executable
 
 class CurrentModel(object):
-    def __init__(self, parameters, species, reaction_system,
-                 pval, ival, obs, sim, exp, sp, obj_func, rxn):
+    def __init__(self, parameters=None, species=None,
+                 pval=None, ival=None, sp=None, rxn=None):
         self.parameters = parameters
         self.species = species
-        self.reaction_system = reaction_system
         self.pval = pval
         self.ival = ival
-        self.obs = obs
-        self.obj_func = obj_func
-        self.sim = sim
-        self.exp = exp
         self.sp = sp
         self.rxn = rxn
 
@@ -111,12 +106,15 @@ class CurrentModel(object):
                 writer.writerows(optimized_initials)
 
 '''
+from biomass.current_model import CurrentModel
 from biomass.models.Nakakuki_Cell_2010 import *
 
-model = CurrentModel(
-    parameters=C.NAMES, species=V.NAMES, reaction_system=set_model,
-    pval=param_values, ival=initial_values, obs=observables,
-    sim=NumericalSimulation(), exp=ExperimentalData(),
-    sp=SearchParam(), obj_func=objective, rxn=ReactionNetwork()
-)
+model = CurrentModel()
+
+model.parameters=C.NAMES
+model.species=V.NAMES
+model.pval=param_values()
+model.ival=initial_values()
+model.sp=SearchParam()
+model.rxn=ReactionNetwork()
 '''
