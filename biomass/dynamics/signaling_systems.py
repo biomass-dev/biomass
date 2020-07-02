@@ -53,7 +53,9 @@ class SignalingSystems(object):
             (len(self.obs), len(n_file), len(self.sim.t), len(self.sim.conditions)),
             np.nan
         )
-        if viz_type != 'experiment':
+        if viz_type == 'experiment':
+            dynamic = self.sim
+        else:
             if len(n_file) > 0:
                 if len(n_file) == 1 and viz_type == 'average':
                     viz_type = 'best'
@@ -91,9 +93,8 @@ class SignalingSystems(object):
                 x = self.pval()
                 y0 = self.ival()
                 if self.sim.simulate(x, y0) is not None:
-                    print('Simulation failed.')
-                else:
-                    dynamic = self.sim
+                    print('Simulation failed.\n')
+                dynamic = self.sim            
         plot_func.timecourse(
             dynamic, n_file, viz_type, show_all, stdev,
             simulations_all, self.obs, self.exp
