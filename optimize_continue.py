@@ -6,10 +6,15 @@ import warnings
 warnings.filterwarnings('ignore')
 
 from biomass.models.Nakakuki_Cell_2010 import SearchParam, objective
+from biomass.models.Nakakuki_Cell_2010 import __path__ as MODEL_PATH
 from biomass.ga import GeneticAlgorithmContinue
 
 if __name__ == '__main__':
-    ga_continue = GeneticAlgorithmContinue(sp=SearchParam(), obj_func=objective)
+    ga_continue = GeneticAlgorithmContinue(
+        model_path=MODEL_PATH[0],
+        sp=SearchParam(),
+        obj_func=objective
+    )
     args = sys.argv
     if len(args) == 2:
         ga_continue.run(int(args[1]))

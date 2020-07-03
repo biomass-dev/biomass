@@ -6,8 +6,9 @@ import numpy as np
 from biomass.dynamics import get_executable
 
 class CurrentModel(object):
-    def __init__(self, parameters=None, species=None,
+    def __init__(self, model_path=None, parameters=None, species=None,
                  pval=None, ival=None, sp=None, rxn=None):
+        self.model_path = model_path
         self.parameters = parameters
         self.species = species
         self.pval = pval
@@ -40,7 +41,8 @@ class CurrentModel(object):
         optimized_params.csv
         optimized_initial_values.csv
         """
-        n_file = get_executable()
+        os.makedirs(self.model_path + '/optimized_params/', exist_ok=True)
+        n_file = get_executable(self.model_path)
 
         if len(self.sp.idx_params) > 0:
             optimized_params = np.empty(
@@ -49,17 +51,17 @@ class CurrentModel(object):
             for i, param_index in enumerate(self.sp.idx_params):
                 for j, nth_paramset in enumerate(n_file):
                     best_generation = np.load(
-                        './out/{:d}/generation.npy'.format(
+                        self.model_path + '/out/{:d}/generation.npy'.format(
                             nth_paramset
                         )
                     )
                     best_indiv = np.load(
-                        './out/{:d}/fit_param{:d}.npy'.format(
+                        self.model_path + '/out/{:d}/fit_param{:d}.npy'.format(
                             nth_paramset, int(best_generation)
                         )
                     )
                     error = np.load(
-                        './out/{:d}/best_fitness.npy'.format(
+                        self.model_path + '/out/{:d}/best_fitness.npy'.format(
                             nth_paramset
                         )
                     )
@@ -69,7 +71,7 @@ class CurrentModel(object):
                     optimized_params[0, nth_paramset-1] = str(nth_paramset)
                     optimized_params[1, nth_paramset-1] = '{:8.3e}'.format(error)
                     optimized_params[i+2, nth_paramset-1] = '{:8.3e}'.format(best_indiv[i])
-            with open('optimized_params.csv', 'w') as f:
+            with open(self.model_path + '/optimized_params/optimized_params.csv', 'w') as f:
                 writer = csv.writer(f, lineterminator='\n')
                 writer.writerows(optimized_params)
 
@@ -80,17 +82,17 @@ class CurrentModel(object):
             for i, specie_index in enumerate(self.sp.idx_initials):
                 for j, nth_paramset in enumerate(n_file):
                     best_generation = np.load(
-                        './out/{:d}/generation.npy'.format(
+                        self.model_path + '/out/{:d}/generation.npy'.format(
                             nth_paramset
                         )
                     )
                     best_indiv = np.load(
-                        './out/{:d}/fit_param{:d}.npy'.format(
+                        self.model_path + '/out/{:d}/fit_param{:d}.npy'.format(
                             nth_paramset, int(best_generation)
                         )
                     )
                     error = np.load(
-                        './out/{:d}/best_fitness.npy'.format(
+                        self.model_path + '/out/{:d}/best_fitness.npy'.format(
                             nth_paramset
                         )
                     )
@@ -101,16 +103,18 @@ class CurrentModel(object):
                     optimized_initials[1, nth_paramset-1] = '{:8.3e}'.format(error)
                     optimized_initials[i+2, nth_paramset-1] = \
                         '{:8.3e}'.format(best_indiv[i+len(self.sp.idx_params)])
-            with open('optimized_inital_varlues.csv', 'w') as f:
+            with open(self.model_path + '/optimized_params/optimized_inital_varlues.csv', 'w') as f:
                 writer = csv.writer(f, lineterminator='\n')
                 writer.writerows(optimized_initials)
 
 '''
 from biomass.current_model import CurrentModel
 from biomass.models.Nakakuki_Cell_2010 import *
+from biomass.models.Nakakuki_Cell_2010 import __path__ as MODEL_PATH
 
 model = CurrentModel()
 
+model.model_path=MODEL_PATH[0]
 model.parameters=C.NAMES
 model.species=V.NAMES
 model.pval=param_values()

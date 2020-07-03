@@ -4,7 +4,7 @@ import seaborn as sns
 
 
 def barplot_sensitivity(metric, sensitivity_coefficients, nonzero_idx,
-                        species, obs, sim):
+                        model_path, species, obs, sim):
     width = 0.3
 
     # rcParams
@@ -58,7 +58,8 @@ def barplot_sensitivity(metric, sensitivity_coefficients, nonzero_idx,
         plt.xlim(-width, len(nonzero_idx)-width)
         plt.legend(loc='upper left', frameon=False)
         plt.savefig(
-            'figure/sensitivity/nonzero_init/{}/{}.pdf'.format(
+            model_path + '/figure/sensitivity/nonzero_init/'\
+            '{}/{}.pdf'.format(
                 metric, obs_name
             ), bbox_inches='tight'
         )
@@ -85,7 +86,7 @@ def _remove_nan(sensitivity_matrix, normalize):
 
 
 def heatmap_sensitivity(metric, sensitivity_coefficients, nonzero_idx,
-                        species, obs, sim):
+                        model_path, species, obs, sim):
     # rcParams
     plt.rcParams['font.size'] = 12
     plt.rcParams['font.family'] = 'Arial'
@@ -115,7 +116,8 @@ def heatmap_sensitivity(metric, sensitivity_coefficients, nonzero_idx,
                 )
                 plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90)
                 plt.savefig(
-                    'figure/sensitivity/nonzero_init/{}/heatmap/{}_{}.pdf'.format(
+                    model_path + '/figure/sensitivity/nonzero_init/'\
+                    '{}/heatmap/{}_{}.pdf'.format(
                         metric, condition, obs_name
                     ), bbox_inches='tight'
                 )

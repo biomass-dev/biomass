@@ -37,7 +37,8 @@ def _write_reaction_indices(sort_idx, reaction_indices, average, stdev, width):
 
 
 def barplot_sensitivity(metric, sensitivity_coefficients, biological_processes, 
-                        n_reaction, sort_idx, reaction_indices, obs, sim):
+                        n_reaction, sort_idx, reaction_indices, 
+                        model_path, obs, sim):
     width = 0.3
 
     # rcParams
@@ -96,7 +97,8 @@ def barplot_sensitivity(metric, sensitivity_coefficients, biological_processes,
             # plt.yticks([-1.2,-1.0,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6])
             plt.legend(loc='lower right', frameon=False)
             plt.savefig(
-                'figure/sensitivity/reaction/{}/{}.pdf'.format(
+                model_path + '/figure/sensitivity/reaction/'\
+                '{}/{}.pdf'.format(
                     metric, obs_name
                 ), bbox_inches='tight'
             )
@@ -123,7 +125,8 @@ def _remove_nan(sensitivity_matrix, normalize):
 
 
 def heatmap_sensitivity(metric, sensitivity_coefficients, biological_processes,
-                        n_reaction, sort_idx, reaction_indices, obs, sim):
+                        n_reaction, sort_idx, reaction_indices, 
+                        model_path, obs, sim):
         # rcParams
         plt.rcParams['font.size'] = 8
         plt.rcParams['font.family'] = 'Arial'
@@ -157,7 +160,8 @@ def heatmap_sensitivity(metric, sensitivity_coefficients, biological_processes,
                         #cbar_kws={"ticks": [-1, 0, 1]}
                     )
                     plt.savefig(
-                        'figure/sensitivity/reaction/{}/heatmap/{}_{}.pdf'.format(
+                        model_path + '/figure/sensitivity/reaction/'\
+                        '{}/heatmap/{}_{}.pdf'.format(
                             metric, condition, obs_name
                         ), bbox_inches='tight'
                     )

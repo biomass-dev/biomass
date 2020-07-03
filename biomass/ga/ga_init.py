@@ -6,7 +6,8 @@ from .rcga import (UnimodalNormalDistributionXover,
                    DistanceIndependentDiversityControl)
 
 class GeneticAlgorithmInit(object):
-    def __init__(self, sp, obj_func):
+    def __init__(self, model_path, sp, obj_func):
+        self.model_path = model_path
         self.sp = sp
         self.obj_func = obj_func
         self.search_rgn = self.sp.get_region()
@@ -24,24 +25,24 @@ class GeneticAlgorithmInit(object):
             )
 
     def run(self, nth_paramset):
-        if not os.path.isdir('./out'):
-            os.mkdir('./out')
+        if not os.path.isdir(self.model_path + '/out'):
+            os.mkdir(self.model_path + '/out')
         try:
             files = os.listdir(
-                './out/{:d}'.format(
+                self.model_path + '/out/{:d}'.format(
                     nth_paramset
                 )
             )
             for file in files:
                 if any(map(file.__contains__, ('.npy', '.log'))):
                     os.remove(
-                        './out/{:d}/{}'.format(
+                        self.model_path + '/out/{:d}/{}'.format(
                             nth_paramset, file
                         )
                     )
         except FileNotFoundError:
             os.mkdir(
-                './out/{:d}'.format(
+                self.model_path + '/out/{:d}'.format(
                     nth_paramset
                 )
             )
@@ -52,7 +53,9 @@ class GeneticAlgorithmInit(object):
 
     def _set_initial(self, nth_paramset):
         population = np.full((self.n_population, self.n_gene+1), np.inf)
-        with open('./out/{:d}/initpop.log'.format(nth_paramset), mode='w') as f:
+        with open(
+                self.model_path
+                + '/out/{:d}/initpop.log'.format(nth_paramset), mode='w') as f:
             f.write(
                 'Generating the initial population. . .\n'
             )
@@ -60,7 +63,9 @@ class GeneticAlgorithmInit(object):
             while not np.isfinite(population[i, -1]):
                 population[i, :self.n_gene] = np.random.rand(self.n_gene)
                 population[i, -1] = self.obj_func(population[i, :self.n_gene])
-            with open('./out/{:d}/initpop.log'.format(nth_paramset), mode='a') as f:
+            with open(
+                    self.model_path
+                    + '/out/{:d}/initpop.log'.format(nth_paramset), mode='a') as f:
                 f.write(
                     '{:d} / {:d}\n'.format(i + 1, self.n_population)
                 )
@@ -73,7 +78,9 @@ class GeneticAlgorithmInit(object):
             self.obj_func, self.n_population, self.n_children, self.n_gene
         )
         population = self._set_initial(nth_paramset)
-        with open('./out/{:d}/out.log'.format(nth_paramset), mode='w') as f:
+        with open(
+                self.model_path
+                + '/out/{:d}/out.log'.format(nth_paramset), mode='w') as f:
             f.write(
                 'Generation1: Best Fitness = {:e}\n'.format(population[0, -1])
             )
@@ -81,13 +88,19 @@ class GeneticAlgorithmInit(object):
         best_fitness = population[0, -1]
 
         np.save(
-            './out/{:d}/generation.npy'.format(nth_paramset), 1
+            self.model_path + '/out/{:d}/generation.npy'.format(
+                nth_paramset
+            ), 1
         )
         np.save(
-            './out/{:d}/fit_param1'.format(nth_paramset), best_indiv
+            self.model_path + '/out/{:d}/fit_param1'.format(
+                nth_paramset
+            ), best_indiv
         )
         np.save(
-            './out/{:d}/best_fitness.npy'.format(nth_paramset), best_fitness
+            self.model_path + '/out/{:d}/best_fitness.npy'.format(
+                nth_paramset
+            ), best_fitness
         )
         if population[0, -1] <= self.allowable_error:
             best_indiv = self.sp.gene2val(population[0, :self.n_gene])
@@ -101,27 +114,29 @@ class GeneticAlgorithmInit(object):
             best_indiv = self.sp.gene2val(population[0, :self.n_gene])
             if population[0, -1] < best_fitness:
                 np.save(
-                    './out/{:d}/generation.npy'.format(
+                    self.model_path + '/out/{:d}/generation.npy'.format(
                         nth_paramset
                     ), generation + 1
                 )
                 np.save(
-                    './out/{:d}/fit_param{:d}.npy'.format(
+                    self.model_path + '/out/{:d}/fit_param{:d}.npy'.format(
                         nth_paramset, generation + 1
                     ), best_indiv
                 )
             best_fitness = population[0, -1]
             np.save(
-                './out/{:d}/best_fitness.npy'.format(
+                self.model_path + '/out/{:d}/best_fitness.npy'.format(
                     nth_paramset
                 ), best_fitness
             )
             np.save(
-                './out/{:d}/count_num.npy'.format(
+                self.model_path + '/out/{:d}/count_num.npy'.format(
                     nth_paramset
                 ), generation + 1
             )
-            with open('./out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
+            with open(
+                    self.model_path
+                    + '/out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
                 f.write(
                     'Generation{:d}: Best Fitness = {:e}\n'.format(
                         generation + 1, best_fitness
@@ -222,7 +237,9 @@ class GeneticAlgorithmInit(object):
         population = self._set_initial(nth_paramset)
         n0[0] = population[0, -1]
 
-        with open('./out/{:d}/out.log'.format(nth_paramset), mode='w') as f:
+        with open(
+                self.model_path
+                + '/out/{:d}/out.log'.format(nth_paramset), mode='w') as f:
             f.write(
                 'Generation1: Best Fitness = {:e}\n'.format(population[0, -1])
             )
@@ -230,13 +247,19 @@ class GeneticAlgorithmInit(object):
         best_fitness = population[0, -1]
 
         np.save(
-            './out/{:d}/generation.npy'.format(nth_paramset), 1
+            self.model_path + '/out/{:d}/generation.npy'.format(
+                nth_paramset
+            ), 1
         )
         np.save(
-            './out/{:d}/fit_param1.npy'.format(nth_paramset), best_indiv
+            self.model_path + '/out/{:d}/fit_param1.npy'.format(
+                nth_paramset
+            ), best_indiv
         )
         np.save(
-            './out/{:d}/best_fitness.npy'.format(nth_paramset), best_fitness
+            self.model_path + '/out/{:d}/best_fitness.npy'.format(
+                nth_paramset
+            ), best_fitness
         )
         if population[0, -1] <= self.allowable_error:
             best_indiv = self.sp.gene2val(population[0, :self.n_gene])
@@ -268,27 +291,29 @@ class GeneticAlgorithmInit(object):
             best_indiv = self.sp.gene2val(population[0, :self.n_gene])
             if population[0, -1] < best_fitness:
                 np.save(
-                    './out/{:d}/generation.npy'.format(
+                    self.model_path + '/out/{:d}/generation.npy'.format(
                         nth_paramset
                     ), generation + 1
                 )
                 np.save(
-                    './out/{:d}/fit_param{:d}.npy'.format(
+                    self.model_path + '/out/{:d}/fit_param{:d}.npy'.format(
                         nth_paramset, generation + 1
                     ), best_indiv
                 )
             best_fitness = population[0, -1]
             np.save(
-                './out/{:d}/best_fitness.npy'.format(
+                self.model_path + '/out/{:d}/best_fitness.npy'.format(
                     nth_paramset
                 ), best_fitness
             )
             np.save(
-                './out/{:d}/count_num.npy'.format(
+                self.model_path + '/out/{:d}/count_num.npy'.format(
                     nth_paramset
                 ), generation + 1
             )
-            with open('./out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
+            with open(
+                    self.model_path
+                    + '/out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
                 f.write(
                     'Generation{:d}: Best Fitness = {:e}\n'.format(
                         generation + 1, best_fitness

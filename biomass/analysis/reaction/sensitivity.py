@@ -9,7 +9,8 @@ from .viz import barplot_sensitivity, heatmap_sensitivity
 
 
 class ReactionSensitivity(object):
-    def __init__(self, reaction_system, obs, sim, sp, rxn):
+    def __init__(self, model_path, reaction_system, obs, sim, sp, rxn):
+        self.model_path = model_path
         self.reaction_system = reaction_system
         self.obs = obs
         self.sim = sim
@@ -37,13 +38,13 @@ class ReactionSensitivity(object):
         
         """
         rate = 1.01  # 1% change
-        n_file = get_executable()
+        n_file = get_executable(self.model_path)
         signaling_metric = np.full(
             (len(n_file), n_reaction, len(self.obs), len(self.sim.conditions)),
             np.nan
         )
         for i, nth_paramset in enumerate(n_file):
-            (x, y0) = load_param(nth_paramset, self.sp.update)
+            (x, y0) = load_param(self.model_path, nth_paramset, self.sp.update)
             for j in range(n_reaction):
                 self.reaction_system.perturbation = [1] * n_reaction
                 self.reaction_system.perturbation[j] = rate
@@ -68,25 +69,25 @@ class ReactionSensitivity(object):
 
     def _load_sc(self, metric, n_reaction):
         os.makedirs(
-            './figure/sensitivity/' \
+            self.model_path + '/figure/sensitivity/' \
             'reaction/{}/heatmap'.format(metric), exist_ok=True
         )
         if not os.path.isfile(
-                './sensitivity_coefficients/' \
+                self.model_path + '/sensitivity_coefficients/' \
                 'reaction/{}/sc.npy'.format(metric)):
             os.makedirs(
-                './sensitivity_coefficients/' \
+                self.model_path + '/sensitivity_coefficients/' \
                 'reaction/{}'.format(metric), exist_ok=True
             )
             sensitivity_coefficients = \
                 self._calc_sensitivity_coefficients(metric, n_reaction)
             np.save(
-                './sensitivity_coefficients/' \
+                self.model_path + '/sensitivity_coefficients/' \
                 'reaction/{}/sc'.format(metric), sensitivity_coefficients
             )
         else:
             sensitivity_coefficients = np.load(
-                './sensitivity_coefficients/' \
+                self.model_path + '/sensitivity_coefficients/' \
                 'reaction/{}/sc.npy'.format(metric)
             )
             
@@ -109,12 +110,14 @@ class ReactionSensitivity(object):
         if style == 'barplot':
             barplot_sensitivity(
                 metric, sensitivity_coefficients, biological_processes,
-                n_reaction, sort_idx, reaction_indices, self.obs, self.sim
+                n_reaction, sort_idx, reaction_indices, 
+                self.model_path, self.obs, self.sim
             )
         elif style == 'heatmap':
             heatmap_sensitivity(
                 metric, sensitivity_coefficients, biological_processes,
-                n_reaction, sort_idx, reaction_indices, self.obs, self.sim
+                n_reaction, sort_idx, reaction_indices, 
+                self.model_path, self.obs, self.sim
             )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")

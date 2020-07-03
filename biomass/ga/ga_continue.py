@@ -5,7 +5,8 @@ from .rcga import (UnimodalNormalDistributionXover,
                    DistanceIndependentDiversityControl)
 
 class GeneticAlgorithmContinue(object):
-    def __init__(self, sp, obj_func):
+    def __init__(self, model_path, sp, obj_func):
+        self.model_path = model_path
         self.sp = sp
         self.obj_func = obj_func
         self.search_rgn = self.sp.get_region()
@@ -32,16 +33,18 @@ class GeneticAlgorithmContinue(object):
 
     def _set_continue(self, nth_paramset):
         best_generation = np.load(
-            './out/{:d}/generation.npy'.format(nth_paramset)
+            self.model_path + '/out/{:d}/generation.npy'.format(nth_paramset)
         )
         best_indiv = np.load(
-            './out/{:d}/fit_param{:d}.npy'.format(
+            self.model_path + '/out/{:d}/fit_param{:d}.npy'.format(
                 nth_paramset, int(best_generation)
             )
         )
         population = np.full((self.n_population, self.n_gene+1), np.inf)
 
-        with open('./out/{:d}/initpop.log'.format(nth_paramset), mode='w') as f:
+        with open(
+            self.model_path
+            + '/out/{:d}/initpop.log'.format(nth_paramset), mode='w') as f:
             f.write(
                 'Generating the initial population. . .\n'
             )
@@ -55,7 +58,7 @@ class GeneticAlgorithmContinue(object):
                     np.clip(population[i, :self.n_gene], 0., 1.)
                 population[i, -1] = self.obj_func(population[i, :self.n_gene])
             with open(
-                    './out/{:d}/initpop.log'.format(
+                    self.model_path + '/out/{:d}/initpop.log'.format(
                         nth_paramset
                     ), mode='a') as f:
                 f.write(
@@ -92,13 +95,13 @@ class GeneticAlgorithmContinue(object):
             self.obj_func, self.n_population, self.n_children, self.n_gene
         )
         count_num = np.load(
-            './out/{:d}/count_num.npy'.format(nth_paramset)
+            self.model_path + '/out/{:d}/count_num.npy'.format(nth_paramset)
         )
         best_generation = np.load(
-            './out/{:d}/generation.npy'.format(nth_paramset)
+            self.model_path + '/out/{:d}/generation.npy'.format(nth_paramset)
         )
         best_indiv = np.load(
-            './out/{:d}/fit_param{:d}.npy'.format(
+            self.model_path + '/out/{:d}/fit_param{:d}.npy'.format(
                 nth_paramset, int(best_generation)
             )
         )
@@ -113,11 +116,13 @@ class GeneticAlgorithmContinue(object):
             best_indiv = self.sp.gene2val(population[0, :self.n_gene])
             best_fitness = population[0, -1]
             np.save(
-                './out/{:d}/fit_param{:d}.npy'.format(
+                self.model_path + '/out/{:d}/fit_param{:d}.npy'.format(
                     nth_paramset, int(count_num) + 1
                 ), best_indiv
             )
-        with open('./out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
+        with open(
+                self.model_path
+                + '/out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
             f.write(
                 '\n----------------------------------------\n\n' +
                 'Generation{:d}: Best Fitness = {:e}\n'.format(
@@ -136,28 +141,30 @@ class GeneticAlgorithmContinue(object):
             best_indiv = self.sp.gene2val(population[0, :self.n_gene])
             if population[0, -1] < best_fitness:
                 np.save(
-                    './out/{:d}/fit_param{:d}.npy'.format(
+                    self.model_path + '/out/{:d}/fit_param{:d}.npy'.format(
                         nth_paramset, generation + int(count_num) + 1
                     ), best_indiv
                 )
                 np.save(
-                    './out/{:d}/generation.npy'.format(
+                    self.model_path + '/out/{:d}/generation.npy'.format(
                         nth_paramset
                     ), generation + int(count_num) + 1
                 )
                 np.save(
-                    './out/{:d}/best_fitness'.format(
+                    self.model_path + '/out/{:d}/best_fitness'.format(
                         nth_paramset
                     ), best_fitness
                 )
             best_fitness = population[0, -1]
 
             np.save(
-                './out/{:d}/count_num.npy'.format(
+                self.model_path + '/out/{:d}/count_num.npy'.format(
                     nth_paramset
                 ), generation + int(count_num) + 1
             )
-            with open('./out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
+            with open(
+                    self.model_path
+                    + '/out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
                 f.write(
                     'Generation{:d}: Best Fitness = {:e}\n'.format(
                         generation + int(count_num) + 1, best_fitness
@@ -184,13 +191,13 @@ class GeneticAlgorithmContinue(object):
         n0 = np.empty(3*self.n_population)
 
         count_num = np.load(
-            './out/{:d}/count_num.npy'.format(nth_paramset)
+            self.model_path + '/out/{:d}/count_num.npy'.format(nth_paramset)
         )
         best_generation = np.load(
-            './out/{:d}/generation.npy'.format(nth_paramset)
+            self.model_path + '/out/{:d}/generation.npy'.format(nth_paramset)
         )
         best_indiv = np.load(
-            './out/{:d}/fit_param{:d}.npy'.format(
+            self.model_path + '/out/{:d}/fit_param{:d}.npy'.format(
                 nth_paramset, int(best_generation)
             )
         )
@@ -205,11 +212,13 @@ class GeneticAlgorithmContinue(object):
             best_indiv = self.sp.gene2val(population[0, :self.n_gene])
             best_fitness = population[0, -1]
             np.save(
-                './out/{:d}/fit_param{:d}.npy'.format(
+                self.model_path + '/out/{:d}/fit_param{:d}.npy'.format(
                     nth_paramset, int(count_num) + 1
                 ), best_indiv
             )
-        with open('./out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
+        with open(
+                self.model_path
+                + '/out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
             f.write(
                 '\n----------------------------------------\n\n' +
                 'Generation{:d}: Best Fitness = {:e}\n'.format(
@@ -248,27 +257,29 @@ class GeneticAlgorithmContinue(object):
             best_indiv = self.sp.gene2val(population[0, :self.n_gene])
             if population[0, -1] < best_fitness:
                 np.save(
-                    './out/{:d}/generation.npy'.format(
+                    self.model_path + '/out/{:d}/generation.npy'.format(
                         nth_paramset
                     ), generation + int(count_num) + 1
                 )
                 np.save(
-                    './out/{:d}/fit_param{:d}.npy'.format(
+                    self.model_path + '/out/{:d}/fit_param{:d}.npy'.format(
                         nth_paramset, generation + int(count_num) + 1
                     ), best_indiv
                 )
                 np.save(
-                    './out/{:d}/best_fitness'.format(
+                    self.model_path + '/out/{:d}/best_fitness'.format(
                         nth_paramset
                     ), best_fitness
                 )
             best_fitness = population[0, -1]
             np.save(
-                './out/{:d}/count_num.npy'.format(
+                self.model_path + '/out/{:d}/count_num.npy'.format(
                     nth_paramset
                 ), generation + int(count_num) + 1
             )
-            with open('./out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
+            with open(
+                    self.model_path
+                    + '/out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
                 f.write(
                     'Generation{:d}: Best Fitness = {:e}\n'.format(
                         generation + int(count_num) + 1, best_fitness

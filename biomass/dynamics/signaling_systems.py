@@ -6,7 +6,9 @@ from . import plot_func
 
 
 class SignalingSystems(object):
-    def __init__(self, parameters, species, pval, ival, obs, sim, exp, sp):
+    def __init__(self, model_path, parameters, species, 
+                 pval, ival, obs, sim, exp, sp):
+        self.model_path = model_path
         self.parameters = parameters
         self.species = species
         self.pval = pval
@@ -48,7 +50,7 @@ class SignalingSystems(object):
                 "'best','average','original','experiment','n(=1, 2, ...)'"
             )
         search_idx = (self.sp.idx_params, self.sp.idx_initials)
-        n_file = [] if viz_type == 'original' else get_executable()
+        n_file = [] if viz_type == 'original' else get_executable(self.model_path)
         simulations_all = np.full(
             (len(self.obs), len(n_file), len(self.sim.t), len(self.sim.conditions)),
             np.nan
@@ -66,9 +68,11 @@ class SignalingSystems(object):
                             simulations_all[j, i, :, :] = dynamic.simulations[j, :, :]
                 best_fitness_all = np.full(len(n_file), np.inf)
                 for i, nth_paramset in enumerate(n_file):
-                    if os.path.isfile('./out/{:d}/best_fitness.npy'.format(nth_paramset)):
+                    if os.path.isfile(self.model_path
+                            + '/out/{:d}/best_fitness.npy'.format(nth_paramset)):
                         best_fitness_all[i] = np.load(
-                            './out/{:d}/best_fitness.npy'.format(nth_paramset)
+                            self.model_path
+                            + '/out/{:d}/best_fitness.npy'.format(nth_paramset)
                         )
                 best_paramset = n_file[np.argmin(best_fitness_all)]
                 self._write_best_fit_param(best_paramset)
@@ -84,9 +88,9 @@ class SignalingSystems(object):
                         (len(n_file), len(search_idx[0]) + len(search_idx[1]))
                     )
                     for i, nth_paramset in enumerate(n_file):
-                        popt[i, :] = _get_indiv(nth_paramset)
+                        popt[i, :] = _get_indiv(self.model_path, nth_paramset)
                     plot_func.param_range(
-                        search_idx, popt, 
+                        search_idx, popt, self.model_path,
                         self.parameters, self.species, self.sp, portrait=True
                     )
             else:
@@ -97,14 +101,14 @@ class SignalingSystems(object):
                 dynamic = self.sim            
         plot_func.timecourse(
             dynamic, n_file, viz_type, show_all, stdev,
-            simulations_all, self.obs, self.exp
+            simulations_all, self.model_path, self.obs, self.exp
         )
     
     def _validate(self, nth_paramset):
         """
         Validates the dynamical viability of a set of estimated parameter values.
         """
-        (x, y0) = load_param(nth_paramset, self.sp.update)
+        (x, y0) = load_param(self.model_path, nth_paramset, self.sp.update)
         if self.sim.simulate(x, y0) is None:
             return self.sim, True
         else:
@@ -114,9 +118,9 @@ class SignalingSystems(object):
             return self.sim, False
 
     def _write_best_fit_param(self, best_paramset):
-        (x, y0) = load_param(best_paramset, self.sp.update)
+        (x, y0) = load_param(self.model_path, best_paramset, self.sp.update)
         
-        with open('./out/best_fit_param.txt', mode='w') as f:
+        with open(self.model_path + '/out/best_fit_param.txt', mode='w') as f:
             f.write(
                 '# param set: {:d}\n'.format(
                     best_paramset
@@ -134,15 +138,14 @@ class SignalingSystems(object):
                 if y0[i] != 0:
                     f.write('y0[V.{}] = {:8.3e}\n'.format(specie, y0[i]))
 
-
-def _get_indiv(paramset):
+def _get_indiv(model_path, paramset):
     best_generation = np.load(
-        './out/{:d}/generation.npy'.format(
+        model_path + '/out/{:d}/generation.npy'.format(
             paramset
         )
     )
     best_indiv = np.load(
-        './out/{:d}/fit_param{:d}.npy'.format(
+        model_path + '/out/{:d}/fit_param{:d}.npy'.format(
             paramset, int(best_generation)
         )
     )
@@ -150,22 +153,23 @@ def _get_indiv(paramset):
     return best_indiv
 
 
-def load_param(paramset, update):
-    best_indiv = _get_indiv(paramset)
+def load_param(model_path, paramset, update):
+    best_indiv = _get_indiv(model_path, paramset)
     (x, y0) = update(best_indiv)
 
     return x, y0
 
 
-def get_executable():
+def get_executable(model_path):
     n_file = []
-    fitparam_files = os.listdir('./out')
+    fitparam_files = os.listdir(model_path + '/out')
     for file in fitparam_files:
         if re.match(r'\d', file):
             n_file.append(int(file))
     empty_folder = []
     for i, nth_paramset in enumerate(n_file):
-        if not os.path.isfile('./out/{:d}/generation.npy'.format(nth_paramset)):
+        if not os.path.isfile(model_path 
+                + '/out/{:d}/generation.npy'.format(nth_paramset)):
             empty_folder.append(i)
     for i in sorted(empty_folder, reverse=True):
         n_file.pop(i)

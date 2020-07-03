@@ -8,7 +8,8 @@ from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
 from .viz import barplot_sensitivity, heatmap_sensitivity
 
 class NonZeroInitSensitivity(object):
-    def __init__(self, species, ival, obs, sim, sp):
+    def __init__(self, model_path, species, ival, obs, sim, sp):
+        self.model_path = model_path
         self.species = species
         self.ival = ival
         self.obs = obs
@@ -89,25 +90,25 @@ class NonZeroInitSensitivity(object):
 
     def _load_sc(self, metric, nonzero_idx):
         os.makedirs(
-            './figure/sensitivity/' \
+            self.model_path + '/figure/sensitivity/' \
             'nonzero_init/{}/heatmap'.format(metric), exist_ok=True
         )
         if not os.path.isfile(
-                './sensitivity_coefficients/' \
+                self.model_path + '/sensitivity_coefficients/' \
                 'nonzero_init/{}/sc.npy'.format(metric)):
             os.makedirs(
-                './sensitivity_coefficients/' \
+                self.model_path + '/sensitivity_coefficients/' \
                 'nonzero_init/{}'.format(metric), exist_ok=True
             )
             sensitivity_coefficients = \
                 self._calc_sensitivity_coefficients(metric, nonzero_idx)
             np.save(
-                './sensitivity_coefficients/' \
+                self.model_path + '/sensitivity_coefficients/' \
                 'nonzero_init/{}/sc'.format(metric), sensitivity_coefficients
             )
         else:
             sensitivity_coefficients = np.load(
-                './sensitivity_coefficients/' \
+                self.model_path + '/sensitivity_coefficients/' \
                 'nonzero_init/{}/sc.npy'.format(metric)
             )
             
@@ -119,7 +120,7 @@ class NonZeroInitSensitivity(object):
         if style == 'barplot':
             barplot_sensitivity(
                 metric, sensitivity_coefficients, nonzero_idx,
-                self.species, self.obs, self.sim
+                self.model_path, self.species, self.obs, self.sim
             )
         elif style == 'heatmap':
             if len(nonzero_idx) < 2:
@@ -127,7 +128,7 @@ class NonZeroInitSensitivity(object):
             else:
                 heatmap_sensitivity(
                     metric, sensitivity_coefficients, nonzero_idx,
-                    self.species, self.obs, self.sim
+                    self.model_path, self.species, self.obs, self.sim
                 )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")

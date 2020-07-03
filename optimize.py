@@ -7,10 +7,15 @@ import warnings
 warnings.filterwarnings('ignore')
 
 from biomass.models.Nakakuki_Cell_2010 import SearchParam, objective
+from biomass.models.Nakakuki_Cell_2010 import __path__ as MODEL_PATH
 from biomass.ga import GeneticAlgorithmInit
 
 if __name__ == '__main__':
-    ga_init = GeneticAlgorithmInit(sp=SearchParam(), obj_func=objective)
+    ga_init = GeneticAlgorithmInit(
+        model_path=MODEL_PATH[0],
+        sp=SearchParam(),
+        obj_func=objective
+    )
     args = sys.argv
     if len(args) == 2:
         ga_init.run(int(args[1]))

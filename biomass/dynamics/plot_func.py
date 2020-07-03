@@ -5,9 +5,9 @@ import seaborn as sns
 
 
 def timecourse(sim, n_file, viz_type, show_all, stdev,
-               simulations_all, obs, exp):
+               simulations_all, model_path, obs, exp):
     os.makedirs(
-        './figure/simulation/{}'.format(viz_type), exist_ok=True
+        model_path + '/figure/simulation/{}'.format(viz_type), exist_ok=True
     )
 
     plt.rcParams['font.size'] = 20
@@ -107,15 +107,15 @@ def timecourse(sim, n_file, viz_type, show_all, stdev,
         plt.ylabel(obs_name.replace('__', '\n').replace('_', ' '))
 
         plt.savefig(
-            './figure/simulation/{}/{}.pdf'.format(
+            model_path + '/figure/simulation/{}/{}.pdf'.format(
                 viz_type, obs_name
             ), bbox_inches='tight'
         )
         plt.close()
 
 
-def param_range(search_idx, popt, parameters, species, sp, portrait):
-    os.makedirs('./figure/param_range', exist_ok=True)
+def param_range(search_idx, popt, model_path, parameters, species, sp, portrait):
+    os.makedirs(model_path + '/figure/param_range', exist_ok=True)
 
     plt.rcParams['font.size'] = 12
     plt.rcParams['axes.linewidth'] = 1.2
@@ -143,7 +143,7 @@ def param_range(search_idx, popt, parameters, species, sp, portrait):
             ax.set_xscale('log')
 
             plt.savefig(
-                './figure/param_range/param_range.pdf',
+                model_path + '/figure/param_range/param_range.pdf',
                 bbox_inches='tight'
             )
             plt.close(fig)
@@ -164,7 +164,7 @@ def param_range(search_idx, popt, parameters, species, sp, portrait):
             ax.set_xscale('log')
 
             plt.savefig(
-                './figure/param_range/initial_value_range.pdf',
+                model_path + '/figure/param_range/initial_value_range.pdf',
                 bbox_inches='tight'
             )
             plt.close(fig)
@@ -187,7 +187,7 @@ def param_range(search_idx, popt, parameters, species, sp, portrait):
             ax.set_yscale('log')
 
             plt.savefig(
-                './figure/param_range/param_range_h.pdf',
+                model_path + '/figure/param_range/param_range_h.pdf',
                 bbox_inches='tight'
             )
             plt.close(fig)
@@ -209,7 +209,7 @@ def param_range(search_idx, popt, parameters, species, sp, portrait):
             ax.set_yscale('log')
 
             plt.savefig(
-                './figure/param_range/initail_value_range_h.pdf',
+                model_path + '/figure/param_range/initail_value_range_h.pdf',
                 bbox_inches='tight'
             )
             plt.close(fig)
