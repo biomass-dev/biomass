@@ -326,7 +326,7 @@ To obtain values for sensitivity of the rate equations, the time derivatives of 
     : The integral of concentration over the observation time.
 
 **style**: 2 options available
-- ```'barplot'``` : To visualizehe the averaged sensitivity coefficients. 
+- ```'barplot'``` : To visualize the averaged sensitivity coefficients. 
 - ```'heatmap'``` : To visualize the individual sensitivity coefficients for each parameter set.
 
 For example, to calculate sensitivity coefficients on rate equations, use the maximum value as a signaling metric and save barplot:
