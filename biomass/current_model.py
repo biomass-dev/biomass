@@ -6,8 +6,16 @@ import numpy as np
 from biomass.dynamics import get_executable
 
 class CurrentModel(object):
-    def __init__(self, model_path=None, parameters=None, species=None,
-                 pval=None, ival=None, sp=None, rxn=None):
+    def __init__(
+            self,
+            model_path=None,
+            parameters=None,
+            species=None,
+            pval=None,
+            ival=None,
+            sp=None,
+            rxn=None
+    ):
         self.model_path = model_path
         self.parameters = parameters
         self.species = species
@@ -41,7 +49,7 @@ class CurrentModel(object):
         optimized_params.csv
         optimized_initial_values.csv
         """
-        os.makedirs(self.model_path + '/optimized_params/', exist_ok=True)
+        os.makedirs(self.model_path + '/optimization_results/', exist_ok=True)
         n_file = get_executable(self.model_path)
 
         if len(self.sp.idx_params) > 0:
@@ -71,7 +79,9 @@ class CurrentModel(object):
                     optimized_params[0, nth_paramset-1] = str(nth_paramset)
                     optimized_params[1, nth_paramset-1] = '{:8.3e}'.format(error)
                     optimized_params[i+2, nth_paramset-1] = '{:8.3e}'.format(best_indiv[i])
-            with open(self.model_path + '/optimized_params/optimized_params.csv', 'w') as f:
+            with open(
+                    self.model_path
+                    + '/optimization_results/optimized_params.csv', 'w') as f:
                 writer = csv.writer(f, lineterminator='\n')
                 writer.writerows(optimized_params)
 
@@ -103,7 +113,9 @@ class CurrentModel(object):
                     optimized_initials[1, nth_paramset-1] = '{:8.3e}'.format(error)
                     optimized_initials[i+2, nth_paramset-1] = \
                         '{:8.3e}'.format(best_indiv[i+len(self.sp.idx_params)])
-            with open(self.model_path + '/optimized_params/optimized_inital_varlues.csv', 'w') as f:
+            with open(
+                    self.model_path
+                    + '/optimization_results/optimized_initals.csv', 'w') as f:
                 writer = csv.writer(f, lineterminator='\n')
                 writer.writerows(optimized_initials)
 
