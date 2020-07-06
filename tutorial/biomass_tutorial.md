@@ -250,6 +250,15 @@ $ cd biomass/models/[your_model]
 
 ## Running BioMASS
 
+### ***Model construction***
+
+```python
+from biomass.models import <your_model>
+from biomass import ExecModel
+
+model = ExecModel(<your_model>)
+```
+
 ### ***Parameter eatimation***
 
 Firstly, move back to the home directory of BioMASS.
@@ -258,27 +267,22 @@ $ cd ..
 ```
 <br>
 
-Then we can run the following to run optimization. Please take note of the following points:
-* ```nohup``` is not necessary but helpful so that the process can run when logged out. 
-* To run a program in the background, enter the command for that job, followed by the ```&``` sign.
-* ```python optimize.py``` is the optimization script.
-
 For only one parameter set number ```1```,
-```bash
-$ nohup python optimize.py 1 &
+```python
+model.optimize(1)
 ```
 <br>
 
 For example, to run optimization with parameter sets from ```1``` **to** ```5``` (```1```, ```2```, ```3```, ```4```, ```5```) simultaneously,
-```bash
-$ nohup python optimize.py 1 5 &
+```python
+model.optimize(1, 5)
 ```
 <br>
 
 
 ### ***Visualization of simulation results***
 
-To visualize the simulation results you can then use the function ```simulate_all``` with several visualization options:
+To visualize the simulation results you can then use the function ```run_simulation``` with several visualization options:
 
 * **Visualization type**: 
     * ```'average'``` : average of the results with parameter sets in ```out/```
@@ -291,23 +295,7 @@ To visualize the simulation results you can then use the function ```simulate_al
 * **Standard deviation** : ```stdev``` to plot the standard deviation. (only available for ```average``` visualization type)
 
 ```python
-from biomass.models.Nakakuki_Cell_2010 import *
-
-from biomass.dynamics import SignalingSystems
-
-erbb_network = SignalingSystems(
-    parameters=C.parameters,
-    species=V.species,
-    pval=param_values,
-    ival=initial_values,
-    obs=observables,
-    sim=NumericalSimulation(),
-    exp=ExperimentalData(),
-    sp=SearchParam()
-)
-
-# to get the average and visualize standard deviation by error bars
-erbb_network.simulate_all(viz_type='average', show_all=False, stdev=True)
+model.run_simulation(viz_type='average', show_all=False, stdev=True)
 ```
 <br>
 
@@ -317,7 +305,11 @@ You can calculate sensitivity coefficients on rate equations and non-zero initia
 
 To obtain values for sensitivity of the rate equations, the time derivatives of state variables must be described via rate equations (See ```set_model.py```) and you need to edit ```reaction_network.py```
 
-**metric**: 3 options available
+**target** : 2 options avairable
+- ```'reaction'```
+- ```'initial_condition'```
+
+**metric** : 3 options available
 - ```'amplitude'```
     : The maximum value.
 - ```'duration'```
@@ -325,29 +317,18 @@ To obtain values for sensitivity of the rate equations, the time derivatives of 
 - ```'integral'```
     : The integral of concentration over the observation time.
 
-**style**: 2 options available
+**style** : 2 options available
 - ```'barplot'``` : To visualize the averaged sensitivity coefficients. 
 - ```'heatmap'``` : To visualize the individual sensitivity coefficients for each parameter set.
 
 For example, to calculate sensitivity coefficients on rate equations, use the maximum value as a signaling metric and save barplot:
 
 ```python
-from biomass.models.Nakakuki_Cell_2010 import *
-
-from biomass.analysis.reaction import ReactionSensitivity
-reaction = ReactionSensitivity(
-    reaction_system=set_model,
-    obs=observables,
-    sim=NumericalSimulation(),
-    sp=SearchParam(),
-    rxn=ReactionNetwork()
-)
-reaction.analyze(metric='integral', style='barplot')
+model.analyze(target='reaction', metric='integral', style='barplot')
 ```
-<br>
 
 The final results should be available in the folder ```/figure```
-
+<br>
 
 If you have any questions, please email us at nico@protein.osaka-u.ac.jp or himoto@protein.osaka-u.ac.jp
 
