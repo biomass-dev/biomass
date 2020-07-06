@@ -1,14 +1,16 @@
 import time
 import numpy as np
 
+from biomass import ExecModel
 from .rcga import (UnimodalNormalDistributionXover,
                    DistanceIndependentDiversityControl)
 
-class GeneticAlgorithmContinue(object):
-    def __init__(self, model_path, sp, obj_func):
-        self.model_path = model_path
-        self.sp = sp
-        self.obj_func = obj_func
+class GeneticAlgorithmContinue(ExecModel):
+    def __init__(self, model):
+        super().__init__(model)
+        self.model_path = model.__path__[0]
+        self.sp = model.SearchParam()
+        self.obj_func = model.objective
         self.search_rgn = self.sp.get_region()
         self.max_generation = 10000
         self.n_population = int(5*self.search_rgn.shape[1])

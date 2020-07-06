@@ -3,18 +3,20 @@ import sys
 import re
 import numpy as np
 
+from biomass import ExecModel
 from biomass.dynamics import load_param, get_executable
 from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
 from .viz import barplot_sensitivity, heatmap_sensitivity
 
-class NonZeroInitSensitivity(object):
-    def __init__(self, model_path, species, ival, obs, sim, sp):
-        self.model_path = model_path
-        self.species = species
-        self.ival = ival
-        self.obs = obs
-        self.sim = sim
-        self.sp = sp
+class NonZeroInitSensitivity(ExecModel):
+    def __init__(self, model):
+        super().__init__(model)
+        self.model_path = model.__path__[0]
+        self.species = model.V.NAMES
+        self.ival = model.initial_values
+        self.obs = model.observables
+        self.sim = model.NumericalSimulation()
+        self.sp = model.SearchParam()
 
     def _get_nonzero_idx(self):
         nonzero_idx = []

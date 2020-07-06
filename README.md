@@ -22,18 +22,17 @@ currently implimented for modeling immediate-early gene response ([Nakakuki *et 
 > - matplotlib
 > - seaborn
 
-## Build model
+## Import model
 ```python
 from biomass.models import Nakakuki_Cell_2010
-from biomass import ExecModel
-
-model = ExecModel(Nakakuki_Cell_2010)
 ```
 
 ## Parameter Estimation of ODE Models (*n* = 1, 2, 3, · · ·)
 The temporary result will be saved in ```out/n/``` after each iteration.
 ```python
-model.optimize(n)
+from biomass import optimize
+
+optimize(Nakakuki_Cell_2010, n)
 ```
 Progress list: ```out/n/out.log```
 ```
@@ -61,16 +60,22 @@ Generation20: Best Fitness = 1.171606e+00
 
 - If you want to continue from where you stopped in the last parameter search,
 ```python
-model.optimize_continue(n)
+from biomass import optimize_continue
+
+optimize_continue(Nakakuki_Cell_2010, n)
 ```
 - If you want to search multiple parameter sets (from *n1* to *n2*) simultaneously,
 ```python
-model.optimize(n1, n2)
+from biomass import optimize
+
+optimize(n1, n2)
 ```
 
 ## Visualization of Simulation Results
 ```python
-model.run_simulation(viz_type='average', show_all=False, stdev=True)
+from biomass import run_simulation
+
+run_simulation(Nakakuki_Cell_2010, viz_type='average', show_all=False, stdev=True)
 ```
 **viz_type** : str
 
@@ -105,7 +110,9 @@ The single parameter sensitivity of each reaction is defined by<br>
 where *v<sub>i</sub>* is the *i*<sup>th</sup> reaction rate, **v** is reaction vector **v** = (*v<sub>1</sub>*, *v<sub>2</sub>*, ...) and *q*(**v**) is a target function, e.g., time-integrated response, duration. Sensitivity coefficients were calculated using finite difference approximations with 1% changes in the reaction rates.
 
 ```python
-model.analyze(target='reaction', metric='integral', style='barplot')
+from biomass import analyze
+
+analyze(Nakakuki_Cell_2010, target='reaction', metric='integral', style='barplot')
 ```
 
 **target** : str

@@ -11,15 +11,14 @@
 #### モデルの読み込み
 ```python
 from biomass.models import Nakakuki_Cell_2010
-from biomass import ExecModel
-
-model = ExecModel(Nakakuki_Cell_2010)
 ```
 
 #### ODEモデルのパラメータ推定 (n = 1, 2, 3, · · ·)
 パラメータ最適化には遺伝的アルゴリズムを用いています．世代交代毎に，最良のパラメータセットが```out/n/```に保存されます．
 ```python
-model.optimize(n)
+from biomass import optimize
+
+optimize(Nakakuki_Cell_2010, n)
 ```
 進捗は```out/n/out.log```で見ることができます．
 ```
@@ -47,18 +46,24 @@ Generation20: Best Fitness = 1.171606e+00
 
 - 途中で中断したところから再開したい場合，
 ```python
-model.optimize_continue(n)
+from biomass import optimize_continue
+
+optimize_continue(Nakakuki_Cell_2010, n)
 ```
 - 複数のパラメータセット（*n1*から*n2*）を同時に探索したい場合,
 ```python
-model.optimize(n1, n2)
+from biomass import optimize
+
+optimize(n1, n2)
 ```
 
 ---
 #### シミュレーション結果の可視化
 パラメータ推定で得た複数のパラメータセットでのシミュレーション結果を出力します．結果は```figure/```に保存されます．
 ```python
-model.run_simulation(viz_type='average', show_all=False, stdev=True)
+from biomass import run_simulation
+
+run_simulation(Nakakuki_Cell_2010, viz_type='average', show_all=False, stdev=True)
 ```
 
 コマンドライン引数を設定することで，出力されるグラフの表示法を変更することができます．
@@ -85,7 +90,9 @@ model.run_simulation(viz_type='average', show_all=False, stdev=True)
 ---
 #### 感度解析
 ```python
-model.analyze(target='reaction', metric='integral', style='barplot')
+from biomass import analyze
+
+analyze(Nakakuki_Cell_2010, target='reaction', metric='integral', style='barplot')
 ```
 
 感度係数は以下の式で記述されます．

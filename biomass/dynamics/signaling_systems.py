@@ -2,21 +2,22 @@ import os
 import re
 import numpy as np
 
+from biomass import ExecModel
 from . import plot_func
 
 
-class SignalingSystems(object):
-    def __init__(self, model_path, parameters, species, 
-                 pval, ival, obs, sim, exp, sp):
-        self.model_path = model_path
-        self.parameters = parameters
-        self.species = species
-        self.pval = pval
-        self.ival = ival
-        self.obs = obs
-        self.sim = sim
-        self.exp = exp
-        self.sp = sp
+class SignalingSystems(ExecModel):
+    def __init__(self, model):
+        super().__init__(model)
+        self.model_path = model.__path__[0]
+        self.parameters = model.C.NAMES
+        self.species = model.V.NAMES
+        self.pval = model.param_values
+        self.ival = model.initial_values
+        self.obs = model.observables
+        self.sim = model.NumericalSimulation()
+        self.exp = model.ExperimentalData()
+        self.sp = model.SearchParam()
 
     def simulate_all(self, viz_type, show_all, stdev):
         """Simulate ODE model with estimated parameter values.

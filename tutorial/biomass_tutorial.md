@@ -250,13 +250,10 @@ $ cd biomass/models/[your_model]
 
 ## Running BioMASS
 
-### ***Model construction***
+### ***Import model***
 
 ```python
 from biomass.models import <your_model>
-from biomass import ExecModel
-
-model = ExecModel(<your_model>)
 ```
 
 ### ***Parameter eatimation***
@@ -269,13 +266,17 @@ $ cd ..
 
 For only one parameter set number ```1```,
 ```python
-model.optimize(1)
+from biomass import optimize
+
+optimize(<your_model>, 1)
 ```
 <br>
 
 For example, to run optimization with parameter sets from ```1``` **to** ```5``` (```1```, ```2```, ```3```, ```4```, ```5```) simultaneously,
 ```python
-model.optimize(1, 5)
+from biomass import optimize
+
+optimize(<your_model>, 1, 5)
 ```
 <br>
 
@@ -295,7 +296,9 @@ To visualize the simulation results you can then use the function ```run_simulat
 * **Standard deviation** : ```stdev``` to plot the standard deviation. (only available for ```average``` visualization type)
 
 ```python
-model.run_simulation(viz_type='average', show_all=False, stdev=True)
+from biomass import run_simulation
+
+run_simulation(<your_model>, viz_type='average', show_all=False, stdev=True)
 ```
 <br>
 
@@ -324,7 +327,9 @@ To obtain values for sensitivity of the rate equations, the time derivatives of 
 For example, to calculate sensitivity coefficients on rate equations, use the maximum value as a signaling metric and save barplot:
 
 ```python
-model.analyze(target='reaction', metric='integral', style='barplot')
+from biomass import analyze
+
+analyze(<your_model>, target='reaction', metric='integral', style='barplot')
 ```
 
 The final results should be available in the folder ```/figure```

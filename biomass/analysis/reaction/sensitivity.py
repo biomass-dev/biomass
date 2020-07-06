@@ -3,19 +3,21 @@ import sys
 import re
 import numpy as np
 
+from biomass import ExecModel
 from biomass.dynamics import load_param, get_executable
 from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
 from .viz import barplot_sensitivity, heatmap_sensitivity
 
 
-class ReactionSensitivity(object):
-    def __init__(self, model_path, reaction_system, obs, sim, sp, rxn):
-        self.model_path = model_path
-        self.reaction_system = reaction_system
-        self.obs = obs
-        self.sim = sim
-        self.sp = sp
-        self.rxn = rxn
+class ReactionSensitivity(ExecModel):
+    def __init__(self, model):
+        super().__init__(model)
+        self.model_path = model.__init__[0]
+        self.reaction_system = model.set_model
+        self.obs = model.observables
+        self.sim = model.NumericalSimulation()
+        self.sp = model.SearchParam()
+        self.rxn = model.ReactionNetwork()
     
     def _calc_sensitivity_coefficients(self, metric, n_reaction):
         """ Calculating Sensitivity Coefficients
