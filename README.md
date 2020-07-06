@@ -68,7 +68,7 @@ optimize_continue(Nakakuki_Cell_2010, n)
 ```python
 from biomass import optimize
 
-optimize(n1, n2)
+optimize(Nakakuki_Cell_2010, n1, n2)
 ```
 
 ## Visualization of Simulation Results
