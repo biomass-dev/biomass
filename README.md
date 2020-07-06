@@ -22,10 +22,18 @@ currently implimented for modeling immediate-early gene response ([Nakakuki *et 
 > - matplotlib
 > - seaborn
 
+## Build model
+```python
+from biomass.models import Nakakuki_Cell_2010
+from biomass import ExecModel
+
+model = ExecModel(Nakakuki_Cell_2010)
+```
+
 ## Parameter Estimation of ODE Models (*n* = 1, 2, 3, · · ·)
 The temporary result will be saved in ```out/n/``` after each iteration.
-```bash
-$ nohup python optimize.py n &
+```python
+model.optimize(n)
 ```
 Progress list: ```out/n/out.log```
 ```
@@ -52,17 +60,17 @@ Generation20: Best Fitness = 1.171606e+00
 ```
 
 - If you want to continue from where you stopped in the last parameter search,
-```bash
-$ nohup python optimize_continue.py n &
+```python
+model.optimize_continue(n)
 ```
 - If you want to search multiple parameter sets (from *n1* to *n2*) simultaneously,
-```bash
-$ nohup python optimize.py n1 n2 &
+```python
+model.optimize(n1, n2)
 ```
 
 ## Visualization of Simulation Results
 ```python
-simulate_all(viz_type, show_all, stdev)
+model.run_simulation(viz_type='average', show_all=False, stdev=True)
 ```
 **viz_type** : str
 
@@ -84,23 +92,7 @@ simulate_all(viz_type, show_all, stdev)
 **stdev** : bool
 - If True, the standard deviation of simulated values will be shown (only when ```viz_type == 'average'```).
 
-```python
-from biomass.models.Nakakuki_Cell_2010 import *
 
-from biomass.dynamics import SignalingSystems
-
-erbb_network = SignalingSystems(
-    parameters=C.parameters,
-    species=V.species,
-    pval=param_values,
-    ival=initial_values,
-    obs=observables,
-    sim=NumericalSimulation(),
-    exp=ExperimentalData(),
-    sp=SearchParam()
-)
-erbb_network.simulate_all(viz_type='average', show_all=False, stdev=True)
-```
 ![simulation_average](public/images/simulation_average.png)
 
 Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid lines denote simulations
@@ -113,8 +105,12 @@ The single parameter sensitivity of each reaction is defined by<br>
 where *v<sub>i</sub>* is the *i*<sup>th</sup> reaction rate, **v** is reaction vector **v** = (*v<sub>1</sub>*, *v<sub>2</sub>*, ...) and *q*(**v**) is a target function, e.g., time-integrated response, duration. Sensitivity coefficients were calculated using finite difference approximations with 1% changes in the reaction rates.
 
 ```python
-analyze(metric, style)
+model.analyze(target='reaction', metric='integral', style='barplot')
 ```
+
+**target** : str
+- ```'reaction'```
+- ```'initial_condition'```
 
 **metric** : str
 - ```'amplitude'```
@@ -128,20 +124,6 @@ analyze(metric, style)
 - ```'barplot'```
 - ```'heatmap'```
 
-```python
-from biomass.models.Nakakuki_Cell_2010 import *
-
-from biomass.analysis.reaction import ReactionSensitivity
-
-reaction = ReactionSensitivity(
-    model=set_model,
-    obs=observables,
-    sim=NumericalSimulation(),
-    sp=SearchParam(),
-    rxn=ReactionNetwork()
-)
-reaction.analyze(metric='integral', style='barplot')
-```
 ![sensitivity_PcFos](public/images/sensitivity_PcFos.png)
 
 Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HRG). Numbers above bars indicate the reaction indices, and error bars correspond to simulation standard deviation.

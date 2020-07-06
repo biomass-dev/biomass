@@ -8,10 +8,18 @@
 
 ## 使い方
 
+#### モデルの読み込み
+```python
+from biomass.models import Nakakuki_Cell_2010
+from biomass import ExecModel
+
+model = ExecModel(Nakakuki_Cell_2010)
+```
+
 #### ODEモデルのパラメータ推定 (n = 1, 2, 3, · · ·)
 パラメータ最適化には遺伝的アルゴリズムを用いています．世代交代毎に，最良のパラメータセットが```out/n/```に保存されます．
-```bash
-$ nohup python optimize.py n &
+```python
+model.optimize(n)
 ```
 進捗は```out/n/out.log```で見ることができます．
 ```
@@ -38,19 +46,19 @@ Generation20: Best Fitness = 1.171606e+00
 ```
 
 - 途中で中断したところから再開したい場合，
-```bash
-$ nohup python optimize_continue.py n &
+```python
+model.optimize_continue(n)
 ```
 - 複数のパラメータセット（*n1*から*n2*）を同時に探索したい場合,
-```bash
-$ nohup python optimize.py n1 n2 &
+```python
+model.optimize(n1, n2)
 ```
 
 ---
 #### シミュレーション結果の可視化
 パラメータ推定で得た複数のパラメータセットでのシミュレーション結果を出力します．結果は```figure/```に保存されます．
 ```python
-simulate_all(viz_type, show_all, stdev)
+model.run_simulation(viz_type='average', show_all=False, stdev=True)
 ```
 
 コマンドライン引数を設定することで，出力されるグラフの表示法を変更することができます．
@@ -70,23 +78,6 @@ simulate_all(viz_type, show_all, stdev)
 **stdev** : bool
 - ```viz_type == 'average'```の際，標準偏差も含めて表示します．
 
-```python
-from biomass.models.Nakakuki_Cell_2010 import *
-
-from biomass.dynamics import SignalingSystems
-
-erbb_network = SignalingSystems(
-    parameters=C.parameters,
-    species=V.species,
-    pval=param_values,
-    ival=initial_values,
-    obs=observables,
-    sim=NumericalSimulation(),
-    exp=ExperimentalData(),
-    sp=SearchParam()
-)
-erbb_network.simulate_all(viz_type='best', show_all=True, stdev=False)
-```
 ![simulation_best](public/images/simulation_best.png)
 
 点（青, EGF; 赤, HRG）は実験データ，線はシミュレーション結果を表す
@@ -94,8 +85,9 @@ erbb_network.simulate_all(viz_type='best', show_all=True, stdev=False)
 ---
 #### 感度解析
 ```python
-analyze(metric, style)
+model.analyze(target='reaction', metric='integral', style='barplot')
 ```
+
 感度係数は以下の式で記述されます．
 
 *s<sub>i</sub>*(*q*(**v**),*v<sub>i</sub>*) = *∂* ln(*q*(**v**)) / *∂* ln(*v<sub>i</sub>*) = *∂*_q_(**v**) / *∂*_v<sub>i</sub>_ · *v<sub>i</sub>* / *q*(**v**)
@@ -109,33 +101,22 @@ if 'perturbation' in globals():
     for i, original in enumerate(v):
         v[i] = original * perturbation[i]
 ```
+**target** : 反応に対する感度解析かゼロでない初期値に対する感度解析かを選びます.
+- ```'reaction'```
+- ```'initial_condition'```
 
-```metric```: 出力に用いる基準を設定します．
-- ```amplitude```
+**metric** : 出力に用いる基準を設定します．
+- ```'amplitude'```
     : 最大値．
-- ```duration```
+- ```'duration'```
     : 最大値の10%まで減少するまでにかかる時間．
-- ```integral```
+- ```'integral'```
     : シミュレーション時間内における濃度の積分値．
 
-```style```: グラフを選択します．
-- ```barplot```
-- ```heatmap```
+**style** : グラフを選択します．
+- ```'barplot'```
+- ```'heatmap'```
 
-```python
-from biomass.models.Nakakuki_Cell_2010 import *
-
-from biomass.analysis.reaction import ReactionSensitivity
-
-reaction = ReactionSensitivity(
-    model=set_model,
-    obs=observables,
-    sim=NumericalSimulation(),
-    sp=SearchParam(),
-    rxn=ReactionNetwork()
-)
-reaction.analyze(metric='integral', style='barplot')
-```
 ![sensitivity_PcFos](public/images/sensitivity_PcFos.png)
 
 pc-Fosの積分値に対する感度係数（青, EGF; 赤, HRG）．棒の上下の数字は反応番号を，エラーバーは標準偏差を表す．
