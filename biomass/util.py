@@ -4,103 +4,106 @@ import csv
 import multiprocessing
 import warnings
 
-from .exec_model import ExecModel
+from biomass.exec_model import ExecModel
 from biomass.dynamics import SignalingSystems, get_executable
 from biomass.ga import GeneticAlgorithmInit, GeneticAlgorithmContinue
 from biomass.analysis.reaction import ReactionSensitivity
 from biomass.analysis.nonzero_init import NonZeroInitSensitivity
 
 
-def get_optimization_results(model):
-    model_path = model.__path__[0]
-    parameters = model.C.NAMES
-    species = model.V.NAMES
-    sp = model.SearchParam()
-    """ Get optimized parameters as CSV file format
+class OptimizationResults(ExecModel):
+    def __init__(self, model):
+        super().__init__(model)
+        self.model_path = model.__path__[0]
+        self.parameters = model.C.NAMES
+        self.species = model.V.NAMES
+        self.sp = model.SearchParam()
 
-    Output
-    ------
-    optimization_results/optimized_params.csv
-    optimization_results/optimized_initials.csv
-    """
-    os.makedirs(model_path + '/optimization_results/', exist_ok=True)
-    n_file = get_executable(model_path)
+    def get(self):
+        """ Get optimized parameters as CSV file format
 
-    if len(sp.idx_params) > 0:
-        optimized_params = np.empty(
-            (len(sp.idx_params)+2, len(n_file)+1), dtype='<U21'
-        )
-        for i, param_index in enumerate(sp.idx_params):
-            for j, nth_paramset in enumerate(n_file):
-                best_generation = np.load(
-                    model_path + '/out/{:d}/generation.npy'.format(
-                        nth_paramset
-                    )
-                )
-                best_indiv = np.load(
-                    model_path + '/out/{:d}/fit_param{:d}.npy'.format(
-                        nth_paramset, int(best_generation)
-                    )
-                )
-                error = np.load(
-                    model_path + '/out/{:d}/best_fitness.npy'.format(
-                        nth_paramset
-                    )
-                )
-                optimized_params[0, 0] = ''
-                optimized_params[1, 0] = '*Error*'
-                optimized_params[i+2, 0] = parameters[param_index]
-                optimized_params[0, nth_paramset-1] = str(nth_paramset)
-                optimized_params[1, nth_paramset-1] = \
-                    '{:8.3e}'.format(error)
-                optimized_params[i+2, nth_paramset-1] = \
-                    '{:8.3e}'.format(best_indiv[i])
-        with open(
-                model_path
-                + '/optimization_results/optimized_params.csv', 'w') as f:
-            writer = csv.writer(f, lineterminator='\n')
-            writer.writerows(optimized_params)
+        Output
+        ------
+        optimization_results/optimized_params.csv
+        optimization_results/optimized_initials.csv
+        """
+        os.makedirs(self.model_path + '/optimization_results/', exist_ok=True)
+        n_file = get_executable(model_path)
 
-    if len(sp.idx_initials) > 0:
-        optimized_initials = np.empty(
-            (len(sp.idx_initials)+2, len(n_file)+1), dtype='<U21'
-        )
-        for i, specie_index in enumerate(sp.idx_initials):
-            for j, nth_paramset in enumerate(n_file):
-                best_generation = np.load(
-                    model_path + '/out/{:d}/generation.npy'.format(
-                        nth_paramset
+        if len(self.sp.idx_params) > 0:
+            optimized_params = np.empty(
+                (len(self.sp.idx_params)+2, len(n_file)+1), dtype='<U21'
+            )
+            for i, param_index in enumerate(self.sp.idx_params):
+                for j, nth_paramset in enumerate(n_file):
+                    best_generation = np.load(
+                        self.model_path + '/out/{:d}/generation.npy'.format(
+                            nth_paramset
+                        )
                     )
-                )
-                best_indiv = np.load(
-                    model_path + '/out/{:d}/fit_param{:d}.npy'.format(
-                        nth_paramset, int(best_generation)
+                    best_indiv = np.load(
+                        self.model_path + '/out/{:d}/fit_param{:d}.npy'.format(
+                            nth_paramset, int(best_generation)
+                        )
                     )
-                )
-                error = np.load(
-                    model_path + '/out/{:d}/best_fitness.npy'.format(
-                        nth_paramset
+                    error = np.load(
+                        self.model_path + '/out/{:d}/best_fitness.npy'.format(
+                            nth_paramset
+                        )
                     )
-                )
-                optimized_initials[0, 0] = ''
-                optimized_initials[1, 0] = '*Error*'
-                optimized_initials[i+2, 0] = species[specie_index]
-                optimized_initials[0, nth_paramset-1] = str(nth_paramset)
-                optimized_initials[1, nth_paramset-1] = \
-                    '{:8.3e}'.format(error)
-                optimized_initials[i+2, nth_paramset-1] = \
-                    '{:8.3e}'.format(best_indiv[i+len(sp.idx_params)])
-        with open(
-                model_path
-                + '/optimization_results/optimized_initals.csv', 'w') as f:
-            writer = csv.writer(f, lineterminator='\n')
-            writer.writerows(optimized_initials)
+                    optimized_params[0, 0] = ''
+                    optimized_params[1, 0] = '*Error*'
+                    optimized_params[i+2, 0] = self.parameters[param_index]
+                    optimized_params[0, nth_paramset-1] = str(nth_paramset)
+                    optimized_params[1, nth_paramset-1] = \
+                        '{:8.3e}'.format(error)
+                    optimized_params[i+2, nth_paramset-1] = \
+                        '{:8.3e}'.format(best_indiv[i])
+            with open(
+                    model_path
+                    + '/optimization_results/optimized_params.csv', 'w') as f:
+                writer = csv.writer(f, lineterminator='\n')
+                writer.writerows(optimized_params)
+        if len(self.sp.idx_initials) > 0:
+            optimized_initials = np.empty(
+                (len(self.sp.idx_initials)+2, len(n_file)+1), dtype='<U21'
+            )
+            for i, specie_index in enumerate(self.sp.idx_initials):
+                for j, nth_paramset in enumerate(n_file):
+                    best_generation = np.load(
+                        self.model_path + '/out/{:d}/generation.npy'.format(
+                            nth_paramset
+                        )
+                    )
+                    best_indiv = np.load(
+                        self.model_path + '/out/{:d}/fit_param{:d}.npy'.format(
+                            nth_paramset, int(best_generation)
+                        )
+                    )
+                    error = np.load(
+                        self.model_path + '/out/{:d}/best_fitness.npy'.format(
+                            nth_paramset
+                        )
+                    )
+                    optimized_initials[0, 0] = ''
+                    optimized_initials[1, 0] = '*Error*'
+                    optimized_initials[i+2, 0] = self.species[specie_index]
+                    optimized_initials[0, nth_paramset-1] = str(nth_paramset)
+                    optimized_initials[1, nth_paramset-1] = \
+                        '{:8.3e}'.format(error)
+                    optimized_initials[i+2, nth_paramset-1] = \
+                        '{:8.3e}'.format(best_indiv[i+len(self.sp.idx_params)])
+            with open(
+                    model_path
+                    + '/optimization_results/optimized_initals.csv', 'w') as f:
+                writer = csv.writer(f, lineterminator='\n')
+                writer.writerows(optimized_initials)
 
 
 def run_simulation(model, viz_type='average', show_all=False, stdev=True):
     warnings.filterwarnings('ignore')
-    biological_network = SignalingSystems(model)
-    biological_network.simulate_all(
+    dynamics = SignalingSystems(model)
+    dynamics.simulate_all(
         viz_type=viz_type, show_all=show_all, stdev=stdev
     )
 
