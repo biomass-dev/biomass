@@ -102,8 +102,13 @@ class OptimizationResults(ExecModel):
 
 def run_simulation(model, viz_type='average', show_all=False, stdev=True):
     warnings.filterwarnings('ignore')
-    dynamics = SignalingSystems(model)
-    dynamics.simulate_all(
+    if not viz_type in ['best', 'average', 'original', 'experiment'] \
+            and not viz_type.isdecimal():
+        raise ValueError(
+            "Avairable viz_type are: " \
+            "'best','average','original','experiment','n(=1, 2, ...)'"
+        )
+    SignalingSystems(model).simulate_all(
         viz_type=viz_type, show_all=show_all, stdev=stdev
     )
 

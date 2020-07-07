@@ -44,12 +44,6 @@ class SignalingSystems(ExecModel):
             (only available for 'average' visualization type).
             
         """
-        if not viz_type in ['best', 'average', 'original', 'experiment'] and \
-                not viz_type.isdecimal():
-            raise ValueError(
-                "Avairable viz_type are: " \
-                "'best','average','original','experiment','n(=1, 2, ...)'"
-            )
         search_idx = (self.sp.idx_params, self.sp.idx_initials)
         n_file = [] if viz_type == 'original' else get_executable(self.model_path)
         simulations_all = np.full(
@@ -122,13 +116,9 @@ class SignalingSystems(ExecModel):
         (x, y0) = load_param(self.model_path, best_paramset, self.sp.update)
         
         with open(self.model_path + '/out/best_fit_param.txt', mode='w') as f:
+            f.write('# param set: {:d}\n'.format(best_paramset))
             f.write(
-                '# param set: {:d}\n'.format(
-                    best_paramset
-                )
-            )
-            f.write(
-                '\n### f_params\n'
+                '\n### param_values\n'
             )
             for i, param in enumerate(self.parameters):
                 f.write('x[C.{}] = {:8.3e}\n'.format(param, x[i]))
