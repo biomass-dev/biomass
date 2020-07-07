@@ -90,9 +90,9 @@ run_simulation(Nakakuki_Cell_2010, viz_type='average', show_all=False, stdev=Tru
 ---
 #### 感度解析
 ```python
-from biomass import analyze
+from biomass import run_analysis
 
-analyze(Nakakuki_Cell_2010, target='reaction', metric='integral', style='barplot')
+run_analysis(Nakakuki_Cell_2010, target='reaction', metric='integral', style='barplot')
 ```
 
 感度係数は以下の式で記述されます．

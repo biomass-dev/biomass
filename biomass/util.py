@@ -149,14 +149,12 @@ def optimize_continue(model, *args):
         )
 
 
-def analyze(model, target, metric='integral', style='barplot'):
+def run_analysis(model, target, metric='integral', style='barplot'):
     warnings.filterwarnings('ignore')
     if target == 'raction':
-        reaction = ReactionSensitivity(model)
-        reaction.analyze(metric=metric, style=metric)
+        ReactionSensitivity(model).analyze(metric=metric, style=style)
     elif target == 'initial_condition':
-        nonzero_init = NonZeroInitSensitivity(model)
-        nonzero_init.analyze(metric=metric, style=metric)
+        NonZeroInitSensitivity(model).analyze(metric=metric, style=style)
     else:
         raise ValueError(
             "Available targets are: 'reaction', 'initial_condition'"

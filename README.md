@@ -110,9 +110,9 @@ The single parameter sensitivity of each reaction is defined by<br>
 where *v<sub>i</sub>* is the *i*<sup>th</sup> reaction rate, **v** is reaction vector **v** = (*v<sub>1</sub>*, *v<sub>2</sub>*, ...) and *q*(**v**) is a target function, e.g., time-integrated response, duration. Sensitivity coefficients were calculated using finite difference approximations with 1% changes in the reaction rates.
 
 ```python
-from biomass import analyze
+from biomass import run_analysis
 
-analyze(Nakakuki_Cell_2010, target='reaction', metric='integral', style='barplot')
+run_analysis(Nakakuki_Cell_2010, target='reaction', metric='integral', style='barplot')
 ```
 
 **target** : str

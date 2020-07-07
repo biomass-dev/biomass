@@ -327,9 +327,9 @@ To obtain values for sensitivity of the rate equations, the time derivatives of 
 For example, to calculate sensitivity coefficients on rate equations, use the maximum value as a signaling metric and save barplot:
 
 ```python
-from biomass import analyze
+from biomass import run_analysis
 
-analyze(<your_model>, target='reaction', metric='integral', style='barplot')
+run_analysis(<your_model>, target='reaction', metric='integral', style='barplot')
 ```
 
 The final results should be available in the folder ```/figure```
