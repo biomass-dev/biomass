@@ -125,9 +125,8 @@ def optimize(model, *args):
         p.close()
     else:
         raise TypeError(
-            "optimze() takes 2 or 3 arguments ({:d} given)".format(
-                len(args)
-            )
+            "optimze(model, *args) takes 1 or 2 args"
+            " ({:d} given)".format(len(args))
         )
 
 
@@ -143,9 +142,8 @@ def optimize_continue(model, *args):
         p.close()
     else:
         raise TypeError(
-            "optimze_continue() takes 2 or 3 arguments ({:d} given)".format(
-                len(args)
-            )
+            "optimze_continue(model, *args) takes 1 or 2 args"
+            " ({:d} given)".format(len(args))
         )
 
 
