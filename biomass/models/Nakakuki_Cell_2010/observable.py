@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy.integrate import ode
 
 from .name2idx import C, V
@@ -16,11 +17,8 @@ observables = [
     'Phosphorylated_cFos',
 ]
 
-
 class NumericalSimulation(object):
-
-    tspan = [0, 5400]  # [start, end] (Unit time: 1 sec.)
-    t = np.arange(tspan[0], tspan[-1]+1)/60.  # sec. -> min. (plot_func.py)
+    t = range(5401)  # 0, 1, 2, ..., 5400 (Unit: sec.)
 
     # Experimental conditions
     conditions = ['EGF', 'HRG']
@@ -31,9 +29,9 @@ class NumericalSimulation(object):
         # get steady state
         x[C.Ligand] = x[C.no_ligand]  # No ligand
         (T_steady_state, Y_steady_state) = self._get_steady_state(
-            diffeq, y0, self.tspan, tuple(x)
+            diffeq, y0, self.t, tuple(x)
         )
-        if T_steady_state < self.tspan[-1]:
+        if T_steady_state < self.t[-1]:
             return False
         else:
             y0 = Y_steady_state[:]
@@ -44,9 +42,9 @@ class NumericalSimulation(object):
             elif condition == 'HRG':
                 x[C.Ligand] = x[C.HRG]
 
-            (T, Y) = self._solveode(diffeq, y0, self.tspan, tuple(x))
+            (T, Y) = self._solveode(diffeq, y0, self.t, tuple(x))
 
-            if T[-1] < self.tspan[-1]:
+            if T[-1] < self.t[-1]:
                 return False
             else:
                 self.simulations[observables.index('Phosphorylated_MEKc'), :, i] = (
@@ -112,7 +110,7 @@ class ExperimentalData(object):
     experiments = [None] * len(observables)
     standard_error = [None] * len(observables)
 
-    t2 = [0, 300, 600, 900, 1800, 2700, 3600, 5400]
+    t2 = [0, 300, 600, 900, 1800, 2700, 3600, 5400]  # (Unit: sec.)
 
     experiments[observables.index('Phosphorylated_MEKc')] = {
         'EGF': [0.000, 0.773, 0.439, 0.252, 0.130, 0.087, 0.080, 0.066], 
@@ -151,7 +149,7 @@ class ExperimentalData(object):
     }
 
     # --------------------------------------------------------------------------
-    t3 = [0, 600, 1800, 3600, 5400]
+    t3 = [0, 600, 1800, 3600, 5400]  # (Unit: sec.)
 
     experiments[observables.index('Phosphorylated_CREBw')] = {
         'EGF': [0, 0.446, 0.030, 0.000, 0.000], 
@@ -162,7 +160,7 @@ class ExperimentalData(object):
         'HRG': [sd/np.sqrt(3) for sd in [0, 0.0, 0.0, 0.0, 0.0]], 
     }
     # --------------------------------------------------------------------------
-    t4 = [0, 600, 1200, 1800, 2700, 3600, 5400]
+    t4 = [0, 600, 1200, 1800, 2700, 3600, 5400]  # (Unit: sec.)
 
     experiments[observables.index('cfos_mRNA')] = {
         'EGF': [0, 0.181, 0.476, 0.518, 0.174, 0.026, 0.000], 
@@ -173,7 +171,7 @@ class ExperimentalData(object):
         'HRG': [sd/np.sqrt(3) for sd in [0.017, 0.006, 0.065, 0.044, 0.087, 0.023, 0.001]], 
     }
     # --------------------------------------------------------------------------
-    t5 = [0, 900, 1800, 2700, 3600, 5400]
+    t5 = [0, 900, 1800, 2700, 3600, 5400]  # (Unit: sec.)
 
     experiments[observables.index('cFos_Protein')] = {
         'EGF': [0, 0.078, 0.216, 0.240, 0.320, 0.235], 
@@ -215,3 +213,86 @@ class ExperimentalData(object):
             exp_t = self.t5
 
         return list(map(int, exp_t))
+
+
+class Visualization(object):
+    def __init__(self):
+        self.timecourse_options = [
+            {
+                'divided_by' : 1,  # to convert time unit. (e.g. sec -> min)
+                'xlim' : (),
+                'xticks' : [],
+                'xlabel': None,
+                'ylim' : (),
+                'yticks' : [],
+                'ylabel': observables[i].replace('__', '\n').replace('_', ' '),
+                'cmap' : [],
+                'shape' : [],
+            } for i, _ in enumerate(observables)]
+
+    def get_timecourse_options(self):
+        for i, _ in enumerate(observables):
+            self.timecourse_options[i]['divided_by'] = 60  # sec. -> min.
+            self.timecourse_options[i]['xlim'] = (-5, 95)
+            self.timecourse_options[i]['xticks'] = [0, 30, 60, 90]
+            self.timecourse_options[i]['xlabel'] = 'Time (min)'
+            self.timecourse_options[i]['ylim'] = (-0.1, 1.3)
+            self.timecourse_options[i]['yticks'] = [0.0, 0.3, 0.6, 0.9, 1.2]
+            self.timecourse_options[i]['cmap'] = ['mediumblue', 'red']
+            self.timecourse_options[i]['shape'] = ['D', 's']
+
+        self.timecourse_options[
+            observables.index('Phosphorylated_MEKc')
+        ]['ylabel'] = 'Phosphorylated MEK\n(cytoplasm)'
+
+        self.timecourse_options[
+            observables.index('Phosphorylated_ERKc')
+        ]['ylabel'] = 'Phosphorylated ERK\n(cytoplasm)'
+
+        self.timecourse_options[
+            observables.index('Phosphorylated_RSKw')
+        ]['ylabel'] = 'Phosphorylated RSK\n(whole cell)'
+
+        self.timecourse_options[
+            observables.index('Phosphorylated_CREBw')
+        ]['ylabel'] = 'Phosphorylated CREB\n(whole cell)'
+
+        self.timecourse_options[
+            observables.index('dusp_mRNA')
+        ]['ylabel'] = r'$\it{dusp}$'+' mRNA\nexpression'
+
+        self.timecourse_options[
+            observables.index('cfos_mRNA')
+        ]['ylabel'] = r'$\it{c}$'+'-'+r'$\it{fos}$'+' mRNA\nexpression'
+
+        self.timecourse_options[
+            observables.index('cFos_Protein')
+        ]['ylabel'] = 'c-Fos Protein\nexpression'
+
+        self.timecourse_options[
+            observables.index('Phosphorylated_cFos')
+        ]['ylabel'] = 'Phosphorylated c-Fos\nProtein expression'
+        
+        return self.timecourse_options
+    
+    @staticmethod
+    def set_timecourse_rcParams():
+        plt.rcParams['font.size'] = 20
+        plt.rcParams['axes.linewidth'] = 1.5
+        plt.rcParams['xtick.major.width'] = 1.5
+        plt.rcParams['ytick.major.width'] = 1.5
+        plt.rcParams['lines.linewidth'] = 1.8
+        plt.rcParams['lines.markersize'] = 12
+        plt.rcParams['font.family'] = 'Arial'
+        plt.rcParams['mathtext.fontset'] = 'custom'
+        plt.rcParams['mathtext.it'] = 'Arial:italic'
+
+    @staticmethod
+    def set_param_range_rcParams():
+        plt.rcParams['font.size'] = 12
+        plt.rcParams['axes.linewidth'] = 1.2
+        plt.rcParams['xtick.major.width'] = 1.2
+        plt.rcParams['ytick.major.width'] = 1.2
+        plt.rcParams['font.family'] = 'Arial'
+        # plt.rcParams['mathtext.fontset'] = 'custom'
+        # plt.rcParams['mathtext.it'] = 'Arial:italic'

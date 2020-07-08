@@ -3,12 +3,13 @@ import re
 import numpy as np
 
 from biomass import ExecModel
-from . import plot_func
+from .plot_func import PlotFunc
 
 
 class SignalingSystems(ExecModel):
     def __init__(self, model):
         super().__init__(model)
+        self.model = model
         self.model_path = model.__path__[0]
         self.parameters = model.C.NAMES
         self.species = model.V.NAMES
@@ -16,7 +17,6 @@ class SignalingSystems(ExecModel):
         self.ival = model.initial_values
         self.obs = model.observables
         self.sim = model.NumericalSimulation()
-        self.exp = model.ExperimentalData()
         self.sp = model.SearchParam()
 
     def simulate_all(self, viz_type, show_all, stdev):
@@ -44,7 +44,6 @@ class SignalingSystems(ExecModel):
             (only available for 'average' visualization type).
             
         """
-        search_idx = (self.sp.idx_params, self.sp.idx_initials)
         n_file = [] if viz_type == 'original' else get_executable(self.model_path)
         simulations_all = np.full(
             (len(self.obs), len(n_file), len(self.sim.t), len(self.sim.conditions)),
@@ -60,10 +59,12 @@ class SignalingSystems(ExecModel):
                     (dynamic, successful) = self._validate(nth_paramset)
                     if successful:
                         for j, _ in enumerate(self.obs):
-                            simulations_all[j, i, :, :] = dynamic.simulations[j, :, :]
+                            simulations_all[j, i, :, :] = \
+                                dynamic.simulations[j, :, :]
                 best_fitness_all = np.full(len(n_file), np.inf)
                 for i, nth_paramset in enumerate(n_file):
-                    if os.path.isfile(self.model_path
+                    if os.path.isfile(
+                            self.model_path
                             + '/out/{:d}/best_fitness.npy'.format(nth_paramset)):
                         best_fitness_all[i] = np.load(
                             self.model_path
@@ -79,24 +80,20 @@ class SignalingSystems(ExecModel):
                     dynamic, _ = self._validate(int(viz_type))
 
                 if 2 <= len(n_file):
-                    popt = np.empty(
-                        (len(n_file), len(search_idx[0]) + len(search_idx[1]))
+                    popt = np.empty((len(n_file), 
+                        len(self.sp.idx_params) + len(self.sp.idx_initials))
                     )
                     for i, nth_paramset in enumerate(n_file):
                         popt[i, :] = _get_indiv(self.model_path, nth_paramset)
-                    plot_func.param_range(
-                        search_idx, popt, self.model_path,
-                        self.parameters, self.species, self.sp, portrait=True
-                    )
+                    PlotFunc(self.model).param_range(popt, portrait=True)
             else:
                 x = self.pval()
                 y0 = self.ival()
                 if self.sim.simulate(x, y0) is not None:
                     print('Simulation failed.\n')
                 dynamic = self.sim            
-        plot_func.timecourse(
-            dynamic, n_file, viz_type, show_all, stdev,
-            simulations_all, self.model_path, self.obs, self.exp
+        PlotFunc(self.model).timecourse(
+            dynamic, n_file, viz_type, show_all, stdev, simulations_all
         )
     
     def _validate(self, nth_paramset):
@@ -159,7 +156,8 @@ def get_executable(model_path):
             n_file.append(int(file))
     empty_folder = []
     for i, nth_paramset in enumerate(n_file):
-        if not os.path.isfile(model_path 
+        if not os.path.isfile(
+                model_path 
                 + '/out/{:d}/generation.npy'.format(nth_paramset)):
             empty_folder.append(i)
     for i in sorted(empty_folder, reverse=True):
