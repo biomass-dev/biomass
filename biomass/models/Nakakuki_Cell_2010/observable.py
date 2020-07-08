@@ -1,5 +1,6 @@
 import numpy as np
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
+from matplotlib.lines import Line2D
 from scipy.integrate import ode
 
 from .name2idx import C, V
@@ -226,6 +227,7 @@ class ExperimentalData(object):
 
 class Visualization(object):
     def __init__(self):
+        self.cm = plt.cm.get_cmap('tab20')
         self.timecourse_options = [
             {
                 'divided_by' : 1,  # to convert time unit. (e.g. sec -> min)
@@ -235,11 +237,12 @@ class Visualization(object):
                 'ylim' : (),
                 'yticks' : [],
                 'ylabel': observables[i].replace('__', '\n').replace('_', ' '),
-                'cmap' : [],
-                'shape' : [],
+                'cmap' : [self.cm.colors[j] for j in range(20)],
+                'shape' : Line2D.filled_markers,
             } for i, _ in enumerate(observables)]
 
     def get_timecourse_options(self):
+        '''
         for i, _ in enumerate(observables):
             self.timecourse_options[i]['divided_by'] = 60  # sec. -> min.
             self.timecourse_options[i]['xlim'] = (-5, 95)
@@ -281,7 +284,7 @@ class Visualization(object):
         self.timecourse_options[
             observables.index('Phosphorylated_cFos')
         ]['ylabel'] = 'Phosphorylated c-Fos\nProtein expression'
-        
+        '''
         return self.timecourse_options
     
     @staticmethod
@@ -292,9 +295,9 @@ class Visualization(object):
         plt.rcParams['ytick.major.width'] = 1.5
         plt.rcParams['lines.linewidth'] = 1.8
         plt.rcParams['lines.markersize'] = 12
-        plt.rcParams['font.family'] = 'Arial'
-        plt.rcParams['mathtext.fontset'] = 'custom'
-        plt.rcParams['mathtext.it'] = 'Arial:italic'
+        # plt.rcParams['font.family'] = 'Arial'
+        # plt.rcParams['mathtext.fontset'] = 'custom'
+        # plt.rcParams['mathtext.it'] = 'Arial:italic'
 
     @staticmethod
     def set_param_range_rcParams():
@@ -302,6 +305,6 @@ class Visualization(object):
         plt.rcParams['axes.linewidth'] = 1.2
         plt.rcParams['xtick.major.width'] = 1.2
         plt.rcParams['ytick.major.width'] = 1.2
-        plt.rcParams['font.family'] = 'Arial'
+        # plt.rcParams['font.family'] = 'Arial'
         # plt.rcParams['mathtext.fontset'] = 'custom'
         # plt.rcParams['mathtext.it'] = 'Arial:italic'
