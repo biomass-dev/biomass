@@ -17,19 +17,22 @@ def _compute_objval_cos(sim_data, exp_data):
     return cosine(sim_data, exp_data)
 
 
-def _diff_sim_and_exp(sim_matrix, exp_dict, exp_timepoint, conditions, 
-                        sim_norm_max=1, exp_norm_max=1):
+def _diff_sim_and_exp(
+        sim_matrix,
+        exp_dict,
+        exp_timepoint,
+        conditions,
+        sim_norm_max
+):
     sim_val = []
     exp_val = []
 
-    for condition in conditions:
+    for idx, condition in enumerate(conditions):
         if condition in exp_dict.keys():
-            sim_val.extend(
-                sim_matrix[exp_timepoint, conditions.index(condition)]
-            )
+            sim_val.extend(sim_matrix[exp_timepoint, idx])
             exp_val.extend(exp_dict[condition])
 
-    return np.array(sim_val)/sim_norm_max, np.array(exp_val)/exp_norm_max
+    return np.array(sim_val) / sim_norm_max, np.array(exp_val)
 
 
 def objective(indiv_gene):
@@ -45,13 +48,13 @@ def objective(indiv_gene):
     if sim.simulate(x, y0) is None:
         error = np.zeros(len(observables))
         for i, _ in enumerate(observables):
-            exp_t = exp.get_timepoint(i)
-            norm_max = np.max(sim.simulations[i])
             if exp.experiments[i] is not None:
                 error[i] = _compute_objval_rss(
                     *_diff_sim_and_exp(
-                        sim.simulations[i], exp.experiments[i], exp_t, sim.conditions, 
-                        sim_norm_max=norm_max, 
+                        sim.simulations[i], exp.experiments[i], 
+                        exp.get_timepoint(i), sim.conditions, 
+                        sim_norm_max=1 if not sim.normalization \
+                            else np.max(sim.simulations[i])
                     )
                 )
         '''
