@@ -39,8 +39,9 @@ class PlotFunc(object):
                         for l, _ in enumerate(sim.conditions):
                             plt.plot(
                                 np.array(sim.t) / options[i]['divided_by'],
-                                simulations_all[i, j, :, l] /
-                                    np.max(simulations_all[i, j, :, :]),
+                                simulations_all[i, j, :, l] / (
+                                    1 if not sim.normalization else
+                                        np.max(simulations_all[i, j, :, :])),
                                 color=options[i]['cmap'][l],
                                 alpha=0.05
                             )
@@ -49,10 +50,12 @@ class PlotFunc(object):
                     for j, _ in enumerate(n_file):
                         for l, _ in enumerate(sim.conditions):
                             normalized[i, j, :, l] = (
-                                simulations_all[i, j, :, l] /
-                                np.max(simulations_all[i, j, :, :])
+                                simulations_all[i, j, :, l] / (
+                                1 if not sim.normalization else
+                                    np.max(simulations_all[i, j, :, :]))
                             )
-                    normalized[i, :, :, :] = normalized[i, :, :, :] / np.max(
+                    normalized[i, :, :, :] /= \
+                        1 if not sim.normalization else np.max(
                         np.nanmean(normalized[i, :, :, :], axis=0)
                     )
                     for l, _ in enumerate(sim.conditions):
@@ -78,7 +81,9 @@ class PlotFunc(object):
                     for l, _ in enumerate(sim.conditions):
                         plt.plot(
                             np.array(sim.t) / options[i]['divided_by'], 
-                            sim.simulations[i, :, l]/np.max(sim.simulations[i]),
+                            sim.simulations[i, :, l] / (
+                                1 if not sim.normalization else
+                                    np.max(sim.simulations[i])),
                             color=options[i]['cmap'][l]
                         )
             if self.exp.experiments[i] is not None:

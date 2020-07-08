@@ -18,6 +18,13 @@ observables = [
 ]
 
 class NumericalSimulation(object):
+    def __init__(self):
+        self.normalization = True
+        '''
+        if True, simulation results in each observable 
+        are divided by their maximum values
+        '''
+
     t = range(5401)  # 0, 1, 2, ..., 5400 (Unit: sec.)
 
     # Experimental conditions
@@ -106,6 +113,8 @@ class NumericalSimulation(object):
         return T[-1], y0
 
 class ExperimentalData(object):
+    def __init__(self):
+        pass
 
     experiments = [None] * len(observables)
     standard_error = [None] * len(observables)
