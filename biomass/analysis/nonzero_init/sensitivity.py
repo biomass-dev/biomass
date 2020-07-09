@@ -51,14 +51,14 @@ class NonZeroInitSensitivity(ExecModel):
         rate = 1.01  # 1% change
         y0 = self.ival()
         nonzero_idx = self._get_nonzero_idx()
-        n_file = get_executable()
+        n_file = get_executable(self.model_path)
 
         signaling_metric = np.full(
             (len(n_file), len(nonzero_idx)+1, len(self.obs), len(self.sim.conditions)),
             np.nan
         )
         for i, nth_paramset in enumerate(n_file):
-            (x, y0) = load_param(nth_paramset, self.sp.update)
+            (x, y0) = load_param(self.model_path, nth_paramset, self.sp.update)
             y_init = y0[:]
             for j, idx in enumerate(nonzero_idx):
                 y0 = y_init[:]
