@@ -8,7 +8,7 @@ from biomass.exec_model import ExecModel
 from biomass.dynamics import SignalingSystems, get_executable
 from biomass.ga import GeneticAlgorithmInit, GeneticAlgorithmContinue
 from biomass.analysis.reaction import ReactionSensitivity
-from biomass.analysis.nonzero_init import NonZeroInitSensitivity
+from biomass.analysis.initial_condition import InitialConditionSensitivity
 
 
 class OptimizationResults(ExecModel):
@@ -152,7 +152,7 @@ def run_analysis(model, target, metric='integral', style='barplot'):
     if target == 'raction':
         ReactionSensitivity(model).analyze(metric=metric, style=style)
     elif target == 'initial_condition':
-        NonZeroInitSensitivity(model).analyze(metric=metric, style=style)
+        InitialConditionSensitivity(model).analyze(metric=metric, style=style)
     else:
         raise ValueError(
             "Available targets are: 'reaction', 'initial_condition'"
