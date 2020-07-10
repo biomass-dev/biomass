@@ -28,7 +28,7 @@ class OptimizationResults(ExecModel):
         optimization_results/optimized_initials.csv
         """
         os.makedirs(self.model_path + '/optimization_results/', exist_ok=True)
-        n_file = get_executable(model_path)
+        n_file = get_executable(self.model_path)
 
         if len(self.sp.idx_params) > 0:
             optimized_params = np.empty(
@@ -60,7 +60,7 @@ class OptimizationResults(ExecModel):
                     optimized_params[i+2, nth_paramset-1] = \
                         '{:8.3e}'.format(best_indiv[i])
             with open(
-                    model_path
+                    self.model_path
                     + '/optimization_results/optimized_params.csv', 'w') as f:
                 writer = csv.writer(f, lineterminator='\n')
                 writer.writerows(optimized_params)
@@ -94,7 +94,7 @@ class OptimizationResults(ExecModel):
                     optimized_initials[i+2, nth_paramset-1] = \
                         '{:8.3e}'.format(best_indiv[i+len(self.sp.idx_params)])
             with open(
-                    model_path
+                    self.model_path
                     + '/optimization_results/optimized_initals.csv', 'w') as f:
                 writer = csv.writer(f, lineterminator='\n')
                 writer.writerows(optimized_initials)
@@ -149,7 +149,7 @@ def optimize_continue(model, *args):
 
 def run_analysis(model, target, metric='integral', style='barplot'):
     warnings.filterwarnings('ignore')
-    if target == 'raction':
+    if target == 'reaction':
         ReactionSensitivity(model).analyze(metric=metric, style=style)
     elif target == 'initial_condition':
         InitialConditionSensitivity(model).analyze(metric=metric, style=style)

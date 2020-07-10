@@ -165,7 +165,7 @@ class InitialConditionSensitivity(ExecModel):
                     )
             plt.xticks(
                 np.arange(len(nonzero_idx)) + options['width'] / 2,
-                [self.viz.convert_species_name(species[i]) for i in nonzero_idx],
+                [self.viz.convert_species_name(self.species[i]) for i in nonzero_idx],
                 rotation=90
             )
             plt.ylabel(
@@ -227,7 +227,7 @@ class InitialConditionSensitivity(ExecModel):
                         figsize=(sensitivity_matrix.shape[0]*0.5,
                                  sensitivity_matrix.shape[0]*0.35),
                         xticklabels=[
-                            self.viz.convert_species_name(species[i])
+                            self.viz.convert_species_name(self.species[i])
                             for i in nonzero_idx],
                         yticklabels=[],
                         #cbar_kws={"ticks": [-1, 0, 1]}

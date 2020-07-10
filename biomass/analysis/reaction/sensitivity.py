@@ -13,7 +13,7 @@ from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
 class ReactionSensitivity(ExecModel):
     def __init__(self, model):
         super().__init__(model)
-        self.model_path = model.__init__[0]
+        self.model_path = model.__path__[0]
         self.reaction_system = model.set_model
         self.obs = model.observables
         self.sim = model.NumericalSimulation()
