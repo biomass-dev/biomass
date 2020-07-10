@@ -8,7 +8,9 @@ from biomass import ExecModel
 from biomass.dynamics import load_param, get_executable
 from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
 
-class NonZeroInitSensitivity(ExecModel):
+class InitialConditionSensitivity(ExecModel):
+    """ sensitivity for species with nonzero initial conditions
+    """
     def __init__(self, model):
         super().__init__(model)
         self.model_path = model.__path__[0]
@@ -118,7 +120,7 @@ class NonZeroInitSensitivity(ExecModel):
         return sensitivity_coefficients
 
     def _barplot_sensitivity(self, metric, sensitivity_coefficients, nonzero_idx):
-        width = 0.3
+        options = self.viz.sensitivity_options
 
         # rcParams
         plt.rcParams['font.size'] = 15
@@ -129,15 +131,15 @@ class NonZeroInitSensitivity(ExecModel):
         plt.rcParams['xtick.major.width'] = 1.2
         plt.rcParams['ytick.major.width'] = 1.2
 
-        colors = ['mediumblue', 'red']
-        if len(colors) < len(self.sim.conditions):
+        if len(options['cmap']) < len(self.sim.conditions):
             raise ValueError(
                 'len(colors) must be equal to or greater than len(sim.conditions).'
             )
         for k, obs_name in enumerate(self.obs):
             plt.figure(figsize=(9, 5))
             plt.hlines(
-                [0], -width, len(nonzero_idx)-width, 'k', lw=1
+                [0], -options['width'], len(nonzero_idx) - options['width'],
+                'k', lw=1
             )
             for l, condition in enumerate(self.sim.conditions):
                 sensitivity_matrix = sensitivity_coefficients[:, :, k, l]
@@ -155,20 +157,21 @@ class NonZeroInitSensitivity(ExecModel):
                     else:
                         stdev = np.std(sensitivity_matrix, axis=0, ddof=1)
                     plt.bar(
-                        np.arange(len(nonzero_idx))+l*width, average, yerr=stdev,
-                        ecolor=colors[l], capsize=2, width=width, color=colors[l],
-                        align='center', label=condition
+                        np.arange(len(nonzero_idx)) + l * options['width'],
+                        average, yerr=stdev, ecolor=options['cmap'][l], 
+                        capsize=2, width=options['width'],
+                        color=options['cmap'][l], align='center', label=condition
                     )
             plt.xticks(
-                np.arange(len(nonzero_idx)) + width/2,
-                [species[i] for i in nonzero_idx],
-                rotation=30
+                np.arange(len(nonzero_idx)) + options['width'] / 2,
+                [self.viz.convert_species_name(species[i]) for i in nonzero_idx],
+                rotation=90
             )
             plt.ylabel(
                 'Control coefficients on\n' + metric +
                 ' (' + obs_name.replace('_', ' ') + ')'
             )
-            plt.xlim(-width, len(nonzero_idx)-width)
+            plt.xlim(-options['width'], len(nonzero_idx)-options['width'])
             plt.legend(loc='upper left', frameon=False)
             plt.savefig(
                 self.model_path + '/figure/sensitivity/initial_condition/'\
@@ -222,7 +225,9 @@ class NonZeroInitSensitivity(ExecModel):
                         col_cluster=False,
                         figsize=(sensitivity_matrix.shape[0]*0.5,
                                  sensitivity_matrix.shape[0]*0.35),
-                        xticklabels=[species[i] for i in nonzero_idx],
+                        xticklabels=[
+                            self.viz.convert_species_name(species[i])
+                            for i in nonzero_idx],
                         yticklabels=[],
                         #cbar_kws={"ticks": [-1, 0, 1]}
                     )

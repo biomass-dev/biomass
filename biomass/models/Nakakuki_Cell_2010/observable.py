@@ -228,6 +228,7 @@ class ExperimentalData(object):
 class Visualization(object):
     def __init__(self):
         self.cm = plt.cm.get_cmap('tab20')
+
         self.timecourse_options = [
             {
                 'divided_by' : 1,  # to convert time unit. (e.g. sec -> min)
@@ -240,6 +241,11 @@ class Visualization(object):
                 'cmap' : [self.cm.colors[j] for j in range(20)],
                 'shape' : Line2D.filled_markers,
             } for i, _ in enumerate(observables)]
+    
+        self.sensitivity_options = {
+            'width' : 0.3,
+            'cmap' : [self.cm.colors[j] for j in range(20)],
+        }
 
     def get_timecourse_options(self):
         '''
@@ -308,3 +314,17 @@ class Visualization(object):
         # plt.rcParams['font.family'] = 'Arial'
         # plt.rcParams['mathtext.fontset'] = 'custom'
         # plt.rcParams['mathtext.it'] = 'Arial:italic'
+
+    @staticmethod
+    def convert_species_name(name):
+        '''
+        if name == 'ERKc':
+            return 'ERK (cytoplasm)'
+        elif name == 'RSKc':
+            return 'RSK (cytoplasm)'
+        elif name == 'CREBn':
+            return 'CREB (nucleus)'
+        elif name == 'Elk1n':
+            return 'Elk1 (nucleus)'
+        '''
+        return name
