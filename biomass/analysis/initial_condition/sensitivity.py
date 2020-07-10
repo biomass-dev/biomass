@@ -133,7 +133,8 @@ class InitialConditionSensitivity(ExecModel):
 
         if len(options['cmap']) < len(self.sim.conditions):
             raise ValueError(
-                'len(colors) must be equal to or greater than len(sim.conditions).'
+                "len(sensitivity_options['cmap']) must be equal to"
+                " or greater than len(sim.conditions)."
             )
         for k, obs_name in enumerate(self.obs):
             plt.figure(figsize=(9, 5))
