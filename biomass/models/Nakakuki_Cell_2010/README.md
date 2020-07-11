@@ -11,9 +11,9 @@ A brief description of each file is below:
 
 |Name|Contents|
 |---|---|
-|[`name2idx/`](./name2idx/)|Names of model parameters and variables|
+|[`name2idx/`](./name2idx/)|Names of model parameters and species|
 |[`set_model.py`](./set_model.py)|Differential equation, parameters and initial condition|
-|[`observalbe.py`](./observable.py)|observables, simulations and experimental data|
+|[`observalbe.py`](./observable.py)|observables, simulations, experimental data and plotting options|
 |[`set_search_param.py`](./set_search_param.py)|Model parameters to optimize and search region|
 |[`fitness.py`](./fitness.py)|An objective function to be minimized, i.e., the distance between model simulation and experimental data|
 |[`reaction_network.py`](./reaction_network.py)|Reaction indices grouped according to biological processes|
