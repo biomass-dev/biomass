@@ -6,18 +6,18 @@ from .rcga import (UnimodalNormalDistributionXover,
                    DistanceIndependentDiversityControl)
 
 class GeneticAlgorithmContinue(ExecModel):
-    def __init__(self, model):
+    def __init__(self, model, max_generation, allowable_error, p0_bounds):
         super().__init__(model)
         self.model_path = model.__path__[0]
         self.sp = model.SearchParam()
         self.obj_func = model.objective
         self.search_rgn = self.sp.get_region()
-        self.max_generation = 10000
         self.n_population = int(5*self.search_rgn.shape[1])
         self.n_children = 50
         self.n_gene = self.search_rgn.shape[1]
-        self.allowable_error = 0.35
-        self.p0_bounds = [0.1, 10]  # [lower_bounds, upper bounds]
+        self.max_generation = max_generation
+        self.allowable_error = allowable_error
+        self.p0_bounds = p0_bounds
 
         if self.n_population < self.n_gene + 2:
             raise ValueError(
@@ -53,9 +53,7 @@ class GeneticAlgorithmContinue(ExecModel):
         for i in range(self.n_population):
             while not np.isfinite(population[i, -1]):
                 population[i, :self.n_gene] = \
-                    self._encode_bestIndivVal2randGene(
-                        best_indiv, self.p0_bounds
-                    )
+                    self._encode_bestIndivVal2randGene(best_indiv)
                 population[i, :self.n_gene] = \
                     np.clip(population[i, :self.n_gene], 0., 1.)
                 population[i, -1] = self.obj_func(population[i, :self.n_gene])
@@ -75,7 +73,7 @@ class GeneticAlgorithmContinue(ExecModel):
             np.log10(
                 best_indiv * 10**(
                     np.random.rand(len(best_indiv))
-                    * np.log10(self.p0_bounds[1]/self.p0_bounds[0])
+                    * np.log10(self.p0_bounds[1] / self.p0_bounds[0])
                     + np.log10(self.p0_bounds[0])
                 )
             ) - self.search_rgn[0, :]
@@ -110,7 +108,7 @@ class GeneticAlgorithmContinue(ExecModel):
         best_indiv_gene = self._encode_val2gene(best_indiv)
         best_fitness = self.obj_func(best_indiv_gene)
 
-        population = self._set_continu(nth_paramset)
+        population = self._set_continue(nth_paramset)
         if best_fitness < population[0, -1]:
             population[0, :self.n_gene] = best_indiv_gene
             population[0, -1] = best_fitness
@@ -206,7 +204,7 @@ class GeneticAlgorithmContinue(ExecModel):
         best_indiv_gene = self._encode_val2gene(best_indiv)
         best_fitness = self.obj_func(best_indiv_gene)
 
-        population = self._set_continu(nth_paramset)
+        population = self._set_continue(nth_paramset)
         if best_fitness < population[0, -1]:
             population[0, :self.n_gene] = best_indiv_gene
             population[0, -1] = best_fitness

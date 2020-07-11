@@ -115,7 +115,11 @@ def run_simulation(model, viz_type='average', show_all=False, stdev=True):
 
 def optimize(model, *args):
     warnings.filterwarnings('ignore')
-    ga_init = GeneticAlgorithmInit(model)
+    ga_init = GeneticAlgorithmInit(
+        model,
+        max_generation=10000,
+        allowable_error=0.5
+    )
     if len(args) == 1:
         ga_init.run(int(args[0]))
     elif len(args) == 2:
@@ -132,7 +136,12 @@ def optimize(model, *args):
 
 def optimize_continue(model, *args):
     warnings.filterwarnings('ignore')
-    ga_continue = GeneticAlgorithmContinue(model)
+    ga_continue = GeneticAlgorithmContinue(
+        model,
+        max_generation=10000,
+        allowable_error=0.5,
+        p0_bounds=[0.1, 10.]  # [lower_bound, upper_bound]
+    )
     if len(args) == 1:
         ga_continue.run(int(args[0]))
     elif len(args) == 2:

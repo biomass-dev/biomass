@@ -7,17 +7,17 @@ from .rcga import (UnimodalNormalDistributionXover,
                    DistanceIndependentDiversityControl)
 
 class GeneticAlgorithmInit(ExecModel):
-    def __init__(self, model):
+    def __init__(self, model, max_generation, allowable_error):
         super().__init__(model)
         self.model_path = model.__path__[0]
         self.sp = model.SearchParam()
         self.obj_func = model.objective
         self.search_rgn = self.sp.get_region()
-        self.max_generation = 10000
         self.n_population = int(5*self.search_rgn.shape[1])
         self.n_children = 50
         self.n_gene = self.search_rgn.shape[1]
-        self.allowable_error = 0.35
+        self.max_generation = max_generation
+        self.allowable_error = allowable_error
     
         if self.n_population < self.n_gene + 2:
             raise ValueError(
