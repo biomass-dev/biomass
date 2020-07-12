@@ -241,6 +241,19 @@ class Visualization(object):
                 'cmap' : [self.cm.colors[j] for j in range(20)],
                 'shape' : Line2D.filled_markers,
             } for i, _ in enumerate(observables)]
+        
+        self.multiple_obs2same_fig = {
+            'observables' : [],
+            'condition' : None,
+            'xlim' : (),
+            'xticks' : [],
+            'xlabel': None,
+            'ylim' : (),
+            'yticks' : [],
+            'ylabel': None,
+            'cmap' : [self.cm.colors[j] for j in range(20)],
+            'shape' : Line2D.filled_markers,
+        }
     
         self.sensitivity_options = {
             'width' : 0.3,
@@ -292,6 +305,24 @@ class Visualization(object):
         ]['ylabel'] = 'Phosphorylated c-Fos\nProtein expression'
         '''
         return self.timecourse_options
+
+    def integrate_observables(self):
+        ''' Example
+        self.multiple_obs2same_fig['observables'] = [
+            'Phosphorylated_ERKc',
+            'Phosphorylated_CREBw',
+            'Phosphorylated_cFos',
+            'dusp_mRNA'
+        ]
+        self.multiple_obs2same_fig['condition'] = 'EGF'
+        self.multiple_obs2same_fig['xlim'] = (-5, 95)
+        self.multiple_obs2same_fig['xticks'] = [0, 30, 60, 90]
+        self.multiple_obs2same_fig['xlabel'] = 'Time (min)'
+        self.multiple_obs2same_fig['ylim'] = (-0.1, 1.3)
+        self.multiple_obs2same_fig['yticks'] = [0.0, 0.3, 0.6, 0.9, 1.2]
+        self.multiple_obs2same_fig['ylabel'] = 'Intensity (a.u.)'
+        '''
+        return self.multiple_obs2same_fig
     
     @staticmethod
     def set_timecourse_rcParams():

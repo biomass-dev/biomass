@@ -21,120 +21,248 @@ class PlotFunc(object):
         )
         self.viz.set_timecourse_rcParams()
         options = self.viz.get_timecourse_options()
+        multiple = self.viz.integrate_observables()
 
-        for i, obs_name in enumerate(self.obs):
-            if len(options[i]['cmap']) < len(sim.conditions) or \
-                    len(options[i]['shape']) < len(sim.conditions):
-                raise ValueError(
-                    'len(cmap), len(shape) must be equal to'
-                    ' or greater than len(sim.conditions).'
-                )
-            plt.figure(figsize=(4, 3))
-            plt.gca().spines['right'].set_visible(False)
-            plt.gca().spines['top'].set_visible(False)
-
-            if viz_type != 'experiment':
-                if show_all:
-                    for j, _ in enumerate(n_file):
-                        for l, _ in enumerate(sim.conditions):
-                            plt.plot(
-                                np.array(sim.t) / options[i]['divided_by'],
-                                simulations_all[i, j, :, l] / (
-                                    1 if not sim.normalization else
-                                        np.max(simulations_all[i, j, :, :])),
-                                color=options[i]['cmap'][l],
-                                alpha=0.05
-                            )
-                if viz_type == 'average':
-                    normalized = np.empty_like(simulations_all)
-                    for j, _ in enumerate(n_file):
-                        for l, _ in enumerate(sim.conditions):
-                            normalized[i, j, :, l] = (
-                                simulations_all[i, j, :, l] / (
-                                1 if not sim.normalization else
-                                    np.max(simulations_all[i, j, :, :]))
-                            )
-                    normalized[i, :, :, :] /= \
-                        1 if not sim.normalization else np.max(
-                        np.nanmean(normalized[i, :, :, :], axis=0)
+        for rule in ['default', 'custom']:
+            for i, obs_name in enumerate(self.obs):
+                if len(options[i]['cmap']) < len(sim.conditions) or \
+                        len(options[i]['shape']) < len(sim.conditions):
+                    raise ValueError(
+                        'len(cmap), len(shape) must be equal to'
+                        ' or greater than len(sim.conditions).'
                     )
-                    for l, _ in enumerate(sim.conditions):
-                        plt.plot(
-                            np.array(sim.t) / options[i]['divided_by'], 
-                            np.nanmean(normalized[i, :, :, l], axis=0),
-                            color=options[i]['cmap'][l]
-                        )
-                    if stdev:
-                        for l, _ in enumerate(sim.conditions):
-                            y_mean = np.nanmean(normalized[i, :, :, l], axis=0)
-                            y_std = [
-                                np.nanstd(normalized[i, :, k, l], ddof=1)
-                                for k, _ in enumerate(sim.t)
-                            ]
-                            plt.fill_between(
-                                np.array(sim.t) / options[i]['divided_by'], 
-                                y_mean - y_std, y_mean + y_std,
-                                lw=0, color=options[i]['cmap'][l],
-                                alpha=0.1
+                if rule == 'custom' and \
+                        obs_name not in multiple['observables']:
+                    continue
+                if rule == 'default':
+                    plt.figure(figsize=(4, 3))
+                plt.gca().spines['right'].set_visible(False)
+                plt.gca().spines['top'].set_visible(False)
+                if viz_type != 'experiment':
+                    if show_all:
+                        for j, _ in enumerate(n_file):
+                            for l, condition in enumerate(sim.conditions):
+                                if rule == 'default' or (rule == 'custom' and
+                                        condition == multiple['condition']):
+                                    plt.plot(
+                                        np.array(sim.t) / 
+                                            options[i]['divided_by'],
+                                        simulations_all[i, j, :, l] / (
+                                            1 if not sim.normalization else
+                                            np.max(
+                                                simulations_all[i, j, :, :]
+                                            )
+                                        ),
+                                        color=options[i]['cmap'][l] \
+                                            if rule == 'default' \
+                                            else multiple['cmap'][
+                                                multiple['observables'].index(
+                                                    obs_name
+                                                )
+                                            ],
+                                        alpha=0.05
+                                    )
+                    if viz_type == 'average':
+                        normalized = np.empty_like(simulations_all)
+                        for j, _ in enumerate(n_file):
+                            for l, condition in enumerate(sim.conditions):
+                                if rule == 'default' or (rule == 'custom' and
+                                        condition == multiple['condition']):
+                                    normalized[i, j, :, l] = (
+                                        simulations_all[i, j, :, l] / (
+                                            1 if not sim.normalization else
+                                            np.max(
+                                                simulations_all[i, j, :, :]
+                                            )
+                                        )
+                                    )
+                        normalized[i, :, :, :] /= \
+                            1 if not sim.normalization else np.max(
+                                np.nanmean(normalized[i, :, :, :], axis=0)
                             )
-                else:
-                    for l, _ in enumerate(sim.conditions):
-                        plt.plot(
-                            np.array(sim.t) / options[i]['divided_by'], 
-                            sim.simulations[i, :, l] / (
-                                1 if not sim.normalization else
-                                    np.max(sim.simulations[i])),
-                            color=options[i]['cmap'][l]
-                        )
-            if self.exp.experiments[i] is not None:
-                exp_t = self.exp.get_timepoint(i)
-                if self.exp.standard_error[i] is not None:
-                    for l, condition in enumerate(sim.conditions):
-                        if condition in self.exp.experiments[i]:
-                            exp_data = plt.errorbar(
-                                np.array(exp_t) / options[i]['divided_by'],
-                                self.exp.experiments[i][condition],
-                                yerr=self.exp.standard_error[i][condition], 
-                                color=options[i]['cmap'][l],
-                                ecolor=options[i]['cmap'][l],
-                                elinewidth=1, capsize=8, markerfacecolor='None',
-                                markeredgecolor=options[i]['cmap'][l],
-                                fmt=options[i]['shape'][l],
-                                clip_on=False
-                            )
-                            for capline in exp_data[1]:
-                                capline.set_clip_on(False)
-                            for barlinecol in exp_data[2]:
-                                barlinecol.set_clip_on(False)
-                else:
-                    for l, condition in enumerate(sim.conditions):
-                        if condition in self.exp.experiments[i]:
-                            plt.plot(
-                                np.array(exp_t) / options[i]['divided_by'], 
-                                self.exp.experiments[i][condition],
-                                options[i]['shape'][l], 
-                                markerfacecolor='None', 
-                                markeredgecolor=options[i]['cmap'][l],
-                                color=options[i]['cmap'][l], 
-                                clip_on=False
-                            )
-            if options[i]['xlim']:
-                plt.xlim(*options[i]['xlim'])
-            if options[i]['xticks']:
-                plt.xticks(options[i]['xticks'])
-            if options[i]['xlabel'] is not None:
-                plt.xlabel(options[i]['xlabel'])
-            if options[i]['ylim']:
-                plt.ylim(*options[i]['ylim'])
-            if options[i]['yticks']:
-                plt.yticks(options[i]['yticks'])
-            plt.ylabel(options[i]['ylabel'])
-            plt.savefig(
-                self.model_path + '/figure/simulation/{}/{}.pdf'.format(
-                    viz_type, obs_name
-                ), bbox_inches='tight'
-            )
-            plt.close()
+                        for l, condition in enumerate(sim.conditions):
+                            if rule == 'default' or (rule == 'custom' and
+                                    condition == multiple['condition']):
+                                plt.plot(
+                                    np.array(sim.t) / options[i]['divided_by'], 
+                                    np.nanmean(normalized[i, :, :, l], axis=0),
+                                    color=options[i]['cmap'][l] \
+                                        if rule == 'default' \
+                                        else multiple['cmap'][
+                                            multiple['observables'].index(
+                                                obs_name
+                                            )
+                                        ],
+                                    label = options[i]['ylabel']
+                                )
+                        if stdev:
+                            for l, condition in enumerate(sim.conditions):
+                                if rule == 'default' or (rule == 'custom' and
+                                        condition == multiple['condition']):
+                                    y_mean = np.nanmean(
+                                        normalized[i, :, :, l], axis=0
+                                    )
+                                    y_std = [
+                                        np.nanstd(
+                                            normalized[i, :, k, l], ddof=1
+                                        ) for k, _ in enumerate(sim.t)
+                                    ]
+                                    plt.fill_between(
+                                        np.array(sim.t) / 
+                                            options[i]['divided_by'], 
+                                        y_mean - y_std, y_mean + y_std,
+                                        lw=0, color=options[i]['cmap'][l] \
+                                            if rule == 'default' \
+                                            else multiple['cmap'][
+                                                multiple['observables'].index(
+                                                    obs_name
+                                                )
+                                            ],
+                                        alpha=0.1
+                                    )
+                    else:
+                        for l, condition in enumerate(sim.conditions):
+                            if rule == 'default' or (rule == 'custom' and
+                                    condition == multiple['condition']):
+                                plt.plot(
+                                    np.array(sim.t) / options[i]['divided_by'], 
+                                    sim.simulations[i, :, l] / (
+                                        1 if not sim.normalization else
+                                        np.max(
+                                            sim.simulations[i]
+                                        )
+                                    ),
+                                    color=options[i]['cmap'][l] \
+                                        if rule == 'default' \
+                                        else multiple['cmap'][
+                                            multiple['observables'].index(
+                                                obs_name
+                                            )
+                                        ],
+                                    label = options[i]['ylabel']
+                                )
+                if self.exp.experiments[i] is not None:
+                    exp_t = self.exp.get_timepoint(i)
+                    if self.exp.standard_error[i] is not None:
+                        for l, condition in enumerate(sim.conditions):
+                            if condition in self.exp.experiments[i] and \
+                                    rule == 'default' or (rule == 'custom' and
+                                    condition == multiple['condition']):
+                                exp_data = plt.errorbar(
+                                    np.array(exp_t) / options[i]['divided_by'],
+                                    self.exp.experiments[i][condition],
+                                    yerr=self.exp.standard_error[i][condition], 
+                                    color=options[i]['cmap'][l] \
+                                        if rule == 'default' \
+                                        else multiple['cmap'][
+                                            multiple['observables'].index(
+                                                obs_name
+                                            )
+                                        ],
+                                    ecolor=options[i]['cmap'][l] \
+                                        if rule == 'default' \
+                                        else multiple['cmap'][
+                                            multiple['observables'].index(
+                                                obs_name
+                                            )
+                                        ],
+                                    elinewidth=1, capsize=8,
+                                    markerfacecolor='None',
+                                    markeredgecolor=options[i]['cmap'][l] \
+                                        if rule == 'default' \
+                                        else multiple['cmap'][
+                                            multiple['observables'].index(
+                                                obs_name
+                                            )
+                                        ],
+                                    fmt=options[i]['shape'][l] \
+                                        if rule == 'default' \
+                                        else multiple['shape'][
+                                            multiple['observables'].index(
+                                                obs_name
+                                            )
+                                        ],
+                                    clip_on=False
+                                )
+                                for capline in exp_data[1]:
+                                    capline.set_clip_on(False)
+                                for barlinecol in exp_data[2]:
+                                    barlinecol.set_clip_on(False)
+                    else:
+                        for l, condition in enumerate(sim.conditions):
+                            if condition in self.exp.experiments[i] and \
+                                    rule == 'default' or (rule == 'custom' and
+                                    condition == multiple['condition']):
+                                plt.plot(
+                                    np.array(exp_t) / options[i]['divided_by'], 
+                                    self.exp.experiments[i][condition],
+                                    fmt=options[i]['shape'][l] \
+                                        if rule == 'default' \
+                                        else multiple['shape'][
+                                            multiple['observables'].index(
+                                                obs_name
+                                            )
+                                        ], 
+                                    markerfacecolor='None', 
+                                    markeredgecolor=options[i]['cmap'][l] \
+                                        if rule == 'default' \
+                                        else multiple['cmap'][
+                                            multiple['observables'].index(
+                                                obs_name
+                                            )
+                                        ],
+                                    color=options[i]['cmap'][l] \
+                                        if rule == 'default' \
+                                        else multiple['cmap'][
+                                            multiple['observables'].index(
+                                                obs_name
+                                            )
+                                        ], 
+                                    clip_on=False
+                                )
+                if rule == 'default':
+                    if options[i]['xlim']:
+                        plt.xlim(*options[i]['xlim'])
+                    if  options[i]['xticks']:
+                        plt.xticks(options[i]['xticks'])
+                    if  options[i]['xlabel'] is not None:
+                        plt.xlabel(options[i]['xlabel'])
+                    if  options[i]['ylim']:
+                        plt.ylim(*options[i]['ylim'])
+                    if  options[i]['yticks']:
+                        plt.yticks(options[i]['yticks'])
+                    plt.ylabel(options[i]['ylabel'])
+                    plt.savefig(
+                        self.model_path 
+                        + '/figure/simulation/{}/{}.pdf'.format(
+                            viz_type, obs_name
+                        ), bbox_inches='tight'
+                    )
+                    plt.close()
+            if rule == 'custom' and multiple['observables']:
+                if multiple['xlim']:
+                    plt.xlim(*multiple['xlim'])
+                if  multiple['xticks']:
+                    plt.xticks(multiple['xticks'])
+                if  multiple['xlabel'] is not None:
+                    plt.xlabel(multiple['xlabel'])
+                if  multiple['ylim']:
+                    plt.ylim(*multiple['ylim'])
+                if  multiple['yticks']:
+                    plt.yticks(multiple['yticks'])
+                if  multiple['xlabel'] is not None:
+                    plt.ylabel(multiple['ylabel'])
+                plt.legend(
+                    bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0,
+                    labelspacing=1.25, frameon = False, fontsize=12
+                )
+                plt.savefig(
+                    self.model_path 
+                    + '/figure/simulation/{}/multiple_observables.pdf'.format(
+                        viz_type
+                    ), bbox_inches='tight'
+                )
+                plt.close()
 
 
     def param_range(self, popt, portrait):
