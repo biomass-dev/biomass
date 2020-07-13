@@ -270,99 +270,69 @@ class PlotFunc(object):
 
         self.viz.set_param_range_rcParams()
 
-        if portrait:
-            if len(self.sp.idx_params) > 0:
-                fig = plt.figure(
-                    figsize=(8, len(self.sp.idx_params) / 2.5)
-                )
-                ax = sns.boxenplot(
-                    data=popt[:, :len(self.sp.idx_params)],
-                    orient='h',
-                    linewidth=0.5,
-                    palette='Set2'
-                )
-                sns.despine()
+        if len(self.sp.idx_params) > 0:
+            fig = plt.figure(
+                figsize=(8, len(self.sp.idx_params) / 2.5) if portrait else
+                        (len(self.sp.idx_params) / 2.2, 6)
+            )
+            ax = sns.boxenplot(
+                data=popt[:, :len(self.sp.idx_params)],
+                orient='h' if portrait else 'v',
+                linewidth=0.5,
+                palette='Set2'
+            )
+            sns.despine()
+            if portrait:
                 ax.set_xlabel('Parameter value')
+                ax.set_xscale('log')
                 ax.set_ylabel('')
                 ax.set_yticklabels(
                     [self.parameters[i] for i in self.sp.idx_params]
                 )
-                ax.set_xscale('log')
-
-                plt.savefig(
-                    self.model_path 
-                    + '/figure/param_range/param_range.pdf',
-                    bbox_inches='tight'
+            else:
+                ax.set_xlabel('')
+                ax.set_xticklabels(
+                    [self.parameters[i] for i in self.sp.idx_params],
+                    rotation=90
                 )
-                plt.close(fig)
-            if len(self.sp.idx_initials) > 0:
-                fig = plt.figure(
-                    figsize=(8, len(self.sp.idx_initials) / 2.5)
-                )
-                ax = sns.boxenplot(
-                    data=popt[:, len(self.sp.idx_params):],
-                    orient='h',
-                    linewidth=0.5,
-                    palette='Set2'
-                )
-                sns.despine()
+                ax.set_ylabel('Parameter value')
+                ax.set_yscale('log')
+            plt.savefig(
+                self.model_path 
+                + '/figure/param_range/estimated_param_values_range.pdf',
+                bbox_inches='tight'
+            )
+            plt.close(fig)
+        if len(self.sp.idx_initials) > 0:
+            fig = plt.figure(
+                figsize=(8, len(self.sp.idx_initials) / 2.5) if portrait else
+                        (len(self.sp.idx_initials) / 2.2, 6)
+            )
+            ax = sns.boxenplot(
+                data=popt[:, len(self.sp.idx_params):],
+                orient='h' if portrait else 'v',
+                linewidth=0.5,
+                palette='Set2'
+            )
+            sns.despine()
+            if portrait:
                 ax.set_xlabel('Initial value')
+                ax.set_xscale('log')
                 ax.set_ylabel('')
                 ax.set_yticklabels(
                     [self.species[i] for i in self.sp.idx_initials]
                 )
-                ax.set_xscale('log')
-
-                plt.savefig(
-                    self.model_path 
-                    + '/figure/param_range/initial_value_range.pdf',
-                    bbox_inches='tight'
-                )
-                plt.close(fig)
-        else:
-            if len(self.sp.idx_params) > 0:
-                fig = plt.figure(
-                    figsize=(len(self.sp.idx_params) / 2.2, 6)
-                )
-                ax = sns.boxenplot(
-                    data=popt[:, :len(self.sp.idx_params)],
-                    linewidth=0.5,
-                    palette='Set2'
-                )
-                sns.despine()
+            else:
                 ax.set_xlabel('')
-                ax.set_xticklabels(
-                    [self.parameters[i] for i in self.sp.idx_params], rotation=45
+                ax.set_yticklabels(
+                    [self.species[i] for i in self.sp.idx_initials],
+                    rotation=90
                 )
-                ax.set_ylabel('Parameter value')
-                ax.set_yscale('log')
-
-                plt.savefig(
-                    self.model_path 
-                    + '/figure/param_range/param_range_h.pdf',
-                    bbox_inches='tight'
-                )
-                plt.close(fig)
-            if len(self.sp.idx_initials) > 0:
-                fig = plt.figure(
-                    figsize=(len(self.sp.idx_initials) / 2.2, 6)
-                )
-                ax = sns.boxenplot(
-                    data=popt[:, len(self.sp.idx_params):],
-                    linewidth=0.5,
-                    palette='Set2'
-                )
-                ax.set_xlabel('')
-                ax.set_xticklabels(
-                    [self.species[i] for i in self.sp.idx_initials], rotation=45
-                )
-                sns.despine()
                 ax.set_ylabel('Initial value')
                 ax.set_yscale('log')
-
-                plt.savefig(
-                    self.model_path 
-                    + '/figure/param_range/initail_value_range_h.pdf',
-                    bbox_inches='tight'
-                )
-                plt.close(fig)
+            plt.savefig(
+                self.model_path 
+                + '/figure/param_range/estimated_initial_values_range.pdf',
+                bbox_inches='tight'
+            )
+            plt.close(fig)
