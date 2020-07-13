@@ -45,7 +45,7 @@ class ReactionNetwork(object):
         Group reactions according to biological processes
         """
         for process, indices in self.reactions.items():
-            if type(indices) is not list:
+            if not isinstance(indices, list):
                 raise TypeError(
                     'Use list for reaction indices in {}'.format(process)
                 )
