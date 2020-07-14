@@ -240,6 +240,7 @@ class Visualization(object):
                 'ylabel': observables[i].replace('__', '\n').replace('_', ' '),
                 'cmap' : [self.cm.colors[j] for j in range(20)],
                 'shape' : Line2D.filled_markers,
+                'dont_show' : [],  # conditions you don't want to plot
             } for i, _ in enumerate(observables)]
         
         self.multiple_obs2same_fig = {
@@ -271,6 +272,7 @@ class Visualization(object):
             self.timecourse_options[i]['yticks'] = [0.0, 0.3, 0.6, 0.9, 1.2]
             self.timecourse_options[i]['cmap'] = ['mediumblue', 'red']
             self.timecourse_options[i]['shape'] = ['D', 's']
+            self.timecourse_options[i]['dont_show'] = []
 
         self.timecourse_options[
             observables.index('Phosphorylated_MEKc')

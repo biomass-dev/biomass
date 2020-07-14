@@ -42,7 +42,9 @@ class PlotFunc(object):
                     if show_all:
                         for j, _ in enumerate(n_file):
                             for l, condition in enumerate(sim.conditions):
-                                if rule == 'default' or (rule == 'custom' and
+                                if (rule == 'default' and condition not in 
+                                        options[i]['dont_show']) or (
+                                        rule == 'custom' and
                                         condition == multiple['condition']):
                                     plt.plot(
                                         np.array(sim.t) / 
@@ -66,8 +68,10 @@ class PlotFunc(object):
                         normalized = np.empty_like(simulations_all)
                         for j, _ in enumerate(n_file):
                             for l, condition in enumerate(sim.conditions):
-                                if rule == 'default' or (rule == 'custom' and
-                                        condition == multiple['condition']):
+                                if (rule == 'default' and condition not in 
+                                        options[i]['dont_show']) or (
+                                            rule == 'custom' and
+                                            condition == multiple['condition']):
                                     normalized[i, j, :, l] = (
                                         simulations_all[i, j, :, l] / (
                                             1 if not sim.normalization else
@@ -81,8 +85,10 @@ class PlotFunc(object):
                                 np.nanmean(normalized[i, :, :, :], axis=0)
                             )
                         for l, condition in enumerate(sim.conditions):
-                            if rule == 'default' or (rule == 'custom' and
-                                    condition == multiple['condition']):
+                            if (rule == 'default' and condition not in
+                                    options[i]['dont_show']) or (
+                                        rule == 'custom' and
+                                        condition == multiple['condition']):
                                 plt.plot(
                                     np.array(sim.t) / options[i]['divided_by'], 
                                     np.nanmean(normalized[i, :, :, l], axis=0),
@@ -97,8 +103,10 @@ class PlotFunc(object):
                                 )
                         if stdev:
                             for l, condition in enumerate(sim.conditions):
-                                if rule == 'default' or (rule == 'custom' and
-                                        condition == multiple['condition']):
+                                if (rule == 'default' and condition not in 
+                                        options[i]['dont_show']) or (
+                                            rule == 'custom' and
+                                            condition == multiple['condition']):
                                     y_mean = np.nanmean(
                                         normalized[i, :, :, l], axis=0
                                     )
@@ -122,8 +130,10 @@ class PlotFunc(object):
                                     )
                     else:
                         for l, condition in enumerate(sim.conditions):
-                            if rule == 'default' or (rule == 'custom' and
-                                    condition == multiple['condition']):
+                            if (rule == 'default' and condition not in
+                                    options[i]['dont_show']) or (
+                                        rule == 'custom' and
+                                        condition == multiple['condition']):
                                 plt.plot(
                                     np.array(sim.t) / options[i]['divided_by'], 
                                     sim.simulations[i, :, l] / (
@@ -146,8 +156,10 @@ class PlotFunc(object):
                     if self.exp.standard_error[i] is not None:
                         for l, condition in enumerate(sim.conditions):
                             if condition in self.exp.experiments[i] and \
-                                    rule == 'default' or (rule == 'custom' and
-                                    condition == multiple['condition']):
+                                    (rule == 'default' and condition not in
+                                    options[i]['dont_show']) or (
+                                        rule == 'custom' and
+                                        condition == multiple['condition']):
                                 exp_data = plt.errorbar(
                                     np.array(exp_t) / options[i]['divided_by'],
                                     self.exp.experiments[i][condition],
@@ -191,8 +203,10 @@ class PlotFunc(object):
                     else:
                         for l, condition in enumerate(sim.conditions):
                             if condition in self.exp.experiments[i] and \
-                                    rule == 'default' or (rule == 'custom' and
-                                    condition == multiple['condition']):
+                                    (rule == 'default' and condition not in
+                                    options[i]['dont_show']) or (
+                                        rule == 'custom' and
+                                        condition == multiple['condition']):
                                 plt.plot(
                                     np.array(exp_t) / options[i]['divided_by'], 
                                     self.exp.experiments[i][condition],
