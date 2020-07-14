@@ -235,25 +235,25 @@ class Visualization(object):
             {
                 'divided_by' : 1,  # to convert time unit. (e.g. sec -> min)
                 'xlim' : (),
-                'xticks' : [],
-                'xlabel': None,
+                'xticks' : None,
+                'xlabel': 'Time',
                 'ylim' : (),
-                'yticks' : [],
+                'yticks' : None,
                 'ylabel': observables[i].replace('__', '\n').replace('_', ' '),
                 'cmap' : [self.cm.colors[j] for j in range(20)],
                 'shape' : Line2D.filled_markers,
                 'dont_show' : [],  # conditions you don't want to plot
             } for i, _ in enumerate(observables)]
         
-        self.multiple_obs2same_fig = {
+        self.obs_samefig = {
             'observables' : [],
             'condition' : None,
             'xlim' : (),
-            'xticks' : [],
-            'xlabel': None,
+            'xticks' : None,
+            'xlabel': 'Time',
             'ylim' : (),
-            'yticks' : [],
-            'ylabel': None,
+            'yticks' : None,
+            'ylabel': '',
             'cmap' : [self.cm.colors[j] for j in range(20)],
             'shape' : Line2D.filled_markers,
         }
@@ -312,21 +312,21 @@ class Visualization(object):
 
     def integrate_observables(self):
         ''' Example
-        self.multiple_obs2same_fig['observables'] = [
+        self.obs_samefig['observables'] = [
             'Phosphorylated_ERKc',
             'Phosphorylated_CREBw',
             'Phosphorylated_cFos',
             'dusp_mRNA'
         ]
-        self.multiple_obs2same_fig['condition'] = 'EGF'
-        self.multiple_obs2same_fig['xlim'] = (-5, 95)
-        self.multiple_obs2same_fig['xticks'] = [0, 30, 60, 90]
-        self.multiple_obs2same_fig['xlabel'] = 'Time (min)'
-        self.multiple_obs2same_fig['ylim'] = (-0.1, 1.3)
-        self.multiple_obs2same_fig['yticks'] = [0.0, 0.3, 0.6, 0.9, 1.2]
-        self.multiple_obs2same_fig['ylabel'] = 'Intensity (a.u.)'
+        self.obs_samefig['condition'] = 'EGF'
+        self.obs_samefig['xlim'] = (-5, 95)
+        self.obs_samefig['xticks'] = [0, 30, 60, 90]
+        self.obs_samefig['xlabel'] = 'Time (min)'
+        self.obs_samefig['ylim'] = (-0.1, 1.3)
+        self.obs_samefig['yticks'] = [0.0, 0.3, 0.6, 0.9, 1.2]
+        self.obs_samefig['ylabel'] = 'Intensity (a.u.)'
         '''
-        return self.multiple_obs2same_fig
+        return self.obs_samefig
     
     @staticmethod
     def set_timecourse_rcParams():

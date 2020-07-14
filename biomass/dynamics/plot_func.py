@@ -236,14 +236,13 @@ class PlotFunc(object):
                                 )
                 if rule == 'default':
                     if options[i]['xlim']:
-                        plt.xlim(*options[i]['xlim'])
-                    if  options[i]['xticks']:
+                        plt.xlim(options[i]['xlim'])
+                    if options[i]['xticks'] is not None:
                         plt.xticks(options[i]['xticks'])
-                    if  options[i]['xlabel'] is not None:
-                        plt.xlabel(options[i]['xlabel'])
-                    if  options[i]['ylim']:
-                        plt.ylim(*options[i]['ylim'])
-                    if  options[i]['yticks']:
+                    plt.xlabel(options[i]['xlabel'])
+                    if options[i]['ylim']:
+                        plt.ylim(options[i]['ylim'])
+                    if options[i]['xticks'] is not None:
                         plt.yticks(options[i]['yticks'])
                     plt.ylabel(options[i]['ylabel'])
                     plt.savefig(
@@ -255,17 +254,15 @@ class PlotFunc(object):
                     plt.close()
             if rule == 'custom' and multiple['observables']:
                 if multiple['xlim']:
-                    plt.xlim(*multiple['xlim'])
-                if  multiple['xticks']:
+                    plt.xlim(multiple['xlim'])
+                if multiple['xticks'] is not None:
                     plt.xticks(multiple['xticks'])
-                if  multiple['xlabel'] is not None:
-                    plt.xlabel(multiple['xlabel'])
-                if  multiple['ylim']:
-                    plt.ylim(*multiple['ylim'])
-                if  multiple['yticks']:
+                plt.xlabel(multiple['xlabel'])
+                if multiple['ylim']:
+                    plt.ylim(multiple['ylim'])
+                if multiple['yticks'] is not None:
                     plt.yticks(multiple['yticks'])
-                if  multiple['xlabel'] is not None:
-                    plt.ylabel(multiple['ylabel'])
+                plt.ylabel(multiple['ylabel'])
                 plt.legend(
                     bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0,
                     labelspacing=1.25, frameon = False, fontsize=12
