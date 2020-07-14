@@ -82,7 +82,7 @@ class NumericalSimulation(object):
                 )
     
     @staticmethod
-    def _solveode(diffeq, y0, tspan, args):
+    def _solveode(diffeq, y0, tspan, args, dt=1.0):
         sol = ode(diffeq)
         sol.set_integrator(
             'vode', method='bdf', with_jacobian=True,
@@ -95,17 +95,19 @@ class NumericalSimulation(object):
         Y = [y0]
 
         while sol.successful() and sol.t < tspan[-1]:
-            sol.integrate(sol.t+1.)
+            sol.integrate(sol.t+dt)
             T.append(sol.t)
             Y.append(sol.y)
 
         return np.array(T), np.array(Y)
     
-    def _get_steady_state(self, diffeq, y0, tspan, args, steady_state_eps=1e-6):
+    def _get_steady_state(self, diffeq, y0, tspan, args,
+                          max_iter=10, steady_state_eps=1e-6):
         iter_ = 0
-        while iter_ < 10:
+        while iter_ < max_iter:
             (T, Y) = self._solveode(diffeq, y0, tspan, args)
-            if T[-1] < tspan[-1] or np.all(np.abs(Y[-1, :] - y0) < steady_state_eps):
+            if T[-1] < tspan[-1] or \
+                    np.all(np.abs(Y[-1, :] - y0) < steady_state_eps):
                 break
             else:
                 y0 = Y[-1, :].tolist()
