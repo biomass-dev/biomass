@@ -247,9 +247,6 @@ class SearchParam(object):
             raise ValueError('Duplicate parameters.')
         elif len(self.idx_initials) != len(set(self.idx_initials)):
             raise ValueError('Duplicate species.')
-        else:
-            pass
-
         search_param = np.empty(
             len(self.idx_params) + len(self.idx_initials)
         )
@@ -260,14 +257,14 @@ class SearchParam(object):
 
         if np.any(search_param == 0.):
             message = 'search_param must not contain zero.'
-            for _, idx in enumerate(self.idx_params):
+            for idx in self.idx_params:
                 if x[int(idx)] == 0.:
                     raise ValueError(
                         '"C.{}" in idx_params: '.format(
                             C.NAMES[int(idx)]
                         ) + message
                     )
-            for _, idx in enumerate(self.idx_initials):
+            for idx in self.idx_initials:
                 if y0[int(idx)] == 0.:
                     raise ValueError(
                         '"V.{}" in idx_initials: '.format(
@@ -318,14 +315,13 @@ class SearchParam(object):
                 )[0]
             ) ^ set(
                 np.append(
-                    self.idx_params,
-                    [C.NUM + idx for (_, idx) in enumerate(self.idx_initials)]
+                    self.idx_params, [C.NUM + idx for idx in self.idx_initials]
                 )
             )
         )
         if len(difference) > 0:
             message = 'in both search_idx and search_rgn'
-            for _, idx in enumerate(difference):
+            for idx in difference:
                 if idx <= C.NUM:
                     raise ValueError(
                         'Set "C.{}" '.format(C.NAMES[int(idx)]) + message
