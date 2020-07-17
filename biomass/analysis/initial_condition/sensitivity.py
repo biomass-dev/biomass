@@ -21,18 +21,18 @@ class InitialConditionSensitivity(ExecModel):
         self.viz = model.Visualization()
         self.sp = model.SearchParam()
 
-    def _get_nonzero_idx(self):
-        nonzero_idx = []
+    def _get_nonzero_indices(self):
+        nonzero_indices = []
         y0 = self.ival()
         for i, val in enumerate(y0):
             if val != 0.0:
-                nonzero_idx.append(i)
-        if not nonzero_idx:
+                nonzero_indices.append(i)
+        if not nonzero_indices:
             raise ValueError('No nonzero initial conditions')
         
-        return nonzero_idx
+        return nonzero_indices
 
-    def _calc_sensitivity_coefficients(self, metric, nonzero_idx):
+    def _calc_sensitivity_coefficients(self, metric, nonzero_indices):
         """ Calculating Sensitivity Coefficients
 
         Parameters
@@ -41,8 +41,8 @@ class InitialConditionSensitivity(ExecModel):
             - 'amplitude': The maximum value.
             - 'duration': The time it takes to decline below 10% of its maximum.
             - 'integral': The integral of concentration over the observation time.
-        nonzero_idx: list
-            for i in nonzero_idx:
+        nonzero_indices: list
+            for i in nonzero_indices:
                 y0[i] != 0.0
 
         Returns
@@ -53,17 +53,21 @@ class InitialConditionSensitivity(ExecModel):
 
         rate = 1.01  # 1% change
         y0 = self.ival()
-        nonzero_idx = self._get_nonzero_idx()
+        nonzero_indices = self._get_nonzero_indices()
         n_file = get_executable(self.model_path)
 
         signaling_metric = np.full(
-            (len(n_file), len(nonzero_idx)+1, len(self.obs), len(self.sim.conditions)),
-            np.nan
+            (
+                len(n_file),
+                len(nonzero_indices)+1,
+                len(self.obs),
+                len(self.sim.conditions)
+            ), np.nan
         )
         for i, nth_paramset in enumerate(n_file):
             (x, y0) = load_param(self.model_path, nth_paramset, self.sp.update)
             y_init = y0[:]
-            for j, idx in enumerate(nonzero_idx):
+            for j, idx in enumerate(nonzero_indices):
                 y0 = y_init[:]
                 y0[idx] = y_init[idx] * rate
                 if self.sim.simulate(x, y0) is None:
@@ -75,7 +79,8 @@ class InitialConditionSensitivity(ExecModel):
                                 )
                 sys.stdout.write(
                     '\r{:d} / {:d}'.format(
-                        i*len(nonzero_idx)+j+1, len(n_file)*len(nonzero_idx)
+                        i*len(nonzero_indices)+j+1,
+                        len(n_file)*len(nonzero_indices)
                     )
                 )
             # Signaling metric without perturbation (j=-1)
@@ -87,13 +92,13 @@ class InitialConditionSensitivity(ExecModel):
                             metric, self.sim.simulations[k, :, l]
                         )
         sensitivity_coefficients = dlnyi_dlnxj(
-            signaling_metric, n_file, nonzero_idx,
-            self.obs, self.sim.conditions, rate, metric_idx=-1
+            signaling_metric, n_file, nonzero_indices,
+            self.obs, self.sim.conditions, rate
         )
 
         return sensitivity_coefficients
 
-    def _load_sc(self, metric, nonzero_idx):
+    def _load_sc(self, metric, nonzero_indices):
         os.makedirs(
             self.model_path + '/figure/sensitivity/' \
             'initial_condition/{}/heatmap'.format(metric), exist_ok=True
@@ -106,7 +111,7 @@ class InitialConditionSensitivity(ExecModel):
                 'initial_condition/{}'.format(metric), exist_ok=True
             )
             sensitivity_coefficients = \
-                self._calc_sensitivity_coefficients(metric, nonzero_idx)
+                self._calc_sensitivity_coefficients(metric, nonzero_indices)
             np.save(
                 self.model_path + '/sensitivity_coefficients/' \
                 'initial_condition/{}/sc'.format(metric), sensitivity_coefficients
@@ -119,7 +124,12 @@ class InitialConditionSensitivity(ExecModel):
             
         return sensitivity_coefficients
 
-    def _barplot_sensitivity(self, metric, sensitivity_coefficients, nonzero_idx):
+    def _barplot_sensitivity(
+            self,
+            metric,
+            sensitivity_coefficients,
+            nonzero_indices
+    ):
         options = self.viz.sensitivity_options
 
         # rcParams
@@ -139,7 +149,7 @@ class InitialConditionSensitivity(ExecModel):
         for k, obs_name in enumerate(self.obs):
             plt.figure(figsize=(9, 5))
             plt.hlines(
-                [0], -options['width'], len(nonzero_idx) - options['width'],
+                [0], -options['width'], len(nonzero_indices) - options['width'],
                 'k', lw=1
             )
             for l, condition in enumerate(self.sim.conditions):
@@ -158,24 +168,25 @@ class InitialConditionSensitivity(ExecModel):
                     else:
                         stdev = np.std(sensitivity_matrix, axis=0, ddof=1)
                     plt.bar(
-                        np.arange(len(nonzero_idx)) + l * options['width'],
+                        np.arange(len(nonzero_indices)) + l * options['width'],
                         average, yerr=stdev, ecolor=options['cmap'][l], 
                         capsize=2, width=options['width'],
                         color=options['cmap'][l], align='center', label=condition
                     )
             plt.xticks(
-                np.arange(len(nonzero_idx)) + options['width'] / 2,
-                [self.viz.convert_species_name(self.species[i]) for i in nonzero_idx],
+                np.arange(len(nonzero_indices)) + options['width'] / 2,
+                [self.viz.convert_species_name(self.species[i]) for i in nonzero_indices],
                 rotation=90
             )
             plt.ylabel(
                 'Control coefficients on\n' + metric +
                 ' (' + obs_name.replace('_', ' ') + ')'
             )
-            plt.xlim(-options['width'], len(nonzero_idx)-options['width'])
+            plt.xlim(-options['width'], len(nonzero_indices)-options['width'])
             plt.legend(loc='upper left', frameon=False)
             plt.savefig(
-                self.model_path + '/figure/sensitivity/initial_condition/'\
+                self.model_path
+                + '/figure/sensitivity/initial_condition/'\
                 '{}/{}.pdf'.format(
                     metric, obs_name
                 ), bbox_inches='tight'
@@ -202,7 +213,12 @@ class InitialConditionSensitivity(ExecModel):
         return np.delete(sensitivity_matrix, nan_idx, axis=0)
 
 
-    def _heatmap_sensitivity(self, metric, sensitivity_coefficients, nonzero_idx):
+    def _heatmap_sensitivity(
+            self,
+            metric,
+            sensitivity_coefficients,
+            nonzero_indices
+    ):
         # rcParams
         plt.rcParams['font.size'] = 12
         plt.rcParams['font.family'] = 'Arial'
@@ -228,13 +244,14 @@ class InitialConditionSensitivity(ExecModel):
                                  sensitivity_matrix.shape[0]*0.35),
                         xticklabels=[
                             self.viz.convert_species_name(self.species[i])
-                            for i in nonzero_idx],
+                            for i in nonzero_indices],
                         yticklabels=[],
                         #cbar_kws={"ticks": [-1, 0, 1]}
                     )
                     plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90)
                     plt.savefig(
-                        self.model_path + '/figure/sensitivity/initial_condition/'\
+                        self.model_path
+                        + '/figure/sensitivity/initial_condition/'\
                         '{}/heatmap/{}_{}.pdf'.format(
                             metric, condition, obs_name
                         ), bbox_inches='tight'
@@ -242,18 +259,18 @@ class InitialConditionSensitivity(ExecModel):
                     plt.close()
 
     def analyze(self, metric, style):
-        nonzero_idx = self._get_nonzero_idx()
-        sensitivity_coefficients = self._load_sc(metric, nonzero_idx)
+        nonzero_indices = self._get_nonzero_indices()
+        sensitivity_coefficients = self._load_sc(metric, nonzero_indices)
         if style == 'barplot':
             self._barplot_sensitivity(
-                metric, sensitivity_coefficients, nonzero_idx
+                metric, sensitivity_coefficients, nonzero_indices
             )
         elif style == 'heatmap':
-            if len(nonzero_idx) < 2:
+            if len(nonzero_indices) < 2:
                 pass
             else:
                 self._heatmap_sensitivity(
-                    metric, sensitivity_coefficients, nonzero_idx
+                    metric, sensitivity_coefficients, nonzero_indices
                 )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")

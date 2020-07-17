@@ -78,7 +78,7 @@ class ReactionSensitivity(ExecModel):
                             )
         sensitivity_coefficients = dlnyi_dlnxj(
             signaling_metric, n_file, reaction_indices,
-            self.obs, self.sim.conditions, rate, metric_idx=-1
+            self.obs, self.sim.conditions, rate
         )
 
         return sensitivity_coefficients

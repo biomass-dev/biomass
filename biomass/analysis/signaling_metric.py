@@ -61,8 +61,7 @@ def get_signaling_metric(metric, temporal_dynamics):
 
 
 def dlnyi_dlnxj(signaling_metric, n_file, perturbed_idx,
-                observables, conditions, rate, metric_idx,
-                epsilon=1e-9):
+                observables, conditions, rate, epsilon=1e-9):
     """
     Numerical computation of sensitivities using finite difference approximations
     with 1% changes in the reaction rates or non-zero initial values.
@@ -81,9 +80,6 @@ def dlnyi_dlnxj(signaling_metric, n_file, perturbed_idx,
         Experimental conditions
     rate: float ~ 1
         1.01 for 1% change
-    metric_idx: int (0 or -1)
-        0 -> rate equations
-        -1 -> non-zero initial values
     epsilon: float << 1
         If |M - M*| < epsilon, sensitivity_coefficient = 0
 
@@ -102,16 +98,16 @@ def dlnyi_dlnxj(signaling_metric, n_file, perturbed_idx,
                     if np.isnan(signaling_metric[i, j, k, l]):
                         sensitivity_coefficients[i, j, k, l] = np.nan
                     elif fabs(
-                        signaling_metric[i, j, k, l] - signaling_metric[i, metric_idx, k, l]
+                        signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l]
                     ) < epsilon or (
-                        signaling_metric[i, j, k, l] / signaling_metric[i, metric_idx, k, l]
+                        signaling_metric[i, j, k, l] / signaling_metric[i, -1, k, l]
                     ) < 0:
                         sensitivity_coefficients[i, j, k, l] = 0.0
                     else:
                         sensitivity_coefficients[i, j, k, l] = (
                             log(
                                 signaling_metric[i, j, k, l] /
-                                signaling_metric[i, metric_idx, k, l]
+                                signaling_metric[i, -1, k, l]
                             ) / log(
                                 rate
                             )
