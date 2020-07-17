@@ -71,9 +71,8 @@ def diffeq(t, y, x):
     
     global perturbation
     if 'perturbation' in globals():
-        for i, original in enumerate(v):
-            v[i] = original * perturbation[i]
-    
+        for i, dv in enumerate(perturbation):
+            v[i] = v[i] * dv
 
     dydt = [0] * V.NUM
 

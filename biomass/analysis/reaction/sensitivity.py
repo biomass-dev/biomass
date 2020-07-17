@@ -1,6 +1,5 @@
 import os
 import sys
-import re
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -20,8 +19,8 @@ class ReactionSensitivity(ExecModel):
         self.viz = model.Visualization()
         self.sp = model.SearchParam()
         self.rxn = model.ReactionNetwork()
-    
-    def _calc_sensitivity_coefficients(self, metric, n_reaction):
+
+    def _calc_sensitivity_coefficients(self, metric, reaction_indices):
         """ Calculating Sensitivity Coefficients
 
         Parameters
@@ -31,27 +30,31 @@ class ReactionSensitivity(ExecModel):
                 The maximum value.
             - 'duration':
                 The time it takes to decline below 10% of its maximum.
-            - 'integral': 
+            - 'integral':
                 The integral of concentration over the observation time.
-        n_reaction: int
-            len(v) in set_model.py/diffeq
+        reaction_indices: list
+            reaction indices for sensitivity analysis
 
         Returns
         -------
         sensitivity_coefficients: numpy array
-        
+
         """
         rate = 1.01  # 1% change
         n_file = get_executable(self.model_path)
         signaling_metric = np.full(
-            (len(n_file), n_reaction, len(self.obs), len(self.sim.conditions)),
-            np.nan
+            (
+                len(n_file),
+                len(reaction_indices)+1,
+                len(self.obs),
+                len(self.sim.conditions)
+            ), np.nan
         )
         for i, nth_paramset in enumerate(n_file):
             (x, y0) = load_param(self.model_path, nth_paramset, self.sp.update)
-            for j in range(n_reaction):
-                self.reaction_system.perturbation = [1] * n_reaction
-                self.reaction_system.perturbation[j] = rate
+            for j, rxn_idx in enumerate(reaction_indices):
+                self.reaction_system.perturbation = [1] * (len(reaction_indices)+1)
+                self.reaction_system.perturbation[rxn_idx] = rate
                 if self.sim.simulate(x, y0) is None:
                     for k, _ in enumerate(self.obs):
                         for l, _ in enumerate(self.sim.conditions):
@@ -61,17 +64,26 @@ class ReactionSensitivity(ExecModel):
                                 )
                 sys.stdout.write(
                     '\r{:d} / {:d}'.format(
-                        i*n_reaction+j+1, len(n_file)*n_reaction
+                        i*len(reaction_indices)+j+1,
+                        len(n_file)*len(reaction_indices)
                     )
                 )
+            self.reaction_system.perturbation = [1] * (len(reaction_indices)+1)
+            if self.sim.simulate(x, y0) is None:
+                for k, _ in enumerate(self.obs):
+                    for l, _ in enumerate(self.sim.conditions):
+                        signaling_metric[i, -1, k, l] = \
+                            get_signaling_metric(
+                                metric, self.sim.simulations[k, :, l]
+                            )
         sensitivity_coefficients = dlnyi_dlnxj(
-            signaling_metric, n_file, range(n_reaction),
-            self.obs, self.sim.conditions, rate, metric_idx=0
+            signaling_metric, n_file, reaction_indices,
+            self.obs, self.sim.conditions, rate, metric_idx=-1
         )
 
         return sensitivity_coefficients
 
-    def _load_sc(self, metric, n_reaction):
+    def _load_sc(self, metric, reaction_indices):
         os.makedirs(
             self.model_path + '/figure/sensitivity/' \
             'reaction/{}/heatmap'.format(metric), exist_ok=True
@@ -84,7 +96,7 @@ class ReactionSensitivity(ExecModel):
                 'reaction/{}'.format(metric), exist_ok=True
             )
             sensitivity_coefficients = \
-                self._calc_sensitivity_coefficients(metric, n_reaction)
+                self._calc_sensitivity_coefficients(metric, reaction_indices)
             np.save(
                 self.model_path + '/sensitivity_coefficients/' \
                 'reaction/{}/sc'.format(metric), sensitivity_coefficients
@@ -94,7 +106,7 @@ class ReactionSensitivity(ExecModel):
                 self.model_path + '/sensitivity_coefficients/' \
                 'reaction/{}/sc.npy'.format(metric)
             )
-            
+
         return sensitivity_coefficients
 
     @staticmethod
@@ -111,33 +123,30 @@ class ReactionSensitivity(ExecModel):
                 left_end += len(proc)
 
     @staticmethod
-    def _write_reaction_indices(sort_idx, reaction_indices, average, stdev, width):
+    def _write_reaction_indices(reaction_indices, average, stdev, width):
         distance = np.max(average) * 0.05
-        for i, j in enumerate(sort_idx):
-            if j != 0:
-                xp = i + width/2
-                yp = average[j, np.argmax(np.abs(average[j, :]))]
-                yerr = stdev[j, np.argmax(stdev[j, :])]
-                if yp > 0:
-                    plt.text(
-                        xp, yp + yerr + distance, reaction_indices[i],
-                        ha='center', va='bottom', fontsize=10, rotation=90
-                    )
-                else:
-                    plt.text(
-                        xp, yp - yerr - distance, reaction_indices[i],
-                        ha='center', va='top', fontsize=10, rotation=90
-                    )
+        for i, j in enumerate(reaction_indices):
+            xp = i + width/2
+            yp = average[i, np.argmax(np.abs(average[i, :]))]
+            yerr = stdev[i, np.argmax(stdev[i, :])]
+            if yp > 0:
+                plt.text(
+                    xp, yp + yerr + distance, str(j),
+                    ha='center', va='bottom', fontsize=10, rotation=90
+                )
+            else:
+                plt.text(
+                    xp, yp - yerr - distance, str(j),
+                    ha='center', va='top', fontsize=10, rotation=90
+                )
 
 
     def _barplot_sensitivity(
             self,
             metric,
             sensitivity_coefficients,
-            biological_processes, 
-            n_reaction,
-            sort_idx,
-            reaction_indices
+            biological_processes,
+            reaction_indices,
     ):
         options = self.viz.sensitivity_options
 
@@ -158,6 +167,7 @@ class ReactionSensitivity(ExecModel):
         for k, obs_name in enumerate(self.obs):
             plt.figure(figsize=(12, 5))
             self._draw_vertical_span(biological_processes, options['width'])
+
             sensitivity_array = sensitivity_coefficients[:, :, k, :]
             # Remove NaN
             nan_idx = []
@@ -178,29 +188,31 @@ class ReactionSensitivity(ExecModel):
                     stdev = np.std(sensitivity_array, axis=0, ddof=1)
                 for l, condition in enumerate(self.sim.conditions):
                     plt.bar(
-                        np.arange(n_reaction) + l * options['width'],
-                        average[sort_idx, l], yerr=stdev[sort_idx, l],
+                        np.arange(len(reaction_indices)) + l * options['width'],
+                        average[:, l], yerr=stdev[:, l],
                         ecolor=options['cmap'][l], capsize=2, width=options['width'],
                         color=options['cmap'][l], align='center', label=condition
                     )
                 self._write_reaction_indices(
-                    sort_idx, reaction_indices, average, stdev, options['width']
+                    reaction_indices, average, stdev, options['width']
                 )
                 plt.hlines(
-                    [0], -options['width'], n_reaction-1-options['width'],
-                    'k', lw=1
+                    [0], -options['width'],
+                    len(reaction_indices)-options['width'], 'k', lw=1
                 )
                 plt.xticks([])
                 plt.ylabel(
                     'Control coefficients on\n'+metric +
                     ' (' + obs_name.replace('_', ' ') + ')'
                 )
-                plt.xlim(-options['width'], n_reaction-1-options['width'])
+                plt.xlim(
+                    -options['width'], len(reaction_indices)-options['width']
+                )
                 # plt.ylim(-1.2,0.6)
                 # plt.yticks([-1.2,-1.0,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6])
                 plt.legend(loc='lower right', frameon=False)
                 plt.savefig(
-                    model_path + '/figure/sensitivity/reaction/'\
+                    self.model_path + '/figure/sensitivity/reaction/'\
                     '{}/{}.pdf'.format(
                         metric, obs_name
                     ), bbox_inches='tight'
@@ -225,7 +237,7 @@ class ReactionSensitivity(ExecModel):
                         np.abs(sensitivity_matrix[i, :])
                     ) if normalize else 1
                 )
-        
+
         return np.delete(sensitivity_matrix, nan_idx, axis=0)
 
     def _heatmap_sensitivity(
@@ -233,9 +245,7 @@ class ReactionSensitivity(ExecModel):
             metric,
             sensitivity_coefficients,
             biological_processes,
-            n_reaction,
-            sort_idx,
-            reaction_indices
+            reaction_indices,
     ):
         # rcParams
         plt.rcParams['font.size'] = 8
@@ -249,7 +259,7 @@ class ReactionSensitivity(ExecModel):
         for k, obs_name in enumerate(self.obs):
             for l, condition in enumerate(self.sim.conditions):
                 sensitivity_matrix = self._remove_nan(
-                    sensitivity_coefficients[:, sort_idx[:-1], k, l],
+                    sensitivity_coefficients[:, :, k, l],
                     normalize=False
                 )
                 if sensitivity_matrix.shape[0] > 1 and \
@@ -264,7 +274,7 @@ class ReactionSensitivity(ExecModel):
                         col_cluster=False,
                         figsize=(16, 8),
                         xticklabels=[
-                            reaction_indices[i] for i in range(n_reaction-1)
+                            str(j) for _, j in enumerate(reaction_indices)
                         ],
                         yticklabels=[],
                         #cbar_kws={"ticks": [-1, 0, 1]}
@@ -279,27 +289,18 @@ class ReactionSensitivity(ExecModel):
 
     def analyze(self, metric, style):
         biological_processes = self.rxn.group()
-        n_reaction = 1
-        for reactions_in_process in biological_processes:
-            n_reaction += len(reactions_in_process)
-        sort_idx = [0] * n_reaction
-        sort_idx[:-1] = np.sum(biological_processes, axis=0)
-        reaction_indices = list(
-            map(
-                lambda x: str(x), sort_idx
-            )
-        )
-        sensitivity_coefficients = self._load_sc(metric, n_reaction)
+        reaction_indices = np.sum(biological_processes, axis=0)
+        sensitivity_coefficients = self._load_sc(metric, reaction_indices)
 
         if style == 'barplot':
             self._barplot_sensitivity(
                 metric, sensitivity_coefficients, biological_processes,
-                n_reaction, sort_idx, reaction_indices
+                reaction_indices
             )
         elif style == 'heatmap':
             self._heatmap_sensitivity(
                 metric, sensitivity_coefficients, biological_processes,
-                n_reaction, sort_idx, reaction_indices
+                reaction_indices
             )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")
