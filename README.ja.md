@@ -105,7 +105,7 @@ run_analysis(Nakakuki_Cell_2010, target='reaction', metric='integral', style='ba
 ```python
 global perturbation
 if 'perturbation' in globals():
-    for i, dv in enumerate(perturbation):
+    for i, dv in perturbation.items():
         v[i] = v[i] * dv
 ```
 **target** : 反応に対する感度解析かゼロでない初期値に対する感度解析かを選びます.

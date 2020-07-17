@@ -53,7 +53,9 @@ class ReactionSensitivity(ExecModel):
         for i, nth_paramset in enumerate(n_file):
             (x, y0) = load_param(self.model_path, nth_paramset, self.sp.update)
             for j, rxn_idx in enumerate(reaction_indices):
-                self.reaction_system.perturbation = [1] * (len(reaction_indices)+1)
+                self.reaction_system.perturbation = {}
+                for idx in reaction_indices:
+                    self.reaction_system.perturbation[idx] = 1
                 self.reaction_system.perturbation[rxn_idx] = rate
                 if self.sim.simulate(x, y0) is None:
                     for k, _ in enumerate(self.obs):
@@ -68,7 +70,8 @@ class ReactionSensitivity(ExecModel):
                         len(n_file)*len(reaction_indices)
                     )
                 )
-            self.reaction_system.perturbation = [1] * (len(reaction_indices)+1)
+            for idx in reaction_indices:
+                self.reaction_system.perturbation[idx] = 1
             if self.sim.simulate(x, y0) is None:
                 for k, _ in enumerate(self.obs):
                     for l, _ in enumerate(self.sim.conditions):
@@ -273,9 +276,7 @@ class ReactionSensitivity(ExecModel):
                         linewidth=.5,
                         col_cluster=False,
                         figsize=(16, 8),
-                        xticklabels=[
-                            str(j) for _, j in enumerate(reaction_indices)
-                        ],
+                        xticklabels=[str(j) for j in reaction_indices],
                         yticklabels=[],
                         #cbar_kws={"ticks": [-1, 0, 1]}
                     )
