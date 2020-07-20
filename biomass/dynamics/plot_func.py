@@ -21,7 +21,7 @@ class PlotFunc(object):
         )
         self.viz.set_timecourse_rcParams()
         options = self.viz.get_timecourse_options()
-        multiple = self.viz.integrate_observables()
+        multiple = self.viz.multiplot_observables()
 
         for rule in ['default', 'custom']:
             for i, obs_name in enumerate(self.obs):

@@ -310,7 +310,7 @@ class Visualization(object):
         '''
         return self.timecourse_options
 
-    def integrate_observables(self):
+    def multiplot_observables(self):
         ''' Example
         self.obs_samefig['observables'] = [
             'Phosphorylated_ERKc',
