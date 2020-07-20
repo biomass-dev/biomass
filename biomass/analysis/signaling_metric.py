@@ -3,23 +3,25 @@ from math import fabs, log
 from scipy.integrate import simps
 
 
-def _get_duration(temporal_dynamics):
+def _get_duration(temporal_dynamics, below_threshold=0.1):
     """
-    Calculation of the duration as the time it takes to decline below 10% of its maximum.
+    Calculation of the duration as the time it takes to decline below the threshold
 
     Parameters
     ----------
-    temporal_dynamics: array
+    temporal_dynamics : array
         Simulated time course data
+    below_threshold : float
+        0.1 for 10% of its maximum
     
     Returns
     -------
-    duration: int
+    duration : int
     
     """
     maximum_value = np.max(temporal_dynamics)
     t_max = np.argmax(temporal_dynamics)
-    temporal_dynamics = temporal_dynamics - 0.1 * maximum_value  # 0.1 -> 10 %
+    temporal_dynamics = temporal_dynamics - below_threshold * maximum_value
     temporal_dynamics[temporal_dynamics > 0.0] = -np.inf
     duration = np.argmax(temporal_dynamics[t_max:]) + t_max
 
@@ -31,14 +33,14 @@ def get_signaling_metric(metric, temporal_dynamics):
 
     Parameters
     ----------
-    metric: str
+    metric : str
         'amplitude', 'duration' or 'integral'
     temporal_dynamics: array
         Simulated time course data
 
     Returns
     -------
-    M*: float
+    M* : float
         signaling_metric[i, j, k, l]
     
     """
@@ -68,19 +70,19 @@ def dlnyi_dlnxj(signaling_metric, n_file, perturbed_idx,
 
     Parameters
     ----------
-    signaling_metric: numpy array
+    signaling_metric : numpy array
         Signaling metric
-    n_file: int
-        Number of optimized parameter sets in out/
-    perturbed_idx: list
+    n_file : list
+        Optimized parameter sets in out/
+    perturbed_idx : list
         Indices of rate equations or non-zero initial values
-    observables: list
+    observables : list
         observables in observable.py
-    conditions: list
+    conditions : list
         Experimental conditions
-    rate: float ~ 1
+    rate : float ~ 1
         1.01 for 1% change
-    epsilon: float << 1
+    epsilon : float << 1
         If |M - M*| < epsilon, sensitivity_coefficient = 0
 
     Returns
