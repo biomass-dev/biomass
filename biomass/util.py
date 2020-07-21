@@ -5,7 +5,7 @@ import multiprocessing
 import warnings
 
 from biomass.exec_model import ExecModel
-from biomass.dynamics import SignalingSystems, get_executable
+from biomass.dynamics import SignalingSystems, load_param, get_executable
 from biomass.ga import GeneticAlgorithmInit, GeneticAlgorithmContinue
 from biomass.analysis.reaction import ReactionSensitivity
 from biomass.analysis.initial_condition import InitialConditionSensitivity
@@ -17,6 +17,9 @@ class OptimizationResults(ExecModel):
         self.model_path = model.__path__[0]
         self.parameters = model.C.NAMES
         self.species = model.V.NAMES
+        self.pval = model.param_values
+        self.ival = model.initial_values
+        self.obj_func = model.objective
         self.sp = model.SearchParam()
 
     def get(self):
@@ -99,6 +102,22 @@ class OptimizationResults(ExecModel):
                 writer = csv.writer(f, lineterminator='\n')
                 writer.writerows(optimized_initials)
 
+    def dynamic_assessment(self, include_original=False):
+        with open(self.model_path + '/fitness_assessment.csv', mode='w') as f:
+            writer = csv.writer(f, lineterminator='\n')
+            writer.writerow(['parameter set', 'Objective value'])
+            if include_original:
+                x = self.pval()
+                y0 = self.ival()
+                obj_val = self.obj_func(None, x, y0)
+                writer.writerow(['original', '{:8.3e}'.format(obj_val)])
+            n_file = get_executable(self.model_path)
+            for paramset in sorted(n_file):
+                (x, y0) = load_param(self.model_path, paramset, self.sp.update)
+                obj_val = self.obj_func(None, x, y0)
+                writer.writerow(
+                    ['{:d}'.format(paramset), '{:8.3e}'.format(obj_val)]
+                )
 
 def run_simulation(model, viz_type='average', show_all=False, stdev=True):
     warnings.filterwarnings('ignore')
@@ -128,10 +147,7 @@ def optimize(model, *args):
         p.map(ga_init.run, range(int(args[0]), int(args[1]) + 1))
         p.close()
     else:
-        raise TypeError(
-            "optimze(model, *args) takes 1 or 2 args"
-            " ({:d} given)".format(len(args))
-        )
+        raise ValueError('too many values to unpack (expected 2)')
 
 
 def optimize_continue(model, *args):
@@ -150,10 +166,7 @@ def optimize_continue(model, *args):
         p.map(ga_continue.run, range(int(args[0]), int(args[1]) + 1))
         p.close()
     else:
-        raise TypeError(
-            "optimze_continue(model, *args) takes 1 or 2 args"
-            " ({:d} given)".format(len(args))
-        )
+        raise ValueError('too many values to unpack (expected 2)')
 
 
 def run_analysis(model, target, metric='integral', style='barplot'):

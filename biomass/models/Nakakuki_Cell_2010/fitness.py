@@ -35,12 +35,19 @@ def _diff_sim_and_exp(
     return np.array(sim_val) / sim_norm_max, np.array(exp_val)
 
 
-def objective(indiv_gene):
+def objective(indiv_gene, *args):
     """Define an objective function to be minimized
     """
-    sp = SearchParam()
-    indiv = sp.gene2val(indiv_gene)
-    (x, y0) = sp.update(indiv)
+    if len(args) == 0:
+        sp = SearchParam()
+        indiv = sp.gene2val(indiv_gene)
+        (x, y0) = sp.update(indiv)
+    elif len(args) == 1:
+        raise ValueError('not enough values to unpack (expected 2, got 1)')
+    elif len(args) == 2:
+        (x, y0) = args
+    else:
+        raise ValueError('too many values to unpack (expected 2)')
 
     exp = ExperimentalData()
     sim = NumericalSimulation()
