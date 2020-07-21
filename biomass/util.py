@@ -169,13 +169,35 @@ def optimize_continue(model, *args):
         raise ValueError('too many values to unpack (expected 2)')
 
 
-def run_analysis(model, target, metric='integral', style='barplot'):
+def run_analysis(
+        model,
+        target,
+        metric='integral',
+        style='barplot',
+        excluded_params=[],
+):
     warnings.filterwarnings('ignore')
     if target == 'reaction':
         ReactionSensitivity(model).analyze(metric=metric, style=style)
     elif target == 'initial_condition':
         InitialConditionSensitivity(model).analyze(metric=metric, style=style)
+    elif target == 'parameter':
+        ParameterSensitivity(
+            model, excluded_params
+        ).analyze(metric=metric, style=style)
+        """
+        >>> from biomass.models import Nakakuki_Cell_2010
+        >>> from biomass import run_analysis
+        >>> run_analysis(
+                Nakakuki_Cell_2010,
+                target='parameter',
+                excluded_params=[
+                    'a', 'Vn', 'Vc', 'Ligand', 'EGF', 'HRG', 'no_ligand'
+                ]
+            )
+        """
     else:
         raise ValueError(
-            "Available targets are: 'reaction', 'initial_condition'"
+            "Available targets are: 'reaction', 'initial_condition' , 'parameter'"
         )
+

@@ -108,9 +108,10 @@ if 'perturbation' in globals():
     for i, dv in perturbation.items():
         v[i] = v[i] * dv
 ```
-**target** : 反応に対する感度解析かゼロでない初期値に対する感度解析かを選びます.
+**target** : 何に対する感度解析かを選択します（反応速度・初期値・パラメータ）.
 - ```'reaction'```
 - ```'initial_condition'```
+- ```'parameter'```
 
 **metric** : 出力に用いる基準を設定します．
 - ```'amplitude'```

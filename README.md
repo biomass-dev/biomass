@@ -118,6 +118,7 @@ run_analysis(Nakakuki_Cell_2010, target='reaction', metric='integral', style='ba
 **target** : str
 - ```'reaction'```
 - ```'initial_condition'```
+- ```'parameter'```
 
 **metric** : str
 - ```'amplitude'```

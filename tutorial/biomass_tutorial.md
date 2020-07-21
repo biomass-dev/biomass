@@ -308,9 +308,10 @@ You can calculate sensitivity coefficients on rate equations and non-zero initia
 
 To obtain values for sensitivity of the rate equations, the time derivatives of state variables must be described via rate equations (See ```set_model.py```) and you need to edit ```reaction_network.py```
 
-**target** : 2 options avairable
+**target** : 3 options avairable
 - ```'reaction'```
 - ```'initial_condition'```
+- ```'parameter'```
 
 **metric** : 3 options available
 - ```'amplitude'```
