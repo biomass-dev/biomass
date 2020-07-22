@@ -56,8 +56,8 @@ class GeneticAlgorithmInit(ExecModel):
     def _set_initial(self, nth_paramset):
         population = np.full((self.n_population, self.n_gene+1), np.inf)
         with open(
-                self.model_path
-                + '/out/{:d}/initpop.log'.format(nth_paramset), mode='w') as f:
+                self.model_path + '/out/{:d}/'
+                'optimization.log'.format(nth_paramset), mode='w') as f:
             f.write(
                 'Generating the initial population. . .\n'
             )
@@ -66,8 +66,8 @@ class GeneticAlgorithmInit(ExecModel):
                 population[i, :self.n_gene] = np.random.rand(self.n_gene)
                 population[i, -1] = self.obj_func(population[i, :self.n_gene])
             with open(
-                    self.model_path
-                    + '/out/{:d}/initpop.log'.format(nth_paramset), mode='a') as f:
+                    self.model_path + '/out/{:d}/'
+                    'optimization.log'.format(nth_paramset), mode='a') as f:
                 f.write(
                     '{:d} / {:d}\n'.format(i + 1, self.n_population)
                 )
@@ -81,9 +81,10 @@ class GeneticAlgorithmInit(ExecModel):
         )
         population = self._set_initial(nth_paramset)
         with open(
-                self.model_path
-                + '/out/{:d}/out.log'.format(nth_paramset), mode='w') as f:
+                self.model_path + '/out/{:d}/'
+                'optimization.log'.format(nth_paramset), mode='a') as f:
             f.write(
+                '\n----------------------------------------\n\n' +
                 'Generation1: Best Fitness = {:e}\n'.format(population[0, -1])
             )
         best_indiv = self.sp.gene2val(population[0, :self.n_gene])
@@ -137,8 +138,8 @@ class GeneticAlgorithmInit(ExecModel):
                 ), generation + 1
             )
             with open(
-                    self.model_path
-                    + '/out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
+                    self.model_path + '/out/{:d}/'
+                    'optimization.log'.format(nth_paramset), mode='a') as f:
                 f.write(
                     'Generation{:d}: Best Fitness = {:e}\n'.format(
                         generation + 1, best_fitness
@@ -240,9 +241,10 @@ class GeneticAlgorithmInit(ExecModel):
         n0[0] = population[0, -1]
 
         with open(
-                self.model_path
-                + '/out/{:d}/out.log'.format(nth_paramset), mode='w') as f:
+                self.model_path + '/out/{:d}/'
+                'optimization.log'.format(nth_paramset), mode='a') as f:
             f.write(
+                '\n----------------------------------------\n\n' +
                 'Generation1: Best Fitness = {:e}\n'.format(population[0, -1])
             )
         best_indiv = self.sp.gene2val(population[0, :self.n_gene])
@@ -314,8 +316,8 @@ class GeneticAlgorithmInit(ExecModel):
                 ), generation + 1
             )
             with open(
-                    self.model_path
-                    + '/out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
+                    self.model_path + '/out/{:d}/'
+                    'optimization.log'.format(nth_paramset), mode='a') as f:
                 f.write(
                     'Generation{:d}: Best Fitness = {:e}\n'.format(
                         generation + 1, best_fitness

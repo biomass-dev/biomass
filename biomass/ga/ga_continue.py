@@ -45,10 +45,13 @@ class GeneticAlgorithmContinue(ExecModel):
         population = np.full((self.n_population, self.n_gene+1), np.inf)
 
         with open(
-            self.model_path
-            + '/out/{:d}/initpop.log'.format(nth_paramset), mode='w') as f:
+                self.model_path + '/out/{:d}/'
+                'optimization.log'.format(nth_paramset), mode='a') as f:
             f.write(
-                'Generating the initial population. . .\n'
+                '\n########################################\n' +
+                '\n############### Continue ###############\n' +
+                '\n########################################\n' +
+                '\nGenerating the initial population. . .\n'
             )
         for i in range(self.n_population):
             while not np.isfinite(population[i, -1]):
@@ -58,9 +61,8 @@ class GeneticAlgorithmContinue(ExecModel):
                     np.clip(population[i, :self.n_gene], 0., 1.)
                 population[i, -1] = self.obj_func(population[i, :self.n_gene])
             with open(
-                    self.model_path + '/out/{:d}/initpop.log'.format(
-                        nth_paramset
-                    ), mode='a') as f:
+                    self.model_path + '/out/{:d}/'
+                    'optimization.log'.format(nth_paramset), mode='a') as f:
                 f.write(
                     '{:d} / {:d}\n'.format(i + 1, self.n_population)
                 )
@@ -121,8 +123,8 @@ class GeneticAlgorithmContinue(ExecModel):
                 ), best_indiv
             )
         with open(
-                self.model_path
-                + '/out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
+                self.model_path + '/out/{:d}/'
+                'optimization.log'.format(nth_paramset), mode='a') as f:
             f.write(
                 '\n----------------------------------------\n\n' +
                 'Generation{:d}: Best Fitness = {:e}\n'.format(
@@ -163,8 +165,8 @@ class GeneticAlgorithmContinue(ExecModel):
                 ), generation + int(count_num) + 1
             )
             with open(
-                    self.model_path
-                    + '/out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
+                    self.model_path + '/out/{:d}/'
+                    'optimization.log'.format(nth_paramset), mode='a') as f:
                 f.write(
                     'Generation{:d}: Best Fitness = {:e}\n'.format(
                         generation + int(count_num) + 1, best_fitness
@@ -217,8 +219,8 @@ class GeneticAlgorithmContinue(ExecModel):
                 ), best_indiv
             )
         with open(
-                self.model_path
-                + '/out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
+                self.model_path + '/out/{:d}/'
+                'optimization.log'.format(nth_paramset), mode='a') as f:
             f.write(
                 '\n----------------------------------------\n\n' +
                 'Generation{:d}: Best Fitness = {:e}\n'.format(
@@ -278,8 +280,8 @@ class GeneticAlgorithmContinue(ExecModel):
                 ), generation + int(count_num) + 1
             )
             with open(
-                    self.model_path
-                    + '/out/{:d}/out.log'.format(nth_paramset), mode='a') as f:
+                    self.model_path + '/out/{:d}/'
+                    'optimization.log'.format(nth_paramset), mode='a') as f:
                 f.write(
                     'Generation{:d}: Best Fitness = {:e}\n'.format(
                         generation + int(count_num) + 1, best_fitness

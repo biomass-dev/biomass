@@ -34,7 +34,7 @@ from biomass import optimize
 
 optimize(Nakakuki_Cell_2010, n)
 ```
-Progress list: ```out/n/out.log```
+Progress list: ```out/n/optimization.log```
 ```
 Generation1: Best Fitness = 1.726069e+00
 Generation2: Best Fitness = 1.726069e+00

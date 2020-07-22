@@ -20,7 +20,7 @@ from biomass import optimize
 
 optimize(Nakakuki_Cell_2010, n)
 ```
-進捗は```out/n/out.log```で見ることができます．
+進捗は```out/n/optimization.log```で見ることができます．
 ```
 Generation1: Best Fitness = 1.726069e+00
 Generation2: Best Fitness = 1.726069e+00
