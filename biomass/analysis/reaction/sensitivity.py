@@ -13,7 +13,6 @@ class ReactionSensitivity(ExecModel):
     def __init__(self, model):
         super().__init__(model)
         self.model_path = model.__path__[0]
-        self.reaction_system = model.set_model
         self.obs = model.observables
         self.sim = model.NumericalSimulation()
         self.viz = model.Visualization()
@@ -53,11 +52,11 @@ class ReactionSensitivity(ExecModel):
         for i, nth_paramset in enumerate(n_file):
             (x, y0) = load_param(self.model_path, nth_paramset, self.sp.update)
             for j, rxn_idx in enumerate(reaction_indices):
-                self.reaction_system.perturbation = {}
+                perturbation = {}
                 for idx in reaction_indices:
-                    self.reaction_system.perturbation[idx] = 1
-                self.reaction_system.perturbation[rxn_idx] = rate
-                if self.sim.simulate(x, y0) is None:
+                    perturbation[idx] = 1
+                perturbation[rxn_idx] = rate
+                if self.sim.simulate(x, y0, perturbation) is None:
                     for k, _ in enumerate(self.obs):
                         for l, _ in enumerate(self.sim.conditions):
                             signaling_metric[i, j, k, l] = \
@@ -70,8 +69,6 @@ class ReactionSensitivity(ExecModel):
                         len(n_file)*len(reaction_indices)
                     )
                 )
-            for idx in reaction_indices:
-                self.reaction_system.perturbation[idx] = 1
             if self.sim.simulate(x, y0) is None:
                 for k, _ in enumerate(self.obs):
                     for l, _ in enumerate(self.sim.conditions):

@@ -4,7 +4,7 @@ from matplotlib.lines import Line2D
 from scipy.integrate import ode
 
 from .name2idx import C, V
-from .set_model import diffeq
+from .set_model import DifferentialEquation
 
 
 observables = [
@@ -18,8 +18,9 @@ observables = [
     'Phosphorylated_cFos',
 ]
 
-class NumericalSimulation(object):
+class NumericalSimulation(DifferentialEquation):
     def __init__(self):
+        super().__init__(perturbation={})
         self.normalization = True
         '''
         if True, simulation results in each observable 
@@ -33,11 +34,13 @@ class NumericalSimulation(object):
 
     simulations = np.empty((len(observables), len(t), len(conditions)))
 
-    def simulate(self, x, y0):
+    def simulate(self, x, y0, _perturbation={}):
+        if _perturbation:
+            self.perturbation = _perturbation
         # get steady state
         x[C.Ligand] = x[C.no_ligand]  # No ligand
         (T_steady_state, Y_steady_state) = self._get_steady_state(
-            diffeq, y0, self.t, tuple(x)
+            self.diffeq, y0, self.t, tuple(x)
         )
         if T_steady_state < self.t[-1]:
             return False
@@ -50,7 +53,7 @@ class NumericalSimulation(object):
             elif condition == 'HRG':
                 x[C.Ligand] = x[C.HRG]
 
-            (T, Y) = self._solveode(diffeq, y0, self.t, tuple(x))
+            (T, Y) = self._solveode(self.diffeq, y0, self.t, tuple(x))
 
             if T[-1] < self.t[-1]:
                 return False
