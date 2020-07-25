@@ -83,15 +83,6 @@ class GeneticAlgorithmContinue(ExecModel):
 
         return rand_gene
 
-    def _encode_val2gene(self, indiv):
-        indiv_gene = (
-            np.log10(indiv) - self.search_rgn[0, :]
-        ) / (
-            self.search_rgn[1, :] - self.search_rgn[0, :]
-        )
-
-        return indiv_gene
-
     def _ga_v1_continue(self, nth_paramset):
         undx = UnimodalNormalDistributionXover(
             self.obj_func, self.n_population, self.n_children, self.n_gene
@@ -107,7 +98,7 @@ class GeneticAlgorithmContinue(ExecModel):
                 nth_paramset, int(best_generation)
             )
         )
-        best_indiv_gene = self._encode_val2gene(best_indiv)
+        best_indiv_gene = self.sp.val2gene(best_indiv)
         best_fitness = self.obj_func(best_indiv_gene)
 
         population = self._set_continue(nth_paramset)
@@ -203,7 +194,7 @@ class GeneticAlgorithmContinue(ExecModel):
                 nth_paramset, int(best_generation)
             )
         )
-        best_indiv_gene = self._encode_val2gene(best_indiv)
+        best_indiv_gene = self.sp.val2gene(best_indiv)
         best_fitness = self.obj_func(best_indiv_gene)
 
         population = self._set_continue(nth_paramset)

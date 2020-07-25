@@ -109,8 +109,8 @@ class SearchParam(object):
             search_rgn[1, j+len(x)] = \
                 search_param[i+len(self.idx_params)] * 2.0  # upper bound
 
-        # search_rgn[:,C.parameter] = [lower_bound,upper_bound]
-        # search_rgn[:,V.specie+len(x)] = [lower_bound,upper_bound]
+        # search_rgn[:,C.parameter] = [lower_bound, upper_bound]
+        # search_rgn[:,V.specie+len(x)] = [lower_bound, upper_bound]
 
         # Hill coefficient
         search_rgn[:, C.n10] = [1.00, 4.00]
@@ -118,7 +118,7 @@ class SearchParam(object):
         search_rgn[:, C.n57] = [1.00, 4.00]
         search_rgn[:, C.nF31] = [1.00, 4.00]
 
-        ''' Example ----------------------------------------------------------------
+        ''' Example ------------------------------------------------------------
 
         search_rgn[:, C.V1] = [7.33e-2, 6.60e-01]
         search_rgn[:, C.Km1] = [1.83e+2, 8.50e+2]
@@ -196,7 +196,7 @@ class SearchParam(object):
         search_rgn[:, C.nF31] = [1.00, 4.00]
         search_rgn[:, C.a] = [1.00e+2, 5.00e+2]
         
-        ----------------------------------------------------------------------------
+        ------------------------------------------------------------------------
         '''
         search_rgn = self._conv_lin2log(search_rgn)
 
@@ -211,7 +211,7 @@ class SearchParam(object):
         for i, j in enumerate(self.idx_initials):
             y0[j] = indiv[i+len(self.idx_params)]
 
-        # constraints --------------------------------------------------------------
+        # constraints ----------------------------------------------------------
         x[C.V6] = x[C.V5]
         x[C.Km6] = x[C.Km5]
         x[C.KimpDUSP] = x[C.KimDUSP]
@@ -226,7 +226,7 @@ class SearchParam(object):
         x[C.p55] = x[C.p50]
         x[C.p56] = x[C.p51]
         x[C.m56] = x[C.m51]
-        # --------------------------------------------------------------------------
+        # ----------------------------------------------------------------------
 
         return x, y0
 
@@ -240,13 +240,35 @@ class SearchParam(object):
 
         return indiv
 
+    def val2gene(self, indiv):
+        search_rgn = self.get_region()
+        indiv_gene = (
+            np.log10(indiv) - search_rgn[0, :]
+        ) / (
+            search_rgn[1, :] - search_rgn[0, :]
+        )
+
+        return indiv_gene
+
     def _init_search_param(self, x, y0):
         """Initialize search_param
         """
         if len(self.idx_params) != len(set(self.idx_params)):
-            raise ValueError('Duplicate parameters.')
+            raise ValueError(
+                'Duplicate parameters (C.): {}'.format(
+                    [C.NAMES[idx]
+                    for idx in [name for name in set(self.idx_params)
+                                if self.idx_params.count(name) > 1]]
+                )
+            )
         elif len(self.idx_initials) != len(set(self.idx_initials)):
-            raise ValueError('Duplicate species.')
+            raise ValueError(
+                'Duplicate species (V.): {}'.format(
+                    [V.NAMES[idx]
+                    for idx in [name for name in set(self.idx_initials)
+                                if self.idx_initials.count(name) > 1]]
+                )
+            )
         search_param = np.empty(
             len(self.idx_params) + len(self.idx_initials)
         )
@@ -279,34 +301,34 @@ class SearchParam(object):
         """
         for i in range(search_rgn.shape[1]):
             if np.min(search_rgn[:, i]) < 0.0:
-                message = 'search_rgn[lb,ub] must be positive.'
+                msg = 'search_rgn[lower_bound, upper_bound] must be positive.'
                 if i <= C.NUM:
                     raise ValueError(
-                        '"C.{}": '.format(C.NAMES[i]) + message
+                        '"C.{}": '.format(C.NAMES[i]) + msg
                     )
                 else:
                     raise ValueError(
-                        '"V.{}": '.format(V.NAMES[i-C.NUM]) + message
+                        '"V.{}": '.format(V.NAMES[i-C.NUM]) + msg
                     )
-            elif np.min(search_rgn[:, i]) == 0 and np.max(search_rgn[:, i]) != 0:
-                message = 'lower_bound must be larger than 0.'
+            elif np.min(search_rgn[:, i]) == 0 and np.max(search_rgn[:, i]) > 0:
+                msg = 'lower_bound must be larger than 0.'
                 if i <= C.NUM:
                     raise ValueError(
-                        '"C.{}" '.format(C.NAMES[i]) + message
+                        '"C.{}" '.format(C.NAMES[i]) + msg
                     )
                 else:
                     raise ValueError(
-                        '"V.{}" '.format(V.NAMES[i-C.NUM]) + message
+                        '"V.{}" '.format(V.NAMES[i-C.NUM]) + msg
                     )
             elif search_rgn[1, i] - search_rgn[0, i] < 0.0:
-                message = 'lower_bound < upper_bound'
+                msg = 'lower_bound must be smaller than upper_bound.'
                 if i <= C.NUM:
                     raise ValueError(
-                        '"C.{}" : '.format(C.NAMES[i]) + message
+                        '"C.{}" : '.format(C.NAMES[i]) + msg
                     )
                 else:
                     raise ValueError(
-                        '"V.{}" : '.format(V.NAMES[i-C.NUM]) + message
+                        '"V.{}" : '.format(V.NAMES[i-C.NUM]) + msg
                     )
         difference = list(
             set(
@@ -320,15 +342,15 @@ class SearchParam(object):
             )
         )
         if len(difference) > 0:
-            message = 'in both search_idx and search_rgn'
+            msg = 'in both search_idx and search_rgn'
             for idx in difference:
                 if idx <= C.NUM:
                     raise ValueError(
-                        'Set "C.{}" '.format(C.NAMES[int(idx)]) + message
+                        'Set "C.{}" '.format(C.NAMES[int(idx)]) + msg
                     )
                 else:
                     raise ValueError(
-                        'Set "V.{}" '.format(V.NAMES[int(idx-C.NUM)]) + message
+                        'Set "V.{}" '.format(V.NAMES[int(idx-C.NUM)]) + msg
                     )
         search_rgn = search_rgn[:, np.any(search_rgn != 0., axis=0)]
 
