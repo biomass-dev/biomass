@@ -34,7 +34,7 @@ def get_signaling_metric(metric, temporal_dynamics):
     Parameters
     ----------
     metric : str
-        'amplitude', 'duration' or 'integral'
+        'maximum', 'minimum', 'duration' or 'integral'
     temporal_dynamics: array
         Simulated time course data
 
@@ -44,8 +44,12 @@ def get_signaling_metric(metric, temporal_dynamics):
         signaling_metric[i, j, k, l]
     
     """
-    if metric == 'amplitude':
+    if metric == 'maximum':
         return np.max(
+            temporal_dynamics
+        )
+    elif metric == 'minimum':
+        return np.min(
             temporal_dynamics
         )
     elif metric == 'duration':
@@ -58,7 +62,7 @@ def get_signaling_metric(metric, temporal_dynamics):
         )
     else:
         raise ValueError(
-            "Available metrics are: 'amplitude', 'duration', 'integral'"
+            "Available metrics are: 'maximum', 'minimum', 'duration', 'integral'"
         )
 
 

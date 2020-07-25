@@ -103,9 +103,8 @@ run_analysis(Nakakuki_Cell_2010, target='reaction', metric='integral', style='ba
 
 各反応における感度係数を求めるためには，[```model/set_model.py```](biomass/model/set_model.py)中で，反応速度を 'v' で表す場合，全ての反応式を記述した直後に，以下を書いておく必要があります．
 ```python
-global perturbation
-if 'perturbation' in globals():
-    for i, dv in perturbation.items():
+if self.perturbation:
+    for i, dv in self.perturbation.items():
         v[i] = v[i] * dv
 ```
 **target** : 何に対する感度解析かを選択します（反応速度・初期値・パラメータ）.
@@ -114,8 +113,10 @@ if 'perturbation' in globals():
 - ```'parameter'```
 
 **metric** : 出力に用いる基準を設定します．
-- ```'amplitude'```
+- ```'maximum'```
     : 最大値．
+- ```'minimum'```
+    : 最小値．
 - ```'duration'```
     : 最大値の10%まで減少するまでにかかる時間．
 - ```'integral'```

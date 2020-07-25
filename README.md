@@ -121,8 +121,10 @@ run_analysis(Nakakuki_Cell_2010, target='reaction', metric='integral', style='ba
 - ```'parameter'```
 
 **metric** : str
-- ```'amplitude'```
+- ```'maximum'```
     : The maximum value.
+- ```'minimum'```
+    : The minimum value.
 - ```'duration'```
     : The time it takes to decline below 10% of its maximum.
 - ```'integral'```
