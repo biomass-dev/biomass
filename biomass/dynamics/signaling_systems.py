@@ -1,8 +1,7 @@
 import os
-import re
 import numpy as np
 
-from biomass import ExecModel
+from biomass.exec_model import ExecModel
 from .plot_func import PlotFunc
 
 
@@ -44,7 +43,7 @@ class SignalingSystems(ExecModel):
             (only available for 'average' visualization type).
             
         """
-        n_file = [] if viz_type == 'original' else get_executable(self.model_path)
+        n_file = [] if viz_type == 'original' else self.get_executable()
         simulations_all = np.full(
             (len(self.obs), len(n_file), len(self.sim.t), len(self.sim.conditions)),
             np.nan
@@ -84,7 +83,7 @@ class SignalingSystems(ExecModel):
                         len(self.sp.idx_params) + len(self.sp.idx_initials))
                     )
                     for i, nth_paramset in enumerate(n_file):
-                        popt[i, :] = _get_indiv(self.model_path, nth_paramset)
+                        popt[i, :] = self.get_indiv(nth_paramset)
                     PlotFunc(self.model).param_range(popt, portrait=True)
             else:
                 x = self.pval()
@@ -100,7 +99,7 @@ class SignalingSystems(ExecModel):
         """
         Validates the dynamical viability of a set of estimated parameter values.
         """
-        (x, y0) = load_param(self.model_path, nth_paramset, self.sp.update)
+        (x, y0) = self.load_param(nth_paramset)
         if self.sim.simulate(x, y0) is None:
             return self.sim, True
         else:
@@ -110,7 +109,7 @@ class SignalingSystems(ExecModel):
             return self.sim, False
 
     def _write_best_fit_param(self, best_paramset):
-        (x, y0) = load_param(self.model_path, best_paramset, self.sp.update)
+        (x, y0) = self.load_param(best_paramset)
         
         with open(self.model_path + '/out/best_fit_param.txt', mode='w') as f:
             f.write('# param set: {:d}\n'.format(best_paramset))
@@ -125,42 +124,3 @@ class SignalingSystems(ExecModel):
             for i, specie in enumerate(self.species):
                 if y0[i] != 0:
                     f.write('y0[V.{}] = {:8.3e}\n'.format(specie, y0[i]))
-
-def _get_indiv(model_path, paramset):
-    best_generation = np.load(
-        model_path + '/out/{:d}/generation.npy'.format(
-            paramset
-        )
-    )
-    best_indiv = np.load(
-        model_path + '/out/{:d}/fit_param{:d}.npy'.format(
-            paramset, int(best_generation)
-        )
-    )
-
-    return best_indiv
-
-
-def load_param(model_path, paramset, update):
-    best_indiv = _get_indiv(model_path, paramset)
-    (x, y0) = update(best_indiv)
-
-    return x, y0
-
-
-def get_executable(model_path):
-    n_file = []
-    fitparam_files = os.listdir(model_path + '/out')
-    for file in fitparam_files:
-        if re.match(r'\d', file):
-            n_file.append(int(file))
-    empty_folder = []
-    for i, nth_paramset in enumerate(n_file):
-        if not os.path.isfile(
-                model_path 
-                + '/out/{:d}/generation.npy'.format(nth_paramset)):
-            empty_folder.append(i)
-    for i in sorted(empty_folder, reverse=True):
-        n_file.pop(i)
-    
-    return n_file

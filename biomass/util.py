@@ -5,10 +5,11 @@ import multiprocessing
 import warnings
 
 from biomass.exec_model import ExecModel
-from biomass.dynamics import SignalingSystems, load_param, get_executable
+from biomass.dynamics import SignalingSystems
 from biomass.ga import GeneticAlgorithmInit, GeneticAlgorithmContinue
 from biomass.analysis.reaction import ReactionSensitivity
 from biomass.analysis.initial_condition import InitialConditionSensitivity
+from biomass.analysis.parameter import ParameterSensitivity
 
 
 class OptimizationResults(ExecModel):
@@ -31,7 +32,7 @@ class OptimizationResults(ExecModel):
         optimization_results/optimized_initials.csv
         """
         os.makedirs(self.model_path + '/optimization_results/', exist_ok=True)
-        n_file = get_executable(self.model_path)
+        n_file = self.get_executable()
 
         if len(self.sp.idx_params) > 0:
             optimized_params = np.empty(
@@ -111,9 +112,9 @@ class OptimizationResults(ExecModel):
                 y0 = self.ival()
                 obj_val = self.obj_func(None, x, y0)
                 writer.writerow(['original', '{:8.3e}'.format(obj_val)])
-            n_file = get_executable(self.model_path)
+            n_file = self.get_executable()
             for paramset in sorted(n_file):
-                (x, y0) = load_param(self.model_path, paramset, self.sp.update)
+                (x, y0) = self.load_param(paramset)
                 obj_val = self.obj_func(None, x, y0)
                 writer.writerow(
                     ['{:d}'.format(paramset), '{:8.3e}'.format(obj_val)]

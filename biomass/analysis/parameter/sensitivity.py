@@ -4,8 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from biomass import ExecModel
-from biomass.dynamics import load_param, get_executable
+from biomass.exec_model import ExecModel
 from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
 
 class ParameterSensitivity(ExecModel):
@@ -55,7 +54,7 @@ class ParameterSensitivity(ExecModel):
         rate = 1.01  # 1% change
         x = self.pval()
         param_indices = self._get_param_indices()
-        n_file = get_executable(self.model_path)
+        n_file = self.get_executable()
 
         signaling_metric = np.full(
             (
@@ -66,7 +65,7 @@ class ParameterSensitivity(ExecModel):
             ), np.nan
         )
         for i, nth_paramset in enumerate(n_file):
-            (x, y0) = load_param(self.model_path, nth_paramset, self.sp.update)
+            (x, y0) = self.load_param(nth_paramset)
             x_init = x[:]
             for j, idx in enumerate(param_indices):
                 x = x_init[:]
