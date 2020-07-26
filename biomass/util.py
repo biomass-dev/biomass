@@ -7,9 +7,9 @@ import warnings
 from biomass.exec_model import ExecModel
 from biomass.dynamics import SignalingSystems
 from biomass.ga import GeneticAlgorithmInit, GeneticAlgorithmContinue
-from biomass.analysis.reaction import ReactionSensitivity
-from biomass.analysis.initial_condition import InitialConditionSensitivity
-from biomass.analysis.parameter import ParameterSensitivity
+from biomass.analysis import (ReactionSensitivity,
+                              InitialConditionSensitivity,
+                              ParameterSensitivity)
 
 
 class OptimizationResults(ExecModel):
