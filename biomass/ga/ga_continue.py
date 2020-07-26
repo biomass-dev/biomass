@@ -1,7 +1,7 @@
 import time
 import numpy as np
 
-from biomass import ExecModel
+from biomass.exec_model import ExecModel
 from .rcga import (UnimodalNormalDistributionXover,
                    DistanceIndependentDiversityControl)
 
