@@ -9,14 +9,6 @@ class SignalingSystems(ExecModel):
     def __init__(self, model):
         super().__init__(model)
         self.model = model
-        self.model_path = model.__path__[0]
-        self.parameters = model.C.NAMES
-        self.species = model.V.NAMES
-        self.pval = model.param_values
-        self.ival = model.initial_values
-        self.obs = model.observables
-        self.sim = model.NumericalSimulation()
-        self.sp = model.SearchParam()
 
     def simulate_all(self, viz_type, show_all, stdev):
         """Simulate ODE model with estimated parameter values.

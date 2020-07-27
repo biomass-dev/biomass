@@ -5,7 +5,17 @@ import numpy as np
 class ExecModel(object):
     def __init__(self, model):
         self.model_path = model.__path__[0]
+        self.parameters = model.C.NAMES
+        self.species = model.V.NAMES
+        self.pval = model.param_values
+        self.ival = model.initial_values
+        self.obs = model.observables
+        self.sim = model.NumericalSimulation()
+        self.exp = model.ExperimentalData()
+        self.viz = model.Visualization()
+        self.rxn = model.ReactionNetwork()
         self.sp = model.SearchParam()
+        self.obj_func = model.objective
 
     def get_indiv(self, paramset):
         best_generation = np.load(

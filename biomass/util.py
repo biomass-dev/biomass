@@ -15,13 +15,6 @@ from biomass.analysis import (ReactionSensitivity,
 class OptimizationResults(ExecModel):
     def __init__(self, model):
         super().__init__(model)
-        self.model_path = model.__path__[0]
-        self.parameters = model.C.NAMES
-        self.species = model.V.NAMES
-        self.pval = model.param_values
-        self.ival = model.initial_values
-        self.obj_func = model.objective
-        self.sp = model.SearchParam()
 
     def get(self):
         """ Get optimized parameters as CSV file format

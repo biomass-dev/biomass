@@ -9,9 +9,6 @@ from .rcga import (UnimodalNormalDistributionXover,
 class GeneticAlgorithmInit(ExecModel):
     def __init__(self, model, max_generation, allowable_error):
         super().__init__(model)
-        self.model_path = model.__path__[0]
-        self.sp = model.SearchParam()
-        self.obj_func = model.objective
         self.search_rgn = self.sp.get_region()
         self.n_population = int(5*self.search_rgn.shape[1])
         self.n_children = 50

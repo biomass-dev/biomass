@@ -11,12 +11,6 @@ from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
 class ReactionSensitivity(ExecModel):
     def __init__(self, model):
         super().__init__(model)
-        self.model_path = model.__path__[0]
-        self.obs = model.observables
-        self.sim = model.NumericalSimulation()
-        self.viz = model.Visualization()
-        self.sp = model.SearchParam()
-        self.rxn = model.ReactionNetwork()
 
     def _calc_sensitivity_coefficients(self, metric, reaction_indices):
         """ Calculating Sensitivity Coefficients

@@ -12,13 +12,6 @@ class InitialConditionSensitivity(ExecModel):
     """
     def __init__(self, model):
         super().__init__(model)
-        self.model_path = model.__path__[0]
-        self.species = model.V.NAMES
-        self.ival = model.initial_values
-        self.obs = model.observables
-        self.sim = model.NumericalSimulation()
-        self.viz = model.Visualization()
-        self.sp = model.SearchParam()
 
     def _get_nonzero_indices(self):
         nonzero_indices = []

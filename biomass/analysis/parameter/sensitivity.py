@@ -12,13 +12,6 @@ class ParameterSensitivity(ExecModel):
     """
     def __init__(self, model, excluded_params):
         super().__init__(model)
-        self.model_path = model.__path__[0]
-        self.parameters = model.C.NAMES
-        self.pval = model.param_values
-        self.obs = model.observables
-        self.sim = model.NumericalSimulation()
-        self.viz = model.Visualization()
-        self.sp = model.SearchParam()
         self.excluded_params = excluded_params
 
     def _get_param_indices(self):
