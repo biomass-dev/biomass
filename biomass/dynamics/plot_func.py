@@ -3,16 +3,12 @@ import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
 
+from biomass.exec_model import ExecModel
 
-class PlotFunc(object):
+
+class PlotFunc(ExecModel):
     def __init__(self, model):
-        self.model_path = model.__path__[0]
-        self.parameters = model.C.NAMES
-        self.species = model.V.NAMES
-        self.obs = model.observables
-        self.viz = model.Visualization()
-        self.exp = model.ExperimentalData()
-        self.sp = model.SearchParam()
+        super().__init__(model)
 
     def timecourse(self, sim, n_file, viz_type, show_all, stdev, simulations_all):
         os.makedirs(
