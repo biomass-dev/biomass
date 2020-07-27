@@ -1,14 +1,12 @@
 import os
 import numpy as np
 
-from biomass.exec_model import ExecModel
-from .plot_func import PlotFunc
+from .temporal_dynamics import TemporalDynamics
 
 
-class SignalingSystems(ExecModel):
+class SignalingSystems(TemporalDynamics):
     def __init__(self, model):
         super().__init__(model)
-        self.model = model
 
     def simulate_all(self, viz_type, show_all, stdev):
         """Simulate ODE model with estimated parameter values.
@@ -76,14 +74,14 @@ class SignalingSystems(ExecModel):
                     )
                     for i, nth_paramset in enumerate(n_file):
                         popt[i, :] = self.get_indiv(nth_paramset)
-                    PlotFunc(self.model).param_range(popt, portrait=True)
+                    self.plot_param_range(popt, portrait=True)
             else:
                 x = self.pval()
                 y0 = self.ival()
                 if self.sim.simulate(x, y0) is not None:
                     print('Simulation failed.\n')
                 dynamic = self.sim            
-        PlotFunc(self.model).timecourse(
+        self.plot_timecourse(
             dynamic, n_file, viz_type, show_all, stdev, simulations_all
         )
     

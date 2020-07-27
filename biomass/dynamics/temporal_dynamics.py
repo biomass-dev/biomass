@@ -6,11 +6,11 @@ import seaborn as sns
 from biomass.exec_model import ExecModel
 
 
-class PlotFunc(ExecModel):
+class TemporalDynamics(ExecModel):
     def __init__(self, model):
         super().__init__(model)
 
-    def timecourse(self, sim, n_file, viz_type, show_all, stdev, simulations_all):
+    def plot_timecourse(self, sim, n_file, viz_type, show_all, stdev, simulations_all):
         os.makedirs(
             self.model_path
             + '/figure/simulation/{}'.format(viz_type), exist_ok=True
@@ -272,7 +272,7 @@ class PlotFunc(ExecModel):
                 plt.close()
 
 
-    def param_range(self, popt, portrait):
+    def plot_param_range(self, popt, portrait):
         os.makedirs(self.model_path + '/figure/param_range', exist_ok=True)
 
         self.viz.set_param_range_rcParams()
