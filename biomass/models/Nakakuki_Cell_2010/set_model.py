@@ -7,9 +7,8 @@ class DifferentialEquation(object):
 
     # Refined Model
     def diffeq(self, t, y, x):
-
-        v = [0] * 64  # Rate equations
-
+        v = {}
+        # Rate equations
         v[1] = x[C.V1] * x[C.a] * y[V.ppMEKc] * y[V.ERKc] /  ( x[C.Km1] * (1 + y[V.pERKc] / x[C.Km2]) + y[V.ERKc] )
         v[2] = x[C.V2] * x[C.a] * y[V.ppMEKc] * y[V.pERKc] /  ( x[C.Km2] * (1 + y[V.ERKc] / x[C.Km1]) + y[V.pERKc] )
         v[3] = x[C.V3] * y[V.pERKc] /  ( x[C.Km3] * (1 + y[V.ppERKc] / x[C.Km4]) + y[V.pERKc] )
