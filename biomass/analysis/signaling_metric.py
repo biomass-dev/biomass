@@ -3,13 +3,13 @@ from math import fabs, log
 from scipy.integrate import simps
 
 
-def _get_duration(temporal_dynamics, below_threshold=0.1):
+def _get_duration(timecourse, below_threshold=0.1):
     """
     Calculation of the duration as the time it takes to decline below the threshold
 
     Parameters
     ----------
-    temporal_dynamics : array
+    timecourse : array
         Simulated time course data
     below_threshold : float
         0.1 for 10% of its maximum
@@ -19,23 +19,23 @@ def _get_duration(temporal_dynamics, below_threshold=0.1):
     duration : int
     
     """
-    maximum_value = np.max(temporal_dynamics)
-    t_max = np.argmax(temporal_dynamics)
-    temporal_dynamics = temporal_dynamics - below_threshold * maximum_value
-    temporal_dynamics[temporal_dynamics > 0.0] = -np.inf
-    duration = np.argmax(temporal_dynamics[t_max:]) + t_max
+    maximum_value = np.max(timecourse)
+    t_max = np.argmax(timecourse)
+    timecourse = timecourse - below_threshold * maximum_value
+    timecourse[timecourse > 0.0] = -np.inf
+    duration = np.argmax(timecourse[t_max:]) + t_max
 
     return duration
 
 
-def get_signaling_metric(metric, temporal_dynamics):
+def get_signaling_metric(metric, timecourse):
     """Quantification of cellular response.
 
     Parameters
     ----------
     metric : str
         'maximum', 'minimum', 'duration' or 'integral'
-    temporal_dynamics: array
+    timecourse : array
         Simulated time course data
 
     Returns
@@ -46,19 +46,19 @@ def get_signaling_metric(metric, temporal_dynamics):
     """
     if metric == 'maximum':
         return np.max(
-            temporal_dynamics
+            timecourse
         )
     elif metric == 'minimum':
         return np.min(
-            temporal_dynamics
+            timecourse
         )
     elif metric == 'duration':
         return _get_duration(
-            temporal_dynamics
+            timecourse
         )
     elif metric == 'integral':
         return simps(
-            temporal_dynamics
+            timecourse
         )
     else:
         raise ValueError(
