@@ -9,6 +9,8 @@ from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
 
 
 class ReactionSensitivity(ExecModel):
+    """ Sensitivity for rate equations
+    """
     def __init__(self, model):
         super().__init__(model)
 
@@ -115,11 +117,10 @@ class ReactionSensitivity(ExecModel):
                     )
                 left_end += len(proc)
 
-    @staticmethod
-    def _write_reaction_indices(reaction_indices, average, stdev, width):
+    def _write_reaction_indices(self, reaction_indices, average, stdev, width):
         distance = np.max(average) * 0.05
         for i, j in enumerate(reaction_indices):
-            xp = i + width/2
+            xp = i + width * 0.5 * (len(self.sim.conditions) - 1)
             yp = average[i, np.argmax(np.abs(average[i, :]))]
             yerr = stdev[i, np.argmax(stdev[i, :])]
             if yp > 0:
@@ -133,7 +134,6 @@ class ReactionSensitivity(ExecModel):
                     ha='center', va='top', fontsize=10, rotation=90
                 )
 
-
     def _barplot_sensitivity(
             self,
             metric,
@@ -144,13 +144,7 @@ class ReactionSensitivity(ExecModel):
         options = self.viz.sensitivity_options
 
         # rcParams
-        plt.rcParams['font.size'] = 15
-        plt.rcParams['font.family'] = 'Arial'
-        plt.rcParams['mathtext.fontset'] = 'custom'
-        plt.rcParams['mathtext.it'] = 'Arial:italic'
-        plt.rcParams['axes.linewidth'] = 1.2
-        plt.rcParams['xtick.major.width'] = 1.2
-        plt.rcParams['ytick.major.width'] = 1.2
+        self.viz.set_sensitivity_rcParams()
 
         if len(options['cmap']) < len(self.sim.conditions):
             raise ValueError(
@@ -158,7 +152,7 @@ class ReactionSensitivity(ExecModel):
                 " or greater than len(sim.conditions)."
             )
         for k, obs_name in enumerate(self.obs):
-            plt.figure(figsize=(12, 5))
+            plt.figure(figsize=options['figsize'])
             self._draw_vertical_span(biological_processes, options['width'])
 
             sensitivity_array = sensitivity_coefficients[:, :, k, :]
@@ -190,19 +184,14 @@ class ReactionSensitivity(ExecModel):
                     reaction_indices, average, stdev, options['width']
                 )
                 plt.hlines(
-                    [0], -options['width'],
-                    len(reaction_indices)-options['width'], 'k', lw=1
+                    [0], -options['width'], len(reaction_indices), 'k', lw=1
                 )
                 plt.xticks([])
                 plt.ylabel(
                     'Control coefficients on\n'+metric +
                     ' (' + obs_name.replace('_', ' ') + ')'
                 )
-                plt.xlim(
-                    -options['width'], len(reaction_indices)-options['width']
-                )
-                # plt.ylim(-1.2,0.6)
-                # plt.yticks([-1.2,-1.0,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6])
+                plt.xlim(-options['width'], len(reaction_indices))
                 plt.legend(loc='lower right', frameon=False)
                 plt.savefig(
                     self.model_path + '/figure/sensitivity/reaction/'\
@@ -240,14 +229,9 @@ class ReactionSensitivity(ExecModel):
             biological_processes,
             reaction_indices,
     ):
+        options = self.viz.sensitivity_options
         # rcParams
-        plt.rcParams['font.size'] = 8
-        plt.rcParams['font.family'] = 'Arial'
-        plt.rcParams['mathtext.fontset'] = 'custom'
-        plt.rcParams['mathtext.it'] = 'Arial:italic'
-        plt.rcParams['axes.linewidth'] = 1.2
-        plt.rcParams['xtick.major.width'] = 1.2
-        plt.rcParams['ytick.major.width'] = 1.2
+        self.viz.set_sensitivity_rcParams()
 
         for k, obs_name in enumerate(self.obs):
             for l, condition in enumerate(self.sim.conditions):
@@ -265,7 +249,7 @@ class ReactionSensitivity(ExecModel):
                         cmap='RdBu_r',
                         linewidth=.5,
                         col_cluster=False,
-                        figsize=(16, 8),
+                        figsize=options['figsize'],
                         xticklabels=[str(j) for j in reaction_indices],
                         yticklabels=[],
                         #cbar_kws={"ticks": [-1, 0, 1]}

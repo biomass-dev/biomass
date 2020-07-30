@@ -7,8 +7,9 @@ import seaborn as sns
 from biomass.exec_model import ExecModel
 from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
 
+
 class ParameterSensitivity(ExecModel):
-    """ sensitivity for species with nonzero initial conditions
+    """ Sensitivity for parameters
     """
     def __init__(self, model, excluded_params):
         super().__init__(model)
@@ -126,13 +127,7 @@ class ParameterSensitivity(ExecModel):
         options = self.viz.sensitivity_options
 
         # rcParams
-        plt.rcParams['font.size'] = 15
-        plt.rcParams['font.family'] = 'Arial'
-        plt.rcParams['mathtext.fontset'] = 'custom'
-        plt.rcParams['mathtext.it'] = 'Arial:italic'
-        plt.rcParams['axes.linewidth'] = 1.2
-        plt.rcParams['xtick.major.width'] = 1.2
-        plt.rcParams['ytick.major.width'] = 1.2
+        self.viz.set_sensitivity_rcParams()
 
         if len(options['cmap']) < len(self.sim.conditions):
             raise ValueError(
@@ -140,10 +135,9 @@ class ParameterSensitivity(ExecModel):
                 " or greater than len(sim.conditions)."
             )
         for k, obs_name in enumerate(self.obs):
-            plt.figure(figsize=(12, 5))
+            plt.figure(figsize=options['figsize'])
             plt.hlines(
-                [0], -options['width'], len(param_indices) - options['width'],
-                'k', lw=1
+                [0], -options['width'], len(param_indices), 'k', lw=1
             )
             for l, condition in enumerate(self.sim.conditions):
                 sensitivity_matrix = sensitivity_coefficients[:, :, k, l]
@@ -167,7 +161,8 @@ class ParameterSensitivity(ExecModel):
                         color=options['cmap'][l], align='center', label=condition
                     )
             plt.xticks(
-                np.arange(len(param_indices)) + options['width'] / 2,
+                np.arange(len(param_indices))
+                + options['width'] * 0.5 * (len(self.sim.conditions) - 1),
                 [self.parameters[i] for i in param_indices],
                 fontsize=6, rotation=90
             )
@@ -175,7 +170,7 @@ class ParameterSensitivity(ExecModel):
                 'Control coefficients on\n' + metric +
                 ' (' + obs_name.replace('_', ' ') + ')'
             )
-            plt.xlim(-options['width'], len(param_indices)-options['width'])
+            plt.xlim(-options['width'], len(param_indices))
             plt.legend(loc='upper left', frameon=False)
             plt.savefig(
                 self.model_path
@@ -205,18 +200,15 @@ class ParameterSensitivity(ExecModel):
 
         return np.delete(sensitivity_matrix, nan_idx, axis=0)
 
-
     def _heatmap_sensitivity(
             self,
             metric,
             sensitivity_coefficients,
             param_indices
     ):
+        options = self.viz.sensitivity_options
         # rcParams
-        plt.rcParams['font.size'] = 5
-        plt.rcParams['font.family'] = 'Arial'
-        plt.rcParams['mathtext.fontset'] = 'custom'
-        plt.rcParams['mathtext.it'] = 'Arial:italic'
+        self.viz.set_sensitivity_rcParams()
 
         for k, obs_name in enumerate(self.obs):
             for l, condition in enumerate(self.sim.conditions):
@@ -233,7 +225,7 @@ class ParameterSensitivity(ExecModel):
                         cmap='RdBu_r',
                         linewidth=.5,
                         col_cluster=False,
-                        figsize=(12,12),
+                        figsize=options['figsize'],
                         xticklabels=[self.parameters[i] for i in param_indices],
                         yticklabels=[],
                         #cbar_kws={"ticks": [-1, 0, 1]}

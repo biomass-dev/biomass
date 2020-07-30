@@ -7,8 +7,9 @@ import seaborn as sns
 from biomass.exec_model import ExecModel
 from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
 
+
 class InitialConditionSensitivity(ExecModel):
-    """ sensitivity for species with nonzero initial conditions
+    """ Sensitivity for species with nonzero initial conditions
     """
     def __init__(self, model):
         super().__init__(model)
@@ -125,13 +126,7 @@ class InitialConditionSensitivity(ExecModel):
         options = self.viz.sensitivity_options
 
         # rcParams
-        plt.rcParams['font.size'] = 15
-        plt.rcParams['font.family'] = 'Arial'
-        plt.rcParams['mathtext.fontset'] = 'custom'
-        plt.rcParams['mathtext.it'] = 'Arial:italic'
-        plt.rcParams['axes.linewidth'] = 1.2
-        plt.rcParams['xtick.major.width'] = 1.2
-        plt.rcParams['ytick.major.width'] = 1.2
+        self.viz.set_sensitivity_rcParams()
 
         if len(options['cmap']) < len(self.sim.conditions):
             raise ValueError(
@@ -139,10 +134,9 @@ class InitialConditionSensitivity(ExecModel):
                 " or greater than len(sim.conditions)."
             )
         for k, obs_name in enumerate(self.obs):
-            plt.figure(figsize=(9, 5))
+            plt.figure(figsize=options['figsize'])
             plt.hlines(
-                [0], -options['width'], len(nonzero_indices) - options['width'],
-                'k', lw=1
+                [0], -options['width'], len(nonzero_indices), 'k', lw=1
             )
             for l, condition in enumerate(self.sim.conditions):
                 sensitivity_matrix = sensitivity_coefficients[:, :, k, l]
@@ -166,7 +160,8 @@ class InitialConditionSensitivity(ExecModel):
                         color=options['cmap'][l], align='center', label=condition
                     )
             plt.xticks(
-                np.arange(len(nonzero_indices)) + options['width'] / 2,
+                np.arange(len(nonzero_indices)) 
+                + options['width'] * 0.5 * (len(self.sim.conditions) - 1),
                 [self.viz.convert_species_name(self.species[i]) for i in nonzero_indices],
                 rotation=90
             )
@@ -174,7 +169,7 @@ class InitialConditionSensitivity(ExecModel):
                 'Control coefficients on\n' + metric +
                 ' (' + obs_name.replace('_', ' ') + ')'
             )
-            plt.xlim(-options['width'], len(nonzero_indices)-options['width'])
+            plt.xlim(-options['width'], len(nonzero_indices))
             plt.legend(loc='upper left', frameon=False)
             plt.savefig(
                 self.model_path
@@ -204,18 +199,15 @@ class InitialConditionSensitivity(ExecModel):
 
         return np.delete(sensitivity_matrix, nan_idx, axis=0)
 
-
     def _heatmap_sensitivity(
             self,
             metric,
             sensitivity_coefficients,
             nonzero_indices
     ):
+        options = self.viz.sensitivity_options
         # rcParams
-        plt.rcParams['font.size'] = 12
-        plt.rcParams['font.family'] = 'Arial'
-        plt.rcParams['mathtext.fontset'] = 'custom'
-        plt.rcParams['mathtext.it'] = 'Arial:italic'
+        self.viz.set_sensitivity_rcParams()
 
         for k, obs_name in enumerate(self.obs):
             for l, condition in enumerate(self.sim.conditions):
@@ -232,8 +224,7 @@ class InitialConditionSensitivity(ExecModel):
                         cmap='RdBu_r',
                         linewidth=.5,
                         col_cluster=False,
-                        figsize=(sensitivity_matrix.shape[0]*0.5,
-                                 sensitivity_matrix.shape[0]*0.35),
+                        figsize=options['figsize'],
                         xticklabels=[
                             self.viz.convert_species_name(self.species[i])
                             for i in nonzero_indices],

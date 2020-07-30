@@ -262,6 +262,7 @@ class Visualization(object):
         }
     
         self.sensitivity_options = {
+            'figsize' : (12, 5),
             'width' : 0.3,
             'cmap' : [self.cm.colors[j] for j in range(20)],
         }
@@ -333,6 +334,8 @@ class Visualization(object):
     
     @staticmethod
     def set_timecourse_rcParams():
+        """ figure/simulation
+        """
         plt.rcParams['font.size'] = 20
         plt.rcParams['axes.linewidth'] = 1.5
         plt.rcParams['xtick.major.width'] = 1.5
@@ -345,16 +348,29 @@ class Visualization(object):
 
     @staticmethod
     def set_param_range_rcParams():
+        """ figure/param_range
+        """
         plt.rcParams['font.size'] = 12
         plt.rcParams['axes.linewidth'] = 1.2
         plt.rcParams['xtick.major.width'] = 1.2
         plt.rcParams['ytick.major.width'] = 1.2
         # plt.rcParams['font.family'] = 'Arial'
-        # plt.rcParams['mathtext.fontset'] = 'custom'
-        # plt.rcParams['mathtext.it'] = 'Arial:italic'
+
+    @staticmethod
+    def set_sensitivity_rcParams():
+        """ figure/sensitivity
+        """
+        plt.rcParams['font.size'] = 12
+        plt.rcParams['axes.linewidth'] = 1.2
+        plt.rcParams['xtick.major.width'] = 1.2
+        plt.rcParams['ytick.major.width'] = 1.2
+        # plt.rcParams['font.family'] = 'Arial'
 
     @staticmethod
     def convert_species_name(name):
+        """ figure/sensitivity/initial_condition
+        - Sensitivity for species with nonzero initial conditions
+        """
         '''
         if name == 'ERKc':
             return 'ERK (cytoplasm)'
