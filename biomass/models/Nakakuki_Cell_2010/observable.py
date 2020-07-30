@@ -39,10 +39,8 @@ class NumericalSimulation(DifferentialEquation):
             self.perturbation = _perturbation
         # get steady state
         x[C.Ligand] = x[C.no_ligand]  # No ligand
-        (T_steady_state, Y_steady_state) = self._get_steady_state(
-            self.diffeq, y0, self.t, tuple(x)
-        )
-        if T_steady_state < self.t[-1]:
+        Y_steady_state = self._get_steady_state(self.diffeq, y0, tuple(x))
+        if Y_steady_state is None:
             return False
         else:
             y0 = Y_steady_state[:]
@@ -104,19 +102,21 @@ class NumericalSimulation(DifferentialEquation):
 
         return np.array(T), np.array(Y)
     
-    def _get_steady_state(self, diffeq, y0, tspan, args,
-                          max_iter=10, steady_state_eps=1e-6):
-        iter_ = 0
-        while iter_ < max_iter:
-            (T, Y) = self._solveode(diffeq, y0, tspan, args)
-            if T[-1] < tspan[-1] or \
-                    np.all(np.abs(Y[-1, :] - y0) < steady_state_eps):
+    def _get_steady_state(self, diffeq, y0, args, eps=1e-6):
+        """
+        Run until a time t for which the maximal absolutevalue of the 
+        regularized relative derivative was smaller than eps.
+        """
+        while True:
+            (T, Y) = self._solveode(diffeq, y0, range(2), args)
+            if T[-1] < 1:
+                return None
+            elif np.max(np.abs((Y[-1, :] - y0) / (np.array(y0) + eps))) < eps:
                 break
             else:
                 y0 = Y[-1, :].tolist()
-                iter_ += 1
 
-        return T[-1], y0
+        return y0
 
 class ExperimentalData(object):
     def __init__(self):
