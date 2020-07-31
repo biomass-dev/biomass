@@ -113,7 +113,7 @@ class OptimizationResults(ExecModel):
                     ['{:d}'.format(paramset), '{:8.3e}'.format(obj_val)]
                 )
 
-def run_simulation(model, viz_type='average', show_all=False, stdev=True):
+def run_simulation(model, viz_type, show_all=False, stdev=False):
     warnings.filterwarnings('ignore')
     if not viz_type in ['best', 'average', 'original', 'experiment'] \
             and not viz_type.isdecimal():
