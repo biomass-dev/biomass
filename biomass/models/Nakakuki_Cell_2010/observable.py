@@ -19,13 +19,17 @@ observables = [
 ]
 
 class NumericalSimulation(DifferentialEquation):
+    """ Simulate a model using scipy.integrate.ode
+
+    normalization : bool
+        if True, simulation results in each observable are divided by their 
+        maximum values.
+
+    """
     def __init__(self):
         super().__init__(perturbation={})
         self.normalization = True
-        '''
-        if True, simulation results in each observable 
-        are divided by their maximum values
-        '''
+        
 
     t = range(5401)  # 0, 1, 2, ..., 5400 (Unit: sec.)
 
@@ -82,8 +86,8 @@ class NumericalSimulation(DifferentialEquation):
                     Y[:, V.pcFOSn] * (x[C.Vn]/x[C.Vc]) + Y[:, V.pcFOSc]
                 )
     
-    @staticmethod
-    def _solveode(diffeq, y0, tspan, args, dt=1.0):
+    def _solveode(self, diffeq, y0, tspan, args):
+        dt = (self.t[-1] - self.t[0]) / (len(self.t) - 1)
         sol = ode(diffeq)
         sol.set_integrator(
             'vode', method='bdf', with_jacobian=True,
