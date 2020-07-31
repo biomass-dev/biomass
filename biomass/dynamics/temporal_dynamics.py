@@ -147,7 +147,7 @@ class TemporalDynamics(ExecModel):
                                         ],
                                     label = options[i]['ylabel']
                                 )
-                if self.exp.experiments[i] is not None:
+                if options[i]['exp_data'] and self.exp.experiments[i] is not None:
                     exp_t = self.exp.get_timepoint(i)
                     if self.exp.standard_error[i] is not None:
                         for l, condition in enumerate(sim.conditions):

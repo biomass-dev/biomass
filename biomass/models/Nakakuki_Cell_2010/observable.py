@@ -21,6 +21,8 @@ observables = [
 class NumericalSimulation(DifferentialEquation):
     """ Simulate a model using scipy.integrate.ode
 
+    Attributes
+    ----------
     normalization : bool
         if True, simulation results in each observable are divided by their 
         maximum values.
@@ -247,6 +249,7 @@ class Visualization(object):
                 'ylim' : (),
                 'yticks' : None,
                 'ylabel': observables[i].replace('__', '\n').replace('_', ' '),
+                'exp_data' : True,  # if False, experimental data will not be shown
                 'cmap' : [self.cm.colors[j] for j in range(20)],
                 'shape' : Line2D.filled_markers,
                 'dont_show' : [],  # conditions you don't want to plot
