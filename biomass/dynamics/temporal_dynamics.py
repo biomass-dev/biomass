@@ -149,7 +149,7 @@ class TemporalDynamics(ExecModel):
                                 )
                 if options[i]['exp_data'] and self.exp.experiments[i] is not None:
                     exp_t = self.exp.get_timepoint(i)
-                    if self.exp.standard_error[i] is not None:
+                    if self.exp.error_bar[i] is not None:
                         for l, condition in enumerate(sim.conditions):
                             if condition in self.exp.experiments[i] and \
                                     (rule == 'default' and condition not in
@@ -159,7 +159,7 @@ class TemporalDynamics(ExecModel):
                                 exp_data = plt.errorbar(
                                     np.array(exp_t) / options[i]['divided_by'],
                                     self.exp.experiments[i][condition],
-                                    yerr=self.exp.standard_error[i][condition], 
+                                    yerr=self.exp.error_bar[i][condition], 
                                     color=options[i]['cmap'][l] \
                                         if rule == 'default' \
                                         else multiple['cmap'][
