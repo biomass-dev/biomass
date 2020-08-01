@@ -238,7 +238,7 @@ class TemporalDynamics(ExecModel):
                     plt.xlabel(options[i]['xlabel'])
                     if options[i]['ylim']:
                         plt.ylim(options[i]['ylim'])
-                    if options[i]['xticks'] is not None:
+                    if options[i]['yticks'] is not None:
                         plt.yticks(options[i]['yticks'])
                     plt.ylabel(options[i]['ylabel'])
                     plt.savefig(
