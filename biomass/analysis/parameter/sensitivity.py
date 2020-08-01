@@ -171,7 +171,7 @@ class ParameterSensitivity(ExecModel):
                 ' (' + obs_name.replace('_', ' ') + ')'
             )
             plt.xlim(-options['width'], len(param_indices))
-            plt.legend(loc='upper left', frameon=False)
+            plt.legend(loc=options['legend_loc'], frameon=False)
             plt.savefig(
                 self.model_path
                 + '/figure/sensitivity/parameter/'\

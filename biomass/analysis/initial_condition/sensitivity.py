@@ -170,7 +170,7 @@ class InitialConditionSensitivity(ExecModel):
                 ' (' + obs_name.replace('_', ' ') + ')'
             )
             plt.xlim(-options['width'], len(nonzero_indices))
-            plt.legend(loc='upper left', frameon=False)
+            plt.legend(loc=options['legend_loc'], frameon=False)
             plt.savefig(
                 self.model_path
                 + '/figure/sensitivity/initial_condition/'\

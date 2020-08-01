@@ -271,6 +271,7 @@ class Visualization(object):
         self.sensitivity_options = {
             'figsize' : (12, 5),
             'width' : 0.3,
+            'legend_loc' : 'upper left',
             'cmap' : [self.cm.colors[j] for j in range(20)],
         }
 

@@ -192,7 +192,7 @@ class ReactionSensitivity(ExecModel):
                     ' (' + obs_name.replace('_', ' ') + ')'
                 )
                 plt.xlim(-options['width'], len(reaction_indices))
-                plt.legend(loc='lower right', frameon=False)
+                plt.legend(loc=options['legend_loc'], frameon=False)
                 plt.savefig(
                     self.model_path + '/figure/sensitivity/reaction/'\
                     '{}/{}.pdf'.format(
