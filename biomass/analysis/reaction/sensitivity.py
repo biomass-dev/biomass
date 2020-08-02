@@ -263,6 +263,10 @@ class ReactionSensitivity(ExecModel):
                     plt.close()
 
     def analyze(self, metric, style):
+        if not self.rxn.reactions:
+            raise ValueError(
+                'Define reaction indices (reactions) in reaction_network.py'
+            )
         biological_processes = self.rxn.group()
         reaction_indices = np.sum(biological_processes, axis=0)
         sensitivity_coefficients = self._load_sc(metric, reaction_indices)
