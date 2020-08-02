@@ -10,25 +10,26 @@ class TemporalDynamics(ExecModel):
     def __init__(self, model):
         super().__init__(model)
 
-    def plot_timecourse(self, sim, n_file, viz_type, show_all, stdev, simulations_all):
+    def plot_timecourse(self, sim, n_file, viz_type,
+                        show_all, stdev, simulations_all):
         os.makedirs(
             self.model_path
             + '/figure/simulation/{}'.format(viz_type), exist_ok=True
         )
         self.viz.set_timecourse_rcParams()
-        options = self.viz.get_timecourse_options()
-        multiple = self.viz.multiplot_observables()
+        timecourse = self.viz.get_timecourse_options()
+        multiplot = self.viz.multiplot_observables()
 
         for rule in ['default', 'custom']:
             for i, obs_name in enumerate(self.obs):
-                if len(options[i]['cmap']) < len(sim.conditions) or \
-                        len(options[i]['shape']) < len(sim.conditions):
+                if len(timecourse[i]['cmap']) < len(sim.conditions) or \
+                        len(timecourse[i]['shape']) < len(sim.conditions):
                     raise ValueError(
                         'len(cmap), len(shape) must be equal to'
                         ' or greater than len(sim.conditions).'
                     )
                 if rule == 'custom' and \
-                        obs_name not in multiple['observables']:
+                        obs_name not in multiplot['observables']:
                     continue
                 if rule == 'default':
                     plt.figure(figsize=(4, 3))
@@ -39,22 +40,22 @@ class TemporalDynamics(ExecModel):
                         for j, _ in enumerate(n_file):
                             for l, condition in enumerate(sim.conditions):
                                 if (rule == 'default' and condition not in 
-                                        options[i]['dont_show']) or (
+                                        timecourse[i]['dont_show']) or (
                                         rule == 'custom' and
-                                        condition == multiple['condition']):
+                                        condition == multiplot['condition']):
                                     plt.plot(
                                         np.array(sim.t) / 
-                                            options[i]['divided_by'],
+                                            timecourse[i]['divided_by'],
                                         simulations_all[i, j, :, l] / (
                                             1 if not sim.normalization else
                                             np.max(
                                                 simulations_all[i, j, :, :]
                                             )
                                         ),
-                                        color=options[i]['cmap'][l] \
+                                        color=timecourse[i]['cmap'][l] \
                                             if rule == 'default' \
-                                            else multiple['cmap'][
-                                                multiple['observables'].index(
+                                            else multiplot['cmap'][
+                                                multiplot['observables'].index(
                                                     obs_name
                                                 )
                                             ],
@@ -65,9 +66,9 @@ class TemporalDynamics(ExecModel):
                         for j, _ in enumerate(n_file):
                             for l, condition in enumerate(sim.conditions):
                                 if (rule == 'default' and condition not in 
-                                        options[i]['dont_show']) or (
+                                        timecourse[i]['dont_show']) or (
                                             rule == 'custom' and
-                                            condition == multiple['condition']):
+                                            condition == multiplot['condition']):
                                     normalized[i, j, :, l] = (
                                         simulations_all[i, j, :, l] / (
                                             1 if not sim.normalization else
@@ -82,27 +83,27 @@ class TemporalDynamics(ExecModel):
                             )
                         for l, condition in enumerate(sim.conditions):
                             if (rule == 'default' and condition not in
-                                    options[i]['dont_show']) or (
+                                    timecourse[i]['dont_show']) or (
                                         rule == 'custom' and
-                                        condition == multiple['condition']):
+                                        condition == multiplot['condition']):
                                 plt.plot(
-                                    np.array(sim.t) / options[i]['divided_by'], 
+                                    np.array(sim.t) / timecourse[i]['divided_by'], 
                                     np.nanmean(normalized[i, :, :, l], axis=0),
-                                    color=options[i]['cmap'][l] \
+                                    color=timecourse[i]['cmap'][l] \
                                         if rule == 'default' \
-                                        else multiple['cmap'][
-                                            multiple['observables'].index(
+                                        else multiplot['cmap'][
+                                            multiplot['observables'].index(
                                                 obs_name
                                             )
                                         ],
-                                    label = options[i]['ylabel']
+                                    label = timecourse[i]['ylabel']
                                 )
                         if stdev:
                             for l, condition in enumerate(sim.conditions):
                                 if (rule == 'default' and condition not in 
-                                        options[i]['dont_show']) or (
+                                        timecourse[i]['dont_show']) or (
                                             rule == 'custom' and
-                                            condition == multiple['condition']):
+                                            condition == multiplot['condition']):
                                     y_mean = np.nanmean(
                                         normalized[i, :, :, l], axis=0
                                     )
@@ -113,12 +114,12 @@ class TemporalDynamics(ExecModel):
                                     ]
                                     plt.fill_between(
                                         np.array(sim.t) / 
-                                            options[i]['divided_by'], 
+                                            timecourse[i]['divided_by'], 
                                         y_mean - y_std, y_mean + y_std,
-                                        lw=0, color=options[i]['cmap'][l] \
+                                        lw=0, color=timecourse[i]['cmap'][l] \
                                             if rule == 'default' \
-                                            else multiple['cmap'][
-                                                multiple['observables'].index(
+                                            else multiplot['cmap'][
+                                                multiplot['observables'].index(
                                                     obs_name
                                                 )
                                             ],
@@ -127,66 +128,67 @@ class TemporalDynamics(ExecModel):
                     else:
                         for l, condition in enumerate(sim.conditions):
                             if (rule == 'default' and condition not in
-                                    options[i]['dont_show']) or (
+                                    timecourse[i]['dont_show']) or (
                                         rule == 'custom' and
-                                        condition == multiple['condition']):
+                                        condition == multiplot['condition']):
                                 plt.plot(
-                                    np.array(sim.t) / options[i]['divided_by'], 
+                                    np.array(sim.t) / timecourse[i]['divided_by'], 
                                     sim.simulations[i, :, l] / (
                                         1 if not sim.normalization else
                                         np.max(
                                             sim.simulations[i]
                                         )
                                     ),
-                                    color=options[i]['cmap'][l] \
+                                    color=timecourse[i]['cmap'][l] \
                                         if rule == 'default' \
-                                        else multiple['cmap'][
-                                            multiple['observables'].index(
+                                        else multiplot['cmap'][
+                                            multiplot['observables'].index(
                                                 obs_name
                                             )
                                         ],
-                                    label = options[i]['ylabel']
+                                    label = timecourse[i]['ylabel']
                                 )
-                if options[i]['exp_data'] and self.exp.experiments[i] is not None:
+                if timecourse[i]['exp_data'] \
+                        and self.exp.experiments[i] is not None:
                     exp_t = self.exp.get_timepoint(i)
                     if self.exp.error_bar[i] is not None:
                         for l, condition in enumerate(sim.conditions):
                             if condition in self.exp.experiments[i] and \
                                     (rule == 'default' and condition not in
-                                    options[i]['dont_show']) or (
+                                    timecourse[i]['dont_show']) or (
                                         rule == 'custom' and
-                                        condition == multiple['condition']):
+                                        condition == multiplot['condition']):
                                 exp_data = plt.errorbar(
-                                    np.array(exp_t) / options[i]['divided_by'],
+                                    np.array(exp_t) / timecourse[i]['divided_by'],
                                     self.exp.experiments[i][condition],
                                     yerr=self.exp.error_bar[i][condition], 
-                                    color=options[i]['cmap'][l] \
+                                    color=timecourse[i]['cmap'][l] \
                                         if rule == 'default' \
-                                        else multiple['cmap'][
-                                            multiple['observables'].index(
+                                        else multiplot['cmap'][
+                                            multiplot['observables'].index(
                                                 obs_name
                                             )
                                         ],
-                                    ecolor=options[i]['cmap'][l] \
+                                    ecolor=timecourse[i]['cmap'][l] \
                                         if rule == 'default' \
-                                        else multiple['cmap'][
-                                            multiple['observables'].index(
+                                        else multiplot['cmap'][
+                                            multiplot['observables'].index(
                                                 obs_name
                                             )
                                         ],
                                     elinewidth=1, capsize=8,
                                     markerfacecolor='None',
-                                    markeredgecolor=options[i]['cmap'][l] \
+                                    markeredgecolor=timecourse[i]['cmap'][l] \
                                         if rule == 'default' \
-                                        else multiple['cmap'][
-                                            multiple['observables'].index(
+                                        else multiplot['cmap'][
+                                            multiplot['observables'].index(
                                                 obs_name
                                             )
                                         ],
-                                    fmt=options[i]['shape'][l] \
+                                    fmt=timecourse[i]['shape'][l] \
                                         if rule == 'default' \
-                                        else multiple['shape'][
-                                            multiple['observables'].index(
+                                        else multiplot['shape'][
+                                            multiplot['observables'].index(
                                                 obs_name
                                             )
                                         ],
@@ -200,47 +202,47 @@ class TemporalDynamics(ExecModel):
                         for l, condition in enumerate(sim.conditions):
                             if condition in self.exp.experiments[i] and \
                                     (rule == 'default' and condition not in
-                                    options[i]['dont_show']) or (
+                                    timecourse[i]['dont_show']) or (
                                         rule == 'custom' and
-                                        condition == multiple['condition']):
+                                        condition == multiplot['condition']):
                                 plt.plot(
-                                    np.array(exp_t) / options[i]['divided_by'], 
+                                    np.array(exp_t) / timecourse[i]['divided_by'], 
                                     self.exp.experiments[i][condition],
-                                    fmt=options[i]['shape'][l] \
+                                    fmt=timecourse[i]['shape'][l] \
                                         if rule == 'default' \
-                                        else multiple['shape'][
-                                            multiple['observables'].index(
+                                        else multiplot['shape'][
+                                            multiplot['observables'].index(
                                                 obs_name
                                             )
                                         ], 
                                     markerfacecolor='None', 
-                                    markeredgecolor=options[i]['cmap'][l] \
+                                    markeredgecolor=timecourse[i]['cmap'][l] \
                                         if rule == 'default' \
-                                        else multiple['cmap'][
-                                            multiple['observables'].index(
+                                        else multiplot['cmap'][
+                                            multiplot['observables'].index(
                                                 obs_name
                                             )
                                         ],
-                                    color=options[i]['cmap'][l] \
+                                    color=timecourse[i]['cmap'][l] \
                                         if rule == 'default' \
-                                        else multiple['cmap'][
-                                            multiple['observables'].index(
+                                        else multiplot['cmap'][
+                                            multiplot['observables'].index(
                                                 obs_name
                                             )
                                         ], 
                                     clip_on=False
                                 )
                 if rule == 'default':
-                    if options[i]['xlim']:
-                        plt.xlim(options[i]['xlim'])
-                    if options[i]['xticks'] is not None:
-                        plt.xticks(options[i]['xticks'])
-                    plt.xlabel(options[i]['xlabel'])
-                    if options[i]['ylim']:
-                        plt.ylim(options[i]['ylim'])
-                    if options[i]['yticks'] is not None:
-                        plt.yticks(options[i]['yticks'])
-                    plt.ylabel(options[i]['ylabel'])
+                    if timecourse[i]['xlim']:
+                        plt.xlim(timecourse[i]['xlim'])
+                    if timecourse[i]['xticks'] is not None:
+                        plt.xticks(timecourse[i]['xticks'])
+                    plt.xlabel(timecourse[i]['xlabel'])
+                    if timecourse[i]['ylim']:
+                        plt.ylim(timecourse[i]['ylim'])
+                    if timecourse[i]['yticks'] is not None:
+                        plt.yticks(timecourse[i]['yticks'])
+                    plt.ylabel(timecourse[i]['ylabel'])
                     plt.savefig(
                         self.model_path 
                         + '/figure/simulation/{}/{}.pdf'.format(
@@ -248,25 +250,26 @@ class TemporalDynamics(ExecModel):
                         ), bbox_inches='tight'
                     )
                     plt.close()
-            if rule == 'custom' and multiple['observables']:
-                if multiple['xlim']:
-                    plt.xlim(multiple['xlim'])
-                if multiple['xticks'] is not None:
-                    plt.xticks(multiple['xticks'])
-                plt.xlabel(multiple['xlabel'])
-                if multiple['ylim']:
-                    plt.ylim(multiple['ylim'])
-                if multiple['yticks'] is not None:
-                    plt.yticks(multiple['yticks'])
-                plt.ylabel(multiple['ylabel'])
+            if rule == 'custom' and multiplot['observables']:
+                if multiplot['xlim']:
+                    plt.xlim(multiplot['xlim'])
+                if multiplot['xticks'] is not None:
+                    plt.xticks(multiplot['xticks'])
+                plt.xlabel(multiplot['xlabel'])
+                if multiplot['ylim']:
+                    plt.ylim(multiplot['ylim'])
+                if multiplot['yticks'] is not None:
+                    plt.yticks(multiplot['yticks'])
+                plt.ylabel(multiplot['ylabel'])
                 plt.legend(
-                    bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0,
-                    labelspacing=1.25, frameon = False, fontsize=12
+                    bbox_to_anchor=(1.05, 1), loc='upper left',
+                    borderaxespad=0, labelspacing=1.25, frameon = False,
+                    fontsize=12
                 )
                 plt.savefig(
                     self.model_path 
-                    + '/figure/simulation/{}/multiple_observables.pdf'.format(
-                        viz_type
+                    + '/figure/simulation/{}/{}.pdf'.format(
+                        viz_type, multiplot['fig_name']
                     ), bbox_inches='tight'
                 )
                 plt.close()
