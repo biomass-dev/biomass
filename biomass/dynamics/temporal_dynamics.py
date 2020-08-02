@@ -21,6 +21,7 @@ class TemporalDynamics(ExecModel):
         multiplot = self.viz.multiplot_observables()
 
         for rule in ['default', 'custom']:
+            set_fig = False
             for i, obs_name in enumerate(self.obs):
                 if len(timecourse[i]['cmap']) < len(sim.conditions) or \
                         len(timecourse[i]['shape']) < len(sim.conditions):
@@ -33,6 +34,9 @@ class TemporalDynamics(ExecModel):
                     continue
                 if rule == 'default':
                     plt.figure(figsize=(4, 3))
+                elif rule == 'custom' and not set_fig:
+                    plt.figure(figsize=(4, 3))
+                    set_fig = True
                 plt.gca().spines['right'].set_visible(False)
                 plt.gca().spines['top'].set_visible(False)
                 if viz_type != 'experiment':
