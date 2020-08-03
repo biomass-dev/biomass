@@ -19,19 +19,19 @@ class ReactionSensitivity(ExecModel):
 
         Parameters
         ----------
-        metric: str
-            - 'amplitude':
-                The maximum value.
-            - 'duration':
-                The time it takes to decline below 10% of its maximum.
-            - 'integral':
-                The integral of concentration over the observation time.
-        reaction_indices: list
-            reaction indices for sensitivity analysis
+        metric : str
+            - 'maximum': The maximum value.
+            - 'minimum' : The minimum value.
+            - 'duration': The time it takes to decline below 10% of its maximum.
+            - 'integral': The integral of concentration over the observation time.
+            
+        nonzero_indices : list of int
+            for i in nonzero_indices:
+                y0[i] != 0.0
 
         Returns
         -------
-        sensitivity_coefficients: numpy array
+        sensitivity_coefficients : numpy array
 
         """
         rate = 1.01  # 1% change

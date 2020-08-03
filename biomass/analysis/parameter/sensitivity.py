@@ -31,17 +31,19 @@ class ParameterSensitivity(ExecModel):
 
         Parameters
         ----------
-        metric: str
-            - 'amplitude': The maximum value.
+        metric : str
+            - 'maximum': The maximum value.
+            - 'minimum' : The minimum value.
             - 'duration': The time it takes to decline below 10% of its maximum.
             - 'integral': The integral of concentration over the observation time.
-        param_indices: list
-            for i in param_indices:
-                x[i] != 0.0
+            
+        nonzero_indices : list of int
+            for i in nonzero_indices:
+                y0[i] != 0.0
 
         Returns
         -------
-        sensitivity_coefficients: numpy array
+        sensitivity_coefficients : numpy array
         
         """
 
