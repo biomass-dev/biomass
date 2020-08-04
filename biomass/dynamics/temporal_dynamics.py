@@ -212,7 +212,7 @@ class TemporalDynamics(ExecModel):
                                 plt.plot(
                                     np.array(exp_t) / timecourse[i]['divided_by'], 
                                     self.exp.experiments[i][condition],
-                                    fmt=timecourse[i]['shape'][l] \
+                                    timecourse[i]['shape'][l] \
                                         if rule == 'default' \
                                         else multiplot['shape'][
                                             multiplot['observables'].index(
