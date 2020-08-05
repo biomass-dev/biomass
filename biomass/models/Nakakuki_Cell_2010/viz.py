@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 
 from .observable import observables
-
+from .observable import NumericalSimulation # add for getting experimental condition
 
 class Visualization(object):
     """ Plotting parameters for customizing figure properties
@@ -21,6 +21,9 @@ class Visualization(object):
     """
     def __init__(self):
         self.cm = plt.cm.get_cmap('tab20')
+        sim_vis = NumericalSimulation() # add
+        # if num of conditions is less than 11, use dark color only
+        cm_range = [range(0, 20, 2), range(20)][len(sim_vis.conditions) > 11]
 
         self.timecourse_options = [
             {
@@ -32,7 +35,7 @@ class Visualization(object):
                 'yticks' : None,
                 'ylabel': observables[i].replace('__', '\n').replace('_', ' '),
                 'exp_data' : True,  # if False, experimental data will not be shown
-                'cmap' : [self.cm.colors[j] for j in range(20)],
+                'cmap' : [self.cm.colors[j] for j in cm_range],
                 'shape' : Line2D.filled_markers,
                 'dont_show' : [],  # conditions you don't want to plot
             } for i, _ in enumerate(observables)]
@@ -47,7 +50,7 @@ class Visualization(object):
             'ylim' : (),
             'yticks' : None,
             'ylabel': '',
-            'cmap' : [self.cm.colors[j] for j in range(20)],
+            'cmap' : [self.cm.colors[j] for j in cm_range],
             'shape' : Line2D.filled_markers,
         }
     
@@ -55,7 +58,7 @@ class Visualization(object):
             'figsize' : (12, 5),
             'width' : 0.3,
             'legend_loc' : 'upper left',
-            'cmap' : [self.cm.colors[j] for j in range(20)],
+            'cmap' : [self.cm.colors[j] for j in cm_range],
         }
 
     def get_timecourse_options(self):
