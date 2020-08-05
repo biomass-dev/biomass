@@ -90,6 +90,9 @@ run_simulation(Nakakuki_Cell_2010, viz_type='average', show_all=False, stdev=Tru
 
 - ```'n(=1,2,...)'```
     : Use the parameter set in ```out/n/```.
+    
+- ```'experiment'```
+    : Draw the experimental data written in ```observable.py``` without simulation results.    
 
 **show_all** : bool
 - Whether to show all simulation results.
