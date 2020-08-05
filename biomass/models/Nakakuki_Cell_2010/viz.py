@@ -35,7 +35,7 @@ class Visualization(object):
                 'yticks' : None,
                 'ylabel': observables[i].replace('__', '\n').replace('_', ' '),
                 'exp_data' : True,  # if False, experimental data will not be shown
-                'cmap' : [self.cm.colors[j] for j in cm_range],
+                'cmap' : [self.cm.colors[j] for j in cm_range], # changed to cm_range from range(20)
                 'shape' : Line2D.filled_markers,
                 'dont_show' : [],  # conditions you don't want to plot
             } for i, _ in enumerate(observables)]
@@ -50,7 +50,7 @@ class Visualization(object):
             'ylim' : (),
             'yticks' : None,
             'ylabel': '',
-            'cmap' : [self.cm.colors[j] for j in cm_range],
+            'cmap' : [self.cm.colors[j] for j in cm_range], # changed to cm_range from range(20)
             'shape' : Line2D.filled_markers,
         }
     
@@ -58,7 +58,7 @@ class Visualization(object):
             'figsize' : (12, 5),
             'width' : 0.3,
             'legend_loc' : 'upper left',
-            'cmap' : [self.cm.colors[j] for j in cm_range],
+            'cmap' : [self.cm.colors[j] for j in cm_range], # changed to cm_range from range(20)
         }
 
     def get_timecourse_options(self):
