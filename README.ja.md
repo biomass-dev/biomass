@@ -77,6 +77,8 @@ run_simulation(Nakakuki_Cell_2010, viz_type='average', show_all=False, stdev=Tru
 
 - ```'n(=1,2,...)'``` : ```out/n(=1,2,...)``` における最新のパラメータセットでのシミュレーション結果を表示します．
 
+- ```'experiment'``` : ```observable.py``` に記述されている実験値の結果のみを表示します．
+
 **show_all** : bool
 - ```out/n(=1,2,...)```に格納されたパラメータセットでの全てのシミュレーション結果を表示します．
 

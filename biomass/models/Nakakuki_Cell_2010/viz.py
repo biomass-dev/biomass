@@ -1,10 +1,10 @@
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 
-from .observable import observables
+from .observable import observables, NumericalSimulation
 
 
-class Visualization(object):
+class Visualization(NumericalSimulation):
     """ Plotting parameters for customizing figure properties
 
     Attributes
@@ -20,8 +20,8 @@ class Visualization(object):
 
     """
     def __init__(self):
-        self.cm = plt.cm.get_cmap('tab20')
-
+        self.cm = plt.cm.get_cmap('tab20')  # if num of conditions is less than 11, use dark color only
+        
         self.timecourse_options = [
             {
                 'divided_by' : 1,  # to convert time unit. (e.g. sec -> min)
@@ -32,7 +32,9 @@ class Visualization(object):
                 'yticks' : None,
                 'ylabel': observables[i].replace('__', '\n').replace('_', ' '),
                 'exp_data' : True,  # if False, experimental data will not be shown
-                'cmap' : [self.cm.colors[j] for j in range(20)],
+                'cmap' : [self.cm.colors[j] for j in (range(20) 
+                            if len(self.conditions) > 10 
+                            else range(0, 20, 2))],
                 'shape' : Line2D.filled_markers,
                 'dont_show' : [],  # conditions you don't want to plot
             } for i, _ in enumerate(observables)]
@@ -47,7 +49,9 @@ class Visualization(object):
             'ylim' : (),
             'yticks' : None,
             'ylabel': '',
-            'cmap' : [self.cm.colors[j] for j in range(20)],
+            'cmap' : [self.cm.colors[j] for j in (range(20) 
+                        if len(self.conditions) > 10 
+                        else range(0, 20, 2))],
             'shape' : Line2D.filled_markers,
         }
     
@@ -55,7 +59,9 @@ class Visualization(object):
             'figsize' : (12, 5),
             'width' : 0.3,
             'legend_loc' : 'upper left',
-            'cmap' : [self.cm.colors[j] for j in range(20)],
+            'cmap' : [self.cm.colors[j] for j in (range(20) 
+                        if len(self.conditions) > 10 
+                        else range(0, 20, 2))],
         }
 
     def get_timecourse_options(self):
