@@ -20,7 +20,7 @@ class Visualization(object):
 
     """
     def __init__(self):
-        self.cm = plt.cm.get_cmap('tab20')
+        self.cm = plt.cm.get_cmap('tab10')
 
         self.timecourse_options = [
             {
@@ -32,7 +32,7 @@ class Visualization(object):
                 'yticks' : None,
                 'ylabel': observables[i].replace('__', '\n').replace('_', ' '),
                 'exp_data' : True,  # if False, experimental data will not be shown
-                'cmap' : [self.cm.colors[j] for j in range(20)],
+                'cmap' : [self.cm.colors[j] for j in range(10)],
                 'shape' : Line2D.filled_markers,
                 'dont_show' : [],  # conditions you don't want to plot
             } for i, _ in enumerate(observables)]
@@ -47,7 +47,7 @@ class Visualization(object):
             'ylim' : (),
             'yticks' : None,
             'ylabel': '',
-            'cmap' : [self.cm.colors[j] for j in range(20)],
+            'cmap' : [self.cm.colors[j] for j in range(10)],
             'shape' : Line2D.filled_markers,
         }
     
@@ -55,7 +55,7 @@ class Visualization(object):
             'figsize' : (12, 5),
             'width' : 0.3,
             'legend_loc' : 'upper left',
-            'cmap' : [self.cm.colors[j] for j in range(20)],
+            'cmap' : [self.cm.colors[j] for j in range(10)],
         }
 
     def get_timecourse_options(self):
