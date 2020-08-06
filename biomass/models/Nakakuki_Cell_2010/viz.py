@@ -112,7 +112,7 @@ class Visualization(NumericalSimulation):
         return self.timecourse_options
 
     def multiplot_observables(self):
-        
+        '''
         self.multiplot_options['observables'] = [
             'Phosphorylated_ERKc',
             'Phosphorylated_CREBw',
@@ -126,7 +126,7 @@ class Visualization(NumericalSimulation):
         self.multiplot_options['ylim'] = (-0.1, 1.3)
         self.multiplot_options['yticks'] = [0.0, 0.3, 0.6, 0.9, 1.2]
         self.multiplot_options['ylabel'] = 'Intensity (a.u.)'
-        
+        '''
         return self.multiplot_options
     
     @staticmethod
