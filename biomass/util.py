@@ -17,7 +17,8 @@ class OptimizationResults(ExecModel):
         super().__init__(model)
 
     def get(self):
-        """ Get optimized parameters as CSV file format
+        """
+        Get optimized parameters as CSV file format.
 
         Output
         ------
@@ -97,6 +98,9 @@ class OptimizationResults(ExecModel):
                 writer.writerows(optimized_initials)
 
     def dynamic_assessment(self, include_original=False):
+        """ 
+        Get objective values using estimated parameters.
+        """
         with open(self.model_path + '/fitness_assessment.csv', mode='w') as f:
             writer = csv.writer(f, lineterminator='\n')
             writer.writerow(['parameter set', 'Objective value'])
@@ -113,7 +117,40 @@ class OptimizationResults(ExecModel):
                     ['{:d}'.format(paramset), '{:8.3e}'.format(obj_val)]
                 )
 
-def run_simulation(model, viz_type, show_all=False, stdev=False):
+def run_simulation(
+        model, 
+        viz_type, 
+        show_all=False, 
+        stdev=False
+):
+    """
+    Simulate ODE model with estimated parameter values.
+
+        Parameters
+        ----------
+        viz_type : str
+            - 'average':
+                The average of simulation results with parameter sets in "out/".
+            - 'best': 
+                The best simulation result in "out/", simulation with 
+                "best_fit_param".
+            - 'original': 
+                Simulation with the default parameters and initial values 
+                defined in "set_model.py".
+            - 'n(=1,2,...)':
+                Use the parameter set in "out/n/".
+            - 'experiment'
+                Draw the experimental data written in observable.py without 
+                simulation results.
+
+        show_all : bool
+            Whether to show all simulation results.
+            
+        stdev : bool
+            If True, the standard deviation of simulated values will be shown
+            (only available for 'average' visualization type).
+            
+        """
     warnings.filterwarnings('ignore')
     if not viz_type in ['best', 'average', 'original', 'experiment'] \
             and not viz_type.isdecimal():
@@ -126,12 +163,38 @@ def run_simulation(model, viz_type, show_all=False, stdev=False):
     )
 
 
-def optimize(model, *args):
+def optimize(
+        model, 
+        *args, 
+        max_generation=10000, 
+        allowable_error=0.0
+):
+    """ 
+    Run GA for parameter estimation.
+
+    Paremters
+    ---------
+    model : module
+        Model for parameter estimation
+    
+    max_generation : int
+        Stop if Generation > max_generation
+    
+    allowable_error : float
+        Stop if Best Fitness <= allowable_error
+    
+    Example
+    -------
+    optimize(
+        Nakakuki_Cell_2010, 1, 10, max_generation=10000, allowable_error=0.5
+    )
+
+    """
     warnings.filterwarnings('ignore')
     ga_init = GeneticAlgorithmInit(
         model,
-        max_generation=10000,
-        allowable_error=0.5
+        max_generation=max_generation,
+        allowable_error=allowable_error
     )
     if len(args) == 1:
         ga_init.run(int(args[0]))
@@ -144,13 +207,46 @@ def optimize(model, *args):
         raise ValueError('too many values to unpack (expected 2)')
 
 
-def optimize_continue(model, *args):
+def optimize_continue(
+        model, 
+        *args, 
+        max_generation=10000, 
+        allowable_error=0.0,
+        p0_bounds=[0.1, 10.]
+):
+    """ 
+    Continue running GA from where you stopped in the last parameter search.
+
+    Paremters
+    ---------
+    model : module
+        Model for parameter estimation
+    
+    max_generation : int
+        Stop if Generation > max_generation
+    
+    allowable_error : float
+        Stop if Best Fitness <= allowable_error
+    
+    p0_bounds : list
+        Generate initial population using best parameter values in the last
+        parameter search.
+            - lower_bound = po_bounds[0] * best_parameter_value
+            - upper_bound = p0_bounds[1] * best_parameter_value
+
+    Example
+    -------
+    optimize_continue(
+        Nakakuki_Cell_2010, 1, 10, max_generation=20000, allowable_error=0.5
+    )
+
+    """
     warnings.filterwarnings('ignore')
     ga_continue = GeneticAlgorithmContinue(
         model,
-        max_generation=10000,
-        allowable_error=0.5,
-        p0_bounds=[0.1, 10.]  # [lower_bound, upper_bound]
+        max_generation=max_generation,
+        allowable_error=allowable_error,
+        p0_bounds=p0_bounds
     )
     if len(args) == 1:
         ga_continue.run(int(args[0]))
@@ -180,6 +276,8 @@ def run_analysis(
             model, excluded_params
         ).analyze(metric=metric, style=style)
         """
+        Example
+        -------
         >>> from biomass.models import Nakakuki_Cell_2010
         >>> from biomass import run_analysis
         >>> run_analysis(

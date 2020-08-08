@@ -9,30 +9,6 @@ class SignalingSystems(TemporalDynamics):
         super().__init__(model)
 
     def simulate_all(self, viz_type, show_all, stdev):
-        """Simulate ODE model with estimated parameter values.
-
-        Parameters
-        ----------
-        viz_type : str
-            - 'average':
-                The average of simulation results with parameter sets in "out/".
-            - 'best': 
-                The best simulation result in "out/", simulation with 
-                "best_fit_param".
-            - 'original': 
-                Simulation with the default parameters and initial values 
-                defined in "set_model.py".
-            - 'n(=1,2,...)':
-                Use the parameter set in "out/n/".
-
-        show_all : bool
-            Whether to show all simulation results.
-            
-        stdev : bool
-            If True, the standard deviation of simulated values will be shown
-            (only available for 'average' visualization type).
-            
-        """
         n_file = [] if viz_type == 'original' else self.get_executable()
         simulations_all = np.full(
             (len(self.obs), len(n_file), len(self.sim.t), len(self.sim.conditions)),
