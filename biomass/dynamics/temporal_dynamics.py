@@ -100,7 +100,8 @@ class TemporalDynamics(ExecModel):
                                                 obs_name
                                             )
                                         ],
-                                    label = timecourse[i]['ylabel']
+                                    label = condition if rule == 'default' \
+                                        else timecourse[i]['ylabel']
                                 )
                         if stdev:
                             for l, condition in enumerate(sim.conditions):
@@ -150,7 +151,8 @@ class TemporalDynamics(ExecModel):
                                                 obs_name
                                             )
                                         ],
-                                    label = timecourse[i]['ylabel']
+                                    label = condition if rule == 'default' \
+                                        else timecourse[i]['ylabel']
                                 )
                 if timecourse[i]['exp_data'] \
                         and self.exp.experiments[i] is not None:
@@ -247,6 +249,11 @@ class TemporalDynamics(ExecModel):
                     if timecourse[i]['yticks'] is not None:
                         plt.yticks(timecourse[i]['yticks'])
                     plt.ylabel(timecourse[i]['ylabel'])
+                    if timecourse[i]['legend_loc'] is not None:
+                        plt.legend(
+                            loc=timecourse[i]['legend_loc'], frameon=False,
+                            fontsize=12
+                        )
                     plt.savefig(
                         self.model_path 
                         + '/figure/simulation/{}/{}.pdf'.format(
