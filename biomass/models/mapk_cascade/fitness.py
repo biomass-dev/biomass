@@ -29,13 +29,18 @@ def _diff_sim_and_exp(
 
     for idx, condition in enumerate(conditions):
         if condition in exp_dict.keys():
-            sim_val.extend(sim_matrix[exp_timepoint, idx])
+            sim_val.extend(sim_matrix[list(map(int, exp_timepoint)), idx])
             exp_val.extend(exp_dict[condition])
 
     return np.array(sim_val) / sim_norm_max, np.array(exp_val)
 
 
-def objective(indiv_gene, *args):
+def objective(
+        indiv_gene,
+        *args,
+        sim=NumericalSimulation(),
+        exp=ExperimentalData()
+):
     """Define an objective function to be minimized
     """
     if len(args) == 0:
@@ -49,17 +54,16 @@ def objective(indiv_gene, *args):
     else:
         raise ValueError('too many values to unpack (expected 2)')
 
-    exp = ExperimentalData()
-    sim = NumericalSimulation()
+    exp.set_data()
 
     if sim.simulate(x, y0) is None:
         error = np.zeros(len(observables))
-        for i, _ in enumerate(observables):
+        for i, obs_name in enumerate(observables):
             if exp.experiments[i] is not None:
                 error[i] = _compute_objval_rss(
                     *_diff_sim_and_exp(
                         sim.simulations[i], exp.experiments[i], 
-                        exp.get_timepoint(i), sim.conditions, 
+                        exp.get_timepoint(obs_name), sim.conditions, 
                         sim_norm_max=1 if not sim.normalization \
                             else np.max(sim.simulations[i])
                     )

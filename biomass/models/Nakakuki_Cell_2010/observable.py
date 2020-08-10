@@ -123,112 +123,110 @@ class NumericalSimulation(DifferentialEquation):
         return y0
 
 class ExperimentalData(object):
-    def __init__(self):
-        pass
+    """
+    Set experimental data.
 
-    experiments = [None] * len(observables)
-    error_bar = [None] * len(observables)
-
-    t2 = [0, 300, 600, 900, 1800, 2700, 3600, 5400]  # (Unit: sec.)
-
-    experiments[observables.index('Phosphorylated_MEKc')] = {
-        'EGF': [0.000, 0.773, 0.439, 0.252, 0.130, 0.087, 0.080, 0.066], 
-        'HRG': [0.000, 0.865, 1.000, 0.837, 0.884, 0.920, 0.875, 0.789], 
-    }
-    error_bar[observables.index('Phosphorylated_MEKc')] = {
-        'EGF': [sd/np.sqrt(3) for sd in [0.000, 0.030, 0.048, 0.009, 0.009, 0.017, 0.012, 0.008]], 
-        'HRG': [sd/np.sqrt(3) for sd in [0.000, 0.041, 0.000, 0.051, 0.058, 0.097, 0.157, 0.136]], 
-    }
-
-    experiments[observables.index('Phosphorylated_ERKc')] = {
-        'EGF': [0.000, 0.867, 0.799, 0.494, 0.313, 0.266, 0.200, 0.194], 
-        'HRG': [0.000, 0.848, 1.000, 0.971, 0.950, 0.812, 0.747, 0.595], 
-    }
-    error_bar[observables.index('Phosphorylated_ERKc')] = {
-        'EGF': [sd/np.sqrt(3) for sd in [0.000, 0.137, 0.188, 0.126, 0.096, 0.087, 0.056, 0.012]], 
-        'HRG': [sd/np.sqrt(3) for sd in [0.000, 0.120, 0.000, 0.037, 0.088, 0.019, 0.093, 0.075]], 
-    }
-
-    experiments[observables.index('Phosphorylated_RSKw')] = {
-        'EGF': [0, 0.814, 0.812, 0.450, 0.151, 0.059, 0.038, 0.030], 
-        'HRG': [0, 0.953, 1.000, 0.844, 0.935, 0.868, 0.779, 0.558], 
-    }
-    error_bar[observables.index('Phosphorylated_RSKw')] = {
-        'EGF': [sd/np.sqrt(3) for sd in [0, 0.064, 0.194, 0.030, 0.027, 0.031, 0.043, 0.051]], 
-        'HRG': [sd/np.sqrt(3) for sd in [0, 0.230, 0.118, 0.058, 0.041, 0.076, 0.090, 0.077]], 
-    }
-
-    experiments[observables.index('Phosphorylated_cFos')] = {
-        'EGF': [0, 0.060, 0.109, 0.083, 0.068, 0.049, 0.027, 0.017], 
-        'HRG': [0, 0.145, 0.177, 0.158, 0.598, 1.000, 0.852, 0.431], 
-    }
-    error_bar[observables.index('Phosphorylated_cFos')] = {
-        'EGF': [sd/np.sqrt(3) for sd in [0, 0.003, 0.021, 0.013, 0.016, 0.007, 0.003, 0.002]], 
-        'HRG': [sd/np.sqrt(3) for sd in [0, 0.010, 0.013, 0.001, 0.014, 0.000, 0.077, 0.047]], 
-    }
-
-    # --------------------------------------------------------------------------
-    t3 = [0, 600, 1800, 3600, 5400]  # (Unit: sec.)
-
-    experiments[observables.index('Phosphorylated_CREBw')] = {
-        'EGF': [0, 0.446, 0.030, 0.000, 0.000], 
-        'HRG': [0, 1.000, 0.668, 0.460, 0.340], 
-    }
-    error_bar[observables.index('Phosphorylated_CREBw')] = {
-        'EGF': [sd/np.sqrt(3) for sd in [0, 0.0, 0.0, 0.0, 0.0]], 
-        'HRG': [sd/np.sqrt(3) for sd in [0, 0.0, 0.0, 0.0, 0.0]], 
-    }
-    # --------------------------------------------------------------------------
-    t4 = [0, 600, 1200, 1800, 2700, 3600, 5400]  # (Unit: sec.)
-
-    experiments[observables.index('cfos_mRNA')] = {
-        'EGF': [0, 0.181, 0.476, 0.518, 0.174, 0.026, 0.000], 
-        'HRG': [0, 0.353, 0.861, 1.000, 0.637, 0.300, 0.059], 
-    }
-    error_bar[observables.index('cfos_mRNA')] = {
-        'EGF': [sd/np.sqrt(3) for sd in [0.017, 0.004, 0.044, 0.004, 0.023, 0.007, 0.008]], 
-        'HRG': [sd/np.sqrt(3) for sd in [0.017, 0.006, 0.065, 0.044, 0.087, 0.023, 0.001]], 
-    }
-    # --------------------------------------------------------------------------
-    t5 = [0, 900, 1800, 2700, 3600, 5400]  # (Unit: sec.)
-
-    experiments[observables.index('cFos_Protein')] = {
-        'EGF': [0, 0.078, 0.216, 0.240, 0.320, 0.235], 
-        'HRG': [0, 0.089, 0.552, 0.861, 1.000, 0.698], 
-    }
-    error_bar[observables.index('cFos_Protein')] = {
-        'EGF': [sd/np.sqrt(3) for sd in [0, 0.036, 0.028, 0.056, 0.071, 0.048]], 
-        'HRG': [sd/np.sqrt(3) for sd in [0, 0.021, 0.042, 0.063, 0.000, 0.047]], 
-    }
+    Attributes
+    ----------
+    experiments : list of dict
+        Time series data.
     
-    experiments[observables.index('dusp_mRNA')] = {
-        'EGF': [0.000, 0.177, 0.331, 0.214, 0.177, 0.231], 
-        'HRG': [0.000, 0.221, 0.750, 1.000, 0.960, 0.934], 
-    }
-    error_bar[observables.index('dusp_mRNA')] = {
-        'EGF': [sd/np.sqrt(3) for sd in [0.033, 0.060, 0.061, 0.032, 0.068, 0.050]], 
-        'HRG': [sd/np.sqrt(3) for sd in [0.027, 0.059, 0.094, 0.124, 0.113, 0.108]], 
-    }
+    error_bar : list of dict
+        Error bars to show in figures.
+    
+    """
+    def __init__(self):
+        self.experiments = [None] * len(observables)
+        self.error_bar = [None] * len(observables)
 
-    def get_timepoint(self, obs_idx):
-        if obs_idx in [
-            observables.index('Phosphorylated_MEKc'),
-            observables.index('Phosphorylated_ERKc'),
-            observables.index('Phosphorylated_RSKw'),
-            observables.index('Phosphorylated_cFos'),
-        ]:
-            exp_t = self.t2
+    def set_data(self):
+        self.experiments[observables.index('Phosphorylated_MEKc')] = {
+            'EGF': [0.000, 0.773, 0.439, 0.252, 0.130, 0.087, 0.080, 0.066], 
+            'HRG': [0.000, 0.865, 1.000, 0.837, 0.884, 0.920, 0.875, 0.789], 
+        }
+        self.error_bar[observables.index('Phosphorylated_MEKc')] = {
+            'EGF': [sd/np.sqrt(3) for sd in [0.000, 0.030, 0.048, 0.009, 0.009, 0.017, 0.012, 0.008]], 
+            'HRG': [sd/np.sqrt(3) for sd in [0.000, 0.041, 0.000, 0.051, 0.058, 0.097, 0.157, 0.136]], 
+        }
 
-        elif obs_idx == observables.index('Phosphorylated_CREBw'):
-            exp_t = self.t3
+        self.experiments[observables.index('Phosphorylated_ERKc')] = {
+            'EGF': [0.000, 0.867, 0.799, 0.494, 0.313, 0.266, 0.200, 0.194], 
+            'HRG': [0.000, 0.848, 1.000, 0.971, 0.950, 0.812, 0.747, 0.595], 
+        }
+        self.error_bar[observables.index('Phosphorylated_ERKc')] = {
+            'EGF': [sd/np.sqrt(3) for sd in [0.000, 0.137, 0.188, 0.126, 0.096, 0.087, 0.056, 0.012]], 
+            'HRG': [sd/np.sqrt(3) for sd in [0.000, 0.120, 0.000, 0.037, 0.088, 0.019, 0.093, 0.075]], 
+        }
 
-        elif obs_idx == observables.index('cfos_mRNA'):
-            exp_t = self.t4
+        self.experiments[observables.index('Phosphorylated_RSKw')] = {
+            'EGF': [0, 0.814, 0.812, 0.450, 0.151, 0.059, 0.038, 0.030], 
+            'HRG': [0, 0.953, 1.000, 0.844, 0.935, 0.868, 0.779, 0.558], 
+        }
+        self.error_bar[observables.index('Phosphorylated_RSKw')] = {
+            'EGF': [sd/np.sqrt(3) for sd in [0, 0.064, 0.194, 0.030, 0.027, 0.031, 0.043, 0.051]], 
+            'HRG': [sd/np.sqrt(3) for sd in [0, 0.230, 0.118, 0.058, 0.041, 0.076, 0.090, 0.077]], 
+        }
 
-        elif obs_idx in [
-            observables.index('cFos_Protein'),
-            observables.index('dusp_mRNA'),
-        ]:
-            exp_t = self.t5
+        self.experiments[observables.index('Phosphorylated_cFos')] = {
+            'EGF': [0, 0.060, 0.109, 0.083, 0.068, 0.049, 0.027, 0.017], 
+            'HRG': [0, 0.145, 0.177, 0.158, 0.598, 1.000, 0.852, 0.431], 
+        }
+        self.error_bar[observables.index('Phosphorylated_cFos')] = {
+            'EGF': [sd/np.sqrt(3) for sd in [0, 0.003, 0.021, 0.013, 0.016, 0.007, 0.003, 0.002]], 
+            'HRG': [sd/np.sqrt(3) for sd in [0, 0.010, 0.013, 0.001, 0.014, 0.000, 0.077, 0.047]], 
+        }
 
-        return list(map(int, exp_t))
+        # ----------------------------------------------------------------------
+
+        self.experiments[observables.index('Phosphorylated_CREBw')] = {
+            'EGF': [0, 0.446, 0.030, 0.000, 0.000], 
+            'HRG': [0, 1.000, 0.668, 0.460, 0.340], 
+        }
+        self.error_bar[observables.index('Phosphorylated_CREBw')] = {
+            'EGF': [sd/np.sqrt(3) for sd in [0, 0.0, 0.0, 0.0, 0.0]], 
+            'HRG': [sd/np.sqrt(3) for sd in [0, 0.0, 0.0, 0.0, 0.0]], 
+        }
+        # ----------------------------------------------------------------------
+
+        self.experiments[observables.index('cfos_mRNA')] = {
+            'EGF': [0, 0.181, 0.476, 0.518, 0.174, 0.026, 0.000], 
+            'HRG': [0, 0.353, 0.861, 1.000, 0.637, 0.300, 0.059], 
+        }
+        self.error_bar[observables.index('cfos_mRNA')] = {
+            'EGF': [sd/np.sqrt(3) for sd in [0.017, 0.004, 0.044, 0.004, 0.023, 0.007, 0.008]], 
+            'HRG': [sd/np.sqrt(3) for sd in [0.017, 0.006, 0.065, 0.044, 0.087, 0.023, 0.001]], 
+        }
+        # ----------------------------------------------------------------------
+
+        self.experiments[observables.index('cFos_Protein')] = {
+            'EGF': [0, 0.078, 0.216, 0.240, 0.320, 0.235], 
+            'HRG': [0, 0.089, 0.552, 0.861, 1.000, 0.698], 
+        }
+        self.error_bar[observables.index('cFos_Protein')] = {
+            'EGF': [sd/np.sqrt(3) for sd in [0, 0.036, 0.028, 0.056, 0.071, 0.048]], 
+            'HRG': [sd/np.sqrt(3) for sd in [0, 0.021, 0.042, 0.063, 0.000, 0.047]], 
+        }
+        
+        self.experiments[observables.index('dusp_mRNA')] = {
+            'EGF': [0.000, 0.177, 0.331, 0.214, 0.177, 0.231], 
+            'HRG': [0.000, 0.221, 0.750, 1.000, 0.960, 0.934], 
+        }
+        self.error_bar[observables.index('dusp_mRNA')] = {
+            'EGF': [sd/np.sqrt(3) for sd in [0.033, 0.060, 0.061, 0.032, 0.068, 0.050]], 
+            'HRG': [sd/np.sqrt(3) for sd in [0.027, 0.059, 0.094, 0.124, 0.113, 0.108]], 
+        }
+
+    @staticmethod
+    def get_timepoint(obs_name):
+        if obs_name in ['Phosphorylated_MEKc', 'Phosphorylated_ERKc',
+                        'Phosphorylated_RSKw', 'Phosphorylated_cFos']:
+            return [0, 300, 600, 900, 1800, 2700, 3600, 5400]  # (Unit: sec.)
+
+        elif obs_name == 'Phosphorylated_CREBw':
+            return [0, 600, 1800, 3600, 5400]
+
+        elif obs_name == 'cfos_mRNA':
+            return [0, 600, 1200, 1800, 2700, 3600, 5400]
+
+        elif obs_name in ['cFos_Protein', 'dusp_mRNA']:
+            return [0, 900, 1800, 2700, 3600, 5400]

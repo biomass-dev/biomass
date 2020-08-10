@@ -91,14 +91,25 @@ class NumericalSimulation(DifferentialEquation):
         return y0
 
 class ExperimentalData(object):
+    """
+    Set experimental data.
+
+    Attributes
+    ----------
+    experiments : list of dict
+        Time series data.
+    
+    error_bar : list of dict
+        Error bars to show in figures.
+    
+    """
     def __init__(self):
+        self.experiments = [None] * len(observables)
+        self.error_bar = [None] * len(observables)
+
+    def set_data(self):
         pass
 
-    experiments = [None] * len(observables)
-    error_bar = [None] * len(observables)
-
-    def get_timepoint(self, obs_idx):
-        '''
-        return list(map(int, exp_t))
-        '''
+    @staticmethod
+    def get_timepoint(obs_name):
         pass

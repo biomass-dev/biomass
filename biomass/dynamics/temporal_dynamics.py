@@ -16,6 +16,7 @@ class TemporalDynamics(ExecModel):
             self.model_path
             + '/figure/simulation/{}'.format(viz_type), exist_ok=True
         )
+        self.exp.set_data()
         self.viz.set_timecourse_rcParams()
         timecourse = self.viz.get_timecourse_options()
         multiplot = self.viz.multiplot_observables()
@@ -100,7 +101,7 @@ class TemporalDynamics(ExecModel):
                                                 obs_name
                                             )
                                         ],
-                                    label = condition if rule == 'default' \
+                                    label=condition if rule == 'default' \
                                         else timecourse[i]['ylabel']
                                 )
                         if stdev:
@@ -151,12 +152,12 @@ class TemporalDynamics(ExecModel):
                                                 obs_name
                                             )
                                         ],
-                                    label = condition if rule == 'default' \
+                                    label=condition if rule == 'default' \
                                         else timecourse[i]['ylabel']
                                 )
                 if timecourse[i]['exp_data'] \
                         and self.exp.experiments[i] is not None:
-                    exp_t = self.exp.get_timepoint(i)
+                    exp_t = self.exp.get_timepoint(obs_name)
                     if self.exp.error_bar[i] is not None:
                         for l, condition in enumerate(sim.conditions):
                             if condition in self.exp.experiments[i] and \
@@ -274,7 +275,7 @@ class TemporalDynamics(ExecModel):
                 plt.ylabel(multiplot['ylabel'])
                 plt.legend(
                     bbox_to_anchor=(1.05, 1), loc='upper left',
-                    borderaxespad=0, labelspacing=1.25, frameon = False,
+                    borderaxespad=0, labelspacing=1.25, frameon=False,
                     fontsize=12
                 )
                 plt.savefig(
