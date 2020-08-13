@@ -55,6 +55,34 @@ class NumericalSimulation(DifferentialEquation):
                 )
 
     def _solveode(self, diffeq, y0, tspan, args):
+        """
+        Solve a system of ordinary differential equations.
+
+        Parameters
+        ----------
+        diffeq : callable f(y, t, f_args)
+            Right-hand side of the differential equation.
+
+        y0 : array
+            Initial condition on y (can be a vector).
+        
+        tspan : array
+            A sequence of time points for which to solve for y.
+        
+        args : tuple
+            Model parameters.
+        
+        Returns
+        -------
+        T, Y : tuple
+            T : array, shape (len(t))
+                Evaluation points.
+
+            Y : array, shape (len(t), len(y0))
+                Array containing the value of y for each desired time in t, 
+                with the initial value y0 in the first row.
+
+        """
         dt = (self.t[-1] - self.t[0]) / (len(self.t) - 1)
         sol = ode(diffeq)
         sol.set_integrator(
@@ -76,19 +104,40 @@ class NumericalSimulation(DifferentialEquation):
     
     def _get_steady_state(self, diffeq, y0, args, eps=1e-6):
         """
-        Run until a time t for which the maximal absolutevalue of the 
-        regularized relative derivative was smaller than eps.
+        Find the steady state for the untreated condition.
+
+        Parameters
+        ----------
+        diffeq : callable f(y, t, f_args)
+            Right-hand side of the differential equation.
+
+        y0 : array
+            Initial condition on y (can be a vector).
+        
+        args : tuple
+            Model parameters.
+        
+        eps : float (default: 1e-6)
+            Run until a time t for which the maximal absolutevalue of the 
+            regularized relative derivative was smaller than eps.
+        
+        Returns
+        -------
+        y0 : array
+            Steady state concentrations of all species.
+            
         """
         while True:
             (T, Y) = self._solveode(diffeq, y0, range(2), args)
-            if T[-1] < 1:
-                return None
-            elif np.max(np.abs((Y[-1, :] - y0) / (np.array(y0) + eps))) < eps:
+            if T[-1] < 1 or \
+                    np.max(
+                        np.abs((Y[-1, :] - y0) / (np.array(y0) + eps))
+                    ) < eps:
                 break
             else:
                 y0 = Y[-1, :].tolist()
 
-        return y0
+        return [] if T[-1] < 1 else Y[-1, :].tolist()
 
 class ExperimentalData(object):
     """
