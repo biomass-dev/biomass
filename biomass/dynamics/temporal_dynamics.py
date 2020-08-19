@@ -12,6 +12,9 @@ class TemporalDynamics(ExecModel):
 
     def plot_timecourse(self, sim, n_file, viz_type,
                         show_all, stdev, simulations_all):
+        """
+        Plot time course of each observable.
+        """
         os.makedirs(
             self.model_path
             + '/figure/simulation/{}'.format(viz_type), exist_ok=True
@@ -288,73 +291,61 @@ class TemporalDynamics(ExecModel):
 
 
     def plot_param_range(self, popt, portrait):
+        """
+        Plot estimated parameter/initial values.
+        """
         os.makedirs(self.model_path + '/figure/param_range', exist_ok=True)
 
         self.viz.set_param_range_rcParams()
 
-        if len(self.sp.idx_params) > 0:
-            fig = plt.figure(
-                figsize=(8, len(self.sp.idx_params) / 2.5) if portrait else
-                        (len(self.sp.idx_params) / 2.2, 6)
-            )
-            ax = sns.boxenplot(
-                data=popt[:, :len(self.sp.idx_params)],
-                orient='h' if portrait else 'v',
-                linewidth=0.5,
-                palette='Set2'
-            )
-            sns.despine()
-            if portrait:
-                ax.set_xlabel('Parameter value')
-                ax.set_xscale('log')
-                ax.set_ylabel('')
-                ax.set_yticklabels(
-                    [self.parameters[i] for i in self.sp.idx_params]
-                )
+        for val in ['parameter_value', 'initial_value']:
+            if (val == 'parameter_value' and len(self.sp.idx_params) == 0) or \
+                    (val == 'initial_value' and len(self.sp.idx_initials) == 0):
+                continue
             else:
-                ax.set_xlabel('')
-                ax.set_xticklabels(
-                    [self.parameters[i] for i in self.sp.idx_params],
-                    rotation=90
+                fig = plt.figure(
+                    figsize=(
+                        8, (len(self.sp.idx_params) 
+                            if val == 'parameter_value' else
+                                len(self.sp.idx_initials)) / 2.5
+                    ) if portrait else (
+                        (len(self.sp.idx_params) 
+                            if val == 'parameter_value' else
+                                len(self.sp.idx_initials)) / 2.2, 6
+                    )
                 )
-                ax.set_ylabel('Parameter value')
-                ax.set_yscale('log')
-            plt.savefig(
-                self.model_path 
-                + '/figure/param_range/estimated_param_values_range.pdf',
-                bbox_inches='tight'
-            )
-            plt.close(fig)
-        if len(self.sp.idx_initials) > 0:
-            fig = plt.figure(
-                figsize=(8, len(self.sp.idx_initials) / 2.5) if portrait else
-                        (len(self.sp.idx_initials) / 2.2, 6)
-            )
-            ax = sns.boxenplot(
-                data=popt[:, len(self.sp.idx_params):],
-                orient='h' if portrait else 'v',
-                linewidth=0.5,
-                palette='Set2'
-            )
-            sns.despine()
-            if portrait:
-                ax.set_xlabel('Initial value')
-                ax.set_xscale('log')
-                ax.set_ylabel('')
-                ax.set_yticklabels(
-                    [self.species[i] for i in self.sp.idx_initials]
+                ax = sns.boxenplot(
+                    data=popt[:, :len(self.sp.idx_params)]
+                        if val == 'parameter_value' else
+                            popt[:, len(self.sp.idx_params):],
+                    orient='h' if portrait else 'v',
+                    linewidth=0.5,
+                    palette='Set2'
                 )
-            else:
-                ax.set_xlabel('')
-                ax.set_yticklabels(
-                    [self.species[i] for i in self.sp.idx_initials],
-                    rotation=90
+                sns.despine()
+                if portrait:
+                    ax.set_xlabel(val.capitalize().replace('_', ' '))
+                    ax.set_xscale('log')
+                    ax.set_ylabel('')
+                    ax.set_yticklabels(
+                        [self.parameters[i] for i in self.sp.idx_params] 
+                            if val == 'parameter_value' else
+                                [self.species[i] for i in self.sp.idx_initials]
+                    )
+                else:
+                    ax.set_xlabel('')
+                    ax.set_xticklabels(
+                        [self.parameters[i] for i in self.sp.idx_params]
+                            if val == 'parameter_value' else
+                                [self.species[i] for i in self.sp.idx_initials],
+                        rotation=90
+                    )
+                    ax.set_ylabel(val.capitalize().replace('_', ' '))
+                    ax.set_yscale('log')
+                plt.savefig(
+                    self.model_path 
+                    + '/figure/param_range/'
+                    + 'estimated_{}s.pdf'.format(val),
+                    bbox_inches='tight'
                 )
-                ax.set_ylabel('Initial value')
-                ax.set_yscale('log')
-            plt.savefig(
-                self.model_path 
-                + '/figure/param_range/estimated_initial_values_range.pdf',
-                bbox_inches='tight'
-            )
-            plt.close(fig)
+                plt.close(fig)
