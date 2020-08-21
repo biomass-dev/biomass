@@ -148,13 +148,13 @@ class ExperimentalData(object):
     experiments : list of dict
         Time series data.
     
-    error_bar : list of dict
+    error_bars : list of dict
         Error bars to show in figures.
     
     """
     def __init__(self):
         self.experiments = [None] * len(observables)
-        self.error_bar = [None] * len(observables)
+        self.error_bars = [None] * len(observables)
 
     def set_data(self):
         pass
