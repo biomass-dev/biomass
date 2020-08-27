@@ -9,7 +9,7 @@ Nakakuki, T. *et al.* Ligand-specific c-Fos expression emerges from the spatiote
 ## Description
 A brief description of each file is below:
 
-|Name|Contents|
+|Name|Content|
 |---|---|
 |[`name2idx/`](./name2idx/)|Names of model parameters and species|
 |[`set_model.py`](./set_model.py)|Differential equation, parameters and initial condition|
