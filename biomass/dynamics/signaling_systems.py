@@ -19,10 +19,13 @@ class SignalingSystems(TemporalDynamics):
         else:
             if len(n_file) > 0:
                 if len(n_file) == 1 and viz_type == 'average':
-                    viz_type = 'best'
+                    raise ValueError(
+                        "viz_type should be 'best', not '{}'.".format(viz_type)
+                    )
+                    # viz_type = 'best'
                 for i, nth_paramset in enumerate(n_file):
-                    (dynamic, successful) = self._validate(nth_paramset)
-                    if successful:
+                    (dynamic, is_successful) = self._validate(nth_paramset)
+                    if is_successful:
                         for j, _ in enumerate(self.obs):
                             simulations_all[j, i, :, :] = \
                                 dynamic.simulations[j, :, :]
