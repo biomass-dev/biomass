@@ -6,15 +6,28 @@ Nakakuki, T. *et al.* Ligand-specific c-Fos expression emerges from the spatiote
 ## BioModels
 - [Nakakuki2010_CellFateDecision_Mechanistic](https://www.ebi.ac.uk/biomodels/BIOMD0000000250)
 
-## Description
-A brief description of each file is below:
+## Usage
+1. Parameter estimation
+    ```python
+    from biomass.models import Nakakuki_Cell_2010
+    from biomass import optimize
 
-|Name|Content|
-|---|---|
-|[`name2idx/`](./name2idx/)|Names of model parameters and species|
-|[`set_model.py`](./set_model.py)|Differential equation, parameters and initial condition|
-|[`observalbe.py`](./observable.py)|Observables, simulations and experimental data|
-|[`viz.py`](./viz.py)|Plotting parameters for customizing figure properties|
-|[`set_search_param.py`](./set_search_param.py)|Model parameters to optimize and search region|
-|[`fitness.py`](./fitness.py)|An objective function to be minimized, i.e., the distance between model simulation and experimental data|
-|[`reaction_network.py`](./reaction_network.py)|Reaction indices grouped according to biological processes|
+    # Estimate 10 parameter sets simultaneously
+    optimize(Nakakuki_Cell_2010, 1, 10, max_generation=10000, allowable_error=0.5)
+    ```
+
+1. Visualization of simulation results
+    ```python
+    from biomass.models import Nakakuki_Cell_2010
+    from biomass import run_simulation
+
+    run_simulation(Nakakuki_Cell_2010, viz_type='average', show_all=False, stdev=True)
+    ```
+
+1. Sensitivity analysis
+    ```python
+    from biomass.models import Nakakuki_Cell_2010
+    from biomass import run_analysis
+    
+    run_analysis(Nakakuki_Cell_2010, target='reaction', metric='integral', style='barplot')
+    ```
