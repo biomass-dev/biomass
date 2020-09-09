@@ -9,7 +9,8 @@ class SignalingSystems(TemporalDynamics):
         super().__init__(model)
 
     def simulate_all(self, viz_type, show_all, stdev):
-        n_file = [] if viz_type == 'original' else self.get_executable()
+        n_file = [] if viz_type in ['original', 'experiment'] \
+            else self.get_executable()
         simulations_all = np.full(
             (len(self.obs), len(n_file), len(self.sim.t), len(self.sim.conditions)),
             np.nan
