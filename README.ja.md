@@ -66,7 +66,7 @@ from biomass import run_simulation
 run_simulation(Nakakuki_Cell_2010, viz_type='average', show_all=False, stdev=True)
 ```
 
-コマンドライン引数を設定することで，出力されるグラフの表示法を変更することができます．
+関数```run_simulation```の引数を設定することで，出力されるグラフの表示法を変更することができます．
 
 **viz_type** : str
 - ```'average'``` : ```out/```にある複数のパラメータセットでのシミュレーション結果の平均を表示します．
