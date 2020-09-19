@@ -202,7 +202,11 @@ class TemporalDynamics(ExecModel):
                                                 obs_name
                                             )
                                         ],
-                                    clip_on=False
+                                    clip_on=False,
+                                    label=timecourse[i]['ylabel'] \
+                                        if rule == 'custom' \
+                                            and viz_type == 'experiment' \
+                                        else None
                                 )
                                 for capline in exp_data[1]:
                                     capline.set_clip_on(False)
@@ -240,7 +244,11 @@ class TemporalDynamics(ExecModel):
                                                 obs_name
                                             )
                                         ], 
-                                    clip_on=False
+                                    clip_on=False,
+                                    label=timecourse[i]['ylabel'] \
+                                        if rule == 'custom' \
+                                            and viz_type == 'experiment' \
+                                        else None
                                 )
                 if rule == 'default':
                     if timecourse[i]['xlim']:
