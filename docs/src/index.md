@@ -13,10 +13,7 @@ By assessing parameter fitting and sensitivity analysis together, it is possible
 ```@contents
     Pages = [
           "introduction/set_up.md",
-          "introduction/import_model.md",
-          "introduction/parameter_estimation.md",
-          "introduction/visualization.md",
-          "introduction/sensitivity_analysis.md",
+          "introduction/usage.md",
     ]
     Depth = 3
 ```
