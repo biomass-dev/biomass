@@ -185,15 +185,15 @@ class DistanceIndependentDiversityControl(object):
         # Best, either of parents
         population[ip[0], :] = family[0, :]
         # Random
-        population[ip[1], :] = \
-            family[
-                np.random.randint(
-                    low=1, high=self.n_children_for_endx+2, dtype=np.int
-                ), :]
+        random_child_idx = np.random.randint(
+            low=1, high=self.n_children_for_endx+2, dtype=np.int
+        )
+        population[ip[1], :] = family[random_child_idx, :]
 
         if not np.isfinite(population[ip[1], -1]):
-            population[ip[1], -1] = \
-                self.obj_func(population[ip[1], :self.n_gene])
+            population[ip[1], -1] = self.obj_func(
+                population[ip[1], :self.n_gene]
+            )
         population = population[np.argsort(population[:, -1]), :]
 
         return population
