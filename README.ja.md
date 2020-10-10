@@ -1,5 +1,5 @@
 # BioMASS
-![logo2](docs/src//assets/logo2.png)
+![logo2](docs/src/assets/logo2.png)
 
 当ソフトウェアは，細胞内シグナル伝達機構の数理モデリングを目的としたツールです．実験から得られた実測データに基づいてモデル内のパラメータを最適化し，その結果に基づいた解析により，細胞応答に対する反応ネットワーク内の重要な要素を同定することができます．
 
@@ -55,6 +55,14 @@ optimize_continue(Nakakuki_Cell_2010, n)
 from biomass import optimize
 
 optimize(Nakakuki_Cell_2010, n1, n2)
+```
+
+#### 最適化したパラメータの取得
+```python
+from biomass.result import OptimizationResult
+
+res = OptimizationResult(Nakakuki_Cell_2010)
+res.get()
 ```
 
 ---
