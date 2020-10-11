@@ -57,7 +57,7 @@ from biomass import optimize
 optimize(Nakakuki_Cell_2010, n1, n2)
 ```
 
-#### 最適化したパラメータの取得
+- 最適化したパラメータの取得
 ```python
 from biomass.result import OptimizationResult
 
