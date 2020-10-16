@@ -12,8 +12,8 @@ def read_requirements():
 
 
 # Python version check.
-if sys.version_info < (3, 6):
-    sys.exit('BioMASS requires at least Python version 3.6')
+if sys.version_info < (3, 7):
+    sys.exit('BioMASS requires at least Python version 3.7')
 
 setup(
     name='biomass',
@@ -24,5 +24,5 @@ setup(
     url='https://github.com/okadalabipr/biomass',
     packages=find_packages(exclude=['docs']),
     install_requires=read_requirements(),
-    python_requires='>=3.6',
+    python_requires='>=3.7',
 )
