@@ -69,7 +69,8 @@ def optimize(
         model, 
         *args, 
         max_generation=10000, 
-        allowable_error=0.0
+        allowable_error=0.0,
+        overwrite=False
 ):
     """ 
     Run GA for parameter estimation.
@@ -85,6 +86,9 @@ def optimize(
     allowable_error : float
         Stop if Best Fitness <= allowable_error
     
+    overwrite : bool (default: False)
+        If True, the out/ folder will be overwritten.
+    
     Example
     -------
     >>> from biomass import optimize
@@ -97,7 +101,8 @@ def optimize(
     ga_init = GeneticAlgorithmInit(
         model,
         max_generation=max_generation,
-        allowable_error=allowable_error
+        allowable_error=allowable_error,
+        overwrite=overwrite
     )
     if len(args) == 1:
         ga_init.run(int(args[0]))

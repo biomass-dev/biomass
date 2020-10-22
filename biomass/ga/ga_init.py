@@ -7,7 +7,7 @@ from .rcga import (UnimodalNormalDistributionXover,
                    DistanceIndependentDiversityControl)
 
 class GeneticAlgorithmInit(ExecModel):
-    def __init__(self, model, max_generation, allowable_error):
+    def __init__(self, model, max_generation, allowable_error, overwrite):
         super().__init__(model)
         self.search_rgn = self.sp.get_region()
         self.n_population = int(5*self.search_rgn.shape[1])
@@ -15,6 +15,7 @@ class GeneticAlgorithmInit(ExecModel):
         self.n_gene = self.search_rgn.shape[1]
         self.max_generation = max_generation
         self.allowable_error = allowable_error
+        self.overwrite = overwrite
     
         if self.n_population < self.n_gene + 2:
             raise ValueError(
@@ -26,25 +27,37 @@ class GeneticAlgorithmInit(ExecModel):
     def run(self, nth_paramset):
         if not os.path.isdir(self.model_path + '/out'):
             os.mkdir(self.model_path + '/out')
-        try:
-            files = os.listdir(
+        if not self.overwrite and os.path.isdir(
                 self.model_path + '/out/{:d}'.format(
                     nth_paramset
                 )
+            ):
+            raise FileExistsError(
+                'Set overwrite=True to overwrite '
+                + self.model_path + '/out/{:d}'.format(
+                    nth_paramset
+                )
             )
-            for file in files:
-                if any(map(file.__contains__, ('.npy', '.log'))):
-                    os.remove(
-                        self.model_path + '/out/{:d}/{}'.format(
-                            nth_paramset, file
-                        )
+        else:
+            try:
+                files = os.listdir(
+                    self.model_path + '/out/{:d}'.format(
+                        nth_paramset
                     )
-        except FileNotFoundError:
-            os.mkdir(
-                self.model_path + '/out/{:d}'.format(
-                    nth_paramset
                 )
-            )
+                for file in files:
+                    if any(map(file.__contains__, ('.npy', '.log'))):
+                        os.remove(
+                            self.model_path + '/out/{:d}/{}'.format(
+                                nth_paramset, file
+                            )
+                        )
+            except FileNotFoundError:
+                os.mkdir(
+                    self.model_path + '/out/{:d}'.format(
+                        nth_paramset
+                    )
+                )
         np.random.seed(
             time.time_ns()*nth_paramset % 2**32
         )
