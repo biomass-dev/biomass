@@ -20,6 +20,9 @@ def run_simulation(
 
         Parameters
         ----------
+        model : module
+            Model for simulation.
+
         viz_type : str
             - 'average':
                 The average of simulation results with parameter sets in "out/".
@@ -44,6 +47,7 @@ def run_simulation(
 
         Example
         -------
+        >>> from biomass.models import Nakakuki_Cell_2010
         >>> from biomass import run_simulation
         >>> run_simulation(
                 Nakakuki_Cell_2010,
@@ -78,19 +82,20 @@ def optimize(
     Paremters
     ---------
     model : module
-        Model for parameter estimation
+        Model for parameter estimation.
     
     max_generation : int
-        Stop if Generation > max_generation
+        Stop if Generation > max_generation.
     
     allowable_error : float
-        Stop if Best Fitness <= allowable_error
+        Stop if Best Fitness <= allowable_error.
     
     overwrite : bool (default: False)
         If True, the out/ folder will be overwritten.
     
     Example
     -------
+    >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import optimize
     >>> optimize(
             Nakakuki_Cell_2010, 1, 10, max_generation=10000, allowable_error=0.5
@@ -128,13 +133,13 @@ def optimize_continue(
     Paremters
     ---------
     model : module
-        Model for parameter estimation
+        Model for parameter estimation.
     
     max_generation : int
-        Stop if Generation > max_generation
+        Stop if Generation > max_generation.
     
     allowable_error : float
-        Stop if Best Fitness <= allowable_error
+        Stop if Best Fitness <= allowable_error.
     
     p0_bounds : list
         Generate initial population using best parameter values in the last
@@ -144,6 +149,7 @@ def optimize_continue(
 
     Example
     -------
+    >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import optimize_continue
     >>> optimize_continue(
             Nakakuki_Cell_2010, 1, 10, max_generation=20000, allowable_error=0.5
