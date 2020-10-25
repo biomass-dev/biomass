@@ -17,6 +17,14 @@ class OptimizationResults(ExecModel):
         ------
         optimization_results/optimized_params.csv
         optimization_results/optimized_initials.csv
+
+        Example
+        -------
+        >>> from biomass.models import Nakakuki_Cell_2010
+        >>> from biomass.result import OptimizationResults
+        >>> res = OptimizationResults(Nakakuki_Cell_2010)
+        >>> res.get()
+
         """
         os.makedirs(self.model_path + '/optimization_results/', exist_ok=True)
         n_file = self.get_executable()
@@ -93,8 +101,29 @@ class OptimizationResults(ExecModel):
     def dynamic_assessment(self, include_original=False):
         """ 
         Get objective values using estimated parameters.
+
+        Parameters
+        ----------
+        include_original : bool (default: False)
+            If True, an objective value simulated with original parameters
+            will also be shown.
+        
+        Output
+        ------
+        fitness_assessment.csv
+
+        Example
+        -------
+        >>> from biomass.models import Nakakuki_Cell_2010
+        >>> from biomass.result import OptimizationResults
+        >>> res = OptimizationResults(Nakakuki_Cell_2010)
+        >>> res.dynamic_assessment()
+
         """
-        with open(self.model_path + '/fitness_assessment.csv', mode='w') as f:
+        os.makedirs(self.model_path + '/optimization_results/', exist_ok=True)
+        with open(
+                self.model_path 
+                + '/optimization_results/fitness_assessment.csv', mode='w') as f:
             writer = csv.writer(f, lineterminator='\n')
             writer.writerow(['parameter set', 'Objective value'])
             if include_original:
