@@ -7,7 +7,8 @@
 
 BioMASS is a user-friendly simulation tool for experimental biologists. 
 
-BioMASS supports
+BioMASS supports:
+
 
 - parameter estimation of ODE models
 - sensitivity analysis
