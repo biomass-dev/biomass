@@ -14,14 +14,14 @@ Each of these model directories contains all files necessary to define a model i
 
 We will use the model of a MAPK cascade in this overview.
 
-Open the mapk_cascade directory. <br>
+Open the mapk_cascade directory: <br>
 `
 models -> mapk_cascade
 `
 <br>
 In the following, we will briefly introduce the relevant model files and their functions. In particular, we will focus on the following three files:
 - `set_model.py` for defining the model itself
-- `observable.py` for setting observables etc.
+- `observable.py` for defining observables *etc*.
 - `set_search_param.py` for defining the parameters to optimize
 
 
@@ -30,21 +30,25 @@ In the following, we will briefly introduce the relevant model files and their f
 The file 'set_model.py' contains the structure of the model implemented as ODEs, as well as the definitions for all parameters and initial values. Please open the file 'set_model.py'. We will explain the three main functions in this file.
 
 - *diffeq* 
+<br>
 Have a look at the *diffeq* function  starting in line 10. Here, the rate laws and the ODEs are defined. As you can see, this model contains in total eight ODEs defined from lines 25 to 32. 
+<br>
 
 - *param_values* 
+<br>
 Next, look at the *param_values* function starting from line 37. Here, all parameters that are used in the ODEs are defined.
 
 - *initial_values*
+<br>
 Each ODE requires some initial value. These are defined in the function *initial_values* starting from line 66.
 <br>
 Note that you can choose which of the parameters and initial values will be optimized by editing the file 'set_search_param.py'.
 
 ## *observable.py*: Defining observables, adding experimental data, defining conditions, setting *in silico* simulation time
-Open the file 'observable.py'. In this file, you can define which of the species contained in the model you would like to observe, that is, retrieving the dynamics of the simulated model, as well as add experimental data. Optionally, you can also define experimental conditions which you would like to explore "in silico." 
+Open the file 'observable.py'. In this file, you can define which of the species contained in the model you would like to observe, that is, retrieving the dynamics of the simulated model. You can also add add experimental data and define the *in silico* simulation time. Optionally, you can define experimental conditions which you would like to explore "in silico." 
 
 ### Observables
-As you can see, in this model, two observables are defined, the double phosphorylated MAPK (*biphosphorylated_MAPK*), and the unphosphorylated MAPK (*unphosphorylated_MAPK*). 
+As you can see, in this model, two observables are defined in the data structure *observables* starting from line 8: the double phosphorylated MAPK (*biphosphorylated_MAPK*), and the unphosphorylated MAPK (*unphosphorylated_MAPK*). 
 <br>
 Starting from line 60, you need to specify which species in your model correspond to the observables. In this model, the two observables are defined by only one model species, each. However, you can add as many model species to your observable as required. For example, if you would like to observe the total amount of a molecule of interest, you can add the corresponding model species.
 <br>
@@ -57,8 +61,24 @@ The function *set_data* starting from line 172 contains the experimental data wh
 It is common that experiments are conducted in different conditions, such as the addition of a stimulant or inihibitor. You can recapulate such conditions with BioMASS. In this model, only a control condition is defined. 
 
 ### *in silico* simulation time
-Lastly, in the function *get_timepoint* you can define the *in silico* time points for your simulation output. In this model, we observe from 0 to 150 with increments of 5 (line 202). Note that you can define the time period you want to study and the time resolution according to your own needs. The *in silico* does not have to match your experimental data points.
+Lastly, in the function *get_timepoint* you can define the *in silico* time points for your simulation output. In this model, we observe from 0 to 150 with increments of 5 (line 202). 
+<br> 
+Note that you can define the time period you want to study and the time resolution according to your own needs. The *in silico* does not have to match your experimental data points.
 
-## *set_search_param.py*: Defining paramters to optimize
+## *set_search_param.py*: Defining parameters to optimize
+In this file, you can specify which parameters you want to optimize, and also define the range in which the values will be searched. We will focus on the parts of the file which may be edited by the user.
 
+- *SearchParam*
+<br>
+Starting from line 7 is a class which contains the parameters and initial values which will be optimized. You can see that in this model, only parameters are added, the initial values as defined in the `set_model.py` file will be directly used.
+
+- *get_region*
+<br>
+In this function, you can define the upper and lower bounds for the parameter search. The lower and upper bounds for parameters are defined in lines 50 and 51, and rage from 0.1 to 10 times the given value by default. Similarly, the lower and upper bounds for the initial values are defined on lines 55 and 57, respectively, and set to 0.5 to 2.0 times the given value by default. The lower and upper bounds defined so far will be applied to all parameters and initial values.
+<br>
+If you would like to specify specific search boundaries for individual parameters and initial values, you may define these in lines 59 and 60. (These two lines are commented out in the model.)
+
+## Parameters and species
+There are two more files which are necessary to define a model in BioMASS. These two files are located in the *name2idx* directory. 
+Move to the *name2idx* directory. 
 
