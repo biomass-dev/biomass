@@ -48,6 +48,9 @@ out/
 # sensitivity array
 sensitivity_coefficients/
 
+# simulation data
+simulation_data/
+
 # optimized_params
 *.csv
 
