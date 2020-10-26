@@ -29,17 +29,14 @@ In the following, we will briefly introduce the relevant model files and their f
 
 The file 'set_model.py' contains the structure of the model implemented as ODEs, as well as the definitions for all parameters and initial values. Please open the file 'set_model.py'. We will explain the three main functions in this file.
 
-- *diffeq* 
-<br>
+- *diffeq* <br>
 Have a look at the *diffeq* function  starting in line 10. Here, the rate laws and the ODEs are defined. As you can see, this model contains in total eight ODEs defined from lines 25 to 32. 
 <br>
 
-- *param_values* 
-<br>
+- *param_values* <br>
 Next, look at the *param_values* function starting from line 37. Here, all parameters that are used in the ODEs are defined.
 
-- *initial_values*
-<br>
+- *initial_values* <br>
 Each ODE requires some initial value. These are defined in the function *initial_values* starting from line 66.
 <br>
 Note that you can choose which of the parameters and initial values will be optimized by editing the file 'set_search_param.py'.
@@ -68,12 +65,10 @@ Note that you can define the time period you want to study and the time resoluti
 ## *set_search_param.py*: Defining parameters to optimize
 In this file, you can specify which parameters you want to optimize, and also define the range in which the values will be searched. We will focus on the parts of the file which may be edited by the user.
 
-- *SearchParam*
-<br>
+- *SearchParam* <br>
 Starting from line 7 is a class which contains the parameters and initial values which will be optimized. You can see that in this model, only parameters are added, the initial values as defined in the `set_model.py` file will be directly used.
 
-- *get_region*
-<br>
+- *get_region* <br>
 In this function, you can define the upper and lower bounds for the parameter search. The lower and upper bounds for parameters are defined in lines 50 and 51, and rage from 0.1 to 10 times the given value by default. Similarly, the lower and upper bounds for the initial values are defined on lines 55 and 57, respectively, and set to 0.5 to 2.0 times the given value by default. The lower and upper bounds defined so far will be applied to all parameters and initial values.
 <br>
 If you would like to specify specific search boundaries for individual parameters and initial values, you may define these in lines 59 and 60. (These two lines are commented out in the model.)
@@ -81,4 +76,8 @@ If you would like to specify specific search boundaries for individual parameter
 ## Parameters and species
 There are two more files which are necessary to define a model in BioMASS. These two files are located in the *name2idx* directory. 
 Move to the *name2idx* directory. 
+
+
+## Closing remark
+We have introduced the files necessary to edit in order to define a model in BioMASS. In the next section, we will introduce the files required for visualization of the parameter optimization results, and start a parameter optimization for the *mapk_cascade* model.
 
