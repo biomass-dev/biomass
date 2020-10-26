@@ -31,7 +31,6 @@ The file 'set_model.py' contains the structure of the model implemented as ODEs,
 
 - *diffeq* <br>
 Have a look at the *diffeq* function  starting in line 10. Here, the rate laws and the ODEs are defined. As you can see, this model contains in total eight ODEs defined from lines 25 to 32. 
-<br>
 
 - *param_values* <br>
 Next, look at the *param_values* function starting from line 37. Here, all parameters that are used in the ODEs are defined.
@@ -42,7 +41,7 @@ Each ODE requires some initial value. These are defined in the function *initial
 Note that you can choose which of the parameters and initial values will be optimized by editing the file 'set_search_param.py'.
 
 ## *observable.py*: Defining observables, adding experimental data, defining conditions, setting *in silico* simulation time
-Open the file 'observable.py'. In this file, you can define which of the species contained in the model you would like to observe, that is, retrieving the dynamics of the simulated model. You can also add add experimental data and define the *in silico* simulation time. Optionally, you can define experimental conditions which you would like to explore "in silico." 
+Open the file 'observable.py'. In this file, you can define which of the species contained in the model you would like to observe, that is, retrieving the dynamics of the simulated model. You can also add add experimental data and define the *in silico* simulation time. Optionally, you can define experimental conditions which you would like to explore *in silico*. 
 
 ### Observables
 As you can see, in this model, two observables are defined in the data structure *observables* starting from line 8: the double phosphorylated MAPK (*biphosphorylated_MAPK*), and the unphosphorylated MAPK (*unphosphorylated_MAPK*). 
@@ -76,7 +75,12 @@ If you would like to specify specific search boundaries for individual parameter
 ## Parameters and species
 There are two more files which are necessary to define a model in BioMASS. These two files are located in the *name2idx* directory. 
 Move to the *name2idx* directory. 
-
+Open the file `parameters.py`.
+All parameter names used in the `set_model.py` file need to be listed here.
+<br> 
+Open the file `species.py`. All species names used in the `set_model.py` file need to be listed here.
+<br>
+Note that the names for parameters and initial values are case sensitive.
 
 ## Closing remark
 We have introduced the files necessary to edit in order to define a model in BioMASS. In the next section, we will introduce the files required for visualization of the parameter optimization results, and start a parameter optimization for the *mapk_cascade* model.
