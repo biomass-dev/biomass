@@ -1,10 +1,12 @@
 # BioMASS tutorial
 
+
 [![Actions Status](https://github.com/okadalabipr/biomass/workflows/Tests/badge.svg)](https://github.com/okadalabipr/biomass/actions)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/okadalabipr/biomass.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/okadalabipr/biomass/context:python)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-BioMASS is a user-friendly simulation tool for experimental biologists and currently implements the model of Nakakuki et al. 
+BioMASS is a user-friendly simulation tool for experimental biologists. 
+
 BioMASS supports
 
 - parameter estimation of ODE models
