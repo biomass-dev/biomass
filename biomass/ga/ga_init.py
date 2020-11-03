@@ -61,7 +61,7 @@ class GeneticAlgorithmInit(ExecModel):
         np.random.seed(
             time.time_ns()*nth_paramset % 2**32
         )
-        (best_indiv, best_fitness) = self._ga_v2(nth_paramset)
+        self._ga_v2(nth_paramset)
 
     def _set_initial(self, nth_paramset):
         population = np.full((self.n_population, self.n_gene+1), np.inf)
@@ -116,10 +116,7 @@ class GeneticAlgorithmInit(ExecModel):
             ), best_fitness
         )
         if population[0, -1] <= self.allowable_error:
-            best_indiv = self.sp.gene2val(population[0, :self.n_gene])
-            best_fitness = population[0, -1]
-
-            return best_indiv, best_fitness
+            return
 
         generation = 1
         while generation < self.max_generation:
@@ -156,19 +153,11 @@ class GeneticAlgorithmInit(ExecModel):
                     )
                 )
             if population[0, -1] <= self.allowable_error:
-                best_indiv = self.sp.gene2val(population[0, :self.n_gene])
-                best_fitness = population[0, -1]
-
-                return best_indiv, best_fitness
+                break
 
             generation += 1
 
-        best_indiv = self.sp.gene2val(
-            population[0, :self.n_gene]
-        )
-        best_fitness = population[0, -1]
-
-        return best_indiv, best_fitness
+        return
 
     def _ga_v2(self, nth_paramset):
         """ga_v2 optimizes an objective function through the following procedure.
@@ -276,10 +265,7 @@ class GeneticAlgorithmInit(ExecModel):
             ), best_fitness
         )
         if population[0, -1] <= self.allowable_error:
-            best_indiv = self.sp.gene2val(population[0, :self.n_gene])
-            best_fitness = population[0, -1]
-
-            return best_indiv, best_fitness
+            return
 
         generation = 1
         while generation < self.max_generation:
@@ -334,14 +320,8 @@ class GeneticAlgorithmInit(ExecModel):
                     )
                 )
             if population[0, -1] <= self.allowable_error:
-                best_indiv = self.sp.gene2val(population[0, :self.n_gene])
-                best_fitness = population[0, -1]
-
-                return best_indiv, best_fitness
+                break
 
             generation += 1
-
-        best_indiv = self.sp.gene2val(population[0, :self.n_gene])
-        best_fitness = population[0, -1]
-
-        return best_indiv, best_fitness
+        
+        return
