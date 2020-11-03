@@ -22,7 +22,7 @@ setup(
     author='Hiroaki Imoto',
     author_email='himoto@protein.osaka-u.ac.jp',
     url='https://github.com/okadalabipr/biomass',
-    packages=find_packages(exclude=['docs']),
+    packages=find_packages(exclude=['docs', 'tests']),
     install_requires=read_requirements(),
     python_requires='>=3.7',
 )
