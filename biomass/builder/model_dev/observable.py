@@ -26,7 +26,9 @@ class NumericalSimulation(DifferentialEquation):
     t = range(101)  # 0, 1, 2, ..., 100
 
     # Experimental conditions
-    conditions = []
+    conditions = [
+        
+    ]
 
     simulations = np.empty((len(observables), len(t), len(conditions)))
 

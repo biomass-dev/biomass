@@ -50,6 +50,8 @@ class SearchParam(object):
             x[j] = indiv[i]
         for i, j in enumerate(self.idx_initials):
             y0[j] = indiv[i+len(self.idx_params)]
+        
+        # parameter constraints
 
         return x, y0
 
