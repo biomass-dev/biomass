@@ -37,17 +37,20 @@ class ExecModel(object):
 
     def get_executable(self):
         n_file = []
-        fitparam_files = os.listdir(self.model_path + '/out')
-        for file in fitparam_files:
-            if re.match(r'\d', file):
-                n_file.append(int(file))
-        empty_folder = []
-        for i, nth_paramset in enumerate(n_file):
-            if not os.path.isfile(
-                    self.model_path 
-                    + '/out/{:d}/generation.npy'.format(nth_paramset)):
-                empty_folder.append(i)
-        for i in sorted(empty_folder, reverse=True):
-            n_file.pop(i)
+        try:
+            fitparam_files = os.listdir(self.model_path + '/out')
+            for file in fitparam_files:
+                if re.match(r'\d', file):
+                    n_file.append(int(file))
+            empty_folder = []
+            for i, nth_paramset in enumerate(n_file):
+                if not os.path.isfile(
+                        self.model_path 
+                        + '/out/{:d}/generation.npy'.format(nth_paramset)):
+                    empty_folder.append(i)
+            for i in sorted(empty_folder, reverse=True):
+                n_file.pop(i)
+        except FileNotFoundError:
+            pass
         
         return n_file
