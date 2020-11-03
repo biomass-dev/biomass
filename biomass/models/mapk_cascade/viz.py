@@ -1,18 +1,17 @@
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 
-from .observable import observables, NumericalSimulation
+from .observable import observables
 
 
-class Visualization(NumericalSimulation):
+class Visualization(object):
     """
     Plotting parameters for customizing figure properties
 
     Attributes
     ----------
-    cm : matplotlib.colors.ListedColormap (default: plt.cm.get_cmap('tab20'))
+    cm : matplotlib.colors.ListedColormap (default: plt.cm.get_cmap('tab10'))
         Choosing colormaps for 'cmap'.
-        If num of conditions is less than 11, use dark color only ('tab20').
 
     timecourse_options : list of dict
         Plotting options for figure/simulation/<viz_type>/<each_observable>.
@@ -64,7 +63,7 @@ class Visualization(NumericalSimulation):
 
     """
     def __init__(self):
-        self.cm = plt.cm.get_cmap('tab20')
+        self.cm = plt.cm.get_cmap('tab10')
         
         self.timecourse_options = [
             {
@@ -77,9 +76,7 @@ class Visualization(NumericalSimulation):
                 'ylabel': observables[i].replace('__', '\n').replace('_', ' '),
                 'exp_data' : True, 
                 'legend_loc' : None,
-                'cmap' : [self.cm.colors[j] for j in (range(20) 
-                            if len(self.conditions) > 10 
-                            else range(0, 20, 2))],
+                'cmap' : [self.cm.colors[j] for j in range(10)],
                 'shape' : Line2D.filled_markers,
                 'dont_show' : [],
             } for i, _ in enumerate(observables)]
@@ -94,9 +91,7 @@ class Visualization(NumericalSimulation):
             'ylim' : (),
             'yticks' : None,
             'ylabel': '',
-            'cmap' : [self.cm.colors[j] for j in (range(20) 
-                        if len(self.conditions) > 10 
-                        else range(0, 20, 2))],
+            'cmap' : [self.cm.colors[j] for j in range(10)],
             'shape' : Line2D.filled_markers,
         }
     
@@ -104,9 +99,7 @@ class Visualization(NumericalSimulation):
             'figsize' : (12, 5),
             'width' : 0.3,
             'legend_loc' : 'upper left',
-            'cmap' : [self.cm.colors[j] for j in (range(20) 
-                        if len(self.conditions) > 10 
-                        else range(0, 20, 2))],
+            'cmap' : [self.cm.colors[j] for j in range(10)],
         }
 
     def get_timecourse_options(self):
