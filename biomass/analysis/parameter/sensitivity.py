@@ -48,7 +48,6 @@ class ParameterSensitivity(ExecModel):
         """
 
         rate = 1.01  # 1% change
-        x = self.pval()
         param_indices = self._get_param_indices()
         n_file = self.get_executable()
 

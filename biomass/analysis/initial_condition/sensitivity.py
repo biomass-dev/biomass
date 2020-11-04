@@ -47,7 +47,6 @@ class InitialConditionSensitivity(ExecModel):
         """
 
         rate = 1.01  # 1% change
-        y0 = self.ival()
         nonzero_indices = self._get_nonzero_indices()
         n_file = self.get_executable()
 
