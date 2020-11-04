@@ -8,6 +8,8 @@ from biomass.analysis import (ReactionSensitivity,
                               InitialConditionSensitivity,
                               ParameterSensitivity)
 
+__all__ = ['run_simulation', 'optimize', 'optimize_continue', 'run_analysis']
+
 
 def run_simulation(
         model, 
