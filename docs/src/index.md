@@ -1,11 +1,7 @@
 # BioMASS tutorial
 
 
-[![Actions Status](https://github.com/okadalabipr/biomass/workflows/Tests/badge.svg)](https://github.com/okadalabipr/biomass/actions)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/okadalabipr/biomass.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/okadalabipr/biomass/context:python)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-
-BioMASS is a user-friendly simulation tool for experimental biologists. 
+BioMASS is a user-friendly tool for model development and simulation tailored for experimental biologists. 
 
 BioMASS supports:
 
@@ -16,6 +12,7 @@ BioMASS supports:
 
 After model fitting, users can perform sensitivity analysis to identify critical parameters, species or regulations in the system of interest. 
 By assessing parameter fitting and sensitivity analysis together, it is possible to identify critical or robust regions in the network, or the origin of heterogeneity generated from the network.
+Here, we will guide you how to set up BioMASS and how to build your own model.
 
 ```@contents
     Pages = [

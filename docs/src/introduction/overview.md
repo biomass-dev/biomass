@@ -12,7 +12,7 @@ biomass -> biomass -> models
 Three models are available in the models directory, each stored in its own directory. 
 Each of these model directories contains all files necessary to define a model in BioMASS. <br>
 
-We will use the model of a MAPK cascade in this overview.
+We will use the model of a MAPK cascade in this overview. For the biological details, please check the reference.
 
 Open the mapk_cascade directory: <br>
 `
@@ -21,7 +21,7 @@ models -> mapk_cascade
 <br>
 In the following, we will briefly introduce the relevant model files and their functions. In particular, we will focus on the following three files:
 - `set_model.py` for defining the model itself
-- `observable.py` for defining observables *etc*.
+- `observable.py` for defining observables and adding experimental data
 - `set_search_param.py` for defining the parameters to optimize
 
 

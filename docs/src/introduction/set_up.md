@@ -1,5 +1,5 @@
 ## Prerequisites
-In order to install and run BioMASS, a few preparations are required. In order to use BioMASS, you need to have Python3 installed, as well as a few packages.
+In order to install and run BioMASS, a few preparations are required. To use BioMASS, you need to have Python3 installed, as well as a few packages.
 
 The BioMASS repository is available on GitHub.
 
