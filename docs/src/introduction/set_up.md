@@ -2,8 +2,10 @@
 In order to install and run BioMASS, a few preparations are required. To use BioMASS, you need to have Python3 installed, as well as a few packages.
 
 The BioMASS repository is available on GitHub.
+If you have Python3 and Anaconda (or another package manager of your choice) already running, please proceed to the next section.
 
-Install Git, open a terminal and run: 
+Linux:
+To install Git, open a terminal and run: 
 
 `
 $ sudo apt-get install git
@@ -58,7 +60,10 @@ This step may take a few minutes. After finishing, one parameter set has been ge
 Let's visualize the optimized parameters. <br>
 Type: <br>
 `
-$ >>>
+$ >>> from biomass import run_simulation
+$ >>> from biomass.models import mapk_cascade
+$ >>> run_simulation(mapk_cascade, viz_type='best', show_all=False, stdev=True)
 `
 <br>
+Note: Both for parameter optimization and model simulation, your working directory needs to be the 'biomass' folder. In this example, we have only optimized one parameter set, and hence, have to choose the visualization type 'best'. You can change the visualization type to 'average' if you optimize more than one parameter set.
 We will explain the model files and functionality in more detail in the next steps.
