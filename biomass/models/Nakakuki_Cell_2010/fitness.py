@@ -64,8 +64,25 @@ def objective(
                     *_diff_sim_and_exp(
                         sim.simulations[i], exp.experiments[i], 
                         exp.get_timepoint(obs_name), sim.conditions, 
-                        sim_norm_max=1 if not sim.normalization \
-                            else np.max(sim.simulations[i])
+                        sim_norm_max = 1 if not sim.normalization \
+                            else (
+                                np.max(
+                                    sim.simulations[
+                                        observables.index(obs_name),
+                                        sim.normalization[obs_name]['timepoint'],
+                                        [sim.conditions.index(c) for c in 
+                                            sim.normalization[obs_name]['condition']]
+                                    ] 
+                                ) if sim.normalization[obs_name]['timepoint'] is not None else
+                                np.max(
+                                    sim.simulations[
+                                        observables.index(obs_name),
+                                        :,
+                                        [sim.conditions.index(c) for c in 
+                                            sim.normalization[obs_name]['condition']]
+                                    ]
+                                )
+                            )
                     )
                 )
         '''

@@ -21,15 +21,25 @@ class NumericalSimulation(DifferentialEquation):
 
     Attributes
     ----------
-    normalization : bool
-        if True, simulation results in each observable are divided by their 
-        maximum values.
+    normalization : nested dict
+        Keys for each observable
+        ------------------------
+        * 'timepoint' : Optional[int]
+            The time point at which simulated values are normalized.
+            If None, the maximum value will be used for normalization.
+        
+        * 'condition' : list of strings
+            The experimental conditions to use for normalization.
 
     """
     def __init__(self):
         super().__init__(perturbation={})
-        self.normalization = True
-        
+        self.normalization = {}
+        for observable in observables:
+            self.normalization[observable] = {
+                'timepoint' : None,
+                'condition' : ['EGF', 'HRG']
+            }
 
     t = range(5401)  # 0, 1, 2, ..., 5400 (Unit: sec.)
 
@@ -116,7 +126,7 @@ class NumericalSimulation(DifferentialEquation):
         dt = (self.t[-1] - self.t[0]) / (len(self.t) - 1)
         sol = ode(diffeq)
         sol.set_integrator(
-            'vode', method='bdf', with_jacobian=True,
+            'zvode', method='bdf', with_jacobian=True,
             atol=1e-9, rtol=1e-9, min_step=1e-8
         )
         sol.set_initial_value(y0, tspan[0])
@@ -130,7 +140,7 @@ class NumericalSimulation(DifferentialEquation):
             T.append(sol.t)
             Y.append(sol.y)
 
-        return np.array(T), np.array(Y)
+        return np.array(T), np.real(Y)
     
     def _get_steady_state(self, diffeq, y0, args, eps=1e-6):
         """
