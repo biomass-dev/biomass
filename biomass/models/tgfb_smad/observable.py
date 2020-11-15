@@ -16,13 +16,21 @@ class NumericalSimulation(DifferentialEquation):
     """ Simulate a model using scipy.integrate.ode
     Attributes
     ----------
-    normalization : bool
-        if True, simulation results in each observable are divided by their 
-        maximum values.
+    normalization : nested dict
+        Keys for each observable
+        ------------------------
+        * 'timepoint' : Optional[int]
+            The time point at which simulated values are normalized.
+            If None, the maximum value will be used for normalization.
+        
+        * 'condition' : list of strings
+            The experimental conditions to use for normalization.
+            If empty, all conditions defined in sim.conditions will be used.
+
     """
     def __init__(self):
         super().__init__(perturbation={})
-        self.normalization = False
+        self.normalization = {}
     
     t = range(600 + 1) # min
 
