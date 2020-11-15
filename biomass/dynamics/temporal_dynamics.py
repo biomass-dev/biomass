@@ -70,21 +70,18 @@ class TemporalDynamics(ExecModel):
                     if show_all:
                         for j, _ in enumerate(n_file):
                             for l, condition in enumerate(sim.conditions):
-                                if (mode == 0 and condition not in 
-                                        timecourse[i]['dont_show']) or (
-                                        mode == 1 and
-                                        condition == multiplot['condition']):
+                                if (mode == 0 and condition not in timecourse[i]['dont_show']) \
+                                        or (mode == 1 and condition == multiplot['condition']):
                                     plt.plot(
                                         np.array(sim.t) / timecourse[i]['divided_by'],
                                         simulations_all[i, j, :, l] / (
-                                            1 if not sim.normalization else
+                                            1 if not sim.normalization or np.max(simulations_all[i, j, :, l]) == 0.0 else
                                             np.max(
                                                 simulations_all[
                                                     i,
                                                     j,
                                                     sim.normalization[obs_name]['timepoint'],
-                                                    [sim.conditions.index(c) for c in 
-                                                        sim.normalization[obs_name]['condition']]
+                                                    [sim.conditions.index(c) for c in sim.normalization[obs_name]['condition']]
                                                 ] 
                                             ) if sim.normalization[obs_name]['timepoint'] is not None else
                                             np.max(
@@ -92,8 +89,7 @@ class TemporalDynamics(ExecModel):
                                                     i,
                                                     j,
                                                     :,
-                                                    [sim.conditions.index(c) for c in 
-                                                        sim.normalization[obs_name]['condition']]
+                                                    [sim.conditions.index(c) for c in sim.normalization[obs_name]['condition']]
                                                 ]
                                             )
                                         ),
@@ -110,20 +106,17 @@ class TemporalDynamics(ExecModel):
                         normalized = np.empty_like(simulations_all)
                         for j, _ in enumerate(n_file):
                             for l, condition in enumerate(sim.conditions):
-                                if (mode == 0 and condition not in 
-                                        timecourse[i]['dont_show']) or (
-                                            mode == 1 and
-                                            condition == multiplot['condition']):
+                                if (mode == 0 and condition not in timecourse[i]['dont_show']) \
+                                        or (mode == 1 and condition == multiplot['condition']):
                                     normalized[i, j, :, l] = (
                                         simulations_all[i, j, :, l] / (
-                                            1 if not sim.normalization else
+                                            1 if not sim.normalization or np.max(simulations_all[i, j, :, l]) == 0.0 else
                                             np.max(
                                                 simulations_all[
                                                     i,
                                                     j,
                                                     sim.normalization[obs_name]['timepoint'],
-                                                    [sim.conditions.index(c) for c in 
-                                                        sim.normalization[obs_name]['condition']]
+                                                    [sim.conditions.index(c) for c in sim.normalization[obs_name]['condition']]
                                                 ] 
                                             ) if sim.normalization[obs_name]['timepoint'] is not None else
                                             np.max(
@@ -131,17 +124,29 @@ class TemporalDynamics(ExecModel):
                                                     i,
                                                     j,
                                                     :,
-                                                    [sim.conditions.index(c) for c in 
-                                                        sim.normalization[obs_name]['condition']]
+                                                    [sim.conditions.index(c) for c in sim.normalization[obs_name]['condition']]
                                                 ]
                                             )
                                         )
                                     )
+                        if sim.normalization and sim.normalization[obs_name]['timepoint'] is None:
+                            mean_vec = []
+                            for c in sim.normalization[obs_name]['condition']:
+                                mean_vec.append(
+                                    np.nanmean(
+                                        normalized[i, :, :, sim.conditions.index(c)],
+                                        axis=0
+                                    )
+                                )
+                            norm_max = np.max(mean_vec)
+                            if not np.isnan(norm_max) and norm_max != 0.0:
+                                normalized[i, :, :, :] /=  norm_max
+                            #raise ValueError(
+                            #    'cannot calculate norm_max'
+                            #)
                         for l, condition in enumerate(sim.conditions):
-                            if (mode == 0 and condition not in
-                                    timecourse[i]['dont_show']) or (
-                                        mode == 1 and
-                                        condition == multiplot['condition']):
+                            if (mode == 0 and condition not in timecourse[i]['dont_show']) \
+                                    or (mode == 1 and condition == multiplot['condition']):
                                 plt.plot(
                                     np.array(sim.t) / timecourse[i]['divided_by'], 
                                     np.nanmean(normalized[i, :, :, l], axis=0),
@@ -152,15 +157,14 @@ class TemporalDynamics(ExecModel):
                                                 obs_name
                                             )
                                         ],
-                                    label=condition if mode == 0 \
+                                    label=condition \
+                                        if mode == 0 \
                                         else timecourse[i]['ylabel']
                                 )
                         if stdev:
                             for l, condition in enumerate(sim.conditions):
-                                if (mode == 0 and condition not in 
-                                        timecourse[i]['dont_show']) or (
-                                            mode == 1 and
-                                            condition == multiplot['condition']):
+                                if (mode == 0 and condition not in timecourse[i]['dont_show']) \
+                                        or (mode == 1 and condition == multiplot['condition']):
                                     y_mean = np.nanmean(
                                         normalized[i, :, :, l], axis=0
                                     )
@@ -183,28 +187,24 @@ class TemporalDynamics(ExecModel):
                                     )
                     else:
                         for l, condition in enumerate(sim.conditions):
-                            if (mode == 0 and condition not in
-                                    timecourse[i]['dont_show']) or (
-                                        mode == 1 and
-                                        condition == multiplot['condition']):
+                            if (mode == 0 and condition not in timecourse[i]['dont_show']) \
+                                    or (mode == 1 and condition == multiplot['condition']):
                                 plt.plot(
                                     np.array(sim.t) / timecourse[i]['divided_by'], 
                                     sim.simulations[i, :, l] / (
-                                        1 if not sim.normalization else
+                                        1 if not sim.normalization or np.max(sim.simulations[i, :, l]) == 0.0 else
                                         np.max(
                                             sim.simulations[
                                                 i,
                                                 sim.normalization[obs_name]['timepoint'],
-                                                [sim.conditions.index(c) for c in 
-                                                    sim.normalization[obs_name]['condition']]
+                                                [sim.conditions.index(c) for c in sim.normalization[obs_name]['condition']]
                                             ]
                                         ) if sim.normalization[obs_name]['timepoint'] is not None else
                                         np.max(
                                             sim.simulations[
                                                 i,
                                                 :,
-                                                [sim.conditions.index(c) for c in 
-                                                    sim.normalization[obs_name]['condition']]
+                                                [sim.conditions.index(c) for c in sim.normalization[obs_name]['condition']]
                                             ]
                                         )
                                     ),
@@ -215,19 +215,16 @@ class TemporalDynamics(ExecModel):
                                                 obs_name
                                             )
                                         ],
-                                    label=condition if mode == 0 \
+                                    label=condition \
+                                        if mode == 0 \
                                         else timecourse[i]['ylabel']
                                 )
-                if timecourse[i]['exp_data'] \
-                        and self.exp.experiments[i] is not None:
+                if timecourse[i]['exp_data'] and self.exp.experiments[i] is not None:
                     exp_t = self.exp.get_timepoint(obs_name)
                     if self.exp.error_bars[i] is not None:
                         for l, condition in enumerate(sim.conditions):
-                            if condition in self.exp.experiments[i] and \
-                                    (mode == 0 and condition not in
-                                    timecourse[i]['dont_show']) or (
-                                        mode == 1 and
-                                        condition == multiplot['condition']):
+                            if condition in self.exp.experiments[i] and (mode == 0 and condition not in timecourse[i]['dont_show']) \
+                                    or (mode == 1 and condition == multiplot['condition']):
                                 exp_data = plt.errorbar(
                                     np.array(exp_t) / timecourse[i]['divided_by'],
                                     self.exp.experiments[i][condition],
@@ -273,11 +270,8 @@ class TemporalDynamics(ExecModel):
                                     barlinecol.set_clip_on(False)
                     else:
                         for l, condition in enumerate(sim.conditions):
-                            if condition in self.exp.experiments[i] and \
-                                    (mode == 0 and condition not in
-                                    timecourse[i]['dont_show']) or (
-                                        mode == 1 and
-                                        condition == multiplot['condition']):
+                            if condition in self.exp.experiments[i] and (mode == 0 and condition not in timecourse[i]['dont_show']) \
+                                    or (mode == 1 and condition == multiplot['condition']):
                                 plt.plot(
                                     np.array(exp_t) / timecourse[i]['divided_by'], 
                                     self.exp.experiments[i][condition],
