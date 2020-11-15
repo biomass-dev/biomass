@@ -30,6 +30,7 @@ class NumericalSimulation(DifferentialEquation):
         
         * 'condition' : list of strings
             The experimental conditions to use for normalization.
+            If empty, all conditions defined in sim.conditions will be used.
 
     """
     def __init__(self):
@@ -38,7 +39,7 @@ class NumericalSimulation(DifferentialEquation):
         for observable in observables:
             self.normalization[observable] = {
                 'timepoint' : None,
-                'condition' : ['EGF', 'HRG']
+                'condition' : []
             }
 
     t = range(5401)  # 0, 1, 2, ..., 5400 (Unit: sec.)

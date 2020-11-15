@@ -24,6 +24,7 @@ class NumericalSimulation(DifferentialEquation):
         
         * 'condition' : list of strings
             The experimental conditions to use for normalization.
+            If empty, all conditions defined in sim.conditions will be used.
 
     """
     def __init__(self):
