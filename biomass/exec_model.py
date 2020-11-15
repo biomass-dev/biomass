@@ -25,12 +25,15 @@ class ExecModel(object):
                     raise ValueError(
                         f'Normalization timepoint must be smaller than {self.sim.t[-1]:d}.'
                     )
-                for c in self.sim.normalization[obs_name]['condition']:
-                    if not c in self.sim.conditions:
-                        raise ValueError(
-                            f'Normalization condition `{c}`'
-                            ' is not defined in sim.conditions.'
-                        )
+                if not self.sim.normalization[obs_name]['condition']:
+                    self.sim.normalization[obs_name]['condition'] = self.sim.conditions
+                else:
+                    for c in self.sim.normalization[obs_name]['condition']:
+                        if not c in self.sim.conditions:
+                            raise ValueError(
+                                f'Normalization condition `{c}`'
+                                ' is not defined in sim.conditions.'
+                            )
 
     def show_properties(self):
         print(
