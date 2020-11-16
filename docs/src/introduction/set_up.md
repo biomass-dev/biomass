@@ -45,7 +45,7 @@ Start Python:
 
 Load the model and the script required for optimization: <br>
 `
-$ >>> from biomass.models import mapk_cascade
+$ >>> from biomass.models import mapk_cascade <br>
 `
 `
 $ >>> from biomass import optimize
@@ -60,9 +60,9 @@ This step may take around two hours. After finishing, one parameter set has been
 Let's visualize the optimized parameters. <br>
 Type: <br>
 `
-$ >>> from biomass import run_simulation
-$ >>> from biomass.models import mapk_cascade
-$ >>> run_simulation(mapk_cascade, viz_type='best', show_all=False, stdev=True)
+$ >>> from biomass import run_simulation <br>
+$ >>> from biomass.models import mapk_cascade <br>
+$ >>> run_simulation(mapk_cascade, viz_type='best',  show_all=False, stdev=True)
 `
 <br>
 Note: Both for parameter optimization and model simulation, your working directory needs to be the 'biomass' folder. In this example, we have only optimized one parameter set, and hence, have to choose the visualization type 'best'. You can change the visualization type to 'average' if you optimize more than one parameter set.

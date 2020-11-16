@@ -15,13 +15,13 @@ In your terminal, start Python from the biomass folder:
 `
 Next, load the required modules:
 `
->>> from biomass.models import mapk_cascade
->>> from biomass import run_simulation
+$ >>> from biomass.models import mapk_cascade
+$ >>> from biomass import run_simulation
 `
 
 Let's visualize the results from our previous parameter optimization. Since we only calculated one parameter set, we can only choose the "best" option to do so. If you optimize more than one parameter set, you can also show the average of your parameter sets.
 `
->>> run_simulation(mapk_cascade, viz_type='best', show_all=False, stdev=True)
+$ >>> run_simulation(mapk_cascade, viz_type='best', show_all=False, stdev=True)
 `
 
 The plots have been placed in the autmatically generated directory "best", and can be found in:
@@ -35,6 +35,6 @@ Alternatively, you can save the three python commands into one file and place it
 $ python3 <simulation_file_name.py>
 `
 
-Where you replace `<simulation_file_name.py>` with the name of the file you previously created.
+Replace `<simulation_file_name.py>` with the name of the file you previously created.
 
 
