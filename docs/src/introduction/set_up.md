@@ -55,7 +55,7 @@ Start the optimization by running the following commands:
 `
 $ >>> optimize(mapk_cascade, 1)
 `
-This step may take a few minutes. After finishing, one parameter set has been generated. Please check by navigating to the mapk_cascade directory. A new directory called "out" should have been created, containing a folder called "1". This folder contains the optimization results for the optimized parameter set 1. <br>
+This step may take around two hours. After finishing, one parameter set has been generated. Please check by navigating to the mapk_cascade directory. A new directory called "out" should have been created, containing a folder called "1". This folder contains the optimization results for the optimized parameter set 1. <br>
 
 Let's visualize the optimized parameters. <br>
 Type: <br>
