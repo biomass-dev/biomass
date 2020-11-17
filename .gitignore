@@ -47,6 +47,7 @@ figure/
 
 # fit_param
 out/
+!/tests/out/
 
 # sensitivity array
 sensitivity_coefficients/
