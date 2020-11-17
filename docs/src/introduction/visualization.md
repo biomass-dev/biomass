@@ -17,6 +17,9 @@ In your terminal, start Python from the biomass folder:
 Next, load the required modules: <br>
 `
 $ >>> from biomass.models import mapk_cascade
+`
+<br>
+`
 $ >>> from biomass import run_simulation
 `
 
@@ -25,7 +28,7 @@ Let's visualize the results from our previous parameter optimization. Since we o
 $ >>> run_simulation(mapk_cascade, viz_type='best', show_all=False, stdev=True)
 `
 
-The plots have been placed in the autmatically generated directory "best", and can be found in:
+The plots have been placed in the automatically generated directory "best", and can be found in:
 <br>
 `biomass->biomass-> models-> mapk_cascade -> figure -> simulation -> best`
 <br>
