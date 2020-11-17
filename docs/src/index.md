@@ -18,10 +18,8 @@ Here, we will guide you how to set up BioMASS and how to build your own model.
     Pages = [
           "introduction/set_up.md",
           "introduction/overview.md",
-          "introduction/import_model.md",
-          "introduction/parameter_estimation.md",
           "introduction/visualization.md",
-          "introduction/sensitivity_analysis.md",
+          "introduction/usage.md",
     ]
     Depth = 3
 ```

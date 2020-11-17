@@ -5,13 +5,11 @@ makedocs(;
     pages = [
         "Home" => "index.md",
         "Getting started with BioMASS" => [
-
-	    "Prerequisites and Installation" => "introduction/set_up.md",
-            "Import model" => "introduction/import_model.md",
-            "Parameter estimation" => "introduction/parameter_estimation.md",
+            "Prerequisites and Installation" => "introduction/set_up.md",
+            "Overview" => "introduction/overview.md",
             "Visualization of simulation results" => "introduction/visualization.md",
-            "Sensitivity analysis" => "introduction/sensitivity_analysis.md",
-        ]
-
+            "Usage" => "introduction/usage.md",
+        ],
+        "Citation" => "citation.md"
     ]
 )
