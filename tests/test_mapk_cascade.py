@@ -4,7 +4,7 @@ import shutil
 from biomass.models import mapk_cascade
 from biomass.exec_model import ExecModel
 from biomass.result import OptimizationResults
-from biomass import optimize, optimize_continue, run_simulation
+from biomass import optimize, optimize_continue, run_simulation, run_analysis
 
 import pytest
 
@@ -19,6 +19,7 @@ def test_simulate_successful():
     x = model.pval()
     y0 = model.ival()
     assert model.sim.simulate(x, y0) is None
+
 
 def test_optimize():
     optimize(mapk_cascade, 1, 3, max_generation=10, overwrite=True)
@@ -49,7 +50,6 @@ def test_run_simulation():
         assert n_pdf == len(model.obs) + 1 # multiplot_observables
 
 
-
 def test_save_result():
     res = OptimizationResults(mapk_cascade)
     res.get()
@@ -60,3 +60,14 @@ def test_save_result():
     assert os.path.isfile(
         MODEL_PATH + '/optimization_results/fitness_assessment.csv'
     )
+
+
+def test_sensitiity_analysis():
+    for target in ['parameter', 'initial_condition']:
+        run_analysis(
+            mapk_cascade, target=target, metric='integral'
+        )
+        assert os.path.isfile(
+            MODEL_PATH
+            + '/sensitivity_coefficients/' + target + '/integral/sc.npy'
+        )
