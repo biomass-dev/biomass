@@ -141,9 +141,6 @@ class TemporalDynamics(ExecModel):
                             norm_max = np.max(mean_vec)
                             if not np.isnan(norm_max) and norm_max != 0.0:
                                 normalized[i, :, :, :] /=  norm_max
-                            #raise ValueError(
-                            #    'cannot calculate norm_max'
-                            #)
                         for l, condition in enumerate(sim.conditions):
                             if (mode == 0 and condition not in timecourse[i]['dont_show']) \
                                     or (mode == 1 and condition == multiplot['condition']):
