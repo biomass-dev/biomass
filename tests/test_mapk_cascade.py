@@ -1,4 +1,5 @@
 import os
+import shutil
 
 from biomass.models import mapk_cascade
 from biomass.exec_model import ExecModel
@@ -8,6 +9,9 @@ from biomass import optimize, optimize_continue, run_simulation
 import pytest
 
 MODEL_PATH = mapk_cascade.__path__[0]
+
+if os.path.isdir(MODEL_PATH + '/figure'):
+    shutil.rmtree(MODEL_PATH + '/figure')
 
 
 def test_simulate_successful():
@@ -31,9 +35,19 @@ def test_optimize():
 
 
 def test_run_simulation():
+    model = ExecModel(mapk_cascade)
+
     run_simulation(mapk_cascade, viz_type='original')
     run_simulation(mapk_cascade, viz_type='average', stdev=True)
     run_simulation(mapk_cascade, viz_type='best', show_all=True)
+    for dir in ['/original', '/average', '/best']:
+        files = os.listdir(MODEL_PATH + '/figure/simulation' + dir)
+        n_pdf = 0
+        for file in files:
+            if '.pdf' in file:
+                n_pdf += 1
+        assert n_pdf == len(model.obs) + 1 # multiplot_observables
+
 
 
 def test_save_result():
