@@ -11,7 +11,8 @@ import pytest
 
 MODEL_PATH = mapk_cascade.__path__[0]
 
-for dir in ['/figure', '/simulation_data', '/sensitivity_coefficients']:
+for dir in ['/figure', '/simulation_data',
+            '/sensitivity_coefficients', '/optimization_results']:
     if os.path.isdir(MODEL_PATH + dir):
         shutil.rmtree(MODEL_PATH + dir)
 
@@ -74,6 +75,6 @@ def test_sensitiity_analysis():
 
 def test_cleanup():
     for dir in ['/figure', '/simulation_data',
-                '/out', '/sensitivity_coefficients']:
+                '/out', '/sensitivity_coefficients', '/optimization_results']:
         if os.path.isdir(MODEL_PATH + dir):
             shutil.rmtree(MODEL_PATH + dir)
