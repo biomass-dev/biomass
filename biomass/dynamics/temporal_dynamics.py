@@ -51,8 +51,8 @@ class TemporalDynamics(ExecModel):
             # mode 1 : multiplot_observables
             set_fig = False
             for i, obs_name in enumerate(self.obs):
-                if len(timecourse[i]['cmap']) < len(sim.conditions) or \
-                        len(timecourse[i]['shape']) < len(sim.conditions):
+                if len(timecourse[i]['cmap']) < len(sim.conditions) \
+                        or len(timecourse[i]['shape']) < len(sim.conditions):
                     raise ValueError(
                         'len(cmap), len(shape) must be equal to'
                         ' or greater than len(sim.conditions).'
@@ -95,11 +95,7 @@ class TemporalDynamics(ExecModel):
                                         ),
                                         color=timecourse[i]['cmap'][l] \
                                             if mode == 0 \
-                                            else multiplot['cmap'][
-                                                multiplot['observables'].index(
-                                                    obs_name
-                                                )
-                                            ],
+                                            else multiplot['cmap'][multiplot['observables'].index(obs_name)],
                                         alpha=0.05
                                     )
                     if viz_type == 'average':
@@ -149,11 +145,7 @@ class TemporalDynamics(ExecModel):
                                     np.nanmean(normalized[i, :, :, l], axis=0),
                                     color=timecourse[i]['cmap'][l] \
                                         if mode == 0 \
-                                        else multiplot['cmap'][
-                                            multiplot['observables'].index(
-                                                obs_name
-                                            )
-                                        ],
+                                        else multiplot['cmap'][multiplot['observables'].index(obs_name)],
                                     label=condition \
                                         if mode == 0 \
                                         else timecourse[i]['ylabel']
@@ -175,11 +167,7 @@ class TemporalDynamics(ExecModel):
                                         y_mean - y_std, y_mean + y_std,
                                         lw=0, color=timecourse[i]['cmap'][l] \
                                             if mode == 0 \
-                                            else multiplot['cmap'][
-                                                multiplot['observables'].index(
-                                                    obs_name
-                                                )
-                                            ],
+                                            else multiplot['cmap'][multiplot['observables'].index(obs_name)],
                                         alpha=0.1
                                     )
                     else:
@@ -207,11 +195,7 @@ class TemporalDynamics(ExecModel):
                                     ),
                                     color=timecourse[i]['cmap'][l] \
                                         if mode == 0 \
-                                        else multiplot['cmap'][
-                                            multiplot['observables'].index(
-                                                obs_name
-                                            )
-                                        ],
+                                        else multiplot['cmap'][multiplot['observables'].index(obs_name)],
                                     label=condition \
                                         if mode == 0 \
                                         else timecourse[i]['ylabel']
@@ -228,34 +212,18 @@ class TemporalDynamics(ExecModel):
                                     yerr=self.exp.error_bars[i][condition], 
                                     color=timecourse[i]['cmap'][l] \
                                         if mode == 0 \
-                                        else multiplot['cmap'][
-                                            multiplot['observables'].index(
-                                                obs_name
-                                            )
-                                        ],
+                                        else multiplot['cmap'][multiplot['observables'].index(obs_name)],
                                     ecolor=timecourse[i]['cmap'][l] \
                                         if mode == 0 \
-                                        else multiplot['cmap'][
-                                            multiplot['observables'].index(
-                                                obs_name
-                                            )
-                                        ],
+                                        else multiplot['cmap'][multiplot['observables'].index(obs_name)],
                                     elinewidth=1, capsize=8,
                                     markerfacecolor='None',
                                     markeredgecolor=timecourse[i]['cmap'][l] \
                                         if mode == 0 \
-                                        else multiplot['cmap'][
-                                            multiplot['observables'].index(
-                                                obs_name
-                                            )
-                                        ],
+                                        else multiplot['cmap'][multiplot['observables'].index(obs_name)],
                                     fmt=timecourse[i]['shape'][l] \
                                         if mode == 0 \
-                                        else multiplot['shape'][
-                                            multiplot['observables'].index(
-                                                obs_name
-                                            )
-                                        ],
+                                        else multiplot['shape'][multiplot['observables'].index(obs_name)],
                                     clip_on=False,
                                     label=timecourse[i]['ylabel'] \
                                         if mode == 1 and viz_type == 'experiment' \
@@ -274,26 +242,14 @@ class TemporalDynamics(ExecModel):
                                     self.exp.experiments[i][condition],
                                     timecourse[i]['shape'][l] \
                                         if mode == 0 \
-                                        else multiplot['shape'][
-                                            multiplot['observables'].index(
-                                                obs_name
-                                            )
-                                        ], 
+                                        else multiplot['shape'][multiplot['observables'].index(obs_name)], 
                                     markerfacecolor='None', 
                                     markeredgecolor=timecourse[i]['cmap'][l] \
                                         if mode == 0 \
-                                        else multiplot['cmap'][
-                                            multiplot['observables'].index(
-                                                obs_name
-                                            )
-                                        ],
+                                        else multiplot['cmap'][multiplot['observables'].index(obs_name)],
                                     color=timecourse[i]['cmap'][l] \
                                         if mode == 0 \
-                                        else multiplot['cmap'][
-                                            multiplot['observables'].index(
-                                                obs_name
-                                            )
-                                        ], 
+                                        else multiplot['cmap'][multiplot['observables'].index(obs_name)], 
                                     clip_on=False,
                                     label=timecourse[i]['ylabel'] \
                                         if mode == 1 and viz_type == 'experiment' \
@@ -317,9 +273,8 @@ class TemporalDynamics(ExecModel):
                         )
                     plt.savefig(
                         self.model_path 
-                        + '/figure/simulation/{}/{}.pdf'.format(
-                            viz_type, obs_name
-                        ), bbox_inches='tight'
+                        + f'/figure/simulation/{viz_type}/{obs_name}.pdf',
+                        bbox_inches='tight'
                     )
                     plt.close()
             if mode == 1 and multiplot['observables']:
@@ -340,9 +295,8 @@ class TemporalDynamics(ExecModel):
                 )
                 plt.savefig(
                     self.model_path 
-                    + '/figure/simulation/{}/{}.pdf'.format(
-                        viz_type, multiplot['fig_name']
-                    ), bbox_inches='tight'
+                    + f'/figure/simulation/{viz_type}/{multiplot["fig_name"]}.pdf',
+                    bbox_inches='tight'
                 )
                 plt.close()
 
