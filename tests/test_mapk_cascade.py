@@ -8,10 +8,12 @@ from biomass import optimize, optimize_continue, run_simulation, run_analysis
 
 import pytest
 
+
 MODEL_PATH = mapk_cascade.__path__[0]
 
-if os.path.isdir(MODEL_PATH + '/figure'):
-    shutil.rmtree(MODEL_PATH + '/figure')
+for dir in ['/figure', '/simulation_data', '/sensitivity_coefficients']:
+    if os.path.isdir(MODEL_PATH + dir):
+        shutil.rmtree(MODEL_PATH + dir)
 
 
 def test_simulate_successful():
@@ -36,18 +38,15 @@ def test_optimize():
 
 
 def test_run_simulation():
-    model = ExecModel(mapk_cascade)
-
     run_simulation(mapk_cascade, viz_type='original')
     run_simulation(mapk_cascade, viz_type='average', stdev=True)
     run_simulation(mapk_cascade, viz_type='best', show_all=True)
-    for dir in ['/original', '/average', '/best']:
-        files = os.listdir(MODEL_PATH + '/figure/simulation' + dir)
-        n_pdf = 0
-        for file in files:
-            if '.pdf' in file:
-                n_pdf += 1
-        assert n_pdf == len(model.obs) + 1 # multiplot_observables
+    assert os.path.isfile(
+        MODEL_PATH + '/simulation_data/simulations_original.npy'
+    )
+    assert os.path.isfile(
+        MODEL_PATH + '/simulation_data/simulations_all.npy'
+    )
 
 
 def test_save_result():
@@ -71,3 +70,10 @@ def test_sensitiity_analysis():
             MODEL_PATH
             + '/sensitivity_coefficients/' + target + '/integral/sc.npy'
         )
+
+
+def test_cleanup():
+    for dir in ['/figure', '/simulation_data',
+                '/out', '/sensitivity_coefficients']:
+        if os.path.isdir(MODEL_PATH + dir):
+            shutil.rmtree(MODEL_PATH + dir)
