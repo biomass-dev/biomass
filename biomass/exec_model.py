@@ -17,25 +17,50 @@ class ExecModel(object):
         self.sp = model.SearchParam()
         self.obj_func = model.objective
 
-    def get_indiv(self, paramset):
+        if self.sim.normalization:
+            for obs_name in (self.obs):
+                if isinstance(
+                        self.sim.normalization[obs_name]['timepoint'], int
+                        ) and self.sim.t[-1] < self.sim.normalization[obs_name]['timepoint']:
+                    raise ValueError(
+                        f'Normalization timepoint must be smaller than {self.sim.t[-1]:d}.'
+                    )
+                if not self.sim.normalization[obs_name]['condition']:
+                    self.sim.normalization[obs_name]['condition'] = self.sim.conditions
+                else:
+                    for c in self.sim.normalization[obs_name]['condition']:
+                        if not c in self.sim.conditions:
+                            raise ValueError(
+                                f'Normalization condition `{c}`'
+                                ' is not defined in sim.conditions.'
+                            )
+
+    def show_properties(self):
+        print(
+            'Model properties\n'
+            '----------------\n'
+            f'{len(self.species):d} species\n'
+            f'{len(self.parameters):d} parameters, '
+            f'of which {len(self.sp.idx_params):d} to be estimated'
+        )
+
+    def get_indiv(self, paramset: int) -> np.ndarray:
         best_generation = np.load(
-            self.model_path + '/out/{:d}/generation.npy'.format(
-                paramset
-            )
+            self.model_path
+            + f'/out/{paramset:d}/generation.npy'
         )
         best_indiv = np.load(
-            self.model_path + '/out/{:d}/fit_param{:d}.npy'.format(
-                paramset, int(best_generation)
-            )
+            self.model_path
+            + f'/out/{paramset:d}/fit_param{int(best_generation):d}.npy'
         )
         return best_indiv
 
-    def load_param(self, paramset):
+    def load_param(self, paramset: int):
         best_indiv = self.get_indiv(paramset)
         (x, y0) = self.sp.update(best_indiv)
         return x, y0
 
-    def get_executable(self):
+    def get_executable(self) -> list:
         n_file = []
         try:
             fitparam_files = os.listdir(self.model_path + '/out')
@@ -46,7 +71,7 @@ class ExecModel(object):
             for i, nth_paramset in enumerate(n_file):
                 if not os.path.isfile(
                         self.model_path 
-                        + '/out/{:d}/generation.npy'.format(nth_paramset)):
+                        + f'/out/{nth_paramset:d}/generation.npy'):
                     empty_folder.append(i)
             for i in sorted(empty_folder, reverse=True):
                 n_file.pop(i)

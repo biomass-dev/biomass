@@ -17,6 +17,7 @@ if sys.version_info < (3, 7):
 
 setup(
     name='biomass',
+    version='0.2.0',
     description='A Python Framework for Modeling and Analysis of Signaling Systems',
     license='MIT',
     author='Hiroaki Imoto',
