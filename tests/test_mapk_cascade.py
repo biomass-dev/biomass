@@ -62,7 +62,7 @@ def test_save_result():
     )
 
 
-def test_sensitiity_analysis():
+def test_sensitivity_analysis():
     for target in ['parameter', 'initial_condition']:
         run_analysis(
             mapk_cascade, target=target, metric='integral'
