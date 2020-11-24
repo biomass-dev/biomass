@@ -9,7 +9,7 @@ class OptimizationResults(ExecModel):
     def __init__(self, model):
         super().__init__(model)
 
-    def get(self):
+    def get(self) -> None:
         """
         Get optimized parameters as CSV file format.
 
@@ -34,7 +34,7 @@ class OptimizationResults(ExecModel):
                 (len(self.sp.idx_params)+2, len(n_file)+1), dtype='<U21'
             )
             for i, param_index in enumerate(self.sp.idx_params):
-                for nth_paramset in n_file:
+                for j, nth_paramset in enumerate(sorted(n_file), start=1):
                     best_generation = np.load(
                         self.model_path + '/out/{:d}/generation.npy'.format(
                             nth_paramset
@@ -53,11 +53,9 @@ class OptimizationResults(ExecModel):
                     optimized_params[0, 0] = ''
                     optimized_params[1, 0] = '*Error*'
                     optimized_params[i+2, 0] = self.parameters[param_index]
-                    optimized_params[0, nth_paramset] = str(nth_paramset)
-                    optimized_params[1, nth_paramset] = \
-                        '{:8.3e}'.format(error)
-                    optimized_params[i+2, nth_paramset] = \
-                        '{:8.3e}'.format(best_indiv[i])
+                    optimized_params[0, j] = str(nth_paramset)
+                    optimized_params[1, j] = '{:8.3e}'.format(error)
+                    optimized_params[i+2, j] = '{:8.3e}'.format(best_indiv[i])
             with open(
                     self.model_path
                     + '/optimization_results/optimized_params.csv', 'w') as f:
@@ -68,7 +66,7 @@ class OptimizationResults(ExecModel):
                 (len(self.sp.idx_initials)+2, len(n_file)+1), dtype='<U21'
             )
             for i, specie_index in enumerate(self.sp.idx_initials):
-                for nth_paramset in n_file:
+                for j, nth_paramset in enumerate(sorted(n_file), start=1):
                     best_generation = np.load(
                         self.model_path + '/out/{:d}/generation.npy'.format(
                             nth_paramset
@@ -87,18 +85,18 @@ class OptimizationResults(ExecModel):
                     optimized_initials[0, 0] = ''
                     optimized_initials[1, 0] = '*Error*'
                     optimized_initials[i+2, 0] = self.species[specie_index]
-                    optimized_initials[0, nth_paramset] = str(nth_paramset)
-                    optimized_initials[1, nth_paramset] = \
-                        '{:8.3e}'.format(error)
-                    optimized_initials[i+2, nth_paramset] = \
-                        '{:8.3e}'.format(best_indiv[i+len(self.sp.idx_params)])
+                    optimized_initials[0, j] = str(nth_paramset)
+                    optimized_initials[1, j] = '{:8.3e}'.format(error)
+                    optimized_initials[i+2, j] = '{:8.3e}'.format(
+                        best_indiv[i+len(self.sp.idx_params)]
+                    )
             with open(
                     self.model_path
                     + '/optimization_results/optimized_initals.csv', 'w') as f:
                 writer = csv.writer(f, lineterminator='\n')
                 writer.writerows(optimized_initials)
 
-    def dynamic_assessment(self, include_original=False):
+    def dynamic_assessment(self, include_original: bool = False) -> None:
         """ 
         Get objective values using estimated parameters.
 
