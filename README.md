@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ## Modeling and Analysis of Signaling Systems
 
-<img align="left" src=images/logo.png width="300">
+<img align="left" src="https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/logo.png?raw=true" width="300">
 
 Mathematical modeling is a powerful method for the analysis of complex biological systems. Although there are many researches devoted on producing models to describe dynamical cellular signaling systems, most of these models are limited and do not cover multiple pathways. Therefore, there is a challenge to combine these models to enable understanding at a larger scale. Nevertheless, larger network means that it gets more difficult to estimate parameters to reproduce dynamic experimental data needed for deeper understanding of a system.
 
@@ -111,7 +111,7 @@ run_simulation(Nakakuki_Cell_2010, viz_type='average', show_all=False, stdev=Tru
 - If True, the standard deviation of simulated values will be shown (only when ```viz_type == 'average'```).
 
 
-![simulation_average](images/simulation_average.png)
+![simulation_average](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/simulation_average.png?raw=true)
 
 Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid lines denote simulations
 
@@ -147,7 +147,7 @@ run_analysis(Nakakuki_Cell_2010, target='reaction', metric='integral', style='ba
 - ```'barplot'```
 - ```'heatmap'```
 
-![sensitivity_PcFos](images/sensitivity_PcFos.png)
+![sensitivity_PcFos](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/sensitivity_PcFos.png?raw=true)
 
 Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HRG). Numbers above bars indicate the reaction indices, and error bars correspond to simulation standard deviation.
 
