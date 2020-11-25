@@ -163,4 +163,5 @@ class ExperimentalData(object):
 
     @staticmethod
     def get_timepoint(obs_name):
-        pass
+        if obs_name in observables:
+            return []

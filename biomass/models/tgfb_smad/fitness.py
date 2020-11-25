@@ -37,9 +37,7 @@ def _diff_sim_and_exp(
 
 def objective(
         indiv_gene,
-        *args,
-        sim=NumericalSimulation(),
-        exp=ExperimentalData()
+        *args
 ):
     """Define an objective function to be minimized
     """
@@ -53,6 +51,9 @@ def objective(
         (x, y0) = args
     else:
         raise ValueError('too many values to unpack (expected 2)')
+
+    sim = NumericalSimulation()
+    exp = ExperimentalData()
 
     exp.set_data()
 

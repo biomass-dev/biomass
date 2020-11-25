@@ -3,7 +3,7 @@
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/okadalabipr/biomass.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/okadalabipr/biomass/context:python)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-![logo2](images/logo2.png)
+![logo2](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/logo2.png?raw=true)
 
 当ソフトウェアは，細胞内シグナル伝達機構の数理モデリングを目的としたツールです．実験から得られた実測データに基づいてモデル内のパラメータを最適化し，その結果に基づいた解析により，細胞応答に対する反応ネットワーク内の重要な要素を同定することができます．
 
@@ -97,7 +97,7 @@ run_simulation(Nakakuki_Cell_2010, viz_type='average', show_all=False, stdev=Tru
 **stdev** : bool
 - ```viz_type == 'average'```の際，標準偏差も含めて表示します．
 
-![simulation_best](docs/src//assets/simulation_best.png)
+![simulation_best](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/simulation_best.png?raw=true)
 
 点（青, EGF; 赤, HRG）は実験データ，線はシミュレーション結果を表す
 
@@ -140,7 +140,7 @@ if self.perturbation:
 - ```'barplot'```
 - ```'heatmap'```
 
-![sensitivity_PcFos](docs/src//assets/sensitivity_PcFos.png)
+![sensitivity_PcFos](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/sensitivity_PcFos.png?raw=true)
 
 pc-Fosの積分値に対する感度係数（青, EGF; 赤, HRG）．棒の上下の数字は反応番号を，エラーバーは標準偏差を表す．
 
