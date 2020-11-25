@@ -1,6 +1,7 @@
 import os
 import re
 import numpy as np
+from typing import Tuple
 
 class ExecModel(object):
     def __init__(self, model):
@@ -55,7 +56,7 @@ class ExecModel(object):
         )
         return best_indiv
 
-    def load_param(self, paramset: int):
+    def load_param(self, paramset: int) -> Tuple[list, list]:
         best_indiv = self.get_indiv(paramset)
         (x, y0) = self.sp.update(best_indiv)
         return x, y0

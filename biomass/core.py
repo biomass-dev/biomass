@@ -1,6 +1,7 @@
 """BioMASS core functions"""
 import multiprocessing
 import warnings
+from typing import List
 
 from biomass.dynamics import SignalingSystems
 from biomass.ga import GeneticAlgorithmInit, GeneticAlgorithmContinue
@@ -13,10 +14,10 @@ __all__ = ['run_simulation', 'optimize', 'optimize_continue', 'run_analysis']
 
 def run_simulation(
         model, 
-        viz_type, 
-        show_all=False, 
-        stdev=False
-):
+        viz_type: str, 
+        show_all: bool = False, 
+        stdev: bool = False
+) -> None:
     """
     Simulate ODE model with estimated parameter values.
 
@@ -63,7 +64,7 @@ def run_simulation(
     if not viz_type in ['best', 'average', 'original', 'experiment'] \
             and not viz_type.isdecimal():
         raise ValueError(
-            "Avairable viz_type are: " \
+            "Available viz_type are: " \
             "'best','average','original','experiment','n(=1, 2, ...)'"
         )
     SignalingSystems(model).simulate_all(
@@ -74,10 +75,10 @@ def run_simulation(
 def optimize(
         model, 
         *args, 
-        max_generation=10000, 
-        allowable_error=0.0,
-        overwrite=False
-):
+        max_generation: int = 10000, 
+        allowable_error: float = 0.0,
+        overwrite:bool = False
+) -> None:
     """ 
     Run GA for parameter estimation.
 
@@ -125,10 +126,10 @@ def optimize(
 def optimize_continue(
         model, 
         *args, 
-        max_generation=10000, 
-        allowable_error=0.0,
-        p0_bounds=[0.1, 10.]
-):
+        max_generation: int=10000, 
+        allowable_error: float=0.0,
+        p0_bounds: List[float] = [0.1, 10.]
+) -> None:
     """ 
     Continue running GA from where you stopped in the last parameter search.
 
@@ -178,11 +179,11 @@ def optimize_continue(
 
 def run_analysis(
         model,
-        target,
-        metric='integral',
-        style='barplot',
-        excluded_params=[]
-):
+        target: str,
+        metric: str = 'integral',
+        style: str = 'barplot',
+        excluded_params: List[str] = []
+) -> None:
     """
     Perform sensitivity analysis to identify critical parameters, species or
     reactions in the complex biological network.
