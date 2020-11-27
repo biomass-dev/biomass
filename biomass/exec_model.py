@@ -76,7 +76,7 @@ class ExecModel(object):
                     empty_folder.append(i)
             for i in sorted(empty_folder, reverse=True):
                 n_file.pop(i)
-        except FileNotFoundError:
-            pass
+        except FileNotFoundError as e:
+            print(e)
         
         return n_file
