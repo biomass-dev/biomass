@@ -52,7 +52,7 @@ def test_run_simulation():
 
 def test_save_result():
     res = OptimizationResults(mapk_cascade)
-    res.get()
+    res.to_csv()
     assert os.path.isfile(
         MODEL_PATH + '/optimization_results/optimized_params.csv'
     )

@@ -9,9 +9,9 @@ class OptimizationResults(ExecModel):
     def __init__(self, model):
         super().__init__(model)
 
-    def get(self) -> None:
+    def to_csv(self) -> None:
         """
-        Get optimized parameters as CSV file format.
+        Save optimized parameters as CSV file format.
 
         Output
         ------
@@ -23,7 +23,7 @@ class OptimizationResults(ExecModel):
         >>> from biomass.models import Nakakuki_Cell_2010
         >>> from biomass.result import OptimizationResults
         >>> res = OptimizationResults(Nakakuki_Cell_2010)
-        >>> res.get()
+        >>> res.to_csv()
 
         """
         os.makedirs(self.model_path + '/optimization_results/', exist_ok=True)
