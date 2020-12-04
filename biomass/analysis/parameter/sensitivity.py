@@ -38,7 +38,7 @@ class ParameterSensitivity(ExecModel):
         ----------
         metric : str
             - 'maximum': The maximum value.
-            - 'minimum' : The minimum value.
+            - 'minimum': The minimum value.
             - 'duration': The time it takes to decline below 10% of its maximum.
             - 'integral': The integral of concentration over the observation time.
             
@@ -98,6 +98,9 @@ class ParameterSensitivity(ExecModel):
         return sensitivity_coefficients
 
     def _load_sc(self, metric: str, param_indices: List[int]):
+        """
+        Load (or calculate) sensitivity coefficients.
+        """
         os.makedirs(
             self.model_path + '/figure/sensitivity/'
             f'parameter/{metric}/heatmap', exist_ok=True
@@ -129,6 +132,9 @@ class ParameterSensitivity(ExecModel):
             sensitivity_coefficients: np.ndarray,
             param_indices: List[int]
     ):
+        """
+        Visualize sensitivity coefficients using barplot.
+        """
         options = self.viz.sensitivity_options
 
         # rcParams
@@ -190,6 +196,9 @@ class ParameterSensitivity(ExecModel):
             sensitivity_matrix: np.ndarray,
             normalize: bool
     ) -> np.ndarray:
+        """
+        Remove NaN from sensitivity matrix.
+        """
         nan_idx = []
         for i in range(sensitivity_matrix.shape[0]):
             if any(np.isnan(sensitivity_matrix[i, :])):
@@ -209,10 +218,13 @@ class ParameterSensitivity(ExecModel):
 
     def _heatmap_sensitivity(
             self,
-            metric : str,
+            metric: str,
             sensitivity_coefficients: np.ndarray,
             param_indices: List[int]
     ):
+        """
+        Visualize sensitivity coefficients using heatmap.
+        """
         options = self.viz.sensitivity_options
         # rcParams
         self.viz.set_sensitivity_rcParams()
@@ -247,6 +259,9 @@ class ParameterSensitivity(ExecModel):
                     plt.close()
 
     def analyze(self, metric: str, style: str):
+        """
+        Perform sensitivity analysis.
+        """
         param_indices = self._get_param_indices()
         sensitivity_coefficients = self._load_sc(metric, param_indices)
         if style == 'barplot':

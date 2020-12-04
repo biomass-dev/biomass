@@ -25,7 +25,7 @@ class ReactionSensitivity(ExecModel):
         ----------
         metric : str
             - 'maximum': The maximum value.
-            - 'minimum' : The minimum value.
+            - 'minimum': The minimum value.
             - 'duration': The time it takes to decline below 10% of its maximum.
             - 'integral': The integral of concentration over the observation time.
             
@@ -82,6 +82,9 @@ class ReactionSensitivity(ExecModel):
         return sensitivity_coefficients
 
     def _load_sc(self, metric: str, reaction_indices: List[int]):
+        """
+        Load (or calculate) sensitivity coefficients.
+        """
         os.makedirs(
             self.model_path + '/figure/sensitivity/'
             f'reaction/{metric}/heatmap', exist_ok=True
@@ -112,6 +115,9 @@ class ReactionSensitivity(ExecModel):
             biological_processes: List[List[int]],
             width: float
     ):
+        """
+        Draw vertical span separating biological processes.
+        """
         if len(biological_processes) > 1:
             left_end = 0
             for i, proc in enumerate(biological_processes):
@@ -130,6 +136,9 @@ class ReactionSensitivity(ExecModel):
             stdev: np.ndarray,
             width: float
     ):
+        """
+        Put reaction index on each bar.
+        """
         distance = np.max(average) * 0.05
         for i, j in enumerate(reaction_indices):
             xp = i + width * 0.5 * (len(self.sim.conditions) - 1)
@@ -153,6 +162,9 @@ class ReactionSensitivity(ExecModel):
             biological_processes: List[List[int]],
             reaction_indices: List[int],
     ):
+        """
+        Visualize sensitivity coefficients using barplot.
+        """
         options = self.viz.sensitivity_options
 
         # rcParams
@@ -217,6 +229,9 @@ class ReactionSensitivity(ExecModel):
             sensitivity_matrix: np.ndarray,
             normalize: bool
     ) -> np.ndarray:
+        """
+        Remove NaN from sensitivity matrix.
+        """
         nan_idx = []
         for i in range(sensitivity_matrix.shape[0]):
             if any(np.isnan(sensitivity_matrix[i, :])):
@@ -242,6 +257,9 @@ class ReactionSensitivity(ExecModel):
             sensitivity_coefficients: np.ndarray,
             reaction_indices: List[int],
     ):
+        """
+        Visualize sensitivity coefficients using heatmap.
+        """
         options = self.viz.sensitivity_options
         # rcParams
         self.viz.set_sensitivity_rcParams()
@@ -275,6 +293,9 @@ class ReactionSensitivity(ExecModel):
                     plt.close()
 
     def analyze(self, metric: str, style: str):
+        """
+        Perform sensitivity analysis.
+        """
         if not self.rxn.reactions:
             raise ValueError(
                 'Define reaction indices (reactions) in reaction_network.py'
