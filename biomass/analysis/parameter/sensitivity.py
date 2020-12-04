@@ -3,6 +3,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from typing import List
 
 from biomass.exec_model import ExecModel
 from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
@@ -15,7 +16,7 @@ class ParameterSensitivity(ExecModel):
         super().__init__(model)
         self.excluded_params = excluded_params
 
-    def _get_param_indices(self):
+    def _get_param_indices(self) -> List[int]:
         param_indices = []
         x = self.pval()
         for i, val in enumerate(x):
@@ -26,7 +27,11 @@ class ParameterSensitivity(ExecModel):
         
         return param_indices
 
-    def _calc_sensitivity_coefficients(self, metric, param_indices):
+    def _calc_sensitivity_coefficients(
+            self,
+            metric: str,
+            param_indices: List[int]
+    ) -> np.ndarray:
         """ Calculating Sensitivity Coefficients
 
         Parameters
@@ -37,9 +42,8 @@ class ParameterSensitivity(ExecModel):
             - 'duration': The time it takes to decline below 10% of its maximum.
             - 'integral': The integral of concentration over the observation time.
             
-        nonzero_indices : list of int
-            for i in nonzero_indices:
-                y0[i] != 0.0
+        param_indices : list of int
+            List of parameter indices for sensitivity analysis.
 
         Returns
         -------
@@ -93,37 +97,37 @@ class ParameterSensitivity(ExecModel):
 
         return sensitivity_coefficients
 
-    def _load_sc(self, metric, param_indices):
+    def _load_sc(self, metric: str, param_indices: List[int]):
         os.makedirs(
-            self.model_path + '/figure/sensitivity/' \
-            'parameter/{}/heatmap'.format(metric), exist_ok=True
+            self.model_path + '/figure/sensitivity/'
+            f'parameter/{metric}/heatmap', exist_ok=True
         )
         if not os.path.isfile(
-                self.model_path + '/sensitivity_coefficients/' \
-                'parameter/{}/sc.npy'.format(metric)):
+                self.model_path + '/sensitivity_coefficients/'
+                f'parameter/{metric}/sc.npy'):
             os.makedirs(
-                self.model_path + '/sensitivity_coefficients/' \
-                'parameter/{}'.format(metric), exist_ok=True
+                self.model_path + '/sensitivity_coefficients/'
+                f'parameter/{metric}', exist_ok=True
             )
             sensitivity_coefficients = \
                 self._calc_sensitivity_coefficients(metric, param_indices)
             np.save(
-                self.model_path + '/sensitivity_coefficients/' \
-                'parameter/{}/sc'.format(metric), sensitivity_coefficients
+                self.model_path + '/sensitivity_coefficients/'
+                f'parameter/{metric}/sc', sensitivity_coefficients
             )
         else:
             sensitivity_coefficients = np.load(
-                self.model_path + '/sensitivity_coefficients/' \
-                'parameter/{}/sc.npy'.format(metric)
+                self.model_path + '/sensitivity_coefficients/'
+                f'parameter/{metric}/sc.npy'
             )
             
         return sensitivity_coefficients
 
     def _barplot_sensitivity(
             self,
-            metric,
-            sensitivity_coefficients,
-            param_indices
+            metric: str,
+            sensitivity_coefficients: np.ndarray,
+            param_indices: List[int]
     ):
         options = self.viz.sensitivity_options
 
@@ -175,15 +179,17 @@ class ParameterSensitivity(ExecModel):
             plt.legend(loc=options['legend_loc'], frameon=False)
             plt.savefig(
                 self.model_path
-                + '/figure/sensitivity/parameter/'\
-                '{}/{}.pdf'.format(
-                    metric, obs_name
-                ), bbox_inches='tight'
+                + '/figure/sensitivity/parameter/'
+                f'{metric}/{obs_name}.pdf',
+                bbox_inches='tight'
             )
             plt.close()
 
     @staticmethod
-    def _remove_nan(sensitivity_matrix, normalize):
+    def _remove_nan(
+            sensitivity_matrix: np.ndarray,
+            normalize: bool
+    ) -> np.ndarray:
         nan_idx = []
         for i in range(sensitivity_matrix.shape[0]):
             if any(np.isnan(sensitivity_matrix[i, :])):
@@ -203,9 +209,9 @@ class ParameterSensitivity(ExecModel):
 
     def _heatmap_sensitivity(
             self,
-            metric,
-            sensitivity_coefficients,
-            param_indices
+            metric : str,
+            sensitivity_coefficients: np.ndarray,
+            param_indices: List[int]
     ):
         options = self.viz.sensitivity_options
         # rcParams
@@ -234,14 +240,13 @@ class ParameterSensitivity(ExecModel):
                     plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90)
                     plt.savefig(
                         self.model_path
-                        + '/figure/sensitivity/parameter/'\
-                        '{}/heatmap/{}_{}.pdf'.format(
-                            metric, condition, obs_name
-                        ), bbox_inches='tight'
+                        + '/figure/sensitivity/parameter/'
+                        f'{metric}/heatmap/{condition}_{obs_name}.pdf',
+                        bbox_inches='tight'
                     )
                     plt.close()
 
-    def analyze(self, metric, style):
+    def analyze(self, metric: str, style: str):
         param_indices = self._get_param_indices()
         sensitivity_coefficients = self._load_sc(metric, param_indices)
         if style == 'barplot':
@@ -256,4 +261,4 @@ class ParameterSensitivity(ExecModel):
                     metric, sensitivity_coefficients, param_indices
                 )
         else:
-            raise ValueError("Available styles are: 'barplot', 'heatmap'")
+            raise ValueError('Available styles are: \'barplot\', \'heatmap\'')
