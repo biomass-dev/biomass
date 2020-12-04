@@ -1,9 +1,10 @@
 import numpy as np
 from math import fabs, log
 from scipy.integrate import simps
+from typing import List, Union
 
 
-def _get_duration(timecourse, below_threshold=0.1):
+def _get_duration(timecourse: np.ndarray, below_threshold: float = 0.1) -> int:
     """
     Calculation of the duration as the time it takes to decline below the threshold
 
@@ -28,7 +29,10 @@ def _get_duration(timecourse, below_threshold=0.1):
     return duration
 
 
-def get_signaling_metric(metric, timecourse):
+def get_signaling_metric(
+        metric: str,
+        timecourse: np.ndarray
+) -> Union[int, float]:
     """Quantification of cellular response.
 
     Parameters
@@ -40,7 +44,7 @@ def get_signaling_metric(metric, timecourse):
 
     Returns
     -------
-    M* : float
+    M* : int or float
         signaling_metric[i, j, k, l]
     
     """
@@ -66,8 +70,15 @@ def get_signaling_metric(metric, timecourse):
         )
 
 
-def dlnyi_dlnxj(signaling_metric, n_file, perturbed_idx,
-                observables, conditions, rate, epsilon=1e-9):
+def dlnyi_dlnxj(
+        signaling_metric: np.ndarray,
+        n_file: List[int],
+        perturbed_idx: List[int],
+        observables: List[str],
+        conditions: List[str],
+        rate: float,
+        epsilon: float = 1e-9
+) -> np.ndarray:
     """
     Numerical computation of sensitivities using finite difference approximations
     with 1% changes in the reaction rates or non-zero initial values.

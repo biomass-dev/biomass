@@ -3,6 +3,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from typing import List
 
 from biomass.exec_model import ExecModel
 from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
@@ -14,7 +15,7 @@ class InitialConditionSensitivity(ExecModel):
     def __init__(self, model):
         super().__init__(model)
 
-    def _get_nonzero_indices(self):
+    def _get_nonzero_indices(self) -> List[int]:
         nonzero_indices = []
         y0 = self.ival()
         for i, val in enumerate(y0):
@@ -25,20 +26,23 @@ class InitialConditionSensitivity(ExecModel):
         
         return nonzero_indices
 
-    def _calc_sensitivity_coefficients(self, metric, nonzero_indices):
+    def _calc_sensitivity_coefficients(
+            self,
+            metric: str,
+            nonzero_indices: List[int]
+    ) -> np.ndarray:
         """ Calculating Sensitivity Coefficients
 
         Parameters
         ----------
         metric : str
             - 'maximum': The maximum value.
-            - 'minimum' : The minimum value.
+            - 'minimum': The minimum value.
             - 'duration': The time it takes to decline below 10% of its maximum.
             - 'integral': The integral of concentration over the observation time.
             
         nonzero_indices : list of int
-            for i in nonzero_indices:
-                y0[i] != 0.0
+            List of species index with nonzero initial conditions. 
 
         Returns
         -------
@@ -92,38 +96,44 @@ class InitialConditionSensitivity(ExecModel):
 
         return sensitivity_coefficients
 
-    def _load_sc(self, metric, nonzero_indices):
+    def _load_sc(self, metric: str, nonzero_indices: List[int]):
+        """
+        Load (or calculate) sensitivity coefficients.
+        """
         os.makedirs(
-            self.model_path + '/figure/sensitivity/' \
-            'initial_condition/{}/heatmap'.format(metric), exist_ok=True
+            self.model_path + '/figure/sensitivity/'
+            f'initial_condition/{metric}/heatmap', exist_ok=True
         )
         if not os.path.isfile(
-                self.model_path + '/sensitivity_coefficients/' \
-                'initial_condition/{}/sc.npy'.format(metric)):
+                self.model_path + '/sensitivity_coefficients/'
+                f'initial_condition/{metric}/sc.npy'):
             os.makedirs(
-                self.model_path + '/sensitivity_coefficients/' \
-                'initial_condition/{}'.format(metric), exist_ok=True
+                self.model_path + '/sensitivity_coefficients/'
+                f'initial_condition/{metric}', exist_ok=True
             )
             sensitivity_coefficients = \
                 self._calc_sensitivity_coefficients(metric, nonzero_indices)
             np.save(
-                self.model_path + '/sensitivity_coefficients/' \
-                'initial_condition/{}/sc'.format(metric), sensitivity_coefficients
+                self.model_path + '/sensitivity_coefficients/'
+                f'initial_condition/{metric}/sc', sensitivity_coefficients
             )
         else:
             sensitivity_coefficients = np.load(
-                self.model_path + '/sensitivity_coefficients/' \
-                'initial_condition/{}/sc.npy'.format(metric)
+                self.model_path + '/sensitivity_coefficients/'
+                f'initial_condition/{metric}/sc.npy'
             )
             
         return sensitivity_coefficients
 
     def _barplot_sensitivity(
             self,
-            metric,
-            sensitivity_coefficients,
-            nonzero_indices
+            metric: str,
+            sensitivity_coefficients: np.ndarray,
+            nonzero_indices: List[int]
     ):
+        """
+        Visualize sensitivity coefficients using barplot.
+        """
         options = self.viz.sensitivity_options
 
         # rcParams
@@ -174,15 +184,20 @@ class InitialConditionSensitivity(ExecModel):
             plt.legend(loc=options['legend_loc'], frameon=False)
             plt.savefig(
                 self.model_path
-                + '/figure/sensitivity/initial_condition/'\
-                '{}/{}.pdf'.format(
-                    metric, obs_name
-                ), bbox_inches='tight'
+                + '/figure/sensitivity/initial_condition/'
+                f'{metric}/{obs_name}.pdf',
+                bbox_inches='tight'
             )
             plt.close()
 
     @staticmethod
-    def _remove_nan(sensitivity_matrix, normalize):
+    def _remove_nan(
+            sensitivity_matrix: np.ndarray,
+            normalize: bool
+    ) -> np.ndarray:
+        """
+        Remove NaN from sensitivity matrix.
+        """
         nan_idx = []
         for i in range(sensitivity_matrix.shape[0]):
             if any(np.isnan(sensitivity_matrix[i, :])):
@@ -202,10 +217,13 @@ class InitialConditionSensitivity(ExecModel):
 
     def _heatmap_sensitivity(
             self,
-            metric,
-            sensitivity_coefficients,
-            nonzero_indices
+            metric: str,
+            sensitivity_coefficients: np.ndarray,
+            nonzero_indices: List[int]
     ):
+        """
+        Visualize sensitivity coefficients using heatmap.
+        """
         options = self.viz.sensitivity_options
         # rcParams
         self.viz.set_sensitivity_rcParams()
@@ -235,14 +253,16 @@ class InitialConditionSensitivity(ExecModel):
                     plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90)
                     plt.savefig(
                         self.model_path
-                        + '/figure/sensitivity/initial_condition/'\
-                        '{}/heatmap/{}_{}.pdf'.format(
-                            metric, condition, obs_name
-                        ), bbox_inches='tight'
+                        + '/figure/sensitivity/initial_condition/'
+                        f'{metric}/heatmap/{condition}_{obs_name}.pdf',
+                        bbox_inches='tight'
                     )
                     plt.close()
 
-    def analyze(self, metric, style):
+    def analyze(self, metric: str, style: str):
+        """
+        Perform sensitivity analysis.
+        """
         nonzero_indices = self._get_nonzero_indices()
         sensitivity_coefficients = self._load_sc(metric, nonzero_indices)
         if style == 'barplot':
@@ -257,4 +277,4 @@ class InitialConditionSensitivity(ExecModel):
                     metric, sensitivity_coefficients, nonzero_indices
                 )
         else:
-            raise ValueError("Available styles are: 'barplot', 'heatmap'")
+            raise ValueError('Available styles are: \'barplot\', \'heatmap\'')
