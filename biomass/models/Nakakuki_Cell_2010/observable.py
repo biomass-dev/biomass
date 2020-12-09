@@ -127,7 +127,7 @@ class NumericalSimulation(DifferentialEquation):
         dt = (self.t[-1] - self.t[0]) / (len(self.t) - 1)
         sol = ode(diffeq)
         sol.set_integrator(
-            'zvode', method='bdf', with_jacobian=True,
+            'vode', method='bdf', with_jacobian=True,
             atol=1e-9, rtol=1e-9, min_step=1e-8
         )
         sol.set_initial_value(y0, tspan[0])
@@ -141,7 +141,7 @@ class NumericalSimulation(DifferentialEquation):
             T.append(sol.t)
             Y.append(sol.y)
 
-        return np.array(T), np.real(Y)
+        return np.array(T), np.array(Y)
     
     def _get_steady_state(self, diffeq, y0, args, eps=1e-6):
         """
