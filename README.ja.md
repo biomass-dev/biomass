@@ -72,7 +72,7 @@ optimize(Nakakuki_Cell_2010, n1, n2)
 - 最適化したパラメータの取得
 
 ```python
-from biomass.result import OptimizationResult
+from biomass.result import OptimizationResults
 
 res = OptimizationResult(Nakakuki_Cell_2010)
 res.to_csv()
@@ -128,7 +128,7 @@ run_analysis(Nakakuki_Cell_2010, target='reaction', metric='integral', style='ba
 
 感度係数は以下の式で記述されます．
 
-_s<sub>i</sub>_(_q_(**v**),_v<sub>i</sub>_) = _∂_ ln(_q_(**v**)) / _∂_ ln(_v<sub>i</sub>_) = _∂__q_(**v**) / _∂__v<sub>i</sub>_ · _v<sub>i</sub>_ / _q_(**v**)
+_s<sub>i</sub>_(_q_(**v**),_v<sub>i</sub>_) = _∂_ ln(_q_(**v**)) / _∂_ ln(_v<sub>i</sub>_) = _∂\_\_q_(**v**) / _∂\_\_v<sub>i</sub>_ · _v<sub>i</sub>_ / _q_(**v**)
 
 ここで _v<sub>i</sub>_ は*i*番目の反応速度を表し, **v** は反応速度のベクトル **v** = (_v<sub>1</sub>_, _v<sub>2</sub>_, ...)，_q_(**v**) は出力を定量する関数です（例：応答の積分値，最大値，持続時間など）． 感度係数は微分を 1%の反応速度の変化で有限差分近似して計算されます．
 
