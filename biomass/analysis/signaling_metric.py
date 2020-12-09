@@ -14,11 +14,11 @@ def _get_duration(timecourse: np.ndarray, below_threshold: float = 0.1) -> int:
         Simulated time course data
     below_threshold : float
         0.1 for 10% of its maximum
-    
+
     Returns
     -------
     duration : int
-    
+
     """
     maximum_value = np.max(timecourse)
     t_max = np.argmax(timecourse)
@@ -29,10 +29,7 @@ def _get_duration(timecourse: np.ndarray, below_threshold: float = 0.1) -> int:
     return duration
 
 
-def get_signaling_metric(
-        metric: str,
-        timecourse: np.ndarray
-) -> Union[int, float]:
+def get_signaling_metric(metric: str, timecourse: np.ndarray) -> Union[int, float]:
     """Quantification of cellular response.
 
     Parameters
@@ -46,38 +43,28 @@ def get_signaling_metric(
     -------
     M* : int or float
         signaling_metric[i, j, k, l]
-    
+
     """
-    if metric == 'maximum':
-        return np.max(
-            timecourse
-        )
-    elif metric == 'minimum':
-        return np.min(
-            timecourse
-        )
-    elif metric == 'duration':
-        return _get_duration(
-            timecourse
-        )
-    elif metric == 'integral':
-        return simps(
-            timecourse
-        )
+    if metric == "maximum":
+        return np.max(timecourse)
+    elif metric == "minimum":
+        return np.min(timecourse)
+    elif metric == "duration":
+        return _get_duration(timecourse)
+    elif metric == "integral":
+        return simps(timecourse)
     else:
-        raise ValueError(
-            "Available metrics are: 'maximum', 'minimum', 'duration', 'integral'"
-        )
+        raise ValueError("Available metrics are: 'maximum', 'minimum', 'duration', 'integral'")
 
 
 def dlnyi_dlnxj(
-        signaling_metric: np.ndarray,
-        n_file: List[int],
-        perturbed_idx: List[int],
-        observables: List[str],
-        conditions: List[str],
-        rate: float,
-        epsilon: float = 1e-9
+    signaling_metric: np.ndarray,
+    n_file: List[int],
+    perturbed_idx: List[int],
+    observables: List[str],
+    conditions: List[str],
+    rate: float,
+    epsilon: float = 1e-9,
 ) -> np.ndarray:
     """
     Numerical computation of sensitivities using finite difference approximations
@@ -105,29 +92,21 @@ def dlnyi_dlnxj(
     sensitivity_coefficients: numpy array
 
     """
-    sensitivity_coefficients = np.empty(
-        (len(n_file), len(perturbed_idx), len(observables), len(conditions))
-    )
+    sensitivity_coefficients = np.empty((len(n_file), len(perturbed_idx), len(observables), len(conditions)))
     for i, _ in enumerate(n_file):
         for j, _ in enumerate(perturbed_idx):
             for k, _ in enumerate(observables):
                 for l, _ in enumerate(conditions):
                     if np.isnan(signaling_metric[i, j, k, l]):
                         sensitivity_coefficients[i, j, k, l] = np.nan
-                    elif fabs(
-                        signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l]
-                    ) < epsilon or (
-                        signaling_metric[i, j, k, l] / signaling_metric[i, -1, k, l]
-                    ) < 0:
+                    elif (
+                        fabs(signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l]) < epsilon
+                        or (signaling_metric[i, j, k, l] / signaling_metric[i, -1, k, l]) < 0
+                    ):
                         sensitivity_coefficients[i, j, k, l] = 0.0
                     else:
-                        sensitivity_coefficients[i, j, k, l] = (
-                            log(
-                                signaling_metric[i, j, k, l] /
-                                signaling_metric[i, -1, k, l]
-                            ) / log(
-                                rate
-                            )
-                        )
+                        sensitivity_coefficients[i, j, k, l] = log(
+                            signaling_metric[i, j, k, l] / signaling_metric[i, -1, k, l]
+                        ) / log(rate)
 
     return sensitivity_coefficients
