@@ -4,8 +4,6 @@ from biomass.models import circadian_clock
 from biomass.exec_model import ExecModel
 from biomass import run_simulation
 
-import pytest
-
 
 for dir in ["/figure", "/simulation_data"]:
     if os.path.isdir(circadian_clock.__path__[0] + dir):
@@ -21,9 +19,7 @@ def test_simulate_successful():
 
 def test_run_simulation():
     run_simulation(circadian_clock, viz_type="original")
-    assert os.path.isfile(
-        circadian_clock.__path__[0] + "/simulation_data/simulations_original.npy"
-    )
+    assert os.path.isfile(circadian_clock.__path__[0] + "/simulation_data/simulations_original.npy")
 
 
 def test_cleanup():

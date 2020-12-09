@@ -1,10 +1,9 @@
 import os
 import shutil
 from distutils.dir_util import copy_tree
-import warnings
-from biomass import run_simulation, run_analysis
+from biomass import run_simulation
 
-import pytest
+# from biomass import run_analysis
 
 
 os.makedirs("biomass/models/Nakakuki_Cell_2010/out", exist_ok=True)

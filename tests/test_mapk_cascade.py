@@ -6,8 +6,6 @@ from biomass.exec_model import ExecModel
 from biomass.result import OptimizationResults
 from biomass import optimize, optimize_continue, run_simulation, run_analysis
 
-import pytest
-
 
 MODEL_PATH = mapk_cascade.__path__[0]
 
@@ -71,9 +69,7 @@ def test_save_result():
 def test_sensitivity_analysis():
     for target in ["parameter", "initial_condition"]:
         run_analysis(mapk_cascade, target=target, metric="integral")
-        assert os.path.isfile(
-            MODEL_PATH + "/sensitivity_coefficients/" + target + "/integral/sc.npy"
-        )
+        assert os.path.isfile(MODEL_PATH + "/sensitivity_coefficients/" + target + "/integral/sc.npy")
 
 
 def test_cleanup():
