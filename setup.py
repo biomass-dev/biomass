@@ -22,7 +22,8 @@ def main():
     exec(open(version_path).read())
 
     # set long_description
-    readme_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "README.md")
+    here = os.path.abspath(os.path.dirname(__file__))
+    readme_path = os.path.join(here, "README.md")
     with open(readme_path, "r", encoding="utf-8") as f:
         long_description = f.read()
 
@@ -36,7 +37,7 @@ def main():
         author="Hiroaki Imoto",
         author_email="himoto@protein.osaka-u.ac.jp",
         url="https://github.com/okadalabipr/biomass",
-        packages=find_packages(exclude=["docs", "tests"]),
+        packages=find_packages(exclude=["tests"]),
         install_requires=read_requirements(),
         python_requires=">=3.7",
         classifiers=[
