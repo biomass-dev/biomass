@@ -178,4 +178,4 @@ When using BioMASS, please cite:
 
 ## Installation
 
-    $ git clone https://github.com/okadalabipr/biomass.git
+    $ pip install git+https://github.com/okadalabipr/biomass.git
