@@ -141,9 +141,13 @@ class RealCodedGeneticAlgorithm(object):
                 popsize=1,
                 polish=False,
                 init=population[ip, : self.n_gene],
-                updating="immediate" if self.workers != 1 else "deferred",
+                updating="immediate" if self.workers == 1 else "deferred",
                 workers=self.workers,
             )
+            obj_val = self.obj_func(res.x)
+            if obj_val < self.obj_func(population[ip[0], : self.n_gene]):
+                population[ip[0], : self.n_gene] = res.x
+                population[ip[0], -1] = obj_val
 
         population = population[np.argsort(population[:, -1]), :]
 
