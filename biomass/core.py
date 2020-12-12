@@ -92,10 +92,11 @@ def optimize(model, *args, options: Optional[dict] = None) -> None:
         n_children : int (default: 200)
             (method='mutation') The number of children generated in NDM/MGG.
 
-        workers : int (default: -1)
+        workers : int (default: -1 if len(args) == 1 else 1)
             (method='DE') The population is subdivided into workers sections and
-            evaluated in parallel (uses multiprocessing.Pool).
-            Supply -1 to use all available CPU cores.
+            evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
+            all available CPU cores. Set workers to 1 when searching multiple
+            parameter sets simultaneously.
 
         overwrite : bool (default: False)
             If True, the out/n folder will be overwritten.
@@ -120,8 +121,11 @@ def optimize(model, *args, options: Optional[dict] = None) -> None:
     options.setdefault("allowable_error", 0.0)
     options.setdefault("local_search_method", "mutation")
     options.setdefault("n_children", 200)
-    options.setdefault("workers", -1)
+    options.setdefault("workers", -1 if len(args) == 1 else 1)
     options.setdefault("overwrite", False)
+
+    if len(args) == 2 and options["local_search_method"].lower() == "de" and options["workers"] != 1:
+        raise AssertionError("daemonic processes are not allowed to have children. Set options['workers'] to 1.")
 
     warnings.filterwarnings("ignore")
     ga_init = GeneticAlgorithmInit(model, **options)
@@ -165,10 +169,11 @@ def optimize_continue(model, *args, options: Optional[dict] = None) -> None:
         n_children : int (default: 200)
             (method='mutation') The number of children generated in NDM/MGG.
 
-        workers : int (default: -1)
+        workers : int (default: -1 if len(args) == 1 else 1)
             (method='DE') The population is subdivided into workers sections and
-            evaluated in parallel (uses multiprocessing.Pool).
-            Supply -1 to use all available CPU cores.
+            evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
+            all available CPU cores. Set workers to 1 when searching multiple
+            parameter sets simultaneously.
 
         p0_bounds : list of float (default: [0.1, 10.0])
             Generate initial population using best parameter values in the last
@@ -196,8 +201,11 @@ def optimize_continue(model, *args, options: Optional[dict] = None) -> None:
     options.setdefault("allowable_error", 0.0)
     options.setdefault("local_search_method", "mutation")
     options.setdefault("n_children", 200)
-    options.setdefault("workers", -1)
+    options.setdefault("workers", -1 if len(args) == 1 else 1)
     options.setdefault("p0_bounds", [0.1, 10.0])
+
+    if len(args) == 2 and options["local_search_method"].lower() == "de" and options["workers"] != 1:
+        raise AssertionError("daemonic processes are not allowed to have children. Set options['workers'] to 1.")
 
     warnings.filterwarnings("ignore")
     ga_continue = GeneticAlgorithmContinue(model, **options)
