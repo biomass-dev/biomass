@@ -46,7 +46,7 @@ class SignalingSystems(TemporalDynamics):
                 if 2 <= len(n_file):
                     popt = np.empty((len(n_file), len(self.sp.idx_params) + len(self.sp.idx_initials)))
                     for i, nth_paramset in enumerate(n_file):
-                        popt[i, :] = self.get_indiv(nth_paramset)
+                        popt[i, :] = self.get_individual(nth_paramset)
                     self.plot_param_range(popt, portrait=True)
             else:  # viz_type == 'original'
                 x = self.pval()

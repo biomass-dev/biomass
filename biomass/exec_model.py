@@ -25,18 +25,13 @@ class ExecModel(object):
                     isinstance(self.sim.normalization[obs_name]["timepoint"], int)
                     and self.sim.t[-1] < self.sim.normalization[obs_name]["timepoint"]
                 ):
-                    raise ValueError(
-                        f"Normalization timepoint must be smaller than {self.sim.t[-1]:d}."
-                    )
+                    raise ValueError(f"Normalization timepoint must be smaller than {self.sim.t[-1]:d}.")
                 if not self.sim.normalization[obs_name]["condition"]:
                     self.sim.normalization[obs_name]["condition"] = self.sim.conditions
                 else:
                     for c in self.sim.normalization[obs_name]["condition"]:
                         if not c in self.sim.conditions:
-                            raise ValueError(
-                                f"Normalization condition '{c}'"
-                                " is not defined in sim.conditions."
-                            )
+                            raise ValueError(f"Normalization condition '{c}'" " is not defined in sim.conditions.")
 
     def show_properties(self):
         print(
@@ -47,16 +42,14 @@ class ExecModel(object):
             f"of which {len(self.sp.idx_params):d} to be estimated"
         )
 
-    def get_indiv(self, paramset: int) -> np.ndarray:
+    def get_individual(self, paramset: int) -> np.ndarray:
         best_generation = np.load(self.model_path + f"/out/{paramset:d}/generation.npy")
-        best_indiv = np.load(
-            self.model_path + f"/out/{paramset:d}/fit_param{int(best_generation):d}.npy"
-        )
-        return best_indiv
+        best_individual = np.load(self.model_path + f"/out/{paramset:d}/fit_param{int(best_generation):d}.npy")
+        return best_individual
 
     def load_param(self, paramset: int) -> Tuple[list, list]:
-        best_indiv = self.get_indiv(paramset)
-        (x, y0) = self.sp.update(best_indiv)
+        best_individual = self.get_individual(paramset)
+        (x, y0) = self.sp.update(best_individual)
         return x, y0
 
     def get_executable(self) -> list:
@@ -68,9 +61,7 @@ class ExecModel(object):
                     n_file.append(int(file))
             empty_folder = []
             for i, nth_paramset in enumerate(n_file):
-                if not os.path.isfile(
-                    self.model_path + f"/out/{nth_paramset:d}/generation.npy"
-                ):
+                if not os.path.isfile(self.model_path + f"/out/{nth_paramset:d}/generation.npy"):
                     empty_folder.append(i)
             for i in sorted(empty_folder, reverse=True):
                 n_file.pop(i)
