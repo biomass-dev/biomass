@@ -33,21 +33,46 @@ def test_optimize():
         3,
         options={
             "popsize": 3,
-            "max_generation": 10,
-            "local_search_method": "Powell",
+            "max_generation": 3,
+            "local_search_method": "mutation",
+            "n_children": 15,
             "overwrite": True,
         },
     )
     for i in range(1, 4):
         with open(MODEL_PATH + f"/out/{i:d}/optimization.log") as f:
             logs = f.readlines()
-        assert logs[-1][:14] == "Generation10: "
+        assert logs[-1][:13] == "Generation3: "
 
-    optimize_continue(mapk_cascade, 1, 3, options={"popsize": 3, "max_generation": 20})
+    optimize_continue(
+        mapk_cascade,
+        1,
+        3,
+        options={
+            "popsize": 3,
+            "max_generation": 6,
+            "local_search_method": "Powell",
+        },
+    )
     for i in range(1, 4):
         with open(MODEL_PATH + f"/out/{i:d}/optimization.log") as f:
             logs = f.readlines()
-        assert logs[-1][:14] == "Generation20: "
+        assert logs[-1][:13] == "Generation6: "
+
+    optimize_continue(
+        mapk_cascade,
+        1,
+        3,
+        options={
+            "popsize": 3,
+            "max_generation": 9,
+            "local_search_method": "DE",
+        },
+    )
+    for i in range(1, 4):
+        with open(MODEL_PATH + f"/out/{i:d}/optimization.log") as f:
+            logs = f.readlines()
+        assert logs[-1][:13] == "Generation9: "
 
 
 def test_run_simulation():
