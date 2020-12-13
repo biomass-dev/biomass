@@ -137,7 +137,7 @@ class RealCodedGeneticAlgorithm(object):
                 ((0.0, 1.0),) * self.n_gene,
                 strategy="best2bin",
                 mutation=(0, 1),
-                maxiter=10 if self.workers == 1 else 50,
+                maxiter=10 if self.workers == 1 else 20,
                 popsize=1,
                 polish=False,
                 init=population[ip, : self.n_gene],
