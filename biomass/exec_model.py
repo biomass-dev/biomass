@@ -1,23 +1,23 @@
 import os
 import re
 import numpy as np
-from typing import Tuple
+from typing import List, Tuple, Callable
 
 
 class ExecModel(object):
     def __init__(self, model):
-        self.model_path = model.__path__[0]
-        self.parameters = model.C.NAMES
-        self.species = model.V.NAMES
-        self.pval = model.param_values
-        self.ival = model.initial_values
-        self.obs = model.observables
+        self.model_path: str = model.__path__[0]
+        self.parameters: List[str] = model.C.NAMES
+        self.species: List[str] = model.V.NAMES
+        self.obs: List[str] = model.observables
+        self.pval: Callable[[], List[float]] = model.param_values
+        self.ival: Callable[[], List[float]] = model.initial_values
+        self.obj_func: Callable[..., float] = model.objective
         self.sim = model.NumericalSimulation()
         self.exp = model.ExperimentalData()
         self.viz = model.Visualization()
-        self.rxn = model.ReactionNetwork()
         self.sp = model.SearchParam()
-        self.obj_func = model.objective
+        self.rxn = model.ReactionNetwork()
 
         if self.sim.normalization:
             for obs_name in self.obs:
@@ -33,7 +33,7 @@ class ExecModel(object):
                         if not c in self.sim.conditions:
                             raise ValueError(f"Normalization condition '{c}'" " is not defined in sim.conditions.")
 
-    def show_properties(self):
+    def show_properties(self) -> None:
         print(
             "Model properties\n"
             "----------------\n"
@@ -47,12 +47,12 @@ class ExecModel(object):
         best_individual = np.load(self.model_path + f"/out/{paramset:d}/fit_param{int(best_generation):d}.npy")
         return best_individual
 
-    def load_param(self, paramset: int) -> Tuple[list, list]:
+    def load_param(self, paramset: int) -> Tuple[List[float], List[float]]:
         best_individual = self.get_individual(paramset)
         (x, y0) = self.sp.update(best_individual)
         return x, y0
 
-    def get_executable(self) -> list:
+    def get_executable(self) -> List[int]:
         n_file = []
         try:
             fitparam_files = os.listdir(self.model_path + "/out")
