@@ -1,4 +1,4 @@
 matplotlib
 numpy
-scipy
+scipy>=1.2.0
 seaborn

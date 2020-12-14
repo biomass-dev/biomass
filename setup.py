@@ -3,12 +3,9 @@ import sys
 from setuptools import setup, find_packages
 
 
-def read_requirements():
-    """Parse requirements from requirements.txt."""
-    reqs_path = os.path.join(".", "requirements.txt")
-    with open(reqs_path, "r") as f:
-        requirements = [line.rstrip() for line in f]
-    return requirements
+def read_file(file_path: str) -> str:
+    """Read a file."""
+    return open(file_path).read()
 
 
 def main():
@@ -18,14 +15,13 @@ def main():
 
     # read version from file
     __version__ = ""
-    version_path = os.path.join("biomass", "version.py")
-    exec(open(version_path).read())
+    version_info = os.path.join("biomass", "version.py")
+    exec(read_file(version_info))
 
-    # set long_description
+    # set long_description and requirements
     here = os.path.abspath(os.path.dirname(__file__))
-    readme_path = os.path.join(here, "README.md")
-    with open(readme_path, "r", encoding="utf-8") as f:
-        long_description = f.read()
+    long_description = read_file(os.path.join(here, "README.md"))
+    requirements = read_file(os.path.join(here, "requirements.txt"))
 
     setup(
         name="biomass",
@@ -38,10 +34,11 @@ def main():
         author_email="himoto@protein.osaka-u.ac.jp",
         url="https://github.com/okadalabipr/biomass",
         packages=find_packages(exclude=["tests"]),
-        install_requires=read_requirements(),
+        install_requires=requirements.split(),
         python_requires=">=3.7",
         classifiers=[
             "Intended Audience :: Science/Research",
+            "License :: OSI Approved :: MIT License",
             "Operating System :: OS Independent",
             "Programming Language :: Python :: 3.7",
             "Programming Language :: Python :: 3.8",

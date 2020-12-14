@@ -74,7 +74,7 @@ optimize(Nakakuki_Cell_2010, n1, n2)
 ```python
 from biomass.result import OptimizationResults
 
-res = OptimizationResult(Nakakuki_Cell_2010)
+res = OptimizationResults(Nakakuki_Cell_2010)
 res.to_csv()
 ```
 

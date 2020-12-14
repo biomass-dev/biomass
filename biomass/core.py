@@ -14,9 +14,7 @@ from biomass.analysis import (
 __all__ = ["run_simulation", "optimize", "optimize_continue", "run_analysis"]
 
 
-def run_simulation(
-    model, viz_type: str, show_all: bool = False, stdev: bool = False
-) -> None:
+def run_simulation(model, viz_type: str, show_all: bool = False, stdev: bool = False) -> None:
     """
     Simulate ODE model with estimated parameter values.
 
@@ -60,17 +58,9 @@ def run_simulation(
 
     """
     warnings.filterwarnings("ignore")
-    if (
-        not viz_type in ["best", "average", "original", "experiment"]
-        and not viz_type.isdecimal()
-    ):
-        raise ValueError(
-            "Available viz_type are: "
-            "'best','average','original','experiment','n(=1, 2, ...)'"
-        )
-    SignalingSystems(model).simulate_all(
-        viz_type=viz_type, show_all=show_all, stdev=stdev
-    )
+    if not viz_type in ["best", "average", "original", "experiment"] and not viz_type.isdecimal():
+        raise ValueError("Available viz_type are: 'best','average','original','experiment','n(=1, 2, ...)'")
+    SignalingSystems(model).simulate_all(viz_type=viz_type, show_all=show_all, stdev=stdev)
 
 
 def optimize(model, *args, options: Optional[dict] = None) -> None:
@@ -96,7 +86,17 @@ def optimize(model, *args, options: Optional[dict] = None) -> None:
         local_search_method : str (default: 'mutation')
             Method used in local search. Should be one of
             - 'mutation' : NDM/MGG
-            - 'Powell' : Modified powell method
+            - 'Powell' : Modified Powell method
+            - 'DE' : Differential Evolution (strategy: best2bin)
+
+        n_children : int (default: 200)
+            (method='mutation') The number of children generated in NDM/MGG.
+
+        workers : int (default: -1 if len(args) == 1 else 1)
+            (method='DE') The population is subdivided into workers sections and
+            evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
+            all available CPU cores. Set workers to 1 when searching multiple
+            parameter sets simultaneously.
 
         overwrite : bool (default: False)
             If True, the out/n folder will be overwritten.
@@ -120,7 +120,12 @@ def optimize(model, *args, options: Optional[dict] = None) -> None:
     options.setdefault("max_generation", 10000)
     options.setdefault("allowable_error", 0.0)
     options.setdefault("local_search_method", "mutation")
+    options.setdefault("n_children", 200)
+    options.setdefault("workers", -1 if len(args) == 1 else 1)
     options.setdefault("overwrite", False)
+
+    if len(args) == 2 and options["local_search_method"].lower() == "de" and options["workers"] != 1:
+        raise AssertionError("daemonic processes are not allowed to have children. Set options['workers'] to 1.")
 
     warnings.filterwarnings("ignore")
     ga_init = GeneticAlgorithmInit(model, **options)
@@ -158,7 +163,17 @@ def optimize_continue(model, *args, options: Optional[dict] = None) -> None:
         local_search_method : str (default: 'mutation')
             Method used in local search. Should be one of
             - 'mutation' : NDM/MGG
-            - 'Powell' : Modified powell method
+            - 'Powell' : Modified Powell method
+            - 'DE' : Differential Evolution (strategy: best2bin)
+
+        n_children : int (default: 200)
+            (method='mutation') The number of children generated in NDM/MGG.
+
+        workers : int (default: -1 if len(args) == 1 else 1)
+            (method='DE') The population is subdivided into workers sections and
+            evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
+            all available CPU cores. Set workers to 1 when searching multiple
+            parameter sets simultaneously.
 
         p0_bounds : list of float (default: [0.1, 10.0])
             Generate initial population using best parameter values in the last
@@ -185,7 +200,12 @@ def optimize_continue(model, *args, options: Optional[dict] = None) -> None:
     options.setdefault("max_generation", 15000)
     options.setdefault("allowable_error", 0.0)
     options.setdefault("local_search_method", "mutation")
+    options.setdefault("n_children", 200)
+    options.setdefault("workers", -1 if len(args) == 1 else 1)
     options.setdefault("p0_bounds", [0.1, 10.0])
+
+    if len(args) == 2 and options["local_search_method"].lower() == "de" and options["workers"] != 1:
+        raise AssertionError("daemonic processes are not allowed to have children. Set options['workers'] to 1.")
 
     warnings.filterwarnings("ignore")
     ga_continue = GeneticAlgorithmContinue(model, **options)
@@ -259,6 +279,4 @@ def run_analysis(
     elif target == "parameter":
         ParameterSensitivity(model, excluded_params).analyze(metric=metric, style=style)
     else:
-        raise ValueError(
-            "Available targets are: 'reaction', 'initial_condition' , 'parameter'"
-        )
+        raise ValueError("Available targets are: 'reaction', 'initial_condition' , 'parameter'")

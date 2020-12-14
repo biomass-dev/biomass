@@ -34,7 +34,7 @@ class OptimizationResults(ExecModel):
             for i, param_index in enumerate(self.sp.idx_params):
                 for j, nth_paramset in enumerate(sorted(n_file), start=1):
                     best_generation = np.load(self.model_path + f"/out/{nth_paramset:d}/generation.npy")
-                    best_indiv = np.load(
+                    best_individual = np.load(
                         self.model_path + f"/out/{nth_paramset:d}" + f"/fit_param{int(best_generation):d}.npy"
                     )
                     error = np.load(self.model_path + f"/out/{nth_paramset:d}/best_fitness.npy")
@@ -43,7 +43,7 @@ class OptimizationResults(ExecModel):
                     optimized_params[i + 2, 0] = self.parameters[param_index]
                     optimized_params[0, j] = str(nth_paramset)
                     optimized_params[1, j] = f"{error:8.3e}"
-                    optimized_params[i + 2, j] = f"{best_indiv[i]:8.3e}"
+                    optimized_params[i + 2, j] = f"{best_individual[i]:8.3e}"
             with open(self.model_path + "/optimization_results/optimized_params.csv", "w") as f:
                 writer = csv.writer(f, lineterminator="\n")
                 writer.writerows(optimized_params)
@@ -52,7 +52,7 @@ class OptimizationResults(ExecModel):
             for i, specie_index in enumerate(self.sp.idx_initials):
                 for j, nth_paramset in enumerate(sorted(n_file), start=1):
                     best_generation = np.load(self.model_path + f"/out/{nth_paramset:d}/generation.npy")
-                    best_indiv = np.load(
+                    best_individual = np.load(
                         self.model_path + f"/out/{nth_paramset:d}" + f"/fit_param{int(best_generation):d}.npy"
                     )
                     error = np.load(self.model_path + f"/out/{nth_paramset:d}/best_fitness.npy")
@@ -61,7 +61,7 @@ class OptimizationResults(ExecModel):
                     optimized_initials[i + 2, 0] = self.species[specie_index]
                     optimized_initials[0, j] = str(nth_paramset)
                     optimized_initials[1, j] = f"{error:8.3e}"
-                    optimized_initials[i + 2, j] = f"{best_indiv[i+len(self.sp.idx_params)]:8.3e}"
+                    optimized_initials[i + 2, j] = f"{best_individual[i+len(self.sp.idx_params)]:8.3e}"
             with open(
                 self.model_path + "/optimization_results" + "/optimized_initals.csv",
                 "w",
