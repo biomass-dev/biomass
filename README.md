@@ -1,8 +1,11 @@
 # BioMASS
 
+[![PyPI license](https://img.shields.io/pypi/l/biomass.svg)](https://pypi.python.org/pypi/biomass/)
 [![Actions Status](https://github.com/okadalabipr/biomass/workflows/Tests/badge.svg)](https://github.com/okadalabipr/biomass/actions)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/okadalabipr/biomass.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/okadalabipr/biomass/context:python)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://badge.fury.io/py/biomass.svg)](https://badge.fury.io/py/biomass)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg)](https://pypi.python.org/pypi/biomass/)
+=
 
 ## Modeling and Analysis of Signaling Systems
 
@@ -21,12 +24,13 @@ BioMASS is a biological modeling environment tailored to
 
 currently implimented for modeling immediate-early gene response ([Nakakuki _et al._, **_Cell_**, 2010](https://doi.org/10.1016/j.cell.2010.03.054)).
 
-## Dependencies
+## Installation
 
-> - numpy
-> - scipy
-> - matplotlib
-> - seaborn
+The BioMASS library is available on [PyPI](https://pypi.org/project/biomass/).
+
+```
+$ pip install biomass
+```
 
 ## Import model
 
@@ -175,7 +179,3 @@ Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HR
 When using BioMASS, please cite:
 
 - Imoto, H., Zhang, S. & Okada, M. A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway. _Cancers (Basel)_. **12**, 2878 (2020). https://doi.org/10.3390/cancers12102878
-
-## Installation
-
-    $ pip install git+https://github.com/okadalabipr/biomass.git

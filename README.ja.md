@@ -1,14 +1,22 @@
 # BioMASS
 
+[![PyPI license](https://img.shields.io/pypi/l/biomass.svg)](https://pypi.python.org/pypi/biomass/)
 [![Actions Status](https://github.com/okadalabipr/biomass/workflows/Tests/badge.svg)](https://github.com/okadalabipr/biomass/actions)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/okadalabipr/biomass.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/okadalabipr/biomass/context:python)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://badge.fury.io/py/biomass.svg)](https://badge.fury.io/py/biomass)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg)](https://pypi.python.org/pypi/biomass/)
 
 ![logo2](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/logo2.png?raw=true)
 
 当ソフトウェアは，細胞内シグナル伝達機構の数理モデリングを目的としたツールです．実験から得られた実測データに基づいてモデル内のパラメータを最適化し，その結果に基づいた解析により，細胞応答に対する反応ネットワーク内の重要な要素を同定することができます．
 
 ここでは，早期転写の反応ネットワーク ([Nakakuki _et al._, **_Cell_**, 2010](https://doi.org/10.1016/j.cell.2010.03.054)) を例に使用しています.
+
+## インストール
+
+```
+$ pip install biomass
+```
 
 ## 使い方
 
