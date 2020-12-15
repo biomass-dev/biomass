@@ -38,8 +38,7 @@ class GeneticAlgorithmInit(ExecModel):
             )
 
     def run(self, nth_paramset: int) -> None:
-        if not os.path.isdir(self.model_path + "/out"):
-            os.mkdir(self.model_path + "/out")
+        os.makedirs(self.model_path + "/out", exist_ok=True)
         if not self.overwrite and os.path.isdir(self.model_path + f"/out/{nth_paramset:d}"):
             raise FileExistsError("Set overwrite=True to overwrite " + self.model_path + f"/out/{nth_paramset:d}")
         else:
