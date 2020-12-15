@@ -63,7 +63,7 @@ def run_simulation(model, viz_type: str, show_all: bool = False, stdev: bool = F
     SignalingSystems(model).simulate_all(viz_type=viz_type, show_all=show_all, stdev=stdev)
 
 
-def optimize(model, *args, options: Optional[dict] = None) -> None:
+def optimize(model, start: int, end: Optional[int] = None, options: Optional[dict] = None) -> None:
     """
     Run GA for parameter estimation.
 
@@ -71,6 +71,12 @@ def optimize(model, *args, options: Optional[dict] = None) -> None:
     ---------
     model : module
         Model for parameter estimation.
+
+    start : int
+        Index of parameter set to estimate.
+
+    end : int
+        When `end` is specified, parameter sets from `start` to `end` will be estimated.
 
     options: dict, optional
         popsize : int (default: 5)
@@ -92,7 +98,7 @@ def optimize(model, *args, options: Optional[dict] = None) -> None:
         n_children : int (default: 200)
             (method='mutation') The number of children generated in NDM/MGG.
 
-        workers : int (default: -1 if len(args) == 1 else 1)
+        workers : int (default: -1 if `end` is None else 1)
             (method='DE') The population is subdivided into workers sections and
             evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
             all available CPU cores. Set workers to 1 when searching multiple
@@ -121,26 +127,24 @@ def optimize(model, *args, options: Optional[dict] = None) -> None:
     options.setdefault("allowable_error", 0.0)
     options.setdefault("local_search_method", "mutation")
     options.setdefault("n_children", 200)
-    options.setdefault("workers", -1 if len(args) == 1 else 1)
+    options.setdefault("workers", -1 if end is None else 1)
     options.setdefault("overwrite", False)
 
-    if len(args) == 2 and options["local_search_method"].lower() == "de" and options["workers"] != 1:
+    if isinstance(end, int) and options["local_search_method"].lower() == "de" and options["workers"] != 1:
         raise AssertionError("daemonic processes are not allowed to have children. Set options['workers'] to 1.")
 
     warnings.filterwarnings("ignore")
     ga_init = GeneticAlgorithmInit(model, **options)
-    if len(args) == 1:
-        ga_init.run(int(args[0]))
-    elif len(args) == 2:
+    if end is None:
+        ga_init.run(int(start))
+    else:
         n_proc = max(1, multiprocessing.cpu_count() - 1)
         p = multiprocessing.Pool(processes=n_proc)
-        p.map(ga_init.run, range(int(args[0]), int(args[1]) + 1))
+        p.map(ga_init.run, range(int(start), int(end) + 1))
         p.close()
-    else:
-        raise ValueError("too many values to unpack (expected 2)")
 
 
-def optimize_continue(model, *args, options: Optional[dict] = None) -> None:
+def optimize_continue(model, start, end: Optional[int] = None, options: Optional[dict] = None) -> None:
     """
     Continue running GA from where you stopped in the last parameter search.
 
@@ -148,6 +152,12 @@ def optimize_continue(model, *args, options: Optional[dict] = None) -> None:
     ---------
     model : module
         Model for parameter estimation.
+
+    start : int
+        Index of parameter set to estimate.
+
+    end : int
+        When `end` is specified, parameter sets from `start` to `end` will be estimated.
 
     options: dict, optional
         popsize : int (default: 5)
@@ -169,7 +179,7 @@ def optimize_continue(model, *args, options: Optional[dict] = None) -> None:
         n_children : int (default: 200)
             (method='mutation') The number of children generated in NDM/MGG.
 
-        workers : int (default: -1 if len(args) == 1 else 1)
+        workers : int (default: -1 if `end` is None else 1)
             (method='DE') The population is subdivided into workers sections and
             evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
             all available CPU cores. Set workers to 1 when searching multiple
@@ -201,23 +211,21 @@ def optimize_continue(model, *args, options: Optional[dict] = None) -> None:
     options.setdefault("allowable_error", 0.0)
     options.setdefault("local_search_method", "mutation")
     options.setdefault("n_children", 200)
-    options.setdefault("workers", -1 if len(args) == 1 else 1)
+    options.setdefault("workers", -1 if end is None else 1)
     options.setdefault("p0_bounds", [0.1, 10.0])
 
-    if len(args) == 2 and options["local_search_method"].lower() == "de" and options["workers"] != 1:
+    if isinstance(end, int) and options["local_search_method"].lower() == "de" and options["workers"] != 1:
         raise AssertionError("daemonic processes are not allowed to have children. Set options['workers'] to 1.")
 
     warnings.filterwarnings("ignore")
     ga_continue = GeneticAlgorithmContinue(model, **options)
-    if len(args) == 1:
-        ga_continue.run(int(args[0]))
-    elif len(args) == 2:
+    if end is None:
+        ga_continue.run(int(start))
+    else:
         n_proc = max(1, multiprocessing.cpu_count() - 1)
         p = multiprocessing.Pool(processes=n_proc)
-        p.map(ga_continue.run, range(int(args[0]), int(args[1]) + 1))
+        p.map(ga_continue.run, range(int(start), int(end) + 1))
         p.close()
-    else:
-        raise ValueError("too many values to unpack (expected 2)")
 
 
 def run_analysis(
