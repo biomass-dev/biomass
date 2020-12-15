@@ -10,7 +10,7 @@ References
     Kimura S, Nakakuki T, Kirita S, Okada M. AGLSDC: A Genetic Local Search
     Suitable for Parallel Computation. SICE J Control Meas Syst Integr 2012;
     4: 105–113.
-    """
+"""
 
 import numpy as np
 from scipy.optimize import minimize, differential_evolution
