@@ -63,6 +63,15 @@ def run_simulation(model, viz_type: str, show_all: bool = False, stdev: bool = F
     SignalingSystems(model).simulate_all(viz_type=viz_type, show_all=show_all, stdev=stdev)
 
 
+def _check_optional_arguments(end: Optional[int], options: Optional[dict]):
+    if options["local_search_method"].lower() not in ["mutation", "powell", "de"]:
+        raise ValueError(
+            f"'{options['local_search_method']}': Invalid local_search_method. Should be one of ['mutation', 'Powell', 'DE']"
+        )
+    elif isinstance(end, int) and options["local_search_method"].lower() == "de" and options["workers"] != 1:
+        raise AssertionError("daemonic processes are not allowed to have children. Set options['workers'] to 1.")
+
+
 def optimize(model, start: int, end: Optional[int] = None, options: Optional[dict] = None) -> None:
     """
     Run GA for parameter estimation.
@@ -75,7 +84,7 @@ def optimize(model, start: int, end: Optional[int] = None, options: Optional[dic
     start : int
         Index of parameter set to estimate.
 
-    end : int
+    end : int, optional
         When `end` is specified, parameter sets from `start` to `end` will be estimated.
 
     options: dict, optional
@@ -130,10 +139,8 @@ def optimize(model, start: int, end: Optional[int] = None, options: Optional[dic
     options.setdefault("workers", -1 if end is None else 1)
     options.setdefault("overwrite", False)
 
-    if isinstance(end, int) and options["local_search_method"].lower() == "de" and options["workers"] != 1:
-        raise AssertionError("daemonic processes are not allowed to have children. Set options['workers'] to 1.")
+    _check_optional_arguments(end, options)
 
-    warnings.filterwarnings("ignore")
     ga_init = GeneticAlgorithmInit(model, **options)
     if end is None:
         ga_init.run(int(start))
@@ -156,7 +163,7 @@ def optimize_continue(model, start, end: Optional[int] = None, options: Optional
     start : int
         Index of parameter set to estimate.
 
-    end : int
+    end : int, optional
         When `end` is specified, parameter sets from `start` to `end` will be estimated.
 
     options: dict, optional
@@ -214,10 +221,8 @@ def optimize_continue(model, start, end: Optional[int] = None, options: Optional
     options.setdefault("workers", -1 if end is None else 1)
     options.setdefault("p0_bounds", [0.1, 10.0])
 
-    if isinstance(end, int) and options["local_search_method"].lower() == "de" and options["workers"] != 1:
-        raise AssertionError("daemonic processes are not allowed to have children. Set options['workers'] to 1.")
+    _check_optional_arguments(end, options)
 
-    warnings.filterwarnings("ignore")
     ga_continue = GeneticAlgorithmContinue(model, **options)
     if end is None:
         ga_continue.run(int(start))
