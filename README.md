@@ -40,13 +40,22 @@ from biomass.models import Nakakuki_Cell_2010
 
 ## Parameter Estimation of ODE Models (_n_ = 1, 2, 3, · · ·)
 
-The temporary result will be saved in `out/n/` after each iteration.
+Parameters are adjusted to minimize the distance between model simulation and experimental data.
 
 ```python
 from biomass import optimize
 
-optimize(Nakakuki_Cell_2010, n)
+optimize(
+    model=Nakakuki_Cell_2010, start=1, options={
+        "popsize": 3,
+        "max_generation": 1000,
+        "allowable_error": 0.5,
+        "local_search_method": "DE",
+    }
+)
 ```
+
+The temporary result will be saved in `out/n/` after each iteration.
 
 Progress list: `out/n/optimization.log`
 
@@ -78,18 +87,33 @@ Generation20: Best Fitness = 1.171606e+00
 ```python
 from biomass import optimize_continue
 
-optimize_continue(Nakakuki_Cell_2010, n)
+optimize_continue(
+    model=Nakakuki_Cell_2010, start=1, options={
+        "popsize": 3,
+        "max_generation": 1000,
+        "allowable_error": 0.5,
+        "local_search_method": "DE",
+    }
+)
 ```
 
-- If you want to search multiple parameter sets (from _n1_ to _n2_) simultaneously,
+- If you want to search multiple parameter sets (e.g., from 1 to 10) simultaneously,
 
 ```python
 from biomass import optimize
 
-optimize(Nakakuki_Cell_2010, n1, n2)
+optimize(
+    model=Nakakuki_Cell_2010, start=1, end=10, options={
+        "popsize": 5,
+        "max_generation": 2000,
+        "allowable_error": 0.5,
+        "local_search_method": "mutation",
+        "n_children": 50
+    }
+)
 ```
 
-- Getting optimized parameters
+- Exporting optimized parameters in CSV format
 
 ```python
 from biomass.result import OptimizationResults
