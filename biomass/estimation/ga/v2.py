@@ -2,6 +2,7 @@ import os
 import warnings
 import time
 import numpy as np
+from typing import Optional, NoReturn
 
 from biomass.exec_model import ExecModel
 from .rcga import RealCodedGeneticAlgorithm
@@ -11,7 +12,7 @@ class OptimizeWarning(UserWarning):
     pass
 
 
-def _check_unknown_options(unknown_options: dict):
+def _check_unknown_options(unknown_options: dict) -> Optional[NoReturn]:
     if unknown_options:
         msg = ", ".join(map(str, unknown_options.keys()))
         warnings.warn(f"Unknown solver options: {msg}", OptimizeWarning)
@@ -48,7 +49,9 @@ class GeneticAlgorithmInit(ExecModel):
     def run(self, nth_paramset: int) -> None:
         os.makedirs(self.model_path + "/out", exist_ok=True)
         if not self.overwrite and os.path.isdir(self.model_path + f"/out/{nth_paramset:d}"):
-            raise FileExistsError("Set overwrite=True to overwrite " + self.model_path + f"/out/{nth_paramset:d}")
+            raise FileExistsError(
+                "Set options['overwrite']=True to overwrite " + self.model_path + f"/out/{nth_paramset:d}"
+            )
         else:
             try:
                 files = os.listdir(self.model_path + f"/out/{nth_paramset:d}")
