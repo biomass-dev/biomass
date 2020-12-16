@@ -31,6 +31,8 @@ The BioMASS library is available on [PyPI](https://pypi.org/project/biomass/).
 $ pip install biomass
 ```
 
+BioMASS supports Python 3.7 or newer.
+
 ## Import model
 
 ```python
