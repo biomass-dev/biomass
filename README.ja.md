@@ -1,9 +1,9 @@
 # BioMASS
 
-[![PyPI license](https://img.shields.io/pypi/l/biomass.svg)](https://pypi.python.org/pypi/biomass/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Actions Status](https://github.com/okadalabipr/biomass/workflows/Tests/badge.svg)](https://github.com/okadalabipr/biomass/actions)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/okadalabipr/biomass.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/okadalabipr/biomass/context:python)
-[![PyPI version](https://badge.fury.io/py/biomass.svg)](https://badge.fury.io/py/biomass)
+[![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&color=blue)](https://pypi.python.org/pypi/biomass/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg)](https://pypi.python.org/pypi/biomass/)
 
 ![logo2](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/logo2.png?raw=true)
