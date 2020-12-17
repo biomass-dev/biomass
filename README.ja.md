@@ -1,9 +1,9 @@
 # BioMASS
 
-[![PyPI license](https://img.shields.io/pypi/l/biomass.svg)](https://pypi.python.org/pypi/biomass/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Actions Status](https://github.com/okadalabipr/biomass/workflows/Tests/badge.svg)](https://github.com/okadalabipr/biomass/actions)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/okadalabipr/biomass.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/okadalabipr/biomass/context:python)
-[![PyPI version](https://badge.fury.io/py/biomass.svg)](https://badge.fury.io/py/biomass)
+[![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&color=blue)](https://pypi.python.org/pypi/biomass/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg)](https://pypi.python.org/pypi/biomass/)
 
 ![logo2](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/logo2.png?raw=true)
@@ -28,13 +28,22 @@ from biomass.models import Nakakuki_Cell_2010
 
 #### ODE モデルのパラメータ推定 (n = 1, 2, 3, · · ·)
 
-パラメータ最適化には遺伝的アルゴリズムを用いています．世代交代毎に，最良のパラメータセットが`out/n/`に保存されます．
+遺伝的アルゴリズムを使用して，目的関数（ここではモデルのシミュレーション値と実験データの誤差）を最小化します．
 
 ```python
 from biomass import optimize
 
-optimize(Nakakuki_Cell_2010, n)
+optimize(
+    model=Nakakuki_Cell_2010, start=1, options={
+        "popsize": 3,
+        "max_generation": 1000,
+        "allowable_error": 0.5,
+        "local_search_method": "DE",
+    }
+)
 ```
+
+世代交代毎に，最良のパラメータセットが`out/n/`に保存されます．
 
 進捗は`out/n/optimization.log`で見ることができます．
 
@@ -66,15 +75,30 @@ Generation20: Best Fitness = 1.171606e+00
 ```python
 from biomass import optimize_continue
 
-optimize_continue(Nakakuki_Cell_2010, n)
+optimize_continue(
+    model=Nakakuki_Cell_2010, start=1, options={
+        "popsize": 3,
+        "max_generation": 1000,
+        "allowable_error": 0.5,
+        "local_search_method": "DE",
+    }
+)
 ```
 
-- 複数のパラメータセット（*n1*から*n2*）を同時に探索したい場合,
+- 複数のパラメータセット（例：1 から 10）を同時に探索したい場合,
 
 ```python
 from biomass import optimize
 
-optimize(Nakakuki_Cell_2010, n1, n2)
+optimize(
+    model=Nakakuki_Cell_2010, start=1, end=10, options={
+        "popsize": 5,
+        "max_generation": 2000,
+        "allowable_error": 0.5,
+        "local_search_method": "mutation",
+        "n_children": 50
+    }
+)
 ```
 
 - 最適化したパラメータの取得

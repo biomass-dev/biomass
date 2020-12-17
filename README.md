@@ -1,11 +1,10 @@
 # BioMASS
 
-[![PyPI license](https://img.shields.io/pypi/l/biomass.svg)](https://pypi.python.org/pypi/biomass/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Actions Status](https://github.com/okadalabipr/biomass/workflows/Tests/badge.svg)](https://github.com/okadalabipr/biomass/actions)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/okadalabipr/biomass.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/okadalabipr/biomass/context:python)
-[![PyPI version](https://badge.fury.io/py/biomass.svg)](https://badge.fury.io/py/biomass)
+[![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&color=blue)](https://pypi.python.org/pypi/biomass/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg)](https://pypi.python.org/pypi/biomass/)
-=
 
 ## Modeling and Analysis of Signaling Systems
 
@@ -32,6 +31,8 @@ The BioMASS library is available on [PyPI](https://pypi.org/project/biomass/).
 $ pip install biomass
 ```
 
+BioMASS supports Python 3.7 or newer.
+
 ## Import model
 
 ```python
@@ -40,13 +41,22 @@ from biomass.models import Nakakuki_Cell_2010
 
 ## Parameter Estimation of ODE Models (_n_ = 1, 2, 3, · · ·)
 
-The temporary result will be saved in `out/n/` after each iteration.
+Parameters are adjusted to minimize the distance between model simulation and experimental data.
 
 ```python
 from biomass import optimize
 
-optimize(Nakakuki_Cell_2010, n)
+optimize(
+    model=Nakakuki_Cell_2010, start=1, options={
+        "popsize": 3,
+        "max_generation": 1000,
+        "allowable_error": 0.5,
+        "local_search_method": "DE",
+    }
+)
 ```
+
+The temporary result will be saved in `out/n/` after each iteration.
 
 Progress list: `out/n/optimization.log`
 
@@ -78,18 +88,33 @@ Generation20: Best Fitness = 1.171606e+00
 ```python
 from biomass import optimize_continue
 
-optimize_continue(Nakakuki_Cell_2010, n)
+optimize_continue(
+    model=Nakakuki_Cell_2010, start=1, options={
+        "popsize": 3,
+        "max_generation": 1000,
+        "allowable_error": 0.5,
+        "local_search_method": "DE",
+    }
+)
 ```
 
-- If you want to search multiple parameter sets (from _n1_ to _n2_) simultaneously,
+- If you want to search multiple parameter sets (e.g., from 1 to 10) simultaneously,
 
 ```python
 from biomass import optimize
 
-optimize(Nakakuki_Cell_2010, n1, n2)
+optimize(
+    model=Nakakuki_Cell_2010, start=1, end=10, options={
+        "popsize": 5,
+        "max_generation": 2000,
+        "allowable_error": 0.5,
+        "local_search_method": "mutation",
+        "n_children": 50
+    }
+)
 ```
 
-- Getting optimized parameters
+- Exporting optimized parameters in CSV format
 
 ```python
 from biomass.result import OptimizationResults

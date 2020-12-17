@@ -28,9 +28,9 @@ def test_simulate_successful():
 
 def test_optimize():
     optimize(
-        mapk_cascade,
-        1,
-        3,
+        model=mapk_cascade,
+        start=1,
+        end=3,
         options={
             "popsize": 3,
             "max_generation": 3,
@@ -45,9 +45,9 @@ def test_optimize():
         assert logs[-1][:13] == "Generation3: "
 
     optimize_continue(
-        mapk_cascade,
-        1,
-        3,
+        model=mapk_cascade,
+        start=1,
+        end=3,
         options={
             "popsize": 3,
             "max_generation": 6,
@@ -60,14 +60,10 @@ def test_optimize():
         assert logs[-1][:13] == "Generation6: "
 
     optimize_continue(
-        mapk_cascade,
-        1,
-        3,
-        options={
-            "popsize": 3,
-            "max_generation": 9,
-            "local_search_method": "DE",
-        },
+        model=mapk_cascade,
+        start=1,
+        end=3,
+        options={"popsize": 3, "max_generation": 9, "local_search_method": "DE", "workers": 1},
     )
     for i in range(1, 4):
         with open(MODEL_PATH + f"/out/{i:d}/optimization.log") as f:
