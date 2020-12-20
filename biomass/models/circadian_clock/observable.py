@@ -59,13 +59,13 @@ class NumericalSimulation(DifferentialEquation):
                 self.simulations[observables.index("Bmal1_mRNA"), :, i] = sol.y[V.MB, :]
 
     @staticmethod
-    def _solveode(diffeq: Callable, y0: List[float], t: range, args: tuple):
+    def _solveode(diffeq: Callable, y0: List[float], t: range, f_params: tuple):
         """
         Solve a system of ordinary differential equations.
 
         Parameters
         ----------
-        diffeq : callable f(y, t, f_args)
+        diffeq : callable f(t, y, *x)
             Right-hand side of the differential equation.
 
         y0 : array
@@ -74,7 +74,7 @@ class NumericalSimulation(DifferentialEquation):
         t : array
             A sequence of time points for which to solve for y.
 
-        args : tuple
+        f_params : tuple
             Model parameters.
 
         Returns
@@ -90,7 +90,7 @@ class NumericalSimulation(DifferentialEquation):
                 y0,
                 method="BDF",
                 t_eval=t,
-                args=args,
+                args=f_params,
                 options={"rtol": 1e-8, "atol": 1e-8},
             )
             return sol if sol.success else None
@@ -101,7 +101,7 @@ class NumericalSimulation(DifferentialEquation):
         self,
         diffeq: Callable,
         y0: List[float],
-        args: tuple,
+        f_params: tuple,
         eps: float = 1e-6,
     ):
         """
@@ -109,17 +109,17 @@ class NumericalSimulation(DifferentialEquation):
 
         Parameters
         ----------
-        diffeq : callable f(y, t, f_args)
+        diffeq : callable f(t, y, *x)
             Right-hand side of the differential equation.
 
         y0 : array
             Initial condition on y (can be a vector).
 
-        args : tuple
+        f_params : tuple
             Model parameters.
 
         eps : float (default: 1e-6)
-            Run until a time t for which the maximal absolutevalue of the
+            Run until a time t for which the maximal absolute value of the
             regularized relative derivative was smaller than eps.
 
         Returns
@@ -129,7 +129,7 @@ class NumericalSimulation(DifferentialEquation):
 
         """
         while True:
-            sol = self._solveode(diffeq, y0, range(2), args)
+            sol = self._solveode(diffeq, y0, range(2), f_params)
             if sol is None or np.max(np.abs((sol.y[:, -1] - y0) / (np.array(y0) + eps))) < eps:
                 break
             else:
