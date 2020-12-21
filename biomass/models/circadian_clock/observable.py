@@ -14,7 +14,7 @@ observables = [
 
 
 class NumericalSimulation(DifferentialEquation):
-    """Simulate a model using scipy.integrate.ode
+    """Simulate a model using scipy.integrate.solve_ivp
 
     Attributes
     ----------
