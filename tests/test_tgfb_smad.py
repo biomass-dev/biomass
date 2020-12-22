@@ -1,13 +1,18 @@
 import os
 import shutil
+import numpy as np
+
 from biomass.models import tgfb_smad
 from biomass.exec_model import ExecModel
 from biomass import run_simulation
 
 
+MODEL_PATH = tgfb_smad.__path__[0]
+
+
 for dir in ["/figure", "/simulation_data"]:
-    if os.path.isdir(tgfb_smad.__path__[0] + dir):
-        shutil.rmtree(tgfb_smad.__path__[0] + dir)
+    if os.path.isdir(MODEL_PATH + dir):
+        shutil.rmtree(MODEL_PATH + dir)
 
 
 def test_simulate_successful():
@@ -19,10 +24,11 @@ def test_simulate_successful():
 
 def test_run_simulation():
     run_simulation(tgfb_smad, viz_type="original")
-    assert os.path.isdir(tgfb_smad.__path__[0] + "/figure/simulation/original")
+    simulated_value = np.load(MODEL_PATH + "/simulation_data/simulations_original.npy")
+    assert np.isfinite(simulated_value).all()
 
 
 def test_cleanup():
     for dir in ["/figure", "/simulation_data"]:
-        if os.path.isdir(tgfb_smad.__path__[0] + dir):
-            shutil.rmtree(tgfb_smad.__path__[0] + dir)
+        if os.path.isdir(MODEL_PATH + dir):
+            shutil.rmtree(MODEL_PATH + dir)

@@ -1,5 +1,6 @@
 import os
 import shutil
+import numpy as np
 
 from biomass.models import mapk_cascade
 from biomass.exec_model import ExecModel
@@ -75,8 +76,14 @@ def test_run_simulation():
     run_simulation(mapk_cascade, viz_type="original")
     run_simulation(mapk_cascade, viz_type="average", stdev=True)
     run_simulation(mapk_cascade, viz_type="best", show_all=True)
-    assert os.path.isfile(MODEL_PATH + "/simulation_data/simulations_original.npy")
-    assert os.path.isfile(MODEL_PATH + "/simulation_data/simulations_all.npy")
+    for npy_file in [
+        "/simulation_data/simulations_original.npy",
+        "/simulation_data/simulations_all.npy",
+    ]:
+        simulated_value = np.load(MODEL_PATH + npy_file)
+        assert np.isfinite(simulated_value).all()
+    # assert os.path.isfile(MODEL_PATH + "/simulation_data/simulations_original.npy")
+    # assert os.path.isfile(MODEL_PATH + "/simulation_data/simulations_all.npy")
 
 
 def test_save_result():
