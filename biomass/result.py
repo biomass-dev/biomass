@@ -63,7 +63,7 @@ class OptimizationResults(ExecModel):
                     optimized_initials[1, j] = f"{error:8.3e}"
                     optimized_initials[i + 2, j] = f"{best_individual[i+len(self.sp.idx_params)]:8.3e}"
             with open(
-                self.model_path + "/optimization_results" + "/optimized_initals.csv",
+                self.model_path + "/optimization_results" + "/optimized_initials.csv",
                 "w",
             ) as f:
                 writer = csv.writer(f, lineterminator="\n")
