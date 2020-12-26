@@ -23,15 +23,15 @@ class ExecModel(object):
             for obs_name in self.obs:
                 if (
                     isinstance(self.sim.normalization[obs_name]["timepoint"], int)
-                    and self.sim.t[-1] < self.sim.normalization[obs_name]["timepoint"]
+                    and not self.sim.t[0] <= self.sim.normalization[obs_name]["timepoint"] <= self.sim.t[-1]
                 ):
-                    raise ValueError(f"Normalization timepoint must be smaller than {self.sim.t[-1]:d}.")
+                    raise ValueError("Normalization timepoint must lie within sim.t.")
                 if not self.sim.normalization[obs_name]["condition"]:
                     self.sim.normalization[obs_name]["condition"] = self.sim.conditions
                 else:
                     for c in self.sim.normalization[obs_name]["condition"]:
                         if not c in self.sim.conditions:
-                            raise ValueError(f"Normalization condition '{c}'" " is not defined in sim.conditions.")
+                            raise ValueError(f"Normalization condition '{c}' is not defined in sim.conditions.")
 
     def show_properties(self) -> None:
         print(

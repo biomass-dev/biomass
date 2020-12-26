@@ -3,11 +3,6 @@ import sys
 from setuptools import setup, find_packages
 
 
-def read_file(file_path: str) -> str:
-    """Read a file."""
-    return open(file_path).read()
-
-
 def get_version() -> str:
     """Read version from file"""
     version_filepath = os.path.join(os.path.dirname(__file__), "biomass", "version.py")
@@ -24,8 +19,8 @@ def main():
 
     # set long_description and requirements
     here = os.path.abspath(os.path.dirname(__file__))
-    long_description = read_file(os.path.join(here, "README.md"))
-    requirements = read_file(os.path.join(here, "requirements.txt"))
+    long_description = open(os.path.join(here, "README.md")).read()
+    requirements = open(os.path.join(here, "requirements.txt")).read()
 
     setup(
         name="biomass",
@@ -38,7 +33,7 @@ def main():
         author_email="himoto@protein.osaka-u.ac.jp",
         url="https://github.com/okadalabipr/biomass",
         packages=find_packages(exclude=["tests"]),
-        install_requires=requirements.split(),
+        install_requires=requirements.splitlines(),
         python_requires=">=3.7",
         classifiers=[
             "Intended Audience :: Science/Research",

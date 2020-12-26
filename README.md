@@ -163,7 +163,7 @@ Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid li
 
 The single parameter sensitivity of each reaction is defined by<br>
 
-_s<sub>i</sub>_(_q_(**v**),_v<sub>i</sub>_) = _∂_ ln(_q_(**v**)) / _∂_ ln(_v<sub>i</sub>_) = _∂\_\_q_(**v**) / _∂\_\_v<sub>i</sub>_ · _v<sub>i</sub>_ / _q_(**v**)
+_s<sub>i</sub>_(_q_(**v**),_v<sub>i</sub>_) = _∂_ ln(_q_(**v**)) / _∂_ ln(_v<sub>i</sub>_) = _∂_ _q_(**v**) / _∂_ _v<sub>i</sub>_ · _v<sub>i</sub>_ / _q_(**v**)
 
 where _v<sub>i</sub>_ is the _i_<sup>th</sup> reaction rate, **v** is reaction vector **v** = (_v<sub>1</sub>_, _v<sub>2</sub>_, ...) and _q_(**v**) is a target function, e.g., time-integrated response, duration. Sensitivity coefficients were calculated using finite difference approximations with 1% changes in the reaction rates.
 

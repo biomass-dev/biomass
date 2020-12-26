@@ -35,10 +35,6 @@ MANIFEST
 *.ipynb
 .ipynb_checkpoints
 
-# docs
-docs/build/
-docs/site/
-
 # nohup
 nohup.out
 
