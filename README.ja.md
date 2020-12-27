@@ -104,7 +104,7 @@ optimize_continue(
 from biomass import optimize
 
 optimize(
-    model=Nakakuki_Cell_2010, start=1, end=10, options={
+    model=model, start=1, end=10, options={
         "popsize": 5,
         "max_generation": 2000,
         "allowable_error": 0.5,
