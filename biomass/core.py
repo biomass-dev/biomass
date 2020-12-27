@@ -3,9 +3,10 @@ import multiprocessing
 import warnings
 from typing import Optional, List
 
-from biomass.dynamics import SignalingSystems
-from biomass.estimation import GeneticAlgorithmInit, GeneticAlgorithmContinue
-from biomass.analysis import (
+from .exec_model import BioMassModel
+from .dynamics import SignalingSystems
+from .estimation import GeneticAlgorithmInit, GeneticAlgorithmContinue
+from .analysis import (
     ReactionSensitivity,
     InitialConditionSensitivity,
     ParameterSensitivity,
@@ -14,13 +15,18 @@ from biomass.analysis import (
 __all__ = ["run_simulation", "optimize", "optimize_continue", "run_analysis"]
 
 
-def run_simulation(model, viz_type: str, show_all: bool = False, stdev: bool = False) -> None:
+def run_simulation(
+    model: BioMassModel,
+    viz_type: str,
+    show_all: bool = False,
+    stdev: bool = False,
+) -> None:
     """
     Simulate ODE model with estimated parameter values.
 
         Parameters
         ----------
-        model : module
+        model : BioMassModel
             Model for simulation.
 
         viz_type : str
@@ -49,8 +55,9 @@ def run_simulation(model, viz_type: str, show_all: bool = False, stdev: bool = F
         -------
         >>> from biomass.models import Nakakuki_Cell_2010
         >>> from biomass import run_simulation
+        >>> model = Nakakuki_Cell_2010.create()
         >>> run_simulation(
-                Nakakuki_Cell_2010,
+                model,
                 viz_type='average',
                 show_all=False,
                 stdev=True
@@ -72,13 +79,18 @@ def _check_optional_arguments(end: Optional[int], options: Optional[dict]):
         raise AssertionError("daemonic processes are not allowed to have children. Set options['workers'] to 1.")
 
 
-def optimize(model, start: int, end: Optional[int] = None, options: Optional[dict] = None) -> None:
+def optimize(
+    model: BioMassModel,
+    start: int,
+    end: Optional[int] = None,
+    options: Optional[dict] = None,
+) -> None:
     """
     Run GA for parameter estimation.
 
     Paremters
     ---------
-    model : module
+    model : BioMassModel
         Model for parameter estimation.
 
     start : int
@@ -120,8 +132,9 @@ def optimize(model, start: int, end: Optional[int] = None, options: Optional[dic
     -------
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import optimize
+    >>> model = Nakakuki_Cell_2010.create()
     >>> optimize(
-            Nakakuki_Cell_2010, 1, 10,
+            model=model, start=1, end=10,
             options={
                 'max_generation': 10000,
                 'allowable_error': 0.5
@@ -151,13 +164,18 @@ def optimize(model, start: int, end: Optional[int] = None, options: Optional[dic
         p.close()
 
 
-def optimize_continue(model, start, end: Optional[int] = None, options: Optional[dict] = None) -> None:
+def optimize_continue(
+    model: BioMassModel,
+    start: int,
+    end: Optional[int] = None,
+    options: Optional[dict] = None,
+) -> None:
     """
     Continue running GA from where you stopped in the last parameter search.
 
     Paremters
     ---------
-    model : module
+    model : BioMassModel
         Model for parameter estimation.
 
     start : int
@@ -202,8 +220,9 @@ def optimize_continue(model, start, end: Optional[int] = None, options: Optional
     -------
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import optimize_continue
+    >>> model = Nakakuki_Cell_2010.create()
     >>> optimize_continue(
-            Nakakuki_Cell_2010, 1, 10,
+            model=model, start=1, end=10,
             options={
                 'max_generation': 20000,
                 'allowable_error': 0.5
@@ -250,7 +269,7 @@ def run_analysis(
 
     Paremters
     ---------
-    model : module
+    model : BioMassModel
         Model for sensitivity analysis.
 
     target : str
@@ -275,8 +294,9 @@ def run_analysis(
     -------
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import run_analysis
+    >>> model = Nakakuki_Cell_2010.create()
     >>> run_analysis(
-            Nakakuki_Cell_2010,
+            model,
             target='parameter',
             excluded_params=[
                 'a', 'Vn', 'Vc', 'Ligand', 'EGF', 'HRG', 'no_ligand'

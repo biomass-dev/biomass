@@ -5,22 +5,22 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import List
 
-from biomass.exec_model import ExecModel
-from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
+from ...exec_model import ExecModel, BioMassModel
+from .. import get_signaling_metric, dlnyi_dlnxj
 
 
 class ParameterSensitivity(ExecModel):
     """Sensitivity for parameters"""
 
-    def __init__(self, model, excluded_params):
+    def __init__(self, model: BioMassModel, excluded_params: List[str]) -> None:
         super().__init__(model)
         self.excluded_params = excluded_params
 
     def _get_param_indices(self) -> List[int]:
         param_indices = []
-        x = self.pval()
+        x = self.model.pval()
         for i, val in enumerate(x):
-            if self.parameters[i] not in self.excluded_params and val != 0.0:
+            if self.model.parameters[i] not in self.excluded_params and val != 0.0:
                 param_indices.append(i)
         if not param_indices:
             raise ValueError("No nonzero parameters")
@@ -55,8 +55,8 @@ class ParameterSensitivity(ExecModel):
             (
                 len(n_file),
                 len(param_indices) + 1,
-                len(self.obs),
-                len(self.sim.conditions),
+                len(self.model.obs),
+                len(self.model.sim.conditions),
             ),
             np.nan,
         )
@@ -66,21 +66,25 @@ class ParameterSensitivity(ExecModel):
             for j, idx in enumerate(param_indices):
                 x = x_init[:]
                 x[idx] = x_init[idx] * rate
-                if self.sim.simulate(x, y0) is None:
-                    for k, _ in enumerate(self.obs):
-                        for l, _ in enumerate(self.sim.conditions):
-                            signaling_metric[i, j, k, l] = get_signaling_metric(metric, self.sim.simulations[k, :, l])
+                if self.model.sim.simulate(x, y0) is None:
+                    for k, _ in enumerate(self.model.obs):
+                        for l, _ in enumerate(self.model.sim.conditions):
+                            signaling_metric[i, j, k, l] = get_signaling_metric(
+                                metric, self.model.sim.simulations[k, :, l]
+                            )
                 sys.stdout.write(
                     "\r{:d} / {:d}".format(i * len(param_indices) + j + 1, len(n_file) * len(param_indices))
                 )
             # Signaling metric without perturbation (j=-1)
             x = x_init[:]
-            if self.sim.simulate(x, y0) is None:
-                for k, _ in enumerate(self.obs):
-                    for l, _ in enumerate(self.sim.conditions):
-                        signaling_metric[i, -1, k, l] = get_signaling_metric(metric, self.sim.simulations[k, :, l])
+            if self.model.sim.simulate(x, y0) is None:
+                for k, _ in enumerate(self.model.obs):
+                    for l, _ in enumerate(self.model.sim.conditions):
+                        signaling_metric[i, -1, k, l] = get_signaling_metric(
+                            metric, self.model.sim.simulations[k, :, l]
+                        )
         sensitivity_coefficients = dlnyi_dlnxj(
-            signaling_metric, n_file, param_indices, self.obs, self.sim.conditions, rate
+            signaling_metric, n_file, param_indices, self.model.obs, self.model.sim.conditions, rate
         )
 
         return sensitivity_coefficients
@@ -90,22 +94,22 @@ class ParameterSensitivity(ExecModel):
         Load (or calculate) sensitivity coefficients.
         """
         os.makedirs(
-            self.model_path + "/figure/sensitivity/" f"parameter/{metric}/heatmap",
+            self.model.path + "/figure/sensitivity/" f"parameter/{metric}/heatmap",
             exist_ok=True,
         )
-        if not os.path.isfile(self.model_path + "/sensitivity_coefficients/" f"parameter/{metric}/sc.npy"):
+        if not os.path.isfile(self.model.path + "/sensitivity_coefficients/" f"parameter/{metric}/sc.npy"):
             os.makedirs(
-                self.model_path + "/sensitivity_coefficients/" f"parameter/{metric}",
+                self.model.path + "/sensitivity_coefficients/" f"parameter/{metric}",
                 exist_ok=True,
             )
             sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, param_indices)
             np.save(
-                self.model_path + "/sensitivity_coefficients/" f"parameter/{metric}/sc",
+                self.model.path + "/sensitivity_coefficients/" f"parameter/{metric}/sc",
                 sensitivity_coefficients,
             )
         else:
             sensitivity_coefficients = np.load(
-                self.model_path + "/sensitivity_coefficients/" f"parameter/{metric}/sc.npy"
+                self.model.path + "/sensitivity_coefficients/" f"parameter/{metric}/sc.npy"
             )
 
         return sensitivity_coefficients
@@ -119,19 +123,19 @@ class ParameterSensitivity(ExecModel):
         """
         Visualize sensitivity coefficients using barplot.
         """
-        options = self.viz.sensitivity_options
+        options = self.model.viz.sensitivity_options
 
         # rcParams
-        self.viz.set_sensitivity_rcParams()
+        self.model.viz.set_sensitivity_rcParams()
 
-        if len(options["cmap"]) < len(self.sim.conditions):
+        if len(options["cmap"]) < len(self.model.sim.conditions):
             raise ValueError(
                 "len(sensitivity_options['cmap']) must be equal to" " or greater than len(sim.conditions)."
             )
-        for k, obs_name in enumerate(self.obs):
+        for k, obs_name in enumerate(self.model.obs):
             plt.figure(figsize=options["figsize"])
             plt.hlines([0], -options["width"], len(param_indices), "k", lw=1)
-            for l, condition in enumerate(self.sim.conditions):
+            for l, condition in enumerate(self.model.sim.conditions):
                 sensitivity_matrix = sensitivity_coefficients[:, :, k, l]
                 nan_idx = []
                 for m in range(sensitivity_matrix.shape[0]):
@@ -156,8 +160,8 @@ class ParameterSensitivity(ExecModel):
                         label=condition,
                     )
             plt.xticks(
-                np.arange(len(param_indices)) + options["width"] * 0.5 * (len(self.sim.conditions) - 1),
-                [self.parameters[i] for i in param_indices],
+                np.arange(len(param_indices)) + options["width"] * 0.5 * (len(self.model.sim.conditions) - 1),
+                [self.model.parameters[i] for i in param_indices],
                 fontsize=6,
                 rotation=90,
             )
@@ -165,7 +169,7 @@ class ParameterSensitivity(ExecModel):
             plt.xlim(-options["width"], len(param_indices))
             plt.legend(loc=options["legend_loc"], frameon=False)
             plt.savefig(
-                self.model_path + "/figure/sensitivity/parameter/" f"{metric}/{obs_name}.pdf",
+                self.model.path + "/figure/sensitivity/parameter/" f"{metric}/{obs_name}.pdf",
                 bbox_inches="tight",
             )
             plt.close()
@@ -199,12 +203,12 @@ class ParameterSensitivity(ExecModel):
         """
         Visualize sensitivity coefficients using heatmap.
         """
-        options = self.viz.sensitivity_options
+        options = self.model.viz.sensitivity_options
         # rcParams
-        self.viz.set_sensitivity_rcParams()
+        self.model.viz.set_sensitivity_rcParams()
 
-        for k, obs_name in enumerate(self.obs):
-            for l, condition in enumerate(self.sim.conditions):
+        for k, obs_name in enumerate(self.model.obs):
+            for l, condition in enumerate(self.model.sim.conditions):
                 sensitivity_matrix = self._remove_nan(sensitivity_coefficients[:, :, k, l], normalize=False)
                 if sensitivity_matrix.shape[0] > 1 and not np.all(sensitivity_matrix == 0.0):
                     g = sns.clustermap(
@@ -216,13 +220,13 @@ class ParameterSensitivity(ExecModel):
                         linewidth=0.5,
                         col_cluster=False,
                         figsize=options["figsize"],
-                        xticklabels=[self.parameters[i] for i in param_indices],
+                        xticklabels=[self.model.parameters[i] for i in param_indices],
                         yticklabels=[],
                         # cbar_kws={"ticks": [-1, 0, 1]}
                     )
                     plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90)
                     plt.savefig(
-                        self.model_path + "/figure/sensitivity/parameter/"
+                        self.model.path + "/figure/sensitivity/parameter/"
                         f"{metric}/heatmap/{condition}_{obs_name}.pdf",
                         bbox_inches="tight",
                     )
