@@ -141,7 +141,7 @@ class NumericalSimulation(DifferentialEquation):
 
         """
         while True:
-            sol = solveode(diffeq, y0, range(2), f_params)
+            sol = self._solveode(diffeq, y0, range(2), f_params)
             if sol is None or np.max(np.abs((sol.y[:, -1] - y0) / (np.array(y0) + eps))) < eps:
                 break
             else:
