@@ -16,10 +16,11 @@ To overcome this problem, we developed BioMASS, a modeling platform tailored to 
 
 ## Description
 
-BioMASS is a biological modeling environment tailored to
+BioMASS supports:
 
 1. Parameter Estimation of ODE Models
 1. Sensitivity Analysis
+1. Effective Visualization of Simulation Results
 
 currently implimented for modeling immediate-early gene response ([Nakakuki _et al._, **_Cell_**, 2010](https://doi.org/10.1016/j.cell.2010.03.054)).
 
