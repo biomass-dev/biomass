@@ -14,13 +14,13 @@ Mathematical modeling is a powerful method for the analysis of complex biologica
 
 To overcome this problem, we developed BioMASS, a modeling platform tailored to optimizing mathematical models of biological processes. By using BioMASS, users can efficiently optimize kinetic parameters to fit user-defined models to experimental data, while performing analysis on reaction networks to predict critical components affecting cellular output.
 
-## Description
+## Features
 
 BioMASS supports:
 
-1. Parameter Estimation of ODE Models
-1. Sensitivity Analysis
-1. Effective Visualization of Simulation Results
+- Parameter Estimation of ODE Models
+- Sensitivity Analysis
+- Effective Visualization of Simulation Results
 
 currently implimented for modeling immediate-early gene response ([Nakakuki _et al._, **_Cell_**, 2010](https://doi.org/10.1016/j.cell.2010.03.054)).
 
