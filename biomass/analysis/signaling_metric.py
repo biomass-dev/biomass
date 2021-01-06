@@ -12,7 +12,7 @@ def _get_duration(timecourse: np.ndarray, below_threshold: float = 0.1) -> int:
     ----------
     timecourse : array
         Simulated time course data
-    below_threshold : float
+    below_threshold : float (from 0.0 to 1.0)
         0.1 for 10% of its maximum
 
     Returns
@@ -45,6 +45,7 @@ def get_signaling_metric(metric: str, timecourse: np.ndarray) -> Union[int, floa
         signaling_metric[i, j, k, l]
 
     """
+    available_metrics = ["maximum", "minimum", "duration", "integral"]
     if metric == "maximum":
         return np.max(timecourse)
     elif metric == "minimum":
@@ -54,7 +55,7 @@ def get_signaling_metric(metric: str, timecourse: np.ndarray) -> Union[int, floa
     elif metric == "integral":
         return simps(timecourse)
     else:
-        raise ValueError("Available metrics are: 'maximum', 'minimum', 'duration', 'integral'")
+        raise ValueError(f"Available metrics are: {', '.join(available_metrics)}")
 
 
 def dlnyi_dlnxj(

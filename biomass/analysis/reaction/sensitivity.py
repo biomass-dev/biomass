@@ -5,17 +5,21 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import List
 
-from biomass.exec_model import ExecModel
-from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
+from ...exec_model import BioMassModel, ExecModel
+from .. import get_signaling_metric, dlnyi_dlnxj
 
 
 class ReactionSensitivity(ExecModel):
     """Sensitivity for rate equations"""
 
-    def __init__(self, model):
+    def __init__(self, model: BioMassModel) -> None:
         super().__init__(model)
 
-    def _calc_sensitivity_coefficients(self, metric: str, reaction_indices: List[int]) -> np.ndarray:
+    def _calc_sensitivity_coefficients(
+        self,
+        metric: str,
+        reaction_indices: List[int],
+    ) -> np.ndarray:
         """Calculating Sensitivity Coefficients
 
         Parameters
@@ -40,8 +44,8 @@ class ReactionSensitivity(ExecModel):
             (
                 len(n_file),
                 len(reaction_indices) + 1,
-                len(self.obs),
-                len(self.sim.conditions),
+                len(self.model.obs),
+                len(self.model.sim.conditions),
             ),
             np.nan,
         )
@@ -52,58 +56,63 @@ class ReactionSensitivity(ExecModel):
                 for idx in reaction_indices:
                     perturbation[idx] = 1
                 perturbation[rxn_idx] = rate
-                if self.sim.simulate(x, y0, perturbation) is None:
-                    for k, _ in enumerate(self.obs):
-                        for l, _ in enumerate(self.sim.conditions):
-                            signaling_metric[i, j, k, l] = get_signaling_metric(metric, self.sim.simulations[k, :, l])
+                if self.model.sim.simulate(x, y0, perturbation) is None:
+                    for k, _ in enumerate(self.model.obs):
+                        for l, _ in enumerate(self.model.sim.conditions):
+                            signaling_metric[i, j, k, l] = get_signaling_metric(
+                                metric, self.model.sim.simulations[k, :, l]
+                            )
                 sys.stdout.write(
                     "\r{:d} / {:d}".format(
                         i * len(reaction_indices) + j + 1,
                         len(n_file) * len(reaction_indices),
                     )
                 )
-            if self.sim.simulate(x, y0) is None:
-                for k, _ in enumerate(self.obs):
-                    for l, _ in enumerate(self.sim.conditions):
-                        signaling_metric[i, -1, k, l] = get_signaling_metric(metric, self.sim.simulations[k, :, l])
+            if self.model.sim.simulate(x, y0) is None:
+                for k, _ in enumerate(self.model.obs):
+                    for l, _ in enumerate(self.model.sim.conditions):
+                        signaling_metric[i, -1, k, l] = get_signaling_metric(
+                            metric, self.model.sim.simulations[k, :, l]
+                        )
         sensitivity_coefficients = dlnyi_dlnxj(
             signaling_metric,
             n_file,
             reaction_indices,
-            self.obs,
-            self.sim.conditions,
+            self.model.obs,
+            self.model.sim.conditions,
             rate,
         )
 
         return sensitivity_coefficients
 
-    def _load_sc(self, metric: str, reaction_indices: List[int]):
+    def _load_sc(self, metric: str, reaction_indices: List[int]) -> np.ndarray:
         """
         Load (or calculate) sensitivity coefficients.
         """
         os.makedirs(
-            self.model_path + "/figure/sensitivity/" f"reaction/{metric}/heatmap",
+            self.model.path + f"/figure/sensitivity/reaction/{metric}/heatmap",
             exist_ok=True,
         )
-        if not os.path.isfile(self.model_path + "/sensitivity_coefficients/" f"reaction/{metric}/sc.npy"):
+        if not os.path.isfile(self.model.path + f"/sensitivity_coefficients/reaction/{metric}/sc.npy"):
             os.makedirs(
-                self.model_path + "/sensitivity_coefficients/" f"reaction/{metric}",
+                self.model.path + f"/sensitivity_coefficients/reaction/{metric}",
                 exist_ok=True,
             )
             sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, reaction_indices)
             np.save(
-                self.model_path + "/sensitivity_coefficients/" f"reaction/{metric}/sc",
+                self.model.path + f"/sensitivity_coefficients/reaction/{metric}/sc",
                 sensitivity_coefficients,
             )
         else:
-            sensitivity_coefficients = np.load(
-                self.model_path + "/sensitivity_coefficients/" f"reaction/{metric}/sc.npy"
-            )
+            sensitivity_coefficients = np.load(self.model.path + f"/sensitivity_coefficients/reaction/{metric}/sc.npy")
 
         return sensitivity_coefficients
 
     @staticmethod
-    def _draw_vertical_span(biological_processes: List[List[int]], width: float):
+    def _draw_vertical_span(
+        biological_processes: List[List[int]],
+        width: float,
+    ) -> None:
         """
         Draw vertical span separating biological processes.
         """
@@ -125,13 +134,13 @@ class ReactionSensitivity(ExecModel):
         average: np.ndarray,
         stdev: np.ndarray,
         width: float,
-    ):
+    ) -> None:
         """
         Put reaction index on each bar.
         """
         distance = np.max(average) * 0.05
         for i, j in enumerate(reaction_indices):
-            xp = i + width * 0.5 * (len(self.sim.conditions) - 1)
+            xp = i + width * 0.5 * (len(self.model.sim.conditions) - 1)
             yp = average[i, np.argmax(np.abs(average[i, :]))]
             yerr = stdev[i, np.argmax(stdev[i, :])]
             if yp > 0:
@@ -161,20 +170,18 @@ class ReactionSensitivity(ExecModel):
         sensitivity_coefficients: np.ndarray,
         biological_processes: List[List[int]],
         reaction_indices: List[int],
-    ):
+    ) -> None:
         """
         Visualize sensitivity coefficients using barplot.
         """
-        options = self.viz.sensitivity_options
+        options = self.model.viz.sensitivity_options
 
         # rcParams
-        self.viz.set_sensitivity_rcParams()
+        self.model.viz.set_sensitivity_rcParams()
 
-        if len(options["cmap"]) < len(self.sim.conditions):
-            raise ValueError(
-                "len(sensitivity_options['cmap']) must be equal to" " or greater than len(sim.conditions)."
-            )
-        for k, obs_name in enumerate(self.obs):
+        if len(options["cmap"]) < len(self.model.sim.conditions):
+            raise ValueError("len(sensitivity_options['cmap']) must be equal to or greater than len(sim.conditions).")
+        for k, obs_name in enumerate(self.model.obs):
             plt.figure(figsize=options["figsize"])
             self._draw_vertical_span(biological_processes, options["width"])
 
@@ -192,7 +199,7 @@ class ReactionSensitivity(ExecModel):
                     stdev = np.zeros((sensitivity_array.shape[1], sensitivity_array.shape[2]))
                 else:
                     stdev = np.std(sensitivity_array, axis=0, ddof=1)
-                for l, condition in enumerate(self.sim.conditions):
+                for l, condition in enumerate(self.model.sim.conditions):
                     plt.bar(
                         np.arange(len(reaction_indices)) + l * options["width"],
                         average[:, l],
@@ -211,7 +218,7 @@ class ReactionSensitivity(ExecModel):
                 plt.xlim(-options["width"], len(reaction_indices))
                 plt.legend(loc=options["legend_loc"], frameon=False)
                 plt.savefig(
-                    self.model_path + "/figure/sensitivity/reaction/" f"{metric}/{obs_name}.pdf",
+                    self.model.path + f"/figure/sensitivity/reaction/{metric}/{obs_name}.pdf",
                     bbox_inches="tight",
                 )
                 plt.close()
@@ -241,16 +248,16 @@ class ReactionSensitivity(ExecModel):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         reaction_indices: List[int],
-    ):
+    ) -> None:
         """
         Visualize sensitivity coefficients using heatmap.
         """
-        options = self.viz.sensitivity_options
+        options = self.model.viz.sensitivity_options
         # rcParams
-        self.viz.set_sensitivity_rcParams()
+        self.model.viz.set_sensitivity_rcParams()
 
-        for k, obs_name in enumerate(self.obs):
-            for l, condition in enumerate(self.sim.conditions):
+        for k, obs_name in enumerate(self.model.obs):
+            for l, condition in enumerate(self.model.sim.conditions):
                 sensitivity_matrix = self._remove_nan(sensitivity_coefficients[:, :, k, l], normalize=False)
                 if sensitivity_matrix.shape[0] > 1 and not np.all(sensitivity_matrix == 0.0):
                     sns.clustermap(
@@ -267,19 +274,19 @@ class ReactionSensitivity(ExecModel):
                         # cbar_kws={"ticks": [-1, 0, 1]}
                     )
                     plt.savefig(
-                        self.model_path + "/figure/sensitivity/reaction/"
+                        self.model.path + "/figure/sensitivity/reaction/"
                         f"{metric}/heatmap/{condition}_{obs_name}.pdf",
                         bbox_inches="tight",
                     )
                     plt.close()
 
-    def analyze(self, metric: str, style: str):
+    def analyze(self, metric: str, style: str) -> None:
         """
         Perform sensitivity analysis.
         """
-        if not self.rxn.reactions:
+        if not self.model.rxn.reactions:
             raise ValueError("Define reaction indices (reactions) in reaction_network.py")
-        biological_processes = self.rxn.group()
+        biological_processes = self.model.rxn.group()
         reaction_indices = np.sum(biological_processes, axis=0)
         sensitivity_coefficients = self._load_sc(metric, reaction_indices)
 

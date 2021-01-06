@@ -5,28 +5,32 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import List
 
-from biomass.exec_model import ExecModel
-from biomass.analysis import get_signaling_metric, dlnyi_dlnxj
+from ...exec_model import BioMassModel, ExecModel
+from .. import get_signaling_metric, dlnyi_dlnxj
 
 
 class InitialConditionSensitivity(ExecModel):
     """Sensitivity for species with nonzero initial conditions"""
 
-    def __init__(self, model):
+    def __init__(self, model: BioMassModel) -> None:
         super().__init__(model)
 
     def _get_nonzero_indices(self) -> List[int]:
         nonzero_indices = []
-        y0 = self.ival()
+        y0 = self.model.ival()
         for i, val in enumerate(y0):
             if val != 0.0:
                 nonzero_indices.append(i)
         if not nonzero_indices:
-            raise ValueError("No nonzero initial conditions")
+            raise ValueError("No nonzero initial conditions.")
 
         return nonzero_indices
 
-    def _calc_sensitivity_coefficients(self, metric: str, nonzero_indices: List[int]) -> np.ndarray:
+    def _calc_sensitivity_coefficients(
+        self,
+        metric: str,
+        nonzero_indices: List[int],
+    ) -> np.ndarray:
         """Calculating Sensitivity Coefficients
 
         Parameters
@@ -54,8 +58,8 @@ class InitialConditionSensitivity(ExecModel):
             (
                 len(n_file),
                 len(nonzero_indices) + 1,
-                len(self.obs),
-                len(self.sim.conditions),
+                len(self.model.obs),
+                len(self.model.sim.conditions),
             ),
             np.nan,
         )
@@ -65,10 +69,12 @@ class InitialConditionSensitivity(ExecModel):
             for j, idx in enumerate(nonzero_indices):
                 y0 = y_init[:]
                 y0[idx] = y_init[idx] * rate
-                if self.sim.simulate(x, y0) is None:
-                    for k, _ in enumerate(self.obs):
-                        for l, _ in enumerate(self.sim.conditions):
-                            signaling_metric[i, j, k, l] = get_signaling_metric(metric, self.sim.simulations[k, :, l])
+                if self.model.sim.simulate(x, y0) is None:
+                    for k, _ in enumerate(self.model.obs):
+                        for l, _ in enumerate(self.model.sim.conditions):
+                            signaling_metric[i, j, k, l] = get_signaling_metric(
+                                metric, self.model.sim.simulations[k, :, l]
+                            )
                 sys.stdout.write(
                     "\r{:d} / {:d}".format(
                         i * len(nonzero_indices) + j + 1,
@@ -77,42 +83,44 @@ class InitialConditionSensitivity(ExecModel):
                 )
             # Signaling metric without perturbation (j=-1)
             y0 = y_init[:]
-            if self.sim.simulate(x, y0) is None:
-                for k, _ in enumerate(self.obs):
-                    for l, _ in enumerate(self.sim.conditions):
-                        signaling_metric[i, -1, k, l] = get_signaling_metric(metric, self.sim.simulations[k, :, l])
+            if self.model.sim.simulate(x, y0) is None:
+                for k, _ in enumerate(self.model.obs):
+                    for l, _ in enumerate(self.model.sim.conditions):
+                        signaling_metric[i, -1, k, l] = get_signaling_metric(
+                            metric, self.model.sim.simulations[k, :, l]
+                        )
         sensitivity_coefficients = dlnyi_dlnxj(
             signaling_metric,
             n_file,
             nonzero_indices,
-            self.obs,
-            self.sim.conditions,
+            self.model.obs,
+            self.model.sim.conditions,
             rate,
         )
 
         return sensitivity_coefficients
 
-    def _load_sc(self, metric: str, nonzero_indices: List[int]):
+    def _load_sc(self, metric: str, nonzero_indices: List[int]) -> np.ndarray:
         """
         Load (or calculate) sensitivity coefficients.
         """
         os.makedirs(
-            self.model_path + "/figure/sensitivity/" f"initial_condition/{metric}/heatmap",
+            self.model.path + f"/figure/sensitivity/initial_condition/{metric}/heatmap",
             exist_ok=True,
         )
-        if not os.path.isfile(self.model_path + "/sensitivity_coefficients/" f"initial_condition/{metric}/sc.npy"):
+        if not os.path.isfile(self.model.path + f"/sensitivity_coefficients/initial_condition/{metric}/sc.npy"):
             os.makedirs(
-                self.model_path + "/sensitivity_coefficients/" f"initial_condition/{metric}",
+                self.model.path + f"/sensitivity_coefficients/initial_condition/{metric}",
                 exist_ok=True,
             )
             sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, nonzero_indices)
             np.save(
-                self.model_path + "/sensitivity_coefficients/" f"initial_condition/{metric}/sc",
+                self.model.path + f"/sensitivity_coefficients/initial_condition/{metric}/sc",
                 sensitivity_coefficients,
             )
         else:
             sensitivity_coefficients = np.load(
-                self.model_path + "/sensitivity_coefficients/" f"initial_condition/{metric}/sc.npy"
+                self.model.path + f"/sensitivity_coefficients/initial_condition/{metric}/sc.npy"
             )
 
         return sensitivity_coefficients
@@ -122,23 +130,21 @@ class InitialConditionSensitivity(ExecModel):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         nonzero_indices: List[int],
-    ):
+    ) -> None:
         """
         Visualize sensitivity coefficients using barplot.
         """
-        options = self.viz.sensitivity_options
+        options = self.model.viz.sensitivity_options
 
         # rcParams
-        self.viz.set_sensitivity_rcParams()
+        self.model.viz.set_sensitivity_rcParams()
 
-        if len(options["cmap"]) < len(self.sim.conditions):
-            raise ValueError(
-                "len(sensitivity_options['cmap']) must be equal to" " or greater than len(sim.conditions)."
-            )
-        for k, obs_name in enumerate(self.obs):
+        if len(options["cmap"]) < len(self.model.sim.conditions):
+            raise ValueError("len(sensitivity_options['cmap']) must be equal to or greater than len(sim.conditions).")
+        for k, obs_name in enumerate(self.model.obs):
             plt.figure(figsize=options["figsize"])
             plt.hlines([0], -options["width"], len(nonzero_indices), "k", lw=1)
-            for l, condition in enumerate(self.sim.conditions):
+            for l, condition in enumerate(self.model.sim.conditions):
                 sensitivity_matrix = sensitivity_coefficients[:, :, k, l]
                 nan_idx = []
                 for m in range(sensitivity_matrix.shape[0]):
@@ -163,15 +169,15 @@ class InitialConditionSensitivity(ExecModel):
                         label=condition,
                     )
             plt.xticks(
-                np.arange(len(nonzero_indices)) + options["width"] * 0.5 * (len(self.sim.conditions) - 1),
-                [self.viz.convert_species_name(self.species[i]) for i in nonzero_indices],
+                np.arange(len(nonzero_indices)) + options["width"] * 0.5 * (len(self.model.sim.conditions) - 1),
+                [self.model.viz.convert_species_name(self.model.species[i]) for i in nonzero_indices],
                 rotation=90,
             )
             plt.ylabel("Control coefficients on\n" + metric + " (" + obs_name.replace("_", " ") + ")")
             plt.xlim(-options["width"], len(nonzero_indices))
             plt.legend(loc=options["legend_loc"], frameon=False)
             plt.savefig(
-                self.model_path + "/figure/sensitivity/initial_condition/" f"{metric}/{obs_name}.pdf",
+                self.model.path + f"/figure/sensitivity/initial_condition/{metric}/{obs_name}.pdf",
                 bbox_inches="tight",
             )
             plt.close()
@@ -201,16 +207,16 @@ class InitialConditionSensitivity(ExecModel):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         nonzero_indices: List[int],
-    ):
+    ) -> None:
         """
         Visualize sensitivity coefficients using heatmap.
         """
-        options = self.viz.sensitivity_options
+        options = self.model.viz.sensitivity_options
         # rcParams
-        self.viz.set_sensitivity_rcParams()
+        self.model.viz.set_sensitivity_rcParams()
 
-        for k, obs_name in enumerate(self.obs):
-            for l, condition in enumerate(self.sim.conditions):
+        for k, obs_name in enumerate(self.model.obs):
+            for l, condition in enumerate(self.model.sim.conditions):
                 sensitivity_matrix = self._remove_nan(sensitivity_coefficients[:, :, k, l], normalize=False)
                 if sensitivity_matrix.shape[0] > 1 and not np.all(sensitivity_matrix == 0.0):
                     g = sns.clustermap(
@@ -222,19 +228,21 @@ class InitialConditionSensitivity(ExecModel):
                         linewidth=0.5,
                         col_cluster=False,
                         figsize=options["figsize"],
-                        xticklabels=[self.viz.convert_species_name(self.species[i]) for i in nonzero_indices],
+                        xticklabels=[
+                            self.model.viz.convert_species_name(self.model.species[i]) for i in nonzero_indices
+                        ],
                         yticklabels=[],
                         # cbar_kws={"ticks": [-1, 0, 1]}
                     )
                     plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90)
                     plt.savefig(
-                        self.model_path + "/figure/sensitivity/initial_condition/"
+                        self.model.path + "/figure/sensitivity/initial_condition/"
                         f"{metric}/heatmap/{condition}_{obs_name}.pdf",
                         bbox_inches="tight",
                     )
                     plt.close()
 
-    def analyze(self, metric: str, style: str):
+    def analyze(self, metric: str, style: str) -> None:
         """
         Perform sensitivity analysis.
         """
