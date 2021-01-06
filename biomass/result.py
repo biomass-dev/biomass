@@ -90,7 +90,7 @@ class OptimizationResults(ExecModel):
         >>> from biomass.models import Nakakuki_Cell_2010
         >>> from biomass.result import OptimizationResults
         >>> model = Nakakuki_Cell_2010.create()
-        >>> res = OptimizationResults(Nakakuki_Cell_2010)
+        >>> res = OptimizationResults(model)
         >>> res.dynamic_assessment()
 
         """
