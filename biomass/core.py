@@ -210,7 +210,7 @@ def optimize_continue(
             all available CPU cores. Set workers to 1 when searching multiple
             parameter sets simultaneously.
 
-        p0_bounds : list of float (default: [0.1, 10.0])
+        p0_bounds : list of floats (default: [0.1, 10.0])
             Generate initial population using best parameter values in the last
             parameter search.
                 - lower_bound = po_bounds[0] * best_parameter_value
