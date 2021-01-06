@@ -2,12 +2,11 @@ import os
 import numpy as np
 import csv
 
-from .exec_model import ExecModel
-from .template import Model
+from .exec_model import BioMassModel, ExecModel
 
 
 class OptimizationResults(ExecModel):
-    def __init__(self, model: Model) -> None:
+    def __init__(self, model: BioMassModel) -> None:
         super().__init__(model)
 
     def to_csv(self) -> None:
