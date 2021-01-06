@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import List
 
-from ...exec_model import ExecModel, BioMassModel
+from ...exec_model import BioMassModel, ExecModel
 from .. import get_signaling_metric, dlnyi_dlnxj
 
 
@@ -27,7 +27,11 @@ class ParameterSensitivity(ExecModel):
 
         return param_indices
 
-    def _calc_sensitivity_coefficients(self, metric: str, param_indices: List[int]) -> np.ndarray:
+    def _calc_sensitivity_coefficients(
+        self,
+        metric: str,
+        param_indices: List[int],
+    ) -> np.ndarray:
         """Calculating Sensitivity Coefficients
 
         Parameters
@@ -89,28 +93,26 @@ class ParameterSensitivity(ExecModel):
 
         return sensitivity_coefficients
 
-    def _load_sc(self, metric: str, param_indices: List[int]):
+    def _load_sc(self, metric: str, param_indices: List[int]) -> np.ndarray:
         """
         Load (or calculate) sensitivity coefficients.
         """
         os.makedirs(
-            self.model.path + "/figure/sensitivity/" f"parameter/{metric}/heatmap",
+            self.model.path + f"/figure/sensitivity/parameter/{metric}/heatmap",
             exist_ok=True,
         )
-        if not os.path.isfile(self.model.path + "/sensitivity_coefficients/" f"parameter/{metric}/sc.npy"):
+        if not os.path.isfile(self.model.path + f"/sensitivity_coefficients/parameter/{metric}/sc.npy"):
             os.makedirs(
-                self.model.path + "/sensitivity_coefficients/" f"parameter/{metric}",
+                self.model.path + f"/sensitivity_coefficients/parameter/{metric}",
                 exist_ok=True,
             )
             sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, param_indices)
             np.save(
-                self.model.path + "/sensitivity_coefficients/" f"parameter/{metric}/sc",
+                self.model.path + f"/sensitivity_coefficients/parameter/{metric}/sc",
                 sensitivity_coefficients,
             )
         else:
-            sensitivity_coefficients = np.load(
-                self.model.path + "/sensitivity_coefficients/" f"parameter/{metric}/sc.npy"
-            )
+            sensitivity_coefficients = np.load(self.model.path + f"/sensitivity_coefficients/parameter/{metric}/sc.npy")
 
         return sensitivity_coefficients
 
@@ -119,7 +121,7 @@ class ParameterSensitivity(ExecModel):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         param_indices: List[int],
-    ):
+    ) -> None:
         """
         Visualize sensitivity coefficients using barplot.
         """
@@ -129,9 +131,7 @@ class ParameterSensitivity(ExecModel):
         self.model.viz.set_sensitivity_rcParams()
 
         if len(options["cmap"]) < len(self.model.sim.conditions):
-            raise ValueError(
-                "len(sensitivity_options['cmap']) must be equal to" " or greater than len(sim.conditions)."
-            )
+            raise ValueError("len(sensitivity_options['cmap']) must be equal to or greater than len(sim.conditions).")
         for k, obs_name in enumerate(self.model.obs):
             plt.figure(figsize=options["figsize"])
             plt.hlines([0], -options["width"], len(param_indices), "k", lw=1)
@@ -169,7 +169,7 @@ class ParameterSensitivity(ExecModel):
             plt.xlim(-options["width"], len(param_indices))
             plt.legend(loc=options["legend_loc"], frameon=False)
             plt.savefig(
-                self.model.path + "/figure/sensitivity/parameter/" f"{metric}/{obs_name}.pdf",
+                self.model.path + f"/figure/sensitivity/parameter/{metric}/{obs_name}.pdf",
                 bbox_inches="tight",
             )
             plt.close()
@@ -199,7 +199,7 @@ class ParameterSensitivity(ExecModel):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         param_indices: List[int],
-    ):
+    ) -> None:
         """
         Visualize sensitivity coefficients using heatmap.
         """
@@ -232,7 +232,7 @@ class ParameterSensitivity(ExecModel):
                     )
                     plt.close()
 
-    def analyze(self, metric: str, style: str):
+    def analyze(self, metric: str, style: str) -> None:
         """
         Perform sensitivity analysis.
         """

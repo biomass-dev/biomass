@@ -4,8 +4,7 @@ import time
 import numpy as np
 from typing import Optional, NoReturn
 
-from ...exec_model import ExecModel
-from ...core import BioMassModel
+from ...exec_model import BioMassModel, ExecModel
 from .rcga import RealCodedGeneticAlgorithm
 
 
@@ -31,7 +30,7 @@ class GeneticAlgorithmInit(ExecModel):
         workers: int,
         overwrite: bool,
         **unknown_options,
-    ):
+    ) -> None:
         super().__init__(model)
         self.search_rgn: np.ndarray = self.model.sp.get_region()
         self.n_population: int = int(popsize * self.search_rgn.shape[1])
@@ -229,7 +228,7 @@ class GeneticAlgorithmContinue(ExecModel):
         workers: int,
         p0_bounds: list,
         **unknown_options,
-    ):
+    ) -> None:
         super().__init__(model)
         self.search_rgn: np.ndarray = self.model.sp.get_region()
         self.n_population: int = int(popsize * self.search_rgn.shape[1])
