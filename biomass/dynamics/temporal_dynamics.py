@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 from typing import List
 
-from ..exec_model import ExecModel, BioMassModel
+from ..exec_model import BioMassModel, ExecModel
 
 
 class TemporalDynamics(ExecModel):
