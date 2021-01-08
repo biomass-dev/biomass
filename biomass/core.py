@@ -1,4 +1,5 @@
 """BioMASS core functions"""
+import os
 import multiprocessing
 import warnings
 from typing import Optional, List
@@ -20,6 +21,7 @@ def run_simulation(
     viz_type: str,
     show_all: bool = False,
     stdev: bool = False,
+    save_format: str = "pdf",
 ) -> None:
     """
     Simulate ODE model with estimated parameter values.
@@ -30,17 +32,17 @@ def run_simulation(
             Model for simulation.
 
         viz_type : str
-            - 'average':
+            * 'average':
                 The average of simulation results with parameter sets in "out/".
-            - 'best':
+            * 'best':
                 The best simulation result in "out/", simulation with
                 "best_fit_param".
-            - 'original':
+            * 'original':
                 Simulation with the default parameters and initial values
                 defined in "set_model.py".
-            - 'n(=1,2,...)':
+            * 'n(=1,2,...)':
                 Use the parameter set in "out/n/".
-            - 'experiment'
+            * 'experiment'
                 Draw the experimental data written in observable.py without
                 simulation results.
 
@@ -51,6 +53,10 @@ def run_simulation(
             If True, the standard deviation of simulated values will be shown
             (only available for 'average' visualization type).
 
+        save_format : str (default: "pdf")
+            Either "png" or "pdf", indicating whether to save figures
+            as png or pdf format.
+
         Example
         -------
         >>> from biomass.models import Nakakuki_Cell_2010
@@ -60,14 +66,15 @@ def run_simulation(
                 model,
                 viz_type='average',
                 show_all=False,
-                stdev=True
+                stdev=True,
+                save_format="png",
             )
 
     """
     warnings.filterwarnings("ignore")
     if not viz_type in ["best", "average", "original", "experiment"] and not viz_type.isdecimal():
         raise ValueError("Available viz_type are: 'best','average','original','experiment','n(=1, 2, ...)'")
-    SignalingSystems(model).simulate_all(viz_type=viz_type, show_all=show_all, stdev=stdev)
+    SignalingSystems(model).simulate_all(viz_type=viz_type, show_all=show_all, stdev=stdev, save_format=save_format)
 
 
 def _check_optional_arguments(end: Optional[int], options: Optional[dict]):
@@ -295,12 +302,26 @@ def run_analysis(
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import run_analysis
     >>> model = Nakakuki_Cell_2010.create()
+
+    1. Parameter
     >>> run_analysis(
             model,
             target='parameter',
             excluded_params=[
                 'a', 'Vn', 'Vc', 'Ligand', 'EGF', 'HRG', 'no_ligand'
             ]
+        )
+
+    2. Initial condition
+    >>> run_analysis(
+            model,
+            target='initial_condition',
+        )
+
+    3. Reaction
+    >>> run_analysis(
+            model,
+            target='reaction',
         )
 
     """
@@ -312,4 +333,23 @@ def run_analysis(
     elif target == "parameter":
         ParameterSensitivity(model, excluded_params).analyze(metric=metric, style=style)
     else:
-        raise ValueError("Available targets are: 'reaction', 'initial_condition' , 'parameter'")
+        here = os.path.abspath(os.path.dirname(__file__))
+        files = os.listdir(os.path.join(here, "analysis"))
+        raise ValueError(
+            "Available targets are: '"
+            + "', '".join(
+                [
+                    available_target
+                    for available_target in files
+                    if os.path.isdir(
+                        os.path.join(
+                            here,
+                            "analysis",
+                            available_target,
+                        )
+                    )
+                    and available_target != "__pycache__"
+                ]
+            )
+            + "'."
+        )

@@ -17,6 +17,7 @@ class TemporalDynamics(ExecModel):
         viz_type: str,
         show_all: bool,
         stdev: bool,
+        save_format: str,
         simulations_all: np.ndarray,
     ) -> None:
         """
@@ -41,7 +42,15 @@ class TemporalDynamics(ExecModel):
             Array containing all simulated values.
 
         """
-        os.makedirs(self.model.path + "/figure/simulation/{}".format(viz_type), exist_ok=True)
+        os.makedirs(
+            os.path.join(
+                self.model.path,
+                "figure",
+                "simulation",
+                f"{viz_type}",
+            ),
+            exist_ok=True,
+        )
         self.model.exp.set_data()
         self.model.viz.set_timecourse_rcParams()
         timecourse = self.model.viz.get_timecourse_options()
@@ -296,7 +305,17 @@ class TemporalDynamics(ExecModel):
                     plt.ylabel(timecourse[i]["ylabel"])
                     if timecourse[i]["legend_loc"] is not None:
                         plt.legend(loc=timecourse[i]["legend_loc"], frameon=False, fontsize=12)
-                    plt.savefig(self.model.path + f"/figure/simulation/{viz_type}/{obs_name}.pdf", bbox_inches="tight")
+                    plt.savefig(
+                        os.path.join(
+                            self.model.path,
+                            "figure",
+                            "simulation",
+                            f"{viz_type}",
+                            f"{obs_name}." + save_format,
+                        ),
+                        dpi=600 if save_format == "png" else None,
+                        bbox_inches="tight",
+                    )
                     plt.close()
             if mode == 1 and multiplot["observables"]:
                 if multiplot["xlim"]:
@@ -318,11 +337,24 @@ class TemporalDynamics(ExecModel):
                     fontsize=12,
                 )
                 plt.savefig(
-                    self.model.path + f'/figure/simulation/{viz_type}/{multiplot["fig_name"]}.pdf', bbox_inches="tight"
+                    os.path.join(
+                        self.model.path,
+                        "figure",
+                        "simulation",
+                        f"{viz_type}",
+                        f"{multiplot['fig_name']}." + save_format,
+                    ),
+                    dpi=600 if save_format == "png" else None,
+                    bbox_inches="tight",
                 )
                 plt.close()
 
-    def plot_param_range(self, popt: np.ndarray, portrait: bool) -> None:
+    def plot_param_range(
+        self,
+        popt: np.ndarray,
+        save_format: str,
+        portrait: bool,
+    ) -> None:
         """
         Plot estimated parameter/initial values.
 
@@ -385,6 +417,13 @@ class TemporalDynamics(ExecModel):
                     ax.set_ylabel(val.capitalize().replace("_", " "))
                     ax.set_yscale("log")
                 plt.savefig(
-                    self.model.path + "/figure/param_range/" + "estimated_{}s.pdf".format(val), bbox_inches="tight"
+                    os.path.join(
+                        self.model.path,
+                        "figure",
+                        "param_range",
+                        f"estimated_{val}s." + save_format,
+                    ),
+                    dpi=600 if save_format == "png" else None,
+                    bbox_inches="tight",
                 )
                 plt.close(fig)
