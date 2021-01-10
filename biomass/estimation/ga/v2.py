@@ -47,32 +47,84 @@ class GeneticAlgorithmInit(ExecModel):
             raise ValueError(f"n_population must be larger than {self.n_gene + 2:d}")
 
     def run(self, nth_paramset: int) -> None:
-        os.makedirs(self.model.path + "/out", exist_ok=True)
-        if not self.overwrite and os.path.isdir(self.model.path + f"/out/{nth_paramset:d}"):
+        os.makedirs(
+            os.path.join(
+                self.model.path,
+                "out",
+            ),
+            exist_ok=True,
+        )
+        if not self.overwrite and os.path.isdir(
+            os.path.join(
+                self.model.path,
+                "out",
+                f"{nth_paramset:d}",
+            )
+        ):
             raise FileExistsError(
-                "Set options['overwrite']=True to overwrite " + self.model.path + f"/out/{nth_paramset:d}"
+                "Set options['overwrite']=True to overwrite "
+                + os.path.join(
+                    self.model.path,
+                    "out",
+                    f"{nth_paramset:d}",
+                )
             )
         else:
             try:
-                files = os.listdir(self.model.path + f"/out/{nth_paramset:d}")
+                files = os.listdir(
+                    os.path.join(
+                        self.model.path,
+                        "out",
+                        f"{nth_paramset:d}",
+                    )
+                )
                 for file in files:
                     if any(map(file.__contains__, (".npy", ".log"))):
-                        os.remove(self.model.path + f"/out/{nth_paramset:d}/{file}")
+                        os.remove(
+                            os.path.join(
+                                self.model.path,
+                                "out",
+                                f"{nth_paramset:d}",
+                                f"{file}",
+                            )
+                        )
             except FileNotFoundError:
-                os.mkdir(self.model.path + f"/out/{nth_paramset:d}")
+                os.mkdir(
+                    os.path.join(
+                        self.model.path,
+                        "out",
+                        f"{nth_paramset:d}",
+                    )
+                )
         np.random.seed(time.time_ns() * nth_paramset % 2 ** 32)
         warnings.filterwarnings("ignore")
         self._ga_v2(nth_paramset)
 
     def _set_initial(self, nth_paramset: int) -> np.ndarray:
         population = np.full((self.n_population, self.n_gene + 1), np.inf)
-        with open(self.model.path + f"/out/{nth_paramset:d}/optimization.log", mode="w") as f:
+        with open(
+            os.path.join(
+                self.model.path,
+                "out",
+                f"{nth_paramset:d}",
+                "optimization.log",
+            ),
+            mode="w",
+        ) as f:
             f.write("Generating the initial population. . .\n")
         for i in range(self.n_population):
             while 1e12 <= population[i, -1] or np.isnan(population[i, -1]):
                 population[i, : self.n_gene] = np.random.rand(self.n_gene)
                 population[i, -1] = self.model.obj_func(population[i, : self.n_gene])
-            with open(self.model.path + f"/out/{nth_paramset:d}/optimization.log", mode="a") as f:
+            with open(
+                os.path.join(
+                    self.model.path,
+                    "out",
+                    f"{nth_paramset:d}",
+                    "optimization.log",
+                ),
+                mode="a",
+            ) as f:
                 f.write(f"{i + 1:d} / {self.n_population:d}\n")
         population = population[np.argsort(population[:, -1]), :]
 
@@ -158,7 +210,15 @@ class GeneticAlgorithmInit(ExecModel):
         population = self._set_initial(nth_paramset)
         n0[0] = population[0, -1]
 
-        with open(self.model.path + f"/out/{nth_paramset:d}/optimization.log", mode="a") as f:
+        with open(
+            os.path.join(
+                self.model.path,
+                "out",
+                f"{nth_paramset:d}",
+                "optimization.log",
+            ),
+            mode="a",
+        ) as f:
             f.write(
                 "\n----------------------------------------\n\n"
                 + f"Generation1: Best Fitness = {population[0, -1]:e}\n"
@@ -166,9 +226,33 @@ class GeneticAlgorithmInit(ExecModel):
         best_individual = self.model.sp.gene2val(population[0, : self.n_gene])
         best_fitness = population[0, -1]
 
-        np.save(self.model.path + f"/out/{nth_paramset:d}/generation.npy", 1)
-        np.save(self.model.path + f"/out/{nth_paramset:d}/fit_param1.npy", best_individual)
-        np.save(self.model.path + f"/out/{nth_paramset:d}/best_fitness.npy", best_fitness)
+        np.save(
+            os.path.join(
+                self.model.path,
+                "out",
+                f"{nth_paramset:d}",
+                "generation.npy",
+            ),
+            1,
+        )
+        np.save(
+            os.path.join(
+                self.model.path,
+                "out",
+                f"{nth_paramset:d}",
+                "fit_param1.npy",
+            ),
+            best_individual,
+        )
+        np.save(
+            os.path.join(
+                self.model.path,
+                "out",
+                f"{nth_paramset:d}",
+                "best_fitness.npy",
+            ),
+            best_fitness,
+        )
         if population[0, -1] <= self.allowable_error:
             return
 
@@ -193,20 +277,51 @@ class GeneticAlgorithmInit(ExecModel):
             best_individual = self.model.sp.gene2val(population[0, : self.n_gene])
             if population[0, -1] < best_fitness:
                 np.save(
-                    self.model.path + f"/out/{nth_paramset:d}/generation.npy",
+                    os.path.join(
+                        self.model.path,
+                        "out",
+                        f"{nth_paramset:d}",
+                        "generation.npy",
+                    ),
                     generation + 1,
                 )
                 np.save(
-                    self.model.path + f"/out/{nth_paramset:d}/fit_param{generation + 1:d}.npy",
+                    os.path.join(
+                        self.model.path,
+                        "out",
+                        f"{nth_paramset:d}",
+                        f"fit_param{generation + 1:d}.npy",
+                    ),
                     best_individual,
                 )
             best_fitness = population[0, -1]
             np.save(
-                self.model.path + f"/out/{nth_paramset:d}/best_fitness.npy",
+                os.path.join(
+                    self.model.path,
+                    "out",
+                    f"{nth_paramset:d}",
+                    "best_fitness.npy",
+                ),
                 best_fitness,
             )
-            np.save(self.model.path + f"/out/{nth_paramset:d}/count_num.npy", generation + 1)
-            with open(self.model.path + f"/out/{nth_paramset:d}/optimization.log", mode="a") as f:
+            np.save(
+                os.path.join(
+                    self.model.path,
+                    "out",
+                    f"{nth_paramset:d}",
+                    "count_num.npy",
+                ),
+                generation + 1,
+            )
+            with open(
+                os.path.join(
+                    self.model.path,
+                    "out",
+                    f"{nth_paramset:d}",
+                    "optimization.log",
+                ),
+                mode="a",
+            ) as f:
                 f.write(f"Generation{generation + 1:d}: " f"Best Fitness = {best_fitness:e}\n")
             if population[0, -1] <= self.allowable_error:
                 break
@@ -252,11 +367,33 @@ class GeneticAlgorithmContinue(ExecModel):
         self._my_ga_continue(nth_paramset)
 
     def _set_continue(self, nth_paramset: int) -> np.ndarray:
-        best_generation = np.load(self.model.path + f"/out/{nth_paramset:d}/generation.npy")
-        best_individual = np.load(self.model.path + f"/out/{nth_paramset:d}/fit_param{int(best_generation):d}.npy")
+        best_generation = np.load(
+            os.path.join(
+                self.model.path,
+                "out",
+                f"{nth_paramset:d}",
+                "generation.npy",
+            )
+        )
+        best_individual = np.load(
+            os.path.join(
+                self.model.path,
+                "out",
+                f"{nth_paramset:d}",
+                f"fit_param{int(best_generation):d}.npy",
+            )
+        )
         population = np.full((self.n_population, self.n_gene + 1), np.inf)
 
-        with open(self.model.path + f"/out/{nth_paramset:d}/optimization.log", mode="a") as f:
+        with open(
+            os.path.join(
+                self.model.path,
+                "out",
+                f"{nth_paramset:d}",
+                "optimization.log",
+            ),
+            mode="a",
+        ) as f:
             f.write(
                 "\n########################################"
                 "\n############### Continue ###############"
@@ -268,7 +405,15 @@ class GeneticAlgorithmContinue(ExecModel):
                 population[i, : self.n_gene] = self._encode_bestIndivVal2randGene(best_individual)
                 population[i, : self.n_gene] = np.clip(population[i, : self.n_gene], 0.0, 1.0)
                 population[i, -1] = self.model.obj_func(population[i, : self.n_gene])
-            with open(self.model.path + f"/out/{nth_paramset:d}/optimization.log", mode="a") as f:
+            with open(
+                os.path.join(
+                    self.model.path,
+                    "out",
+                    f"{nth_paramset:d}",
+                    "optimization.log",
+                ),
+                mode="a",
+            ) as f:
                 f.write(f"{i + 1:d} / {self.n_population:d}\n")
         population = population[np.argsort(population[:, -1]), :]
 
@@ -296,9 +441,30 @@ class GeneticAlgorithmContinue(ExecModel):
         n_iter = 1
         n0 = np.empty(3 * self.n_population)
 
-        count_num = np.load(self.model.path + f"/out/{nth_paramset:d}/count_num.npy")
-        best_generation = np.load(self.model.path + f"/out/{nth_paramset:d}/generation.npy")
-        best_individual = np.load(self.model.path + f"/out/{nth_paramset:d}/fit_param{int(best_generation):d}.npy")
+        count_num = np.load(
+            os.path.join(
+                self.model.path,
+                "out",
+                f"{nth_paramset:d}",
+                "count_num.npy",
+            )
+        )
+        best_generation = np.load(
+            os.path.join(
+                self.model.path,
+                "out",
+                f"{nth_paramset:d}",
+                "generation.npy",
+            )
+        )
+        best_individual = np.load(
+            os.path.join(
+                self.model.path,
+                "out",
+                f"{nth_paramset:d}",
+                f"fit_param{int(best_generation):d}.npy",
+            )
+        )
         best_individual_gene = self.model.sp.val2gene(best_individual)
         best_fitness = self.model.obj_func(best_individual_gene)
 
@@ -313,10 +479,23 @@ class GeneticAlgorithmContinue(ExecModel):
             best_individual = self.model.sp.gene2val(population[0, : self.n_gene])
             best_fitness = population[0, -1]
             np.save(
-                self.model.path + f"/out/{nth_paramset:d}/fit_param{int(count_num) + 1:d}.npy",
+                os.path.join(
+                    self.model.path,
+                    "out",
+                    f"{nth_paramset:d}",
+                    f"fit_param{int(count_num) + 1:d}.npy",
+                ),
                 best_individual,
             )
-        with open(self.model.path + f"/out/{nth_paramset:d}/optimization.log", mode="a") as f:
+        with open(
+            os.path.join(
+                self.model.path,
+                "out",
+                f"{nth_paramset:d}",
+                "optimization.log",
+            ),
+            mode="a",
+        ) as f:
             f.write(
                 "\n----------------------------------------\n\n"
                 f"Generation{int(count_num) + 1:d}: "
@@ -347,20 +526,51 @@ class GeneticAlgorithmContinue(ExecModel):
             best_individual = self.model.sp.gene2val(population[0, : self.n_gene])
             if population[0, -1] < best_fitness:
                 np.save(
-                    self.model.path + f"/out/{nth_paramset:d}/generation.npy",
+                    os.path.join(
+                        self.model.path,
+                        "out",
+                        f"{nth_paramset:d}",
+                        "generation.npy",
+                    ),
                     generation + 1,
                 )
                 np.save(
-                    self.model.path + f"/out/{nth_paramset:d}/fit_param{generation + 1:d}.npy",
+                    os.path.join(
+                        self.model.path,
+                        "out",
+                        f"{nth_paramset:d}",
+                        f"fit_param{generation + 1:d}.npy",
+                    ),
                     best_individual,
                 )
                 np.save(
-                    self.model.path + f"/out/{nth_paramset:d}/best_fitness",
+                    os.path.join(
+                        self.model.path,
+                        "out",
+                        f"{nth_paramset:d}",
+                        "best_fitness",
+                    ),
                     best_fitness,
                 )
             best_fitness = population[0, -1]
-            np.save(self.model.path + f"/out/{nth_paramset:d}/count_num.npy", generation + 1)
-            with open(self.model.path + f"/out/{nth_paramset:d}/optimization.log", mode="a") as f:
+            np.save(
+                os.path.join(
+                    self.model.path,
+                    "out",
+                    f"{nth_paramset:d}",
+                    "count_num.npy",
+                ),
+                generation + 1,
+            )
+            with open(
+                os.path.join(
+                    self.model.path,
+                    "out",
+                    f"{nth_paramset:d}",
+                    "optimization.log",
+                ),
+                mode="a",
+            ) as f:
                 f.write(f"Generation{generation + 1:d}: " f"Best Fitness = {best_fitness:e}\n")
             if population[0, -1] <= self.allowable_error:
                 break
