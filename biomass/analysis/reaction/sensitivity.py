@@ -90,21 +90,55 @@ class ReactionSensitivity(ExecModel):
         Load (or calculate) sensitivity coefficients.
         """
         os.makedirs(
-            self.model.path + f"/figure/sensitivity/reaction/{metric}/heatmap",
+            os.path.join(
+                self.model.path,
+                "figure",
+                "sensitivity",
+                "reaction",
+                f"{metric}",
+                "heatmap",
+            ),
             exist_ok=True,
         )
-        if not os.path.isfile(self.model.path + f"/sensitivity_coefficients/reaction/{metric}/sc.npy"):
+        if not os.path.isfile(
+            os.path.join(
+                self.model.path,
+                "sensitivity_coefficients",
+                "reaction",
+                f"{metric}",
+                "sc.npy",
+            )
+        ):
             os.makedirs(
-                self.model.path + f"/sensitivity_coefficients/reaction/{metric}",
+                os.path.join(
+                    self.model.path,
+                    "sensitivity_coefficients",
+                    "reaction",
+                    f"{metric}",
+                ),
                 exist_ok=True,
             )
             sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, reaction_indices)
             np.save(
-                self.model.path + f"/sensitivity_coefficients/reaction/{metric}/sc",
+                os.path.join(
+                    self.model.path,
+                    "sensitivity_coefficients",
+                    "reaction",
+                    f"{metric}",
+                    "sc",
+                ),
                 sensitivity_coefficients,
             )
         else:
-            sensitivity_coefficients = np.load(self.model.path + f"/sensitivity_coefficients/reaction/{metric}/sc.npy")
+            sensitivity_coefficients = np.load(
+                os.path.join(
+                    self.model.path,
+                    "sensitivity_coefficients",
+                    "reaction",
+                    f"{metric}",
+                    "sc.npy",
+                )
+            )
 
         return sensitivity_coefficients
 
@@ -218,7 +252,14 @@ class ReactionSensitivity(ExecModel):
                 plt.xlim(-options["width"], len(reaction_indices))
                 plt.legend(loc=options["legend_loc"], frameon=False)
                 plt.savefig(
-                    self.model.path + f"/figure/sensitivity/reaction/{metric}/{obs_name}.pdf",
+                    os.path.join(
+                        self.model.path,
+                        "figure",
+                        "sensitivity",
+                        "reaction",
+                        f"{metric}",
+                        f"{obs_name}.pdf",
+                    ),
                     bbox_inches="tight",
                 )
                 plt.close()
@@ -274,8 +315,15 @@ class ReactionSensitivity(ExecModel):
                         # cbar_kws={"ticks": [-1, 0, 1]}
                     )
                     plt.savefig(
-                        self.model.path + "/figure/sensitivity/reaction/"
-                        f"{metric}/heatmap/{condition}_{obs_name}.pdf",
+                        os.path.join(
+                            self.model.path,
+                            "figure",
+                            "sensitivity",
+                            "reaction",
+                            f"{metric}",
+                            "heatmap",
+                            f"{condition}_{obs_name}.pdf",
+                        ),
                         bbox_inches="tight",
                     )
                     plt.close()
