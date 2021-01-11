@@ -12,6 +12,7 @@ def _get_duration(timecourse: np.ndarray, below_threshold: float = 0.1) -> int:
     ----------
     timecourse : array
         Simulated time course data
+
     below_threshold : float (from 0.0 to 1.0)
         0.1 for 10% of its maximum
 
@@ -20,6 +21,8 @@ def _get_duration(timecourse: np.ndarray, below_threshold: float = 0.1) -> int:
     duration : int
 
     """
+    if not 0.0 < below_threshold < 1.0:
+        raise ValueError("below_threshold must lie within (0.0, 1.0).")
     maximum_value = np.max(timecourse)
     t_max = np.argmax(timecourse)
     timecourse = timecourse - below_threshold * maximum_value
@@ -36,6 +39,7 @@ def get_signaling_metric(metric: str, timecourse: np.ndarray) -> Union[int, floa
     ----------
     metric : str
         'maximum', 'minimum', 'duration' or 'integral'
+
     timecourse : array
         Simulated time course data
 
@@ -45,11 +49,15 @@ def get_signaling_metric(metric: str, timecourse: np.ndarray) -> Union[int, floa
         signaling_metric[i, j, k, l]
 
     """
-    available_metrics = ["maximum", "minimum", "duration", "integral"]
+    available_metrics = ["maximum", "minimum", "argmax", "argmin", "duration", "integral"]
     if metric == "maximum":
         return np.max(timecourse)
     elif metric == "minimum":
         return np.min(timecourse)
+    elif metric == "argmax":
+        return np.argmax(timecourse)
+    elif metric == "argmin":
+        return np.argmin(timecourse)
     elif metric == "duration":
         return _get_duration(timecourse)
     elif metric == "integral":
@@ -69,24 +77,30 @@ def dlnyi_dlnxj(
 ) -> np.ndarray:
     """
     Numerical computation of sensitivities using finite difference approximations
-    with 1% changes in the reaction rates or non-zero initial values.
+    with 1% changes in the reaction rates, parameter values or non-zero initial values.
 
     Parameters
     ----------
     signaling_metric : numpy array
         Signaling metric
-    n_file : list
+
+    n_file : list of integers
         Optimized parameter sets in out/
-    perturbed_idx : list
-        Indices of rate equations or non-zero initial values
-    observables : list
+
+    perturbed_idx : list of integers
+        Indices of rate equations or non-zero initial values.
+
+    observables : list of strings
         observables in observable.py
-    conditions : list
-        Experimental conditions
+
+    conditions : list of strings
+        Experimental conditions.
+
     rate : float ~ 1
-        1.01 for 1% change
+        1.01 for 1% change.
+
     epsilon : float << 1
-        If |M - M*| < epsilon, sensitivity_coefficient = 0
+        If |M - M*| < epsilon, sensitivity_coefficient = 0.
 
     Returns
     -------

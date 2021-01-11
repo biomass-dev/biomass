@@ -36,7 +36,7 @@ Model properties
 115 parameters, of which 75 to be estimated
 ```
 
-```
+```python
 model = Nakakuki_Cell_2010.create()
 ```
 
@@ -196,10 +196,19 @@ if self.perturbation:
 
 - `'maximum'`
   : 最大値．
+
 - `'minimum'`
   : 最小値．
+
+- `'argmax'`
+  : 最大値に到達するまでの時間．
+
+- `'argmin'`
+  : 最小値に到達するまでの時間．
+
 - `'duration'`
   : 最大値の 10%まで減少するまでにかかる時間．
+
 - `'integral'`
   : シミュレーション時間内における濃度の積分値．
 

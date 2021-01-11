@@ -297,6 +297,8 @@ def run_analysis(
     metric : str (default: 'integral')
         - 'maximum' : The maximum value.
         - 'minimum' : The minimum value.
+        - 'argmax' : The time to reach the maximum value.
+        - 'argmin' : The time to reach the minimum value.
         - 'duration' : The time it takes to decline below 10% of its maximum.
         - 'integral' : The integral of concentration over the observation time.
 

@@ -50,7 +50,7 @@ Model properties
 115 parameters, of which 75 to be estimated
 ```
 
-```
+```python
 model = Nakakuki_Cell_2010.create()
 ```
 
@@ -198,10 +198,19 @@ run_analysis(model, target='reaction', metric='integral', style='barplot')
 
 - `'maximum'`
   : The maximum value.
+
 - `'minimum'`
   : The minimum value.
+
+- `'argmax'`
+  : The time to reach the maximum value.
+
+- `'argmin'`
+  : The time to reach the minimum value.
+
 - `'duration'`
   : The time it takes to decline below 10% of its maximum.
+
 - `'integral'`
   : The integral of concentration over the observation time.
 
