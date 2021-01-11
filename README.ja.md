@@ -37,7 +37,7 @@ Model properties
 ```
 
 ```
-model = Nakakuki_cell_2010.create()
+model = Nakakuki_Cell_2010.create()
 ```
 
 #### ODE モデルのパラメータ推定 (n = 1, 2, 3, · · ·)

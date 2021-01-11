@@ -51,7 +51,7 @@ Model properties
 ```
 
 ```
-model = Nakakuki_cell_2010.create()
+model = Nakakuki_Cell_2010.create()
 ```
 
 ## Parameter Estimation of ODE Models (_n_ = 1, 2, 3, · · ·)
