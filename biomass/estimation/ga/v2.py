@@ -27,6 +27,7 @@ class GeneticAlgorithmInit(ExecModel):
         allowable_error: float,
         local_search_method: str,
         n_children: int,
+        maxiter: int,
         workers: int,
         overwrite: bool,
         **unknown_options,
@@ -39,6 +40,7 @@ class GeneticAlgorithmInit(ExecModel):
         self.allowable_error: float = allowable_error
         self.local_search_method: str = local_search_method.lower()
         self.n_children: int = n_children
+        self.maxiter: int = maxiter
         self.workers: int = workers
         self.overwrite: bool = overwrite
 
@@ -202,7 +204,12 @@ class GeneticAlgorithmInit(ExecModel):
             Otherwise, Generation <- Generation + 1, and return to the step 2.
         """
         rcga = RealCodedGeneticAlgorithm(
-            self.model.obj_func, self.n_population, self.n_gene, self.n_children, self.workers
+            self.model.obj_func,
+            self.n_population,
+            self.n_gene,
+            self.n_children,
+            self.maxiter,
+            self.workers,
         )
         n_iter = 1
         n0 = np.empty(3 * self.n_population)
@@ -340,6 +347,7 @@ class GeneticAlgorithmContinue(ExecModel):
         allowable_error: float,
         local_search_method: str,
         n_children: int,
+        maxiter: int,
         workers: int,
         p0_bounds: list,
         **unknown_options,
@@ -353,6 +361,7 @@ class GeneticAlgorithmContinue(ExecModel):
         self.allowable_error: float = allowable_error
         self.local_search_method: str = local_search_method.lower()
         self.n_children: int = n_children
+        self.maxiter: int = maxiter
         self.workers: int = workers
         self.p0_bounds: list = p0_bounds
 
@@ -436,7 +445,12 @@ class GeneticAlgorithmContinue(ExecModel):
 
     def _my_ga_continue(self, nth_paramset: int) -> None:
         rcga = RealCodedGeneticAlgorithm(
-            self.model.obj_func, self.n_population, self.n_gene, self.n_children, self.workers
+            self.model.obj_func,
+            self.n_population,
+            self.n_gene,
+            self.n_children,
+            self.maxiter,
+            self.workers,
         )
         n_iter = 1
         n0 = np.empty(3 * self.n_population)

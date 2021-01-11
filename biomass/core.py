@@ -126,6 +126,10 @@ def optimize(
         n_children : int (default: 200)
             (method='mutation') The number of children generated in NDM/MGG.
 
+        maxiter : int (default: 10)
+            (method='Powell' or 'DE') The maximum number of iterations
+            over which the entire population is evolved.
+
         workers : int (default: -1 if `end` is None else 1)
             (method='DE') The population is subdivided into workers sections and
             evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
@@ -156,6 +160,7 @@ def optimize(
     options.setdefault("allowable_error", 0.0)
     options.setdefault("local_search_method", "mutation")
     options.setdefault("n_children", 200)
+    options.setdefault("maxiter", 10)
     options.setdefault("workers", -1 if end is None else 1)
     options.setdefault("overwrite", False)
 
@@ -211,6 +216,10 @@ def optimize_continue(
         n_children : int (default: 200)
             (method='mutation') The number of children generated in NDM/MGG.
 
+        maxiter : int (default: 10)
+            (method='Powell' or 'DE') The maximum number of iterations
+            over which the entire population is evolved.
+
         workers : int (default: -1 if `end` is None else 1)
             (method='DE') The population is subdivided into workers sections and
             evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
@@ -244,6 +253,7 @@ def optimize_continue(
     options.setdefault("allowable_error", 0.0)
     options.setdefault("local_search_method", "mutation")
     options.setdefault("n_children", 200)
+    options.setdefault("maxiter", 10)
     options.setdefault("workers", -1 if end is None else 1)
     options.setdefault("p0_bounds", [0.1, 10.0])
 
