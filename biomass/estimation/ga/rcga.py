@@ -137,7 +137,7 @@ class RealCodedGeneticAlgorithm(object):
                 self.obj_func,
                 ((0.0, 1.0),) * self.n_gene,
                 strategy="best2bin",
-                mutation=(0, 1),
+                mutation=0.1,
                 maxiter=self.maxiter,
                 popsize=1,
                 polish=False,
