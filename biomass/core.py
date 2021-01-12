@@ -74,7 +74,12 @@ def run_simulation(
     warnings.filterwarnings("ignore")
     if not viz_type in ["best", "average", "original", "experiment"] and not viz_type.isdecimal():
         raise ValueError("Available viz_type are: 'best','average','original','experiment','n(=1, 2, ...)'")
-    SignalingSystems(model).simulate_all(viz_type=viz_type, show_all=show_all, stdev=stdev, save_format=save_format)
+    SignalingSystems(model).simulate_all(
+        viz_type=viz_type,
+        show_all=show_all,
+        stdev=stdev,
+        save_format=save_format,
+    )
 
 
 def _check_optional_arguments(end: Optional[int], options: Optional[dict]):
@@ -275,6 +280,7 @@ def run_analysis(
     metric: str = "integral",
     style: str = "barplot",
     excluded_params: List[str] = [],
+    options: Optional[dict] = None,
 ) -> None:
     """
     Perform sensitivity analysis to identify critical parameters, species or
@@ -299,7 +305,8 @@ def run_analysis(
         - 'minimum' : The minimum value.
         - 'argmax' : The time to reach the maximum value.
         - 'argmin' : The time to reach the minimum value.
-        - 'duration' : The time it takes to decline below 10% of its maximum.
+        - 'timepoint' : The simulated value at the time point set via options['timepoint'].
+        - 'duration' :  The time it takes to decline below the threshold set via options['duration'].
         - 'integral' : The integral of concentration over the observation time.
 
     style : str (default: 'barplot')
@@ -308,6 +315,13 @@ def run_analysis(
 
     excluded_params : list of strings
         For parameter sensitivity analysis.
+
+    options: dict, optional
+        timepoint : int (default: model.sim.t[-1])
+            (metric=='timepoint') Which timepoint to use.
+
+        duration : float
+            (metric=='duration') 0.1 for 10% of its maximum.
 
     Example
     -------
@@ -337,13 +351,35 @@ def run_analysis(
         )
 
     """
+    if options is None:
+        options = {}
+    options.setdefault("timepoint", model.sim.t[-1])
+    options.setdefault("duration", 0.5)
+
+    if not model.sim.t[0] <= options["timepoint"] <= model.sim.t[-1]:
+        raise ValueError("options['timepooint'] must lie within sim.t.")
+    if not 0.0 < options["duration"] < 1.0:
+        raise ValueError("options['duration'] must lie within (0, 1).")
+
     warnings.filterwarnings("ignore")
     if target == "reaction":
-        ReactionSensitivity(model).analyze(metric=metric, style=style)
+        ReactionSensitivity(model).analyze(
+            metric=metric,
+            style=style,
+            options=options,
+        )
     elif target == "initial_condition":
-        InitialConditionSensitivity(model).analyze(metric=metric, style=style)
+        InitialConditionSensitivity(model).analyze(
+            metric=metric,
+            style=style,
+            options=options,
+        )
     elif target == "parameter":
-        ParameterSensitivity(model, excluded_params).analyze(metric=metric, style=style)
+        ParameterSensitivity(model, excluded_params).analyze(
+            metric=metric,
+            style=style,
+            options=options,
+        )
     else:
         here = os.path.abspath(os.path.dirname(__file__))
         files = os.listdir(os.path.join(here, "analysis"))

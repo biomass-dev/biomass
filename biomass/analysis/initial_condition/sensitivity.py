@@ -30,6 +30,7 @@ class InitialConditionSensitivity(ExecModel):
         self,
         metric: str,
         nonzero_indices: List[int],
+        options: dict,
     ) -> np.ndarray:
         """Calculating Sensitivity Coefficients
 
@@ -73,7 +74,7 @@ class InitialConditionSensitivity(ExecModel):
                     for k, _ in enumerate(self.model.obs):
                         for l, _ in enumerate(self.model.sim.conditions):
                             signaling_metric[i, j, k, l] = get_signaling_metric(
-                                metric, self.model.sim.simulations[k, :, l]
+                                metric, self.model.sim.simulations[k, :, l], options
                             )
                 sys.stdout.write(
                     "\r{:d} / {:d}".format(
@@ -87,7 +88,7 @@ class InitialConditionSensitivity(ExecModel):
                 for k, _ in enumerate(self.model.obs):
                     for l, _ in enumerate(self.model.sim.conditions):
                         signaling_metric[i, -1, k, l] = get_signaling_metric(
-                            metric, self.model.sim.simulations[k, :, l]
+                            metric, self.model.sim.simulations[k, :, l], options
                         )
         sensitivity_coefficients = dlnyi_dlnxj(
             signaling_metric,
@@ -100,7 +101,7 @@ class InitialConditionSensitivity(ExecModel):
 
         return sensitivity_coefficients
 
-    def _load_sc(self, metric: str, nonzero_indices: List[int]) -> np.ndarray:
+    def _load_sc(self, metric: str, nonzero_indices: List[int], options: dict) -> np.ndarray:
         """
         Load (or calculate) sensitivity coefficients.
         """
@@ -133,7 +134,11 @@ class InitialConditionSensitivity(ExecModel):
                 ),
                 exist_ok=True,
             )
-            sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, nonzero_indices)
+            sensitivity_coefficients = self._calc_sensitivity_coefficients(
+                metric,
+                nonzero_indices,
+                options,
+            )
             np.save(
                 os.path.join(
                     self.model.path,
@@ -288,18 +293,26 @@ class InitialConditionSensitivity(ExecModel):
                     )
                     plt.close()
 
-    def analyze(self, metric: str, style: str) -> None:
+    def analyze(self, metric: str, style: str, options: dict) -> None:
         """
         Perform sensitivity analysis.
         """
         nonzero_indices = self._get_nonzero_indices()
-        sensitivity_coefficients = self._load_sc(metric, nonzero_indices)
+        sensitivity_coefficients = self._load_sc(metric, nonzero_indices, options)
         if style == "barplot":
-            self._barplot_sensitivity(metric, sensitivity_coefficients, nonzero_indices)
+            self._barplot_sensitivity(
+                metric,
+                sensitivity_coefficients,
+                nonzero_indices,
+            )
         elif style == "heatmap":
             if len(nonzero_indices) < 2:
                 pass
             else:
-                self._heatmap_sensitivity(metric, sensitivity_coefficients, nonzero_indices)
+                self._heatmap_sensitivity(
+                    metric,
+                    sensitivity_coefficients,
+                    nonzero_indices,
+                )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")

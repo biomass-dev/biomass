@@ -31,6 +31,7 @@ class ParameterSensitivity(ExecModel):
         self,
         metric: str,
         param_indices: List[int],
+        options,
     ) -> np.ndarray:
         """Calculating Sensitivity Coefficients
 
@@ -73,7 +74,7 @@ class ParameterSensitivity(ExecModel):
                     for k, _ in enumerate(self.model.obs):
                         for l, _ in enumerate(self.model.sim.conditions):
                             signaling_metric[i, j, k, l] = get_signaling_metric(
-                                metric, self.model.sim.simulations[k, :, l]
+                                metric, self.model.sim.simulations[k, :, l], options
                             )
                 sys.stdout.write(
                     "\r{:d} / {:d}".format(i * len(param_indices) + j + 1, len(n_file) * len(param_indices))
@@ -84,7 +85,7 @@ class ParameterSensitivity(ExecModel):
                 for k, _ in enumerate(self.model.obs):
                     for l, _ in enumerate(self.model.sim.conditions):
                         signaling_metric[i, -1, k, l] = get_signaling_metric(
-                            metric, self.model.sim.simulations[k, :, l]
+                            metric, self.model.sim.simulations[k, :, l], options
                         )
         sensitivity_coefficients = dlnyi_dlnxj(
             signaling_metric, n_file, param_indices, self.model.obs, self.model.sim.conditions, rate
@@ -92,7 +93,7 @@ class ParameterSensitivity(ExecModel):
 
         return sensitivity_coefficients
 
-    def _load_sc(self, metric: str, param_indices: List[int]) -> np.ndarray:
+    def _load_sc(self, metric: str, param_indices: List[int], options: dict) -> np.ndarray:
         """
         Load (or calculate) sensitivity coefficients.
         """
@@ -125,7 +126,11 @@ class ParameterSensitivity(ExecModel):
                 ),
                 exist_ok=True,
             )
-            sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, param_indices)
+            sensitivity_coefficients = self._calc_sensitivity_coefficients(
+                metric,
+                param_indices,
+                options,
+            )
             np.save(
                 os.path.join(
                     self.model.path,
@@ -148,7 +153,11 @@ class ParameterSensitivity(ExecModel):
             )
             if len(param_indices) != sensitivity_coefficients.shape[1]:
                 # User changed excluded_params after the last trial
-                sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, param_indices)
+                sensitivity_coefficients = self._calc_sensitivity_coefficients(
+                    metric,
+                    param_indices,
+                    options,
+                )
                 np.save(
                     os.path.join(
                         self.model.path,
@@ -292,18 +301,26 @@ class ParameterSensitivity(ExecModel):
                     )
                     plt.close()
 
-    def analyze(self, metric: str, style: str) -> None:
+    def analyze(self, metric: str, style: str, options: dict) -> None:
         """
         Perform sensitivity analysis.
         """
         param_indices = self._get_param_indices()
-        sensitivity_coefficients = self._load_sc(metric, param_indices)
+        sensitivity_coefficients = self._load_sc(metric, param_indices, options)
         if style == "barplot":
-            self._barplot_sensitivity(metric, sensitivity_coefficients, param_indices)
+            self._barplot_sensitivity(
+                metric,
+                sensitivity_coefficients,
+                param_indices,
+            )
         elif style == "heatmap":
             if len(param_indices) < 2:
                 pass
             else:
-                self._heatmap_sensitivity(metric, sensitivity_coefficients, param_indices)
+                self._heatmap_sensitivity(
+                    metric,
+                    sensitivity_coefficients,
+                    param_indices,
+                )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")

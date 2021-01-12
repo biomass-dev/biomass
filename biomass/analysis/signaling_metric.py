@@ -1,10 +1,13 @@
 import numpy as np
 from math import fabs, log
 from scipy.integrate import simps
-from typing import List, Union
+from typing import List, Union, Optional
 
 
-def _get_duration(timecourse: np.ndarray, below_threshold: float = 0.1) -> int:
+def _get_duration(
+    timecourse: np.ndarray,
+    below_threshold: float,
+) -> int:
     """
     Calculation of the duration as the time it takes to decline below the threshold
 
@@ -32,7 +35,11 @@ def _get_duration(timecourse: np.ndarray, below_threshold: float = 0.1) -> int:
     return duration
 
 
-def get_signaling_metric(metric: str, timecourse: np.ndarray) -> Union[int, float]:
+def get_signaling_metric(
+    metric: str,
+    timecourse: np.ndarray,
+    options: dict,
+) -> Optional[Union[int, float]]:
     """Quantification of cellular response.
 
     Parameters
@@ -43,14 +50,19 @@ def get_signaling_metric(metric: str, timecourse: np.ndarray) -> Union[int, floa
     timecourse : array
         Simulated time course data
 
+    options: dict
+        Options for detailed setting of signaling metric.
+
     Returns
     -------
     M* : int or float
         signaling_metric[i, j, k, l]
 
     """
-    available_metrics = ["maximum", "minimum", "argmax", "argmin", "duration", "integral"]
-    if metric == "maximum":
+    available_metrics = ["maximum", "minimum", "argmax", "argmin", "timepoint", "duration", "integral"]
+    if metric not in available_metrics:
+        raise ValueError(f"Available metrics are: {', '.join(available_metrics)}")
+    elif metric == "maximum":
         return np.max(timecourse)
     elif metric == "minimum":
         return np.min(timecourse)
@@ -58,12 +70,12 @@ def get_signaling_metric(metric: str, timecourse: np.ndarray) -> Union[int, floa
         return np.argmax(timecourse)
     elif metric == "argmin":
         return np.argmin(timecourse)
+    elif metric == "timepoint":
+        return timecourse[options["timepoint"]]
     elif metric == "duration":
-        return _get_duration(timecourse)
+        return _get_duration(timecourse, options["duration"])
     elif metric == "integral":
         return simps(timecourse)
-    else:
-        raise ValueError(f"Available metrics are: {', '.join(available_metrics)}")
 
 
 def dlnyi_dlnxj(
