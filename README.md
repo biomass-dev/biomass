@@ -146,7 +146,7 @@ from biomass import run_simulation
 run_simulation(model, viz_type='average', show_all=False, stdev=True)
 ```
 
-**viz_type** : str
+**viz_type** : _str_
 
 - `'average'`
   : The average of simulation results with parameter sets in `out/`.
@@ -162,11 +162,11 @@ run_simulation(model, viz_type='average', show_all=False, stdev=True)
 - `'experiment'`
   : Draw the experimental data written in `observable.py` without simulation results.
 
-**show_all** : bool
+**show_all** : _bool_
 
 - Whether to show all simulation results.
 
-**stdev** : bool
+**stdev** : _bool_
 
 - If True, the standard deviation of simulated values will be shown (only when `viz_type == 'average'`).
 
@@ -188,13 +188,13 @@ from biomass import run_analysis
 run_analysis(model, target='reaction', metric='integral', style='barplot')
 ```
 
-**target** : str
+**target** : _str_
 
 - `'reaction'`
 - `'initial_condition'`
 - `'parameter'`
 
-**metric** : str
+**metric** : _str_
 
 - `'maximum'`
   : The maximum value.
@@ -208,16 +208,29 @@ run_analysis(model, target='reaction', metric='integral', style='barplot')
 - `'argmin'`
   : The time to reach the minimum value.
 
+- `'timepoint'`
+  : The simulated value at the time point set via options['timepoint'].
+
 - `'duration'`
-  : The time it takes to decline below 10% of its maximum.
+  : The time it takes to decline below the threshold set via options['duration'].
 
 - `'integral'`
   : The integral of concentration over the observation time.
 
-**style** : str
+**style** : _str_
 
 - `'barplot'`
 - `'heatmap'`
+
+**options** : _dict, optional_
+
+- **timepoint** : _int_
+
+  - (metric == `'timepoint'`) Which timepoint to use.
+
+- **duration**: _float_
+
+  - (metric == `'duration'`) 0.1 for 10% of its maximum.
 
 ![sensitivity_PcFos](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/sensitivity_PcFos.png?raw=true)
 
