@@ -9,9 +9,9 @@ from biomass import run_simulation
 model = tgfb_smad.create()
 
 
-for dir in ["/figure", "/simulation_data"]:
-    if os.path.isdir(model.path + dir):
-        shutil.rmtree(model.path + dir)
+for dir in ["figure", "simulation_data"]:
+    if os.path.isdir(os.path.join(model.path, dir)):
+        shutil.rmtree(os.path.join(model.path, dir))
 
 
 def test_simulate_successful():
@@ -22,11 +22,17 @@ def test_simulate_successful():
 
 def test_run_simulation():
     run_simulation(model, viz_type="original")
-    simulated_value = np.load(model.path + "/simulation_data/simulations_original.npy")
+    simulated_value = np.load(
+        os.path.join(
+            model.path,
+            "simulation_data",
+            "simulations_original.npy",
+        )
+    )
     assert np.isfinite(simulated_value).all()
 
 
 def test_cleanup():
-    for dir in ["/figure", "/simulation_data"]:
-        if os.path.isdir(model.path + dir):
-            shutil.rmtree(model.path + dir)
+    for dir in ["figure", "simulation_data"]:
+        if os.path.isdir(os.path.join(model.path, dir)):
+            shutil.rmtree(os.path.join(model.path, dir))
