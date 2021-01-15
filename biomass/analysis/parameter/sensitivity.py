@@ -23,7 +23,7 @@ class ParameterSensitivity(ExecModel):
             if self.model.parameters[i] not in self.excluded_params and val != 0.0:
                 param_indices.append(i)
         if not param_indices:
-            raise ValueError("No nonzero parameters")
+            raise ValueError("No nonzero parameters.")
 
         return param_indices
 
@@ -31,6 +31,7 @@ class ParameterSensitivity(ExecModel):
         self,
         metric: str,
         param_indices: List[int],
+        options,
     ) -> np.ndarray:
         """Calculating Sensitivity Coefficients
 
@@ -52,7 +53,6 @@ class ParameterSensitivity(ExecModel):
         """
 
         rate = 1.01  # 1% change
-        param_indices = self._get_param_indices()
         n_file = self.get_executable()
 
         signaling_metric = np.full(
@@ -74,7 +74,7 @@ class ParameterSensitivity(ExecModel):
                     for k, _ in enumerate(self.model.obs):
                         for l, _ in enumerate(self.model.sim.conditions):
                             signaling_metric[i, j, k, l] = get_signaling_metric(
-                                metric, self.model.sim.simulations[k, :, l]
+                                metric, self.model.sim.simulations[k, :, l], options
                             )
                 sys.stdout.write(
                     "\r{:d} / {:d}".format(i * len(param_indices) + j + 1, len(n_file) * len(param_indices))
@@ -85,7 +85,7 @@ class ParameterSensitivity(ExecModel):
                 for k, _ in enumerate(self.model.obs):
                     for l, _ in enumerate(self.model.sim.conditions):
                         signaling_metric[i, -1, k, l] = get_signaling_metric(
-                            metric, self.model.sim.simulations[k, :, l]
+                            metric, self.model.sim.simulations[k, :, l], options
                         )
         sensitivity_coefficients = dlnyi_dlnxj(
             signaling_metric, n_file, param_indices, self.model.obs, self.model.sim.conditions, rate
@@ -93,26 +93,81 @@ class ParameterSensitivity(ExecModel):
 
         return sensitivity_coefficients
 
-    def _load_sc(self, metric: str, param_indices: List[int]) -> np.ndarray:
+    def _load_sc(self, metric: str, param_indices: List[int], options: dict) -> np.ndarray:
         """
         Load (or calculate) sensitivity coefficients.
         """
         os.makedirs(
-            self.model.path + f"/figure/sensitivity/parameter/{metric}/heatmap",
+            os.path.join(
+                self.model.path,
+                "figure",
+                "sensitivity",
+                "parameter",
+                f"{metric}",
+                "heatmap",
+            ),
             exist_ok=True,
         )
-        if not os.path.isfile(self.model.path + f"/sensitivity_coefficients/parameter/{metric}/sc.npy"):
+        if not os.path.isfile(
+            os.path.join(
+                self.model.path,
+                "sensitivity_coefficients",
+                "parameter",
+                f"{metric}",
+                "sc.npy",
+            )
+        ):
             os.makedirs(
-                self.model.path + f"/sensitivity_coefficients/parameter/{metric}",
+                os.path.join(
+                    self.model.path,
+                    "sensitivity_coefficients",
+                    "parameter",
+                    f"{metric}",
+                ),
                 exist_ok=True,
             )
-            sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, param_indices)
+            sensitivity_coefficients = self._calc_sensitivity_coefficients(
+                metric,
+                param_indices,
+                options,
+            )
             np.save(
-                self.model.path + f"/sensitivity_coefficients/parameter/{metric}/sc",
+                os.path.join(
+                    self.model.path,
+                    "sensitivity_coefficients",
+                    "parameter",
+                    f"{metric}",
+                    "sc",
+                ),
                 sensitivity_coefficients,
             )
         else:
-            sensitivity_coefficients = np.load(self.model.path + f"/sensitivity_coefficients/parameter/{metric}/sc.npy")
+            sensitivity_coefficients = np.load(
+                os.path.join(
+                    self.model.path,
+                    "sensitivity_coefficients",
+                    "parameter",
+                    f"{metric}",
+                    "sc.npy",
+                )
+            )
+            if len(param_indices) != sensitivity_coefficients.shape[1]:
+                # User changed excluded_params after the last trial
+                sensitivity_coefficients = self._calc_sensitivity_coefficients(
+                    metric,
+                    param_indices,
+                    options,
+                )
+                np.save(
+                    os.path.join(
+                        self.model.path,
+                        "sensitivity_coefficients",
+                        "parameter",
+                        f"{metric}",
+                        "sc",
+                    ),
+                    sensitivity_coefficients,
+                )
 
         return sensitivity_coefficients
 
@@ -169,7 +224,14 @@ class ParameterSensitivity(ExecModel):
             plt.xlim(-options["width"], len(param_indices))
             plt.legend(loc=options["legend_loc"], frameon=False)
             plt.savefig(
-                self.model.path + f"/figure/sensitivity/parameter/{metric}/{obs_name}.pdf",
+                os.path.join(
+                    self.model.path,
+                    "figure",
+                    "sensitivity",
+                    "parameter",
+                    f"{metric}",
+                    f"{obs_name}.pdf",
+                ),
                 bbox_inches="tight",
             )
             plt.close()
@@ -226,24 +288,39 @@ class ParameterSensitivity(ExecModel):
                     )
                     plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90)
                     plt.savefig(
-                        self.model.path + "/figure/sensitivity/parameter/"
-                        f"{metric}/heatmap/{condition}_{obs_name}.pdf",
+                        os.path.join(
+                            self.model.path,
+                            "figure",
+                            "sensitivity",
+                            "parameter",
+                            f"{metric}",
+                            "heatmap",
+                            f"{condition}_{obs_name}.pdf",
+                        ),
                         bbox_inches="tight",
                     )
                     plt.close()
 
-    def analyze(self, metric: str, style: str) -> None:
+    def analyze(self, metric: str, style: str, options: dict) -> None:
         """
         Perform sensitivity analysis.
         """
         param_indices = self._get_param_indices()
-        sensitivity_coefficients = self._load_sc(metric, param_indices)
+        sensitivity_coefficients = self._load_sc(metric, param_indices, options)
         if style == "barplot":
-            self._barplot_sensitivity(metric, sensitivity_coefficients, param_indices)
+            self._barplot_sensitivity(
+                metric,
+                sensitivity_coefficients,
+                param_indices,
+            )
         elif style == "heatmap":
             if len(param_indices) < 2:
                 pass
             else:
-                self._heatmap_sensitivity(metric, sensitivity_coefficients, param_indices)
+                self._heatmap_sensitivity(
+                    metric,
+                    sensitivity_coefficients,
+                    param_indices,
+                )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")

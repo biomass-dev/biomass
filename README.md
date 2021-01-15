@@ -1,8 +1,9 @@
 # BioMASS
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Actions Status](https://github.com/okadalabipr/biomass/workflows/Tests/badge.svg)](https://github.com/okadalabipr/biomass/actions)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/okadalabipr/biomass.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/okadalabipr/biomass/context:python)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Downloads](https://pepy.tech/badge/biomass)](https://pepy.tech/project/biomass)
 [![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&color=blue)](https://pypi.python.org/pypi/biomass/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg)](https://pypi.python.org/pypi/biomass/)
 
@@ -49,8 +50,8 @@ Model properties
 115 parameters, of which 75 to be estimated
 ```
 
-```
-model = Nakakuki_cell_2010.create()
+```python
+model = Nakakuki_Cell_2010.create()
 ```
 
 ## Parameter Estimation of ODE Models (_n_ = 1, 2, 3, · · ·)
@@ -145,7 +146,7 @@ from biomass import run_simulation
 run_simulation(model, viz_type='average', show_all=False, stdev=True)
 ```
 
-**viz_type** : str
+**viz_type** : _str_
 
 - `'average'`
   : The average of simulation results with parameter sets in `out/`.
@@ -161,11 +162,11 @@ run_simulation(model, viz_type='average', show_all=False, stdev=True)
 - `'experiment'`
   : Draw the experimental data written in `observable.py` without simulation results.
 
-**show_all** : bool
+**show_all** : _bool_
 
 - Whether to show all simulation results.
 
-**stdev** : bool
+**stdev** : _bool_
 
 - If True, the standard deviation of simulated values will be shown (only when `viz_type == 'average'`).
 
@@ -187,27 +188,49 @@ from biomass import run_analysis
 run_analysis(model, target='reaction', metric='integral', style='barplot')
 ```
 
-**target** : str
+**target** : _str_
 
 - `'reaction'`
 - `'initial_condition'`
 - `'parameter'`
 
-**metric** : str
+**metric** : _str_
 
 - `'maximum'`
   : The maximum value.
+
 - `'minimum'`
   : The minimum value.
+
+- `'argmax'`
+  : The time to reach the maximum value.
+
+- `'argmin'`
+  : The time to reach the minimum value.
+
+- `'timepoint'`
+  : The simulated value at the time point set via options['timepoint'].
+
 - `'duration'`
-  : The time it takes to decline below 10% of its maximum.
+  : The time it takes to decline below the threshold set via options['duration'].
+
 - `'integral'`
   : The integral of concentration over the observation time.
 
-**style** : str
+**style** : _str_
 
 - `'barplot'`
 - `'heatmap'`
+
+**options** : _dict, optional_
+
+- **timepoint** : _int_
+
+  - (metric == `'timepoint'`) Which timepoint to use.
+
+- **duration**: _float_
+
+  - (metric == `'duration'`) 0.1 for 10% of its maximum.
 
 ![sensitivity_PcFos](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/sensitivity_PcFos.png?raw=true)
 
@@ -217,4 +240,4 @@ Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HR
 
 When using BioMASS, please cite:
 
-- Imoto, H., Zhang, S. & Okada, M. A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway. _Cancers (Basel)_. **12**, 2878 (2020). https://doi.org/10.3390/cancers12102878
+- Imoto, H., Zhang, S. & Okada, M. A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway. _Cancers_. **12**, 2878 (2020). https://doi.org/10.3390/cancers12102878

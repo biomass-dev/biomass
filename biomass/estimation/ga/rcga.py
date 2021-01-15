@@ -24,6 +24,7 @@ class RealCodedGeneticAlgorithm(object):
     n_population: int
     n_gene: int
     n_children: int
+    maxiter: int
     workers: int
     n_children_for_endx: int = field(default=10, init=False)
 
@@ -122,7 +123,7 @@ class RealCodedGeneticAlgorithm(object):
                 options={
                     "xtol": 1.0,
                     "ftol": 1.0,
-                    "maxiter": 5,
+                    "maxiter": self.maxiter,
                     "maxfev": 100 * self.n_gene,
                     "direc": direc,
                 },
@@ -136,8 +137,9 @@ class RealCodedGeneticAlgorithm(object):
                 self.obj_func,
                 ((0.0, 1.0),) * self.n_gene,
                 strategy="best2bin",
-                mutation=(0, 1),
-                maxiter=10 if self.workers == 1 else 20,
+                mutation=0.1,
+                recombination=0.9,
+                maxiter=self.maxiter,
                 popsize=1,
                 polish=False,
                 init=population[ip, : self.n_gene],

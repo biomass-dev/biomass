@@ -10,13 +10,13 @@ from biomass import optimize, optimize_continue, run_simulation, run_analysis
 model = mapk_cascade.create()
 
 for dir in [
-    "/figure",
-    "/simulation_data",
-    "/sensitivity_coefficients",
-    "/optimization_results",
+    "figure",
+    "simulation_data",
+    "sensitivity_coefficients",
+    "optimization_results",
 ]:
-    if os.path.isdir(model.path + dir):
-        shutil.rmtree(model.path + dir)
+    if os.path.isdir(os.path.join(model.path, dir)):
+        shutil.rmtree(os.path.join(model.path, dir))
 
 
 def test_simulate_successful():
@@ -78,40 +78,72 @@ def test_run_simulation():
     run_simulation(model, viz_type="average", stdev=True)
     run_simulation(model, viz_type="best", show_all=True)
     for npy_file in [
-        "/simulation_data/simulations_original.npy",
-        "/simulation_data/simulations_1.npy",
-        "/simulation_data/simulations_2.npy",
-        "/simulation_data/simulations_3.npy",
-        "/simulation_data/simulations_all.npy",
-        "/simulation_data/simulations_best.npy",
+        "simulation_data/simulations_original.npy",
+        "simulation_data/simulations_1.npy",
+        "simulation_data/simulations_2.npy",
+        "simulation_data/simulations_3.npy",
+        "simulation_data/simulations_all.npy",
+        "simulation_data/simulations_best.npy",
     ]:
-        simulated_value = np.load(model.path + npy_file)
+        simulated_value = np.load(os.path.join(model.path, npy_file))
         assert np.isfinite(simulated_value).all()
-    # assert os.path.isfile(model.path + "/simulation_data/simulations_original.npy")
-    # assert os.path.isfile(model.path + "/simulation_data/simulations_all.npy")
 
 
 def test_save_result():
     res = OptimizationResults(model)
     res.to_csv()
-    assert os.path.isfile(model.path + "/optimization_results/optimized_params.csv")
+    assert os.path.isfile(
+        os.path.join(
+            model.path,
+            "optimization_results",
+            "optimized_params.csv",
+        )
+    )
     res.dynamic_assessment(include_original=True)
-    assert os.path.isfile(model.path + "/optimization_results/fitness_assessment.csv")
+    assert os.path.isfile(
+        os.path.join(
+            model.path,
+            "optimization_results",
+            "fitness_assessment.csv",
+        )
+    )
 
 
 def test_sensitivity_analysis():
-    for target in ["parameter", "initial_condition"]:
-        run_analysis(model, target=target, metric="integral")
-        assert os.path.isfile(model.path + "/sensitivity_coefficients/" + target + "/integral/sc.npy")
+    for target in [
+        "parameter",
+        "initial_condition",
+        "reaction",
+    ]:
+        for metric in [
+            "maximum",
+            "minimum",
+            "argmax",
+            "argmin",
+            "timepoint",
+            "duration",
+            "integral",
+        ]:
+            run_analysis(model, target=target, metric=metric)
+            sensitivity_coefficients = np.load(
+                os.path.join(
+                    model.path,
+                    "sensitivity_coefficients",
+                    target,
+                    metric,
+                    "sc.npy",
+                )
+            )
+            assert np.isfinite(sensitivity_coefficients).all()
 
 
 def test_cleanup():
     for dir in [
-        "/figure",
-        "/simulation_data",
-        "/out",
-        "/sensitivity_coefficients",
-        "/optimization_results",
+        "figure",
+        "simulation_data",
+        "out",
+        "sensitivity_coefficients",
+        "optimization_results",
     ]:
-        if os.path.isdir(model.path + dir):
-            shutil.rmtree(model.path + dir)
+        if os.path.isdir(os.path.join(model.path, dir)):
+            shutil.rmtree(os.path.join(model.path, dir))

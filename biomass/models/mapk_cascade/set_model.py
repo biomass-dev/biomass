@@ -21,6 +21,10 @@ class DifferentialEquation(object):
         v[9] = x[C.V9] * y[V.MAPK_PP] / (x[C.K9] + y[V.MAPK_PP])
         v[10] = x[C.V10] * y[V.MAPK_P] / (x[C.K10] + y[V.MAPK_P])
 
+        if self.perturbation:
+            for i, dv in self.perturbation.items():
+                v[i] = v[i] * dv
+
         dydt = [0] * V.NUM
         dydt[V.MKKK] = v[2] - v[1]
         dydt[V.MKKK_P] = v[1] - v[2]

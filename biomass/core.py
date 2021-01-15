@@ -1,4 +1,5 @@
 """BioMASS core functions"""
+import os
 import multiprocessing
 import warnings
 from typing import Optional, List
@@ -20,6 +21,7 @@ def run_simulation(
     viz_type: str,
     show_all: bool = False,
     stdev: bool = False,
+    save_format: str = "pdf",
 ) -> None:
     """
     Simulate ODE model with estimated parameter values.
@@ -30,17 +32,17 @@ def run_simulation(
             Model for simulation.
 
         viz_type : str
-            - 'average':
+            * 'average':
                 The average of simulation results with parameter sets in "out/".
-            - 'best':
+            * 'best':
                 The best simulation result in "out/", simulation with
                 "best_fit_param".
-            - 'original':
+            * 'original':
                 Simulation with the default parameters and initial values
                 defined in "set_model.py".
-            - 'n(=1,2,...)':
+            * 'n(=1,2,...)':
                 Use the parameter set in "out/n/".
-            - 'experiment'
+            * 'experiment'
                 Draw the experimental data written in observable.py without
                 simulation results.
 
@@ -51,6 +53,10 @@ def run_simulation(
             If True, the standard deviation of simulated values will be shown
             (only available for 'average' visualization type).
 
+        save_format : str (default: "pdf")
+            Either "png" or "pdf", indicating whether to save figures
+            as png or pdf format.
+
         Example
         -------
         >>> from biomass.models import Nakakuki_Cell_2010
@@ -60,14 +66,20 @@ def run_simulation(
                 model,
                 viz_type='average',
                 show_all=False,
-                stdev=True
+                stdev=True,
+                save_format="png",
             )
 
     """
     warnings.filterwarnings("ignore")
     if not viz_type in ["best", "average", "original", "experiment"] and not viz_type.isdecimal():
         raise ValueError("Available viz_type are: 'best','average','original','experiment','n(=1, 2, ...)'")
-    SignalingSystems(model).simulate_all(viz_type=viz_type, show_all=show_all, stdev=stdev)
+    SignalingSystems(model).simulate_all(
+        viz_type=viz_type,
+        show_all=show_all,
+        stdev=stdev,
+        save_format=save_format,
+    )
 
 
 def _check_optional_arguments(end: Optional[int], options: Optional[dict]):
@@ -119,6 +131,10 @@ def optimize(
         n_children : int (default: 200)
             (method='mutation') The number of children generated in NDM/MGG.
 
+        maxiter : int (default: 10)
+            (method='Powell' or 'DE') The maximum number of iterations
+            over which the entire population is evolved.
+
         workers : int (default: -1 if `end` is None else 1)
             (method='DE') The population is subdivided into workers sections and
             evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
@@ -149,6 +165,7 @@ def optimize(
     options.setdefault("allowable_error", 0.0)
     options.setdefault("local_search_method", "mutation")
     options.setdefault("n_children", 200)
+    options.setdefault("maxiter", 10)
     options.setdefault("workers", -1 if end is None else 1)
     options.setdefault("overwrite", False)
 
@@ -204,6 +221,10 @@ def optimize_continue(
         n_children : int (default: 200)
             (method='mutation') The number of children generated in NDM/MGG.
 
+        maxiter : int (default: 10)
+            (method='Powell' or 'DE') The maximum number of iterations
+            over which the entire population is evolved.
+
         workers : int (default: -1 if `end` is None else 1)
             (method='DE') The population is subdivided into workers sections and
             evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
@@ -237,6 +258,7 @@ def optimize_continue(
     options.setdefault("allowable_error", 0.0)
     options.setdefault("local_search_method", "mutation")
     options.setdefault("n_children", 200)
+    options.setdefault("maxiter", 10)
     options.setdefault("workers", -1 if end is None else 1)
     options.setdefault("p0_bounds", [0.1, 10.0])
 
@@ -258,6 +280,7 @@ def run_analysis(
     metric: str = "integral",
     style: str = "barplot",
     excluded_params: List[str] = [],
+    options: Optional[dict] = None,
 ) -> None:
     """
     Perform sensitivity analysis to identify critical parameters, species or
@@ -280,7 +303,10 @@ def run_analysis(
     metric : str (default: 'integral')
         - 'maximum' : The maximum value.
         - 'minimum' : The minimum value.
-        - 'duration' : The time it takes to decline below 10% of its maximum.
+        - 'argmax' : The time to reach the maximum value.
+        - 'argmin' : The time to reach the minimum value.
+        - 'timepoint' : The simulated value at the time point set via options['timepoint'].
+        - 'duration' :  The time it takes to decline below the threshold set via options['duration'].
         - 'integral' : The integral of concentration over the observation time.
 
     style : str (default: 'barplot')
@@ -290,11 +316,20 @@ def run_analysis(
     excluded_params : list of strings
         For parameter sensitivity analysis.
 
+    options: dict, optional
+        timepoint : int (default: model.sim.t[-1])
+            (metric=='timepoint') Which timepoint to use.
+
+        duration : float
+            (metric=='duration') 0.1 for 10% of its maximum.
+
     Example
     -------
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import run_analysis
     >>> model = Nakakuki_Cell_2010.create()
+
+    1. Parameter
     >>> run_analysis(
             model,
             target='parameter',
@@ -303,13 +338,66 @@ def run_analysis(
             ]
         )
 
+    2. Initial condition
+    >>> run_analysis(
+            model,
+            target='initial_condition',
+        )
+
+    3. Reaction
+    >>> run_analysis(
+            model,
+            target='reaction',
+        )
+
     """
+    if options is None:
+        options = {}
+    options.setdefault("timepoint", model.sim.t[-1])
+    options.setdefault("duration", 0.5)
+
+    if not model.sim.t[0] <= options["timepoint"] <= model.sim.t[-1]:
+        raise ValueError("options['timepooint'] must lie within sim.t.")
+    if not 0.0 < options["duration"] < 1.0:
+        raise ValueError("options['duration'] must lie within (0, 1).")
+
     warnings.filterwarnings("ignore")
     if target == "reaction":
-        ReactionSensitivity(model).analyze(metric=metric, style=style)
+        ReactionSensitivity(model).analyze(
+            metric=metric,
+            style=style,
+            options=options,
+        )
     elif target == "initial_condition":
-        InitialConditionSensitivity(model).analyze(metric=metric, style=style)
+        InitialConditionSensitivity(model).analyze(
+            metric=metric,
+            style=style,
+            options=options,
+        )
     elif target == "parameter":
-        ParameterSensitivity(model, excluded_params).analyze(metric=metric, style=style)
+        ParameterSensitivity(model, excluded_params).analyze(
+            metric=metric,
+            style=style,
+            options=options,
+        )
     else:
-        raise ValueError("Available targets are: 'reaction', 'initial_condition' , 'parameter'")
+        here = os.path.abspath(os.path.dirname(__file__))
+        files = os.listdir(os.path.join(here, "analysis"))
+        raise ValueError(
+            "Available targets are: '"
+            + "', '".join(
+                [
+                    available_target
+                    for available_target in files
+                    if os.path.isdir(
+                        os.path.join(
+                            here,
+                            "analysis",
+                            available_target,
+                        )
+                    )
+                    and available_target != "__pycache__"
+                ]
+            )
+            + "'."
+        )

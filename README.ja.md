@@ -1,8 +1,9 @@
 # BioMASS
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Actions Status](https://github.com/okadalabipr/biomass/workflows/Tests/badge.svg)](https://github.com/okadalabipr/biomass/actions)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/okadalabipr/biomass.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/okadalabipr/biomass/context:python)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Downloads](https://pepy.tech/badge/biomass)](https://pepy.tech/project/biomass)
 [![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&color=blue)](https://pypi.python.org/pypi/biomass/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg)](https://pypi.python.org/pypi/biomass/)
 
@@ -35,8 +36,8 @@ Model properties
 115 parameters, of which 75 to be estimated
 ```
 
-```
-model = Nakakuki_cell_2010.create()
+```python
+model = Nakakuki_Cell_2010.create()
 ```
 
 #### ODE モデルのパラメータ推定 (n = 1, 2, 3, · · ·)
@@ -137,7 +138,7 @@ run_simulation(model, viz_type='average', show_all=False, stdev=True)
 
 関数`run_simulation`の引数を設定することで，出力されるグラフの表示法を変更することができます．
 
-**viz_type** : str
+**viz_type** : _str_
 
 - `'average'` : `out/`にある複数のパラメータセットでのシミュレーション結果の平均を表示します．
 
@@ -149,13 +150,13 @@ run_simulation(model, viz_type='average', show_all=False, stdev=True)
 
 - `'experiment'` : `observable.py` に記述されている実験値の結果のみを表示します．
 
-**show_all** : bool
+**show_all** : _bool_
 
-- `out/n(=1,2,...)`に格納されたパラメータセットでの全てのシミュレーション結果を表示します．
+- `out/n(=1,2,...)`に格納されたパラメータセットでの全てのシミュレーション結果を淡色で表示します．
 
-**stdev** : bool
+**stdev** : _bool_
 
-- `viz_type == 'average'`の際，標準偏差も含めて表示します．
+- `viz_type == 'average'`の際，標準偏差も含めてシミュレーション結果を表示します．
 
 ![simulation_best](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/simulation_best.png?raw=true)
 
@@ -185,27 +186,57 @@ if self.perturbation:
         v[i] = v[i] * dv
 ```
 
-**target** : 何に対する感度解析かを選択します（反応速度・初期値・パラメータ）.
+**target** : _str_
+
+何に対する感度解析かを選択します（反応速度・初期値・パラメータ）.
 
 - `'reaction'`
 - `'initial_condition'`
 - `'parameter'`
 
-**metric** : 出力に用いる基準を設定します．
+**metric** : _str_
+
+出力に用いる基準を設定します．
 
 - `'maximum'`
   : 最大値．
+
 - `'minimum'`
   : 最小値．
+
+- `'argmax'`
+  : 最大値に到達するまでの時間．
+
+- `'argmin'`
+  : 最小値に到達するまでの時間．
+
+- `'timepoint'`
+  : options['timepoint']で指定した時間点におけるシミュレーション値.
+
 - `'duration'`
-  : 最大値の 10%まで減少するまでにかかる時間．
+  : options['duration']で指定した閾値まで減少するまでにかかる時間．
+
 - `'integral'`
   : シミュレーション時間内における濃度の積分値．
 
-**style** : グラフを選択します．
+**style** : _str_
+
+グラフを選択します．
 
 - `'barplot'`
 - `'heatmap'`
+
+**options** : _dict, optional_
+
+詳細な metric を設定します．
+
+- **timepoint** : _int_
+
+  - (metric == `'timepoint'`) どの時間点を使用するかを指定します．
+
+- **duration**: _float_
+
+  - (metric == `'duration'`) 0 から 1 の間の実数を指定します．例えば，最大値の 10%まで減少する時間を metric に使用する場合には 0.1 に設定します．
 
 ![sensitivity_PcFos](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/sensitivity_PcFos.png?raw=true)
 

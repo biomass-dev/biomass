@@ -30,6 +30,7 @@ class InitialConditionSensitivity(ExecModel):
         self,
         metric: str,
         nonzero_indices: List[int],
+        options: dict,
     ) -> np.ndarray:
         """Calculating Sensitivity Coefficients
 
@@ -73,7 +74,7 @@ class InitialConditionSensitivity(ExecModel):
                     for k, _ in enumerate(self.model.obs):
                         for l, _ in enumerate(self.model.sim.conditions):
                             signaling_metric[i, j, k, l] = get_signaling_metric(
-                                metric, self.model.sim.simulations[k, :, l]
+                                metric, self.model.sim.simulations[k, :, l], options
                             )
                 sys.stdout.write(
                     "\r{:d} / {:d}".format(
@@ -87,7 +88,7 @@ class InitialConditionSensitivity(ExecModel):
                 for k, _ in enumerate(self.model.obs):
                     for l, _ in enumerate(self.model.sim.conditions):
                         signaling_metric[i, -1, k, l] = get_signaling_metric(
-                            metric, self.model.sim.simulations[k, :, l]
+                            metric, self.model.sim.simulations[k, :, l], options
                         )
         sensitivity_coefficients = dlnyi_dlnxj(
             signaling_metric,
@@ -100,27 +101,63 @@ class InitialConditionSensitivity(ExecModel):
 
         return sensitivity_coefficients
 
-    def _load_sc(self, metric: str, nonzero_indices: List[int]) -> np.ndarray:
+    def _load_sc(self, metric: str, nonzero_indices: List[int], options: dict) -> np.ndarray:
         """
         Load (or calculate) sensitivity coefficients.
         """
         os.makedirs(
-            self.model.path + f"/figure/sensitivity/initial_condition/{metric}/heatmap",
+            os.path.join(
+                self.model.path,
+                "figure",
+                "sensitivity",
+                "initial_condition",
+                f"{metric}",
+                "heatmap",
+            ),
             exist_ok=True,
         )
-        if not os.path.isfile(self.model.path + f"/sensitivity_coefficients/initial_condition/{metric}/sc.npy"):
+        if not os.path.isfile(
+            os.path.join(
+                self.model.path,
+                "sensitivity_coefficients",
+                "initial_condition",
+                f"{metric}",
+                "sc.npy",
+            )
+        ):
             os.makedirs(
-                self.model.path + f"/sensitivity_coefficients/initial_condition/{metric}",
+                os.path.join(
+                    self.model.path,
+                    "sensitivity_coefficients",
+                    "initial_condition",
+                    f"{metric}",
+                ),
                 exist_ok=True,
             )
-            sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, nonzero_indices)
+            sensitivity_coefficients = self._calc_sensitivity_coefficients(
+                metric,
+                nonzero_indices,
+                options,
+            )
             np.save(
-                self.model.path + f"/sensitivity_coefficients/initial_condition/{metric}/sc",
+                os.path.join(
+                    self.model.path,
+                    "sensitivity_coefficients",
+                    "initial_condition",
+                    f"{metric}",
+                    "sc",
+                ),
                 sensitivity_coefficients,
             )
         else:
             sensitivity_coefficients = np.load(
-                self.model.path + f"/sensitivity_coefficients/initial_condition/{metric}/sc.npy"
+                os.path.join(
+                    self.model.path,
+                    "sensitivity_coefficients",
+                    "initial_condition",
+                    f"{metric}",
+                    "sc.npy",
+                )
             )
 
         return sensitivity_coefficients
@@ -177,7 +214,14 @@ class InitialConditionSensitivity(ExecModel):
             plt.xlim(-options["width"], len(nonzero_indices))
             plt.legend(loc=options["legend_loc"], frameon=False)
             plt.savefig(
-                self.model.path + f"/figure/sensitivity/initial_condition/{metric}/{obs_name}.pdf",
+                os.path.join(
+                    self.model.path,
+                    "figure",
+                    "sensitivity",
+                    "initial_condition",
+                    f"{metric}",
+                    f"{obs_name}.pdf",
+                ),
                 bbox_inches="tight",
             )
             plt.close()
@@ -236,24 +280,39 @@ class InitialConditionSensitivity(ExecModel):
                     )
                     plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90)
                     plt.savefig(
-                        self.model.path + "/figure/sensitivity/initial_condition/"
-                        f"{metric}/heatmap/{condition}_{obs_name}.pdf",
+                        os.path.join(
+                            self.model.path,
+                            "figure",
+                            "sensitivity",
+                            "initial_condition",
+                            f"{metric}",
+                            "heatmap",
+                            f"{condition}_{obs_name}.pdf",
+                        ),
                         bbox_inches="tight",
                     )
                     plt.close()
 
-    def analyze(self, metric: str, style: str) -> None:
+    def analyze(self, metric: str, style: str, options: dict) -> None:
         """
         Perform sensitivity analysis.
         """
         nonzero_indices = self._get_nonzero_indices()
-        sensitivity_coefficients = self._load_sc(metric, nonzero_indices)
+        sensitivity_coefficients = self._load_sc(metric, nonzero_indices, options)
         if style == "barplot":
-            self._barplot_sensitivity(metric, sensitivity_coefficients, nonzero_indices)
+            self._barplot_sensitivity(
+                metric,
+                sensitivity_coefficients,
+                nonzero_indices,
+            )
         elif style == "heatmap":
             if len(nonzero_indices) < 2:
                 pass
             else:
-                self._heatmap_sensitivity(metric, sensitivity_coefficients, nonzero_indices)
+                self._heatmap_sensitivity(
+                    metric,
+                    sensitivity_coefficients,
+                    nonzero_indices,
+                )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")

@@ -2,11 +2,12 @@ import os
 import shutil
 import numpy as np
 
-from biomass.models import circadian_clock
+from biomass.models import nfkb_pathway
 from biomass import run_simulation
 
 
-model = circadian_clock.create()
+model = nfkb_pathway.create()
+
 
 for dir in ["figure", "simulation_data"]:
     if os.path.isdir(os.path.join(model.path, dir)):
