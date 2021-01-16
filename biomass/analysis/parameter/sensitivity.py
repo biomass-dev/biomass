@@ -65,12 +65,11 @@ class ParameterSensitivity(ExecModel):
             np.nan,
         )
         for i, nth_paramset in enumerate(n_file):
-            (x, y0) = self.load_param(nth_paramset)
-            x_init = x[:]
+            optimized = self.load_param(nth_paramset)
             for j, idx in enumerate(param_indices):
-                x = x_init[:]
-                x[idx] = x_init[idx] * rate
-                if self.model.sim.simulate(x, y0) is None:
+                x = optimized.params[:]
+                x[idx] = optimized.params[idx] * rate
+                if self.model.sim.simulate(x, optimized.initials) is None:
                     for k, _ in enumerate(self.model.obs):
                         for l, _ in enumerate(self.model.sim.conditions):
                             signaling_metric[i, j, k, l] = get_signaling_metric(
@@ -80,8 +79,8 @@ class ParameterSensitivity(ExecModel):
                     "\r{:d} / {:d}".format(i * len(param_indices) + j + 1, len(n_file) * len(param_indices))
                 )
             # Signaling metric without perturbation (j=-1)
-            x = x_init[:]
-            if self.model.sim.simulate(x, y0) is None:
+            x = optimized.params[:]
+            if self.model.sim.simulate(x, optimized.initials) is None:
                 for k, _ in enumerate(self.model.obs):
                     for l, _ in enumerate(self.model.sim.conditions):
                         signaling_metric[i, -1, k, l] = get_signaling_metric(

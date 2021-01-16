@@ -172,6 +172,6 @@ class OptimizationResults(ExecModel):
                 writer.writerow(["original", f"{obj_val:8.3e}"])
             n_file = self.get_executable()
             for paramset in sorted(n_file):
-                (x, y0) = self.load_param(paramset)
-                obj_val = self.model.obj_func(None, x, y0)
+                optimized = self.load_param(paramset)
+                obj_val = self.model.obj_func(None, *optimized)
                 writer.writerow([f"{paramset:d}", f"{obj_val:8.3e}"])

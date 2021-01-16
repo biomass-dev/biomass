@@ -65,12 +65,11 @@ class InitialConditionSensitivity(ExecModel):
             np.nan,
         )
         for i, nth_paramset in enumerate(n_file):
-            (x, y0) = self.load_param(nth_paramset)
-            y_init = y0[:]
+            optimized = self.load_param(nth_paramset)
             for j, idx in enumerate(nonzero_indices):
-                y0 = y_init[:]
-                y0[idx] = y_init[idx] * rate
-                if self.model.sim.simulate(x, y0) is None:
+                y0 = optimized.initials[:]
+                y0[idx] = optimized.initials[idx] * rate
+                if self.model.sim.simulate(optimized.params, y0) is None:
                     for k, _ in enumerate(self.model.obs):
                         for l, _ in enumerate(self.model.sim.conditions):
                             signaling_metric[i, j, k, l] = get_signaling_metric(
@@ -83,8 +82,8 @@ class InitialConditionSensitivity(ExecModel):
                     )
                 )
             # Signaling metric without perturbation (j=-1)
-            y0 = y_init[:]
-            if self.model.sim.simulate(x, y0) is None:
+            y0 = optimized.initials[:]
+            if self.model.sim.simulate(optimized.params, y0) is None:
                 for k, _ in enumerate(self.model.obs):
                     for l, _ in enumerate(self.model.sim.conditions):
                         signaling_metric[i, -1, k, l] = get_signaling_metric(
