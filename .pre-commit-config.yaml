@@ -11,7 +11,7 @@ repos:
       - id: debug-statements
 
   - repo: https://github.com/pycqa/isort
-    rev: 5.5.2
+    rev: 5.7.0
     hooks:
       - id: isort
         additional_dependencies: [toml]
@@ -24,6 +24,6 @@ repos:
         language_version: python3.7
 
   - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.1
+    rev: 3.8.4
     hooks:
       - id: flake8
