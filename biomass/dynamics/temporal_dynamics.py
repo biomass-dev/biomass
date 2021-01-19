@@ -44,7 +44,13 @@ class TemporalDynamics(ExecModel):
 
         """
         os.makedirs(
-            os.path.join(self.model.path, "figure", "simulation", f"{viz_type}",), exist_ok=True,
+            os.path.join(
+                self.model.path,
+                "figure",
+                "simulation",
+                f"{viz_type}",
+            ),
+            exist_ok=True,
         )
         self.model.exp.set_data()
         self.model.viz.set_timecourse_rcParams()
@@ -106,7 +112,12 @@ class TemporalDynamics(ExecModel):
             if mode == 1 and multiplot["observables"]:
                 self._save_mode_1(multiplot, viz_type, save_format)
 
-    def plot_param_range(self, popt: np.ndarray, save_format: str, portrait: bool,) -> None:
+    def plot_param_range(
+        self,
+        popt: np.ndarray,
+        save_format: str,
+        portrait: bool,
+    ) -> None:
         """
         Plot estimated parameter/initial values.
 
@@ -118,7 +129,12 @@ class TemporalDynamics(ExecModel):
         portrait : bool
         """
         os.makedirs(
-            os.path.join(self.model.path, "figure", "param_range",), exist_ok=True,
+            os.path.join(
+                self.model.path,
+                "figure",
+                "param_range",
+            ),
+            exist_ok=True,
         )
 
         self.model.viz.set_param_range_rcParams()
@@ -376,7 +392,11 @@ class TemporalDynamics(ExecModel):
                 )
 
     def _plot_simulations(
-        self, obs_name: str, mode: int, timecourse: List[dict], multiplot: dict,
+        self,
+        obs_name: str,
+        mode: int,
+        timecourse: List[dict],
+        multiplot: dict,
     ) -> None:
         """
         Plot time course simulated values (viz_type not in ['average', 'experiment']).
@@ -508,7 +528,11 @@ class TemporalDynamics(ExecModel):
                 )
 
     def _save_mode_0(
-        self, obs_name: str, timecourse: List[dict], viz_type: str, save_format: str,
+        self,
+        obs_name: str,
+        timecourse: List[dict],
+        viz_type: str,
+        save_format: str,
     ) -> None:
         """
         Plot time course of each observable.
@@ -526,7 +550,9 @@ class TemporalDynamics(ExecModel):
         plt.ylabel(timecourse[i]["ylabel"])
         if timecourse[i]["legend_loc"] is not None:
             plt.legend(
-                loc=timecourse[i]["legend_loc"], frameon=False, fontsize=12,
+                loc=timecourse[i]["legend_loc"],
+                frameon=False,
+                fontsize=12,
             )
         plt.savefig(
             os.path.join(
@@ -541,7 +567,12 @@ class TemporalDynamics(ExecModel):
         )
         plt.close()
 
-    def _save_mode_1(self, multiplot: dict, viz_type: str, save_format: str,) -> None:
+    def _save_mode_1(
+        self,
+        multiplot: dict,
+        viz_type: str,
+        save_format: str,
+    ) -> None:
         """
         Plot time course of multiple observables in one figure.
         """

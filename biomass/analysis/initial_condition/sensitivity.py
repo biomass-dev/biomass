@@ -28,7 +28,10 @@ class InitialConditionSensitivity(ExecModel):
         return nonzero_indices
 
     def _calc_sensitivity_coefficients(
-        self, metric: str, nonzero_indices: List[int], options: dict,
+        self,
+        metric: str,
+        nonzero_indices: List[int],
+        options: dict,
     ) -> np.ndarray:
         """Calculating Sensitivity Coefficients
 
@@ -75,7 +78,8 @@ class InitialConditionSensitivity(ExecModel):
                             )
                 sys.stdout.write(
                     "\r{:d} / {:d}".format(
-                        i * len(nonzero_indices) + j + 1, len(n_file) * len(nonzero_indices),
+                        i * len(nonzero_indices) + j + 1,
+                        len(n_file) * len(nonzero_indices),
                     )
                 )
             # Signaling metric without perturbation (j=-1)
@@ -123,12 +127,17 @@ class InitialConditionSensitivity(ExecModel):
         ):
             os.makedirs(
                 os.path.join(
-                    self.model.path, "sensitivity_coefficients", "initial_condition", f"{metric}",
+                    self.model.path,
+                    "sensitivity_coefficients",
+                    "initial_condition",
+                    f"{metric}",
                 ),
                 exist_ok=True,
             )
             sensitivity_coefficients = self._calc_sensitivity_coefficients(
-                metric, nonzero_indices, options,
+                metric,
+                nonzero_indices,
+                options,
             )
             np.save(
                 os.path.join(
@@ -154,7 +163,10 @@ class InitialConditionSensitivity(ExecModel):
         return sensitivity_coefficients
 
     def _barplot_sensitivity(
-        self, metric: str, sensitivity_coefficients: np.ndarray, nonzero_indices: List[int],
+        self,
+        metric: str,
+        sensitivity_coefficients: np.ndarray,
+        nonzero_indices: List[int],
     ) -> None:
         """
         Visualize sensitivity coefficients using barplot.
@@ -244,7 +256,10 @@ class InitialConditionSensitivity(ExecModel):
         return np.delete(sensitivity_matrix, nan_idx, axis=0)
 
     def _heatmap_sensitivity(
-        self, metric: str, sensitivity_coefficients: np.ndarray, nonzero_indices: List[int],
+        self,
+        metric: str,
+        sensitivity_coefficients: np.ndarray,
+        nonzero_indices: List[int],
     ) -> None:
         """
         Visualize sensitivity coefficients using heatmap.
@@ -298,14 +313,18 @@ class InitialConditionSensitivity(ExecModel):
         sensitivity_coefficients = self._load_sc(metric, nonzero_indices, options)
         if style == "barplot":
             self._barplot_sensitivity(
-                metric, sensitivity_coefficients, nonzero_indices,
+                metric,
+                sensitivity_coefficients,
+                nonzero_indices,
             )
         elif style == "heatmap":
             if len(nonzero_indices) < 2:
                 pass
             else:
                 self._heatmap_sensitivity(
-                    metric, sensitivity_coefficients, nonzero_indices,
+                    metric,
+                    sensitivity_coefficients,
+                    nonzero_indices,
                 )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")

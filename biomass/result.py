@@ -29,7 +29,11 @@ class OptimizationResults(ExecModel):
 
         """
         os.makedirs(
-            os.path.join(self.model.path, "optimization_results",), exist_ok=True,
+            os.path.join(
+                self.model.path,
+                "optimization_results",
+            ),
+            exist_ok=True,
         )
         n_file = self.get_executable()
 
@@ -41,7 +45,10 @@ class OptimizationResults(ExecModel):
                 for j, nth_paramset in enumerate(sorted(n_file), start=1):
                     best_generation = np.load(
                         os.path.join(
-                            self.model.path, "out", f"{nth_paramset:d}", "generation.npy",
+                            self.model.path,
+                            "out",
+                            f"{nth_paramset:d}",
+                            "generation.npy",
                         )
                     )
                     best_individual = np.load(
@@ -54,7 +61,10 @@ class OptimizationResults(ExecModel):
                     )
                     error = np.load(
                         os.path.join(
-                            self.model.path, "out", f"{nth_paramset:d}", "best_fitness.npy",
+                            self.model.path,
+                            "out",
+                            f"{nth_paramset:d}",
+                            "best_fitness.npy",
                         )
                     )
                     optimized_params[0, 0] = ""
@@ -64,7 +74,11 @@ class OptimizationResults(ExecModel):
                     optimized_params[1, j] = f"{error:8.3e}"
                     optimized_params[i + 2, j] = f"{best_individual[i]:8.3e}"
             with open(
-                os.path.join(self.model.path, "optimization_results", "optimized_params.csv",),
+                os.path.join(
+                    self.model.path,
+                    "optimization_results",
+                    "optimized_params.csv",
+                ),
                 mode="w",
             ) as f:
                 writer = csv.writer(f, lineterminator="\n")
@@ -77,7 +91,10 @@ class OptimizationResults(ExecModel):
                 for j, nth_paramset in enumerate(sorted(n_file), start=1):
                     best_generation = np.load(
                         os.path.join(
-                            self.model.path, "out", f"{nth_paramset:d}", "generation.npy",
+                            self.model.path,
+                            "out",
+                            f"{nth_paramset:d}",
+                            "generation.npy",
                         )
                     )
                     best_individual = np.load(
@@ -90,7 +107,10 @@ class OptimizationResults(ExecModel):
                     )
                     error = np.load(
                         os.path.join(
-                            self.model.path, "out", f"{nth_paramset:d}", "best_fitness.npy",
+                            self.model.path,
+                            "out",
+                            f"{nth_paramset:d}",
+                            "best_fitness.npy",
                         )
                     )
                     optimized_initials[0, 0] = ""
@@ -102,7 +122,11 @@ class OptimizationResults(ExecModel):
                         i + 2, j
                     ] = f"{best_individual[i+len(self.model.sp.idx_params)]:8.3e}"
             with open(
-                os.path.join(self.model.path, "optimization_results", "optimized_initials.csv",),
+                os.path.join(
+                    self.model.path,
+                    "optimization_results",
+                    "optimized_initials.csv",
+                ),
                 mode="w",
             ) as f:
                 writer = csv.writer(f, lineterminator="\n")
@@ -132,10 +156,18 @@ class OptimizationResults(ExecModel):
 
         """
         os.makedirs(
-            os.path.join(self.model.path, "optimization_results",), exist_ok=True,
+            os.path.join(
+                self.model.path,
+                "optimization_results",
+            ),
+            exist_ok=True,
         )
         with open(
-            os.path.join(self.model.path, "optimization_results", "fitness_assessment.csv",),
+            os.path.join(
+                self.model.path,
+                "optimization_results",
+                "fitness_assessment.csv",
+            ),
             mode="w",
         ) as f:
             writer = csv.writer(f, lineterminator="\n")

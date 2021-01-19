@@ -5,7 +5,10 @@ import numpy as np
 from scipy.integrate import simps
 
 
-def _get_duration(timecourse: np.ndarray, below_threshold: float,) -> int:
+def _get_duration(
+    timecourse: np.ndarray,
+    below_threshold: float,
+) -> int:
     """
     Calculation of the duration as the time it takes to decline below the threshold
 
@@ -34,7 +37,9 @@ def _get_duration(timecourse: np.ndarray, below_threshold: float,) -> int:
 
 
 def get_signaling_metric(
-    metric: str, timecourse: np.ndarray, options: dict,
+    metric: str,
+    timecourse: np.ndarray,
+    options: dict,
 ) -> Optional[Union[int, float]]:
     """Quantification of cellular response.
 

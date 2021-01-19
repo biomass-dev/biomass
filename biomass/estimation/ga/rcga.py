@@ -102,7 +102,12 @@ class RealCodedGeneticAlgorithm(object):
 
         return child
 
-    def local_search(self, ip: np.ndarray, population: np.ndarray, method: str,) -> np.ndarray:
+    def local_search(
+        self,
+        ip: np.ndarray,
+        population: np.ndarray,
+        method: str,
+    ) -> np.ndarray:
         """
         Apply the local search method to the best individual in a family
         consisting of the two parents, i.e., p1 and p2, and their children.

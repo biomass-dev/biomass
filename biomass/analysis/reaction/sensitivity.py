@@ -17,7 +17,10 @@ class ReactionSensitivity(ExecModel):
         super().__init__(model)
 
     def _calc_sensitivity_coefficients(
-        self, metric: str, reaction_indices: List[int], options: dict,
+        self,
+        metric: str,
+        reaction_indices: List[int],
+        options: dict,
     ) -> np.ndarray:
         """Calculating Sensitivity Coefficients
 
@@ -66,7 +69,8 @@ class ReactionSensitivity(ExecModel):
                             )
                 sys.stdout.write(
                     "\r{:d} / {:d}".format(
-                        i * len(reaction_indices) + j + 1, len(n_file) * len(reaction_indices),
+                        i * len(reaction_indices) + j + 1,
+                        len(n_file) * len(reaction_indices),
                     )
                 )
             if self.model.sim.simulate(optimized.params, optimized.initials) is None:
@@ -92,41 +96,66 @@ class ReactionSensitivity(ExecModel):
         """
         os.makedirs(
             os.path.join(
-                self.model.path, "figure", "sensitivity", "reaction", f"{metric}", "heatmap",
+                self.model.path,
+                "figure",
+                "sensitivity",
+                "reaction",
+                f"{metric}",
+                "heatmap",
             ),
             exist_ok=True,
         )
         if not os.path.isfile(
             os.path.join(
-                self.model.path, "sensitivity_coefficients", "reaction", f"{metric}", "sc.npy",
+                self.model.path,
+                "sensitivity_coefficients",
+                "reaction",
+                f"{metric}",
+                "sc.npy",
             )
         ):
             os.makedirs(
                 os.path.join(
-                    self.model.path, "sensitivity_coefficients", "reaction", f"{metric}",
+                    self.model.path,
+                    "sensitivity_coefficients",
+                    "reaction",
+                    f"{metric}",
                 ),
                 exist_ok=True,
             )
             sensitivity_coefficients = self._calc_sensitivity_coefficients(
-                metric, reaction_indices, options,
+                metric,
+                reaction_indices,
+                options,
             )
             np.save(
                 os.path.join(
-                    self.model.path, "sensitivity_coefficients", "reaction", f"{metric}", "sc",
+                    self.model.path,
+                    "sensitivity_coefficients",
+                    "reaction",
+                    f"{metric}",
+                    "sc",
                 ),
                 sensitivity_coefficients,
             )
         else:
             sensitivity_coefficients = np.load(
                 os.path.join(
-                    self.model.path, "sensitivity_coefficients", "reaction", f"{metric}", "sc.npy",
+                    self.model.path,
+                    "sensitivity_coefficients",
+                    "reaction",
+                    f"{metric}",
+                    "sc.npy",
                 )
             )
 
         return sensitivity_coefficients
 
     @staticmethod
-    def _draw_vertical_span(biological_processes: List[List[int]], width: float,) -> None:
+    def _draw_vertical_span(
+        biological_processes: List[List[int]],
+        width: float,
+    ) -> None:
         """
         Draw vertical span separating biological processes.
         """
@@ -135,12 +164,19 @@ class ReactionSensitivity(ExecModel):
             for i, proc in enumerate(biological_processes):
                 if i % 2 == 0:
                     plt.axvspan(
-                        left_end - width, left_end - width + len(proc), facecolor="k", alpha=0.1,
+                        left_end - width,
+                        left_end - width + len(proc),
+                        facecolor="k",
+                        alpha=0.1,
                     )
                 left_end += len(proc)
 
     def _write_reaction_indices(
-        self, reaction_indices: List[int], average: np.ndarray, stdev: np.ndarray, width: float,
+        self,
+        reaction_indices: List[int],
+        average: np.ndarray,
+        stdev: np.ndarray,
+        width: float,
     ) -> None:
         """
         Put reaction index on each bar.
@@ -263,7 +299,10 @@ class ReactionSensitivity(ExecModel):
         return np.delete(sensitivity_matrix, nan_idx, axis=0)
 
     def _heatmap_sensitivity(
-        self, metric: str, sensitivity_coefficients: np.ndarray, reaction_indices: List[int],
+        self,
+        metric: str,
+        sensitivity_coefficients: np.ndarray,
+        reaction_indices: List[int],
     ) -> None:
         """
         Visualize sensitivity coefficients using heatmap.
@@ -317,11 +356,16 @@ class ReactionSensitivity(ExecModel):
 
         if style == "barplot":
             self._barplot_sensitivity(
-                metric, sensitivity_coefficients, biological_processes, reaction_indices,
+                metric,
+                sensitivity_coefficients,
+                biological_processes,
+                reaction_indices,
             )
         elif style == "heatmap":
             self._heatmap_sensitivity(
-                metric, sensitivity_coefficients, reaction_indices,
+                metric,
+                sensitivity_coefficients,
+                reaction_indices,
             )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")
