@@ -6,6 +6,7 @@
 [![Downloads](https://pepy.tech/badge/biomass)](https://pepy.tech/project/biomass)
 [![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&color=blue)](https://pypi.python.org/pypi/biomass/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg)](https://pypi.python.org/pypi/biomass/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ![logo2](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/logo2.png?raw=true)
 
