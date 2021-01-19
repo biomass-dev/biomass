@@ -73,11 +73,17 @@ def run_simulation(
             "Available viz_type are: " "'best','average','original','experiment','n(=1, 2, ...)'"
         )
     SignalingSystems(model).simulate_all(
-        viz_type=viz_type, show_all=show_all, stdev=stdev, save_format=save_format,
+        viz_type=viz_type,
+        show_all=show_all,
+        stdev=stdev,
+        save_format=save_format,
     )
 
 
-def _check_optional_arguments(end: Optional[int], options: Optional[dict],) -> Optional[NoReturn]:
+def _check_optional_arguments(
+    end: Optional[int],
+    options: Optional[dict],
+) -> Optional[NoReturn]:
     if options["local_search_method"].lower() not in ["mutation", "powell", "de"]:
         raise ValueError(
             f"'{options['local_search_method']}': "
@@ -94,7 +100,10 @@ def _check_optional_arguments(end: Optional[int], options: Optional[dict],) -> O
 
 
 def optimize(
-    model: BioMassModel, start: int, end: Optional[int] = None, options: Optional[dict] = None,
+    model: BioMassModel,
+    start: int,
+    end: Optional[int] = None,
+    options: Optional[dict] = None,
 ) -> None:
     """
     Run GA for parameter estimation.
@@ -181,7 +190,10 @@ def optimize(
 
 
 def optimize_continue(
-    model: BioMassModel, start: int, end: Optional[int] = None, options: Optional[dict] = None,
+    model: BioMassModel,
+    start: int,
+    end: Optional[int] = None,
+    options: Optional[dict] = None,
 ) -> None:
     """
     Continue running GA from where you stopped in the last parameter search.
@@ -360,15 +372,21 @@ def run_analysis(
     warnings.filterwarnings("ignore")
     if target == "reaction":
         ReactionSensitivity(model).analyze(
-            metric=metric, style=style, options=options,
+            metric=metric,
+            style=style,
+            options=options,
         )
     elif target == "initial_condition":
         InitialConditionSensitivity(model).analyze(
-            metric=metric, style=style, options=options,
+            metric=metric,
+            style=style,
+            options=options,
         )
     elif target == "parameter":
         ParameterSensitivity(model, excluded_params).analyze(
-            metric=metric, style=style, options=options,
+            metric=metric,
+            style=style,
+            options=options,
         )
     else:
         here = os.path.abspath(os.path.dirname(__file__))
@@ -379,7 +397,13 @@ def run_analysis(
                 [
                     available_target
                     for available_target in files
-                    if os.path.isdir(os.path.join(here, "analysis", available_target,))
+                    if os.path.isdir(
+                        os.path.join(
+                            here,
+                            "analysis",
+                            available_target,
+                        )
+                    )
                     and available_target != "__pycache__"
                 ]
             )
