@@ -31,6 +31,9 @@ MANIFEST
 # pytest
 .pytest_cache/
 
+# mypy
+.mypy_cache/
+
 # Jupyter files
 *.ipynb
 .ipynb_checkpoints
