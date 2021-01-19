@@ -1,13 +1,11 @@
-import numpy as np
 from math import fabs, log
+from typing import List, Optional, Union
+
+import numpy as np
 from scipy.integrate import simps
-from typing import List, Union, Optional
 
 
-def _get_duration(
-    timecourse: np.ndarray,
-    below_threshold: float,
-) -> int:
+def _get_duration(timecourse: np.ndarray, below_threshold: float,) -> int:
     """
     Calculation of the duration as the time it takes to decline below the threshold
 
@@ -36,9 +34,7 @@ def _get_duration(
 
 
 def get_signaling_metric(
-    metric: str,
-    timecourse: np.ndarray,
-    options: dict,
+    metric: str, timecourse: np.ndarray, options: dict,
 ) -> Optional[Union[int, float]]:
     """Quantification of cellular response.
 
@@ -59,7 +55,15 @@ def get_signaling_metric(
         signaling_metric[i, j, k, l]
 
     """
-    available_metrics = ["maximum", "minimum", "argmax", "argmin", "timepoint", "duration", "integral"]
+    available_metrics = [
+        "maximum",
+        "minimum",
+        "argmax",
+        "argmin",
+        "timepoint",
+        "duration",
+        "integral",
+    ]
     if metric not in available_metrics:
         raise ValueError(f"Available metrics are: {', '.join(available_metrics)}")
     elif metric == "maximum":
@@ -119,7 +123,9 @@ def dlnyi_dlnxj(
     sensitivity_coefficients: numpy array
 
     """
-    sensitivity_coefficients = np.empty((len(n_file), len(perturbed_idx), len(observables), len(conditions)))
+    sensitivity_coefficients = np.empty(
+        (len(n_file), len(perturbed_idx), len(observables), len(conditions))
+    )
     for i, _ in enumerate(n_file):
         for j, _ in enumerate(perturbed_idx):
             for k, _ in enumerate(observables):
@@ -127,7 +133,8 @@ def dlnyi_dlnxj(
                     if np.isnan(signaling_metric[i, j, k, l]):
                         sensitivity_coefficients[i, j, k, l] = np.nan
                     elif (
-                        fabs(signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l]) < epsilon
+                        fabs(signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l])
+                        < epsilon
                         or (signaling_metric[i, j, k, l] / signaling_metric[i, -1, k, l]) < 0
                     ):
                         sensitivity_coefficients[i, j, k, l] = 0.0

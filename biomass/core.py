@@ -1,17 +1,13 @@
 """BioMASS core functions"""
-import os
 import multiprocessing
+import os
 import warnings
-from typing import Optional, List, NoReturn
+from typing import List, NoReturn, Optional
 
-from .exec_model import BioMassModel
+from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
 from .dynamics import SignalingSystems
-from .estimation import GeneticAlgorithmInit, GeneticAlgorithmContinue
-from .analysis import (
-    ReactionSensitivity,
-    InitialConditionSensitivity,
-    ParameterSensitivity,
-)
+from .estimation import GeneticAlgorithmContinue, GeneticAlgorithmInit
+from .exec_model import BioMassModel
 
 __all__ = ["run_simulation", "optimize", "optimize_continue", "run_analysis"]
 
@@ -72,30 +68,33 @@ def run_simulation(
 
     """
     warnings.filterwarnings("ignore")
-    if not viz_type in ["best", "average", "original", "experiment"] and not viz_type.isdecimal():
-        raise ValueError("Available viz_type are: 'best','average','original','experiment','n(=1, 2, ...)'")
+    if viz_type not in ["best", "average", "original", "experiment"] and not viz_type.isdecimal():
+        raise ValueError(
+            "Available viz_type are: " "'best','average','original','experiment','n(=1, 2, ...)'"
+        )
     SignalingSystems(model).simulate_all(
-        viz_type=viz_type,
-        show_all=show_all,
-        stdev=stdev,
-        save_format=save_format,
+        viz_type=viz_type, show_all=show_all, stdev=stdev, save_format=save_format,
     )
 
 
-def _check_optional_arguments(end: Optional[int], options: Optional[dict]) -> Optional[NoReturn]:
+def _check_optional_arguments(end: Optional[int], options: Optional[dict],) -> Optional[NoReturn]:
     if options["local_search_method"].lower() not in ["mutation", "powell", "de"]:
         raise ValueError(
-            f"'{options['local_search_method']}': Invalid local_search_method. Should be one of ['mutation', 'Powell', 'DE']"
+            f"'{options['local_search_method']}': "
+            "Invalid local_search_method. Should be one of ['mutation', 'Powell', 'DE']"
         )
-    elif isinstance(end, int) and options["local_search_method"].lower() == "de" and options["workers"] != 1:
-        raise AssertionError("daemonic processes are not allowed to have children. Set options['workers'] to 1.")
+    elif (
+        isinstance(end, int)
+        and options["local_search_method"].lower() == "de"
+        and options["workers"] != 1
+    ):
+        raise AssertionError(
+            "daemonic processes are not allowed to have children. Set options['workers'] to 1."
+        )
 
 
 def optimize(
-    model: BioMassModel,
-    start: int,
-    end: Optional[int] = None,
-    options: Optional[dict] = None,
+    model: BioMassModel, start: int, end: Optional[int] = None, options: Optional[dict] = None,
 ) -> None:
     """
     Run GA for parameter estimation.
@@ -182,10 +181,7 @@ def optimize(
 
 
 def optimize_continue(
-    model: BioMassModel,
-    start: int,
-    end: Optional[int] = None,
-    options: Optional[dict] = None,
+    model: BioMassModel, start: int, end: Optional[int] = None, options: Optional[dict] = None,
 ) -> None:
     """
     Continue running GA from where you stopped in the last parameter search.
@@ -364,21 +360,15 @@ def run_analysis(
     warnings.filterwarnings("ignore")
     if target == "reaction":
         ReactionSensitivity(model).analyze(
-            metric=metric,
-            style=style,
-            options=options,
+            metric=metric, style=style, options=options,
         )
     elif target == "initial_condition":
         InitialConditionSensitivity(model).analyze(
-            metric=metric,
-            style=style,
-            options=options,
+            metric=metric, style=style, options=options,
         )
     elif target == "parameter":
         ParameterSensitivity(model, excluded_params).analyze(
-            metric=metric,
-            style=style,
-            options=options,
+            metric=metric, style=style, options=options,
         )
     else:
         here = os.path.abspath(os.path.dirname(__file__))
@@ -389,13 +379,7 @@ def run_analysis(
                 [
                     available_target
                     for available_target in files
-                    if os.path.isdir(
-                        os.path.join(
-                            here,
-                            "analysis",
-                            available_target,
-                        )
-                    )
+                    if os.path.isdir(os.path.join(here, "analysis", available_target,))
                     and available_target != "__pycache__"
                 ]
             )

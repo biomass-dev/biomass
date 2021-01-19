@@ -12,10 +12,11 @@ References
     4: 105–113.
 """
 
-import numpy as np
-from scipy.optimize import minimize, differential_evolution
-from typing import Callable
 from dataclasses import dataclass, field
+from typing import Callable
+
+import numpy as np
+from scipy.optimize import differential_evolution, minimize
 
 
 @dataclass(frozen=True)
@@ -36,10 +37,15 @@ class RealCodedGeneticAlgorithm(object):
         child = np.empty(self.n_gene + 1)
 
         t1 = (parents[1, : self.n_gene] - parents[0, : self.n_gene]) / 2.0
-        t2 = np.random.normal(scale=ALPHA) * (parents[1, : self.n_gene] - parents[0, : self.n_gene])
+        t2 = np.random.normal(scale=ALPHA) * (
+            parents[1, : self.n_gene] - parents[0, : self.n_gene]
+        )
         t3 = np.sum(
             np.random.normal(scale=BETA, size=self.n_gene)[:, np.newaxis]
-            * (parents[2:, : self.n_gene] - (np.sum(parents[2:, : self.n_gene], axis=0) / self.n_gene)),
+            * (
+                parents[2:, : self.n_gene]
+                - (np.sum(parents[2:, : self.n_gene], axis=0) / self.n_gene)
+            ),
             axis=0,
         )
         child[: self.n_gene] = t1 + t2 + t3
@@ -64,7 +70,9 @@ class RealCodedGeneticAlgorithm(object):
         # Best, either of parents
         population[ip[0], :] = family[0, :]
         # Random
-        random_child_idx = np.random.randint(low=1, high=self.n_children_for_endx + 2, dtype=np.int)
+        random_child_idx = np.random.randint(
+            low=1, high=self.n_children_for_endx + 2, dtype=np.int
+        )
         population[ip[1], :] = family[random_child_idx, :]
 
         if 1e12 <= population[ip[1], -1] or np.isnan(population[ip[1], -1]):
@@ -82,7 +90,10 @@ class RealCodedGeneticAlgorithm(object):
 
         t2 = np.sum(
             np.random.normal(scale=GAMMA, size=self.n_gene + 1)[:, np.newaxis]
-            * (parents[1:, : self.n_gene] - (np.sum(parents[1:, : self.n_gene], axis=0) / (self.n_gene + 1))),
+            * (
+                parents[1:, : self.n_gene]
+                - (np.sum(parents[1:, : self.n_gene], axis=0) / (self.n_gene + 1))
+            ),
             axis=0,
         )
         child[: self.n_gene] = parents[0, : self.n_gene] + t2
@@ -91,7 +102,7 @@ class RealCodedGeneticAlgorithm(object):
 
         return child
 
-    def local_search(self, ip: np.ndarray, population: np.ndarray, method: str) -> np.ndarray:
+    def local_search(self, ip: np.ndarray, population: np.ndarray, method: str,) -> np.ndarray:
         """
         Apply the local search method to the best individual in a family
         consisting of the two parents, i.e., p1 and p2, and their children.
@@ -101,7 +112,9 @@ class RealCodedGeneticAlgorithm(object):
             idx[ip[0]] = False
             children = np.empty((self.n_children, self.n_gene + 1))
             for i in range(self.n_children):
-                ip[1:] = np.random.choice(np.arange(self.n_population)[idx], self.n_gene + 1, replace=False)
+                ip[1:] = np.random.choice(
+                    np.arange(self.n_population)[idx], self.n_gene + 1, replace=False
+                )
                 children[i, :] = self._mutation(population[ip, :])
             family = np.empty((self.n_children + 1, self.n_gene + 1))
             family[: self.n_children, :] = children

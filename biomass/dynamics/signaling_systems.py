@@ -1,4 +1,5 @@
 import os
+
 import numpy as np
 
 from ..exec_model import BioMassModel
@@ -9,13 +10,7 @@ class SignalingSystems(TemporalDynamics):
     def __init__(self, model: BioMassModel) -> None:
         super().__init__(model)
 
-    def simulate_all(
-        self,
-        viz_type: str,
-        show_all: bool,
-        stdev: bool,
-        save_format: str,
-    ) -> None:
+    def simulate_all(self, viz_type: str, show_all: bool, stdev: bool, save_format: str,) -> None:
         n_file = [] if viz_type in ["original", "experiment"] else self.get_executable()
         simulations_all = np.full(
             (
@@ -28,11 +23,7 @@ class SignalingSystems(TemporalDynamics):
         )
         if viz_type != "experiment":
             os.makedirs(
-                os.path.join(
-                    self.model.path,
-                    "simulation_data",
-                ),
-                exist_ok=True,
+                os.path.join(self.model.path, "simulation_data",), exist_ok=True,
             )
             if len(n_file) > 0:
                 if len(n_file) == 1 and viz_type == "average":
@@ -46,29 +37,19 @@ class SignalingSystems(TemporalDynamics):
                     All simulated values with estimated parameter sets.
                 """
                 np.save(
-                    os.path.join(
-                        self.model.path,
-                        "simulation_data",
-                        "simulations_all.npy",
-                    ),
+                    os.path.join(self.model.path, "simulation_data", "simulations_all.npy",),
                     simulations_all,
                 )
                 best_fitness_all = np.full(len(n_file), np.inf)
                 for i, nth_paramset in enumerate(n_file):
                     if os.path.isfile(
                         os.path.join(
-                            self.model.path,
-                            "out",
-                            f"{nth_paramset:d}",
-                            "best_fitness.npy",
+                            self.model.path, "out", f"{nth_paramset:d}", "best_fitness.npy",
                         )
                     ):
                         best_fitness_all[i] = np.load(
                             os.path.join(
-                                self.model.path,
-                                "out",
-                                f"{nth_paramset:d}",
-                                "best_fitness.npy",
+                                self.model.path, "out", f"{nth_paramset:d}", "best_fitness.npy",
                             )
                         )
                 best_paramset = n_file[np.argmin(best_fitness_all)]
@@ -80,9 +61,7 @@ class SignalingSystems(TemporalDynamics):
                     if is_successful:
                         np.save(
                             os.path.join(
-                                self.model.path,
-                                "simulation_data",
-                                "simulations_best.npy",
+                                self.model.path, "simulation_data", "simulations_best.npy",
                             ),
                             self.model.sim.simulations,
                         )
@@ -119,11 +98,7 @@ class SignalingSystems(TemporalDynamics):
                     Simulated values with original parameter values.
                 """
                 np.save(
-                    os.path.join(
-                        self.model.path,
-                        "simulation_data",
-                        "simulations_original.npy",
-                    ),
+                    os.path.join(self.model.path, "simulation_data", "simulations_original.npy",),
                     self.model.sim.simulations,
                 )
 
@@ -165,14 +140,7 @@ class SignalingSystems(TemporalDynamics):
         """
         optimized = self.load_param(best_paramset)
 
-        with open(
-            os.path.join(
-                self.model.path,
-                "out",
-                "best_fit_param.txt",
-            ),
-            mode="w",
-        ) as f:
+        with open(os.path.join(self.model.path, "out", "best_fit_param.txt",), mode="w",) as f:
             f.write(f"# param set: {best_paramset:d}\n")
             f.write("\n### param_values\n")
             for i, param in enumerate(self.model.parameters):

@@ -1,12 +1,13 @@
 import os
 import sys
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 from typing import List
 
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+
 from ...exec_model import BioMassModel, ExecModel
-from .. import get_signaling_metric, dlnyi_dlnxj
+from .. import dlnyi_dlnxj, get_signaling_metric
 
 
 class ReactionSensitivity(ExecModel):
@@ -16,10 +17,7 @@ class ReactionSensitivity(ExecModel):
         super().__init__(model)
 
     def _calc_sensitivity_coefficients(
-        self,
-        metric: str,
-        reaction_indices: List[int],
-        options: dict,
+        self, metric: str, reaction_indices: List[int], options: dict,
     ) -> np.ndarray:
         """Calculating Sensitivity Coefficients
 
@@ -57,7 +55,10 @@ class ReactionSensitivity(ExecModel):
                 for idx in reaction_indices:
                     perturbation[idx] = 1
                 perturbation[rxn_idx] = rate
-                if self.model.sim.simulate(optimized.params, optimized.initials, perturbation) is None:
+                if (
+                    self.model.sim.simulate(optimized.params, optimized.initials, perturbation)
+                    is None
+                ):
                     for k, _ in enumerate(self.model.obs):
                         for l, _ in enumerate(self.model.sim.conditions):
                             signaling_metric[i, j, k, l] = get_signaling_metric(
@@ -65,8 +66,7 @@ class ReactionSensitivity(ExecModel):
                             )
                 sys.stdout.write(
                     "\r{:d} / {:d}".format(
-                        i * len(reaction_indices) + j + 1,
-                        len(n_file) * len(reaction_indices),
+                        i * len(reaction_indices) + j + 1, len(n_file) * len(reaction_indices),
                     )
                 )
             if self.model.sim.simulate(optimized.params, optimized.initials) is None:
@@ -92,66 +92,41 @@ class ReactionSensitivity(ExecModel):
         """
         os.makedirs(
             os.path.join(
-                self.model.path,
-                "figure",
-                "sensitivity",
-                "reaction",
-                f"{metric}",
-                "heatmap",
+                self.model.path, "figure", "sensitivity", "reaction", f"{metric}", "heatmap",
             ),
             exist_ok=True,
         )
         if not os.path.isfile(
             os.path.join(
-                self.model.path,
-                "sensitivity_coefficients",
-                "reaction",
-                f"{metric}",
-                "sc.npy",
+                self.model.path, "sensitivity_coefficients", "reaction", f"{metric}", "sc.npy",
             )
         ):
             os.makedirs(
                 os.path.join(
-                    self.model.path,
-                    "sensitivity_coefficients",
-                    "reaction",
-                    f"{metric}",
+                    self.model.path, "sensitivity_coefficients", "reaction", f"{metric}",
                 ),
                 exist_ok=True,
             )
             sensitivity_coefficients = self._calc_sensitivity_coefficients(
-                metric,
-                reaction_indices,
-                options,
+                metric, reaction_indices, options,
             )
             np.save(
                 os.path.join(
-                    self.model.path,
-                    "sensitivity_coefficients",
-                    "reaction",
-                    f"{metric}",
-                    "sc",
+                    self.model.path, "sensitivity_coefficients", "reaction", f"{metric}", "sc",
                 ),
                 sensitivity_coefficients,
             )
         else:
             sensitivity_coefficients = np.load(
                 os.path.join(
-                    self.model.path,
-                    "sensitivity_coefficients",
-                    "reaction",
-                    f"{metric}",
-                    "sc.npy",
+                    self.model.path, "sensitivity_coefficients", "reaction", f"{metric}", "sc.npy",
                 )
             )
 
         return sensitivity_coefficients
 
     @staticmethod
-    def _draw_vertical_span(
-        biological_processes: List[List[int]],
-        width: float,
-    ) -> None:
+    def _draw_vertical_span(biological_processes: List[List[int]], width: float,) -> None:
         """
         Draw vertical span separating biological processes.
         """
@@ -160,19 +135,12 @@ class ReactionSensitivity(ExecModel):
             for i, proc in enumerate(biological_processes):
                 if i % 2 == 0:
                     plt.axvspan(
-                        left_end - width,
-                        left_end - width + len(proc),
-                        facecolor="k",
-                        alpha=0.1,
+                        left_end - width, left_end - width + len(proc), facecolor="k", alpha=0.1,
                     )
                 left_end += len(proc)
 
     def _write_reaction_indices(
-        self,
-        reaction_indices: List[int],
-        average: np.ndarray,
-        stdev: np.ndarray,
-        width: float,
+        self, reaction_indices: List[int], average: np.ndarray, stdev: np.ndarray, width: float,
     ) -> None:
         """
         Put reaction index on each bar.
@@ -219,7 +187,10 @@ class ReactionSensitivity(ExecModel):
         self.model.viz.set_sensitivity_rcParams()
 
         if len(options["cmap"]) < len(self.model.sim.conditions):
-            raise ValueError("len(sensitivity_options['cmap']) must be equal to or greater than len(sim.conditions).")
+            raise ValueError(
+                "len(sensitivity_options['cmap']) must be equal to "
+                "or greater than len(sim.conditions)."
+            )
         for k, obs_name in enumerate(self.model.obs):
             plt.figure(figsize=options["figsize"])
             self._draw_vertical_span(biological_processes, options["width"])
@@ -253,7 +224,9 @@ class ReactionSensitivity(ExecModel):
                 self._write_reaction_indices(reaction_indices, average, stdev, options["width"])
                 plt.hlines([0], -options["width"], len(reaction_indices), "k", lw=1)
                 plt.xticks([])
-                plt.ylabel("Control coefficients on\n" + metric + " (" + obs_name.replace("_", " ") + ")")
+                plt.ylabel(
+                    "Control coefficients on\n" + metric + " (" + obs_name.replace("_", " ") + ")"
+                )
                 plt.xlim(-options["width"], len(reaction_indices))
                 plt.legend(loc=options["legend_loc"], frameon=False)
                 plt.savefig(
@@ -290,10 +263,7 @@ class ReactionSensitivity(ExecModel):
         return np.delete(sensitivity_matrix, nan_idx, axis=0)
 
     def _heatmap_sensitivity(
-        self,
-        metric: str,
-        sensitivity_coefficients: np.ndarray,
-        reaction_indices: List[int],
+        self, metric: str, sensitivity_coefficients: np.ndarray, reaction_indices: List[int],
     ) -> None:
         """
         Visualize sensitivity coefficients using heatmap.
@@ -304,7 +274,9 @@ class ReactionSensitivity(ExecModel):
 
         for k, obs_name in enumerate(self.model.obs):
             for l, condition in enumerate(self.model.sim.conditions):
-                sensitivity_matrix = self._remove_nan(sensitivity_coefficients[:, :, k, l], normalize=False)
+                sensitivity_matrix = self._remove_nan(
+                    sensitivity_coefficients[:, :, k, l], normalize=False
+                )
                 if sensitivity_matrix.shape[0] > 1 and not np.all(sensitivity_matrix == 0.0):
                     sns.clustermap(
                         data=sensitivity_matrix,
@@ -345,16 +317,11 @@ class ReactionSensitivity(ExecModel):
 
         if style == "barplot":
             self._barplot_sensitivity(
-                metric,
-                sensitivity_coefficients,
-                biological_processes,
-                reaction_indices,
+                metric, sensitivity_coefficients, biological_processes, reaction_indices,
             )
         elif style == "heatmap":
             self._heatmap_sensitivity(
-                metric,
-                sensitivity_coefficients,
-                reaction_indices,
+                metric, sensitivity_coefficients, reaction_indices,
             )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")
