@@ -2,13 +2,18 @@ import os
 import re
 import numpy as np
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List, NamedTuple
 
 from .template import Model
 
 
 class BioMassModel(Model):
     pass
+
+
+class OptimizedValues(NamedTuple):
+    params: list
+    initials: list
 
 
 @dataclass
@@ -34,10 +39,10 @@ class ExecModel(object):
         )
         return best_individual
 
-    def load_param(self, paramset: int) -> Tuple[list, list]:
+    def load_param(self, paramset: int) -> OptimizedValues:
         best_individual = self.get_individual(paramset)
         (x, y0) = self.model.sp.update(best_individual)
-        return x, y0
+        return OptimizedValues(x, y0)
 
     def get_executable(self) -> List[int]:
         n_file = []

@@ -162,13 +162,17 @@ run_simulation(model, viz_type='average', show_all=False, stdev=True)
 - `'experiment'`
   : Draw the experimental data written in `observable.py` without simulation results.
 
-**show_all** : _bool_
+**show_all** : _bool_ (defaulf: False)
 
 - Whether to show all simulation results.
 
-**stdev** : _bool_
+**stdev** : _bool_ (defaulf: False)
 
 - If True, the standard deviation of simulated values will be shown (only when `viz_type == 'average'`).
+
+**save_format** : _str_ (default: "pdf")
+
+- Either "png" or "pdf", indicating whether to save figures as png or pdf format.
 
 ![simulation_average](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/simulation_average.png?raw=true)
 
@@ -194,7 +198,7 @@ run_analysis(model, target='reaction', metric='integral', style='barplot')
 - `'initial_condition'`
 - `'parameter'`
 
-**metric** : _str_
+**metric** : _str_ (default: 'integral')
 
 - `'maximum'`
   : The maximum value.
@@ -217,18 +221,18 @@ run_analysis(model, target='reaction', metric='integral', style='barplot')
 - `'integral'`
   : The integral of concentration over the observation time.
 
-**style** : _str_
+**style** : _str_ (default: 'barplot')
 
 - `'barplot'`
 - `'heatmap'`
 
 **options** : _dict, optional_
 
-- **timepoint** : _int_
+- **timepoint** : _int_ (default: model.sim.t[-1])
 
   - (metric == `'timepoint'`) Which timepoint to use.
 
-- **duration**: _float_
+- **duration**: _float_ (default: 0.5)
 
   - (metric == `'duration'`) 0.1 for 10% of its maximum.
 

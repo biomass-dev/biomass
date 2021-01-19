@@ -2,7 +2,7 @@
 import os
 import multiprocessing
 import warnings
-from typing import Optional, List
+from typing import Optional, List, NoReturn
 
 from .exec_model import BioMassModel
 from .dynamics import SignalingSystems
@@ -82,7 +82,7 @@ def run_simulation(
     )
 
 
-def _check_optional_arguments(end: Optional[int], options: Optional[dict]):
+def _check_optional_arguments(end: Optional[int], options: Optional[dict]) -> Optional[NoReturn]:
     if options["local_search_method"].lower() not in ["mutation", "powell", "de"]:
         raise ValueError(
             f"'{options['local_search_method']}': Invalid local_search_method. Should be one of ['mutation', 'Powell', 'DE']"
@@ -320,7 +320,7 @@ def run_analysis(
         timepoint : int (default: model.sim.t[-1])
             (metric=='timepoint') Which timepoint to use.
 
-        duration : float
+        duration : float (default: 0.5)
             (metric=='duration') 0.1 for 10% of its maximum.
 
     Example

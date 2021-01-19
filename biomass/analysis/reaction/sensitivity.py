@@ -51,13 +51,13 @@ class ReactionSensitivity(ExecModel):
             np.nan,
         )
         for i, nth_paramset in enumerate(n_file):
-            (x, y0) = self.load_param(nth_paramset)
+            optimized = self.load_param(nth_paramset)
             for j, rxn_idx in enumerate(reaction_indices):
                 perturbation = {}
                 for idx in reaction_indices:
                     perturbation[idx] = 1
                 perturbation[rxn_idx] = rate
-                if self.model.sim.simulate(x, y0, perturbation) is None:
+                if self.model.sim.simulate(optimized.params, optimized.initials, perturbation) is None:
                     for k, _ in enumerate(self.model.obs):
                         for l, _ in enumerate(self.model.sim.conditions):
                             signaling_metric[i, j, k, l] = get_signaling_metric(
@@ -69,7 +69,7 @@ class ReactionSensitivity(ExecModel):
                         len(n_file) * len(reaction_indices),
                     )
                 )
-            if self.model.sim.simulate(x, y0) is None:
+            if self.model.sim.simulate(optimized.params, optimized.initials) is None:
                 for k, _ in enumerate(self.model.obs):
                     for l, _ in enumerate(self.model.sim.conditions):
                         signaling_metric[i, -1, k, l] = get_signaling_metric(

@@ -150,13 +150,17 @@ run_simulation(model, viz_type='average', show_all=False, stdev=True)
 
 - `'experiment'` : `observable.py` に記述されている実験値の結果のみを表示します．
 
-**show_all** : _bool_
+**show_all** : _bool_ (default: False)
 
 - `out/n(=1,2,...)`に格納されたパラメータセットでの全てのシミュレーション結果を淡色で表示します．
 
-**stdev** : _bool_
+**stdev** : _bool_ (default: False)
 
 - `viz_type == 'average'`の際，標準偏差も含めてシミュレーション結果を表示します．
+
+**save_format** : _str_ (default: "pdf")
+
+- 保存する図の拡張子（`"pdf"`または`"png"`）を指定します．
 
 ![simulation_best](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/simulation_best.png?raw=true)
 
@@ -194,7 +198,7 @@ if self.perturbation:
 - `'initial_condition'`
 - `'parameter'`
 
-**metric** : _str_
+**metric** : _str_ (default: 'integral')
 
 出力に用いる基準を設定します．
 
@@ -219,7 +223,7 @@ if self.perturbation:
 - `'integral'`
   : シミュレーション時間内における濃度の積分値．
 
-**style** : _str_
+**style** : _str_ (default: 'barplot')
 
 グラフを選択します．
 
@@ -230,11 +234,11 @@ if self.perturbation:
 
 詳細な metric を設定します．
 
-- **timepoint** : _int_
+- **timepoint** : _int_ (default: model.sim.t[-1])
 
   - (metric == `'timepoint'`) どの時間点を使用するかを指定します．
 
-- **duration**: _float_
+- **duration**: _float_ (default: 0.5)
 
   - (metric == `'duration'`) 0 から 1 の間の実数を指定します．例えば，最大値の 10%まで減少する時間を metric に使用する場合には 0.1 に設定します．
 
