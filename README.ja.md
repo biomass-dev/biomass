@@ -17,7 +17,7 @@
 ## インストール
 
 ```
-$ pip install biomass
+$ pip3 install biomass
 ```
 
 ## 使い方
@@ -27,12 +27,12 @@ $ pip install biomass
 ```python
 from biomass.models import Nakakuki_Cell_2010
 
-Nakakuki_Cell_2010.show_properties()
+Nakakuki_Cell_2010.show_info()
 ```
 
 ```
-Model properties
-----------------
+Model information
+-----------------
 36 species
 115 parameters, of which 75 to be estimated
 ```

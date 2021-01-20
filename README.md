@@ -31,7 +31,7 @@ currently implimented for modeling immediate-early gene response ([Nakakuki _et 
 The BioMASS library is available on [PyPI](https://pypi.org/project/biomass/).
 
 ```
-$ pip install biomass
+$ pip3 install biomass
 ```
 
 BioMASS supports Python 3.7 or newer.
@@ -41,12 +41,12 @@ BioMASS supports Python 3.7 or newer.
 ```python
 from biomass.models import Nakakuki_Cell_2010
 
-Nakakuki_Cell_2010.show_properties()
+Nakakuki_Cell_2010.show_info()
 ```
 
 ```
-Model properties
-----------------
+Model information
+-----------------
 36 species
 115 parameters, of which 75 to be estimated
 ```
