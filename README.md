@@ -45,8 +45,8 @@ Nakakuki_Cell_2010.show_info()
 ```
 
 ```
-Model information
------------------
+Nakakuki_Cell_2010 information
+------------------------------
 36 species
 115 parameters, of which 75 to be estimated
 ```
