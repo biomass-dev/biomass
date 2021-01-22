@@ -16,7 +16,7 @@ class OptimizeWarning(UserWarning):
 def _check_unknown_options(unknown_options: dict) -> Optional[NoReturn]:
     if unknown_options:
         msg = ", ".join(map(str, unknown_options.keys()))
-        warnings.warn(f"Unknown solver options: {msg}", OptimizeWarning)
+        warnings.warn(f"Unknown optimization options: {msg}", OptimizeWarning)
 
 
 class GeneticAlgorithmInit(ExecModel):
