@@ -27,10 +27,7 @@ class ReactionSensitivity(ExecModel):
         Parameters
         ----------
         metric : str
-            - 'maximum': The maximum value.
-            - 'minimum': The minimum value.
-            - 'duration': The time it takes to decline below 10% of its maximum.
-            - 'integral': The integral of concentration over the observation time.
+            The signaling metric used for sensitivity analysis.
 
         reaction_indices : list of int
             List of reaction indices.
@@ -90,7 +87,12 @@ class ReactionSensitivity(ExecModel):
 
         return sensitivity_coefficients
 
-    def _load_sc(self, metric: str, reaction_indices: List[int], options: dict) -> np.ndarray:
+    def _load_sc(
+        self,
+        metric: str,
+        reaction_indices: List[int],
+        options: dict,
+    ) -> np.ndarray:
         """
         Load (or calculate) sensitivity coefficients.
         """
@@ -344,7 +346,7 @@ class ReactionSensitivity(ExecModel):
                     )
                     plt.close()
 
-    def analyze(self, metric: str, style: str, options: dict) -> None:
+    def analyze(self, *, metric: str, style: str, options: dict) -> None:
         """
         Perform sensitivity analysis.
         """
