@@ -17,7 +17,7 @@ class OptimizedValues(NamedTuple):
     initials: list
 
 
-@dataclass
+@dataclass(frozen=True)
 class ExecModel(object):
     model: BioMassModel
 
