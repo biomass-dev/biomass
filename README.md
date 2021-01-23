@@ -20,9 +20,9 @@ To overcome this problem, we developed BioMASS, a modeling platform tailored to 
 
 BioMASS supports:
 
-- Parameter Estimation of ODE Models
-- Sensitivity Analysis
-- Effective Visualization of Simulation Results
+- parameter estimation of ODE models
+- sensitivity analysis
+- effective visualization of simulation results
 
 currently implimented for modeling immediate-early gene response ([Nakakuki _et al._, **_Cell_**, 2010](https://doi.org/10.1016/j.cell.2010.03.054)).
 
@@ -36,7 +36,7 @@ $ pip3 install biomass
 
 BioMASS supports Python 3.7 or newer.
 
-## Create an executable model
+## Model Construction
 
 ```python
 from biomass.models import Nakakuki_Cell_2010
@@ -174,6 +174,20 @@ run_simulation(model, viz_type='average', show_all=False, stdev=True)
 **save_format** : _str_ (default: "pdf")
 
 - Either "png" or "pdf", indicating whether to save figures as png or pdf format.
+
+**param_range** : _dict, optional_
+
+- orientation : _str_ (default: 'portrait')
+
+  - Either `'portrait'` or `'landscape'`.
+
+- distribution : _str_ (default: 'boxenplot')
+
+  - Either `'boxplot'` or `'boxenplot'`.
+
+- scatter : _bool_ (default: False)
+
+  - If `True`, draw a stripplot.
 
 ![simulation_average](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/simulation_average.png?raw=true)
 

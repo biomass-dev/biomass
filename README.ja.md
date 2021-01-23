@@ -163,6 +163,20 @@ run_simulation(model, viz_type='average', show_all=False, stdev=True)
 
 - 保存する図の拡張子（`"pdf"`または`"png"`）を指定します．
 
+**param_range** : _dict, optional_
+
+- orientation : _str_ (default: 'portrait')
+
+  - 図の向き（`'portrait'`または`'landscape'`）を指定します．
+
+- distribution : _str_ (default: 'boxenplot')
+
+  - プロットの種類（`'boxplot'`または`'boxenplot'`）を指定します．
+
+- scatter : _bool_ (default: False)
+
+  - `True`の場合，stripplot を付加します．
+
 ![simulation_best](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/simulation_best.png?raw=true)
 
 点（青, EGF; 赤, HRG）は実験データ，線はシミュレーション結果を表す
