@@ -2,7 +2,7 @@
 import multiprocessing
 import os
 import warnings
-from typing import List, NoReturn, Optional
+from typing import Dict, List, NoReturn, Optional, Union
 
 from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
 from .dynamics import SignalingSystems
@@ -18,6 +18,7 @@ def run_simulation(
     show_all: bool = False,
     stdev: bool = False,
     save_format: str = "pdf",
+    param_range: Optional[Dict[str, Union[str, bool]]] = None,
 ) -> None:
     """
     Simulate ODE model with estimated parameter values.
@@ -53,6 +54,16 @@ def run_simulation(
             Either "png" or "pdf", indicating whether to save figures
             as png or pdf format.
 
+        param_range : dict, optional
+            orientation : str (default: 'portrait')
+                Either 'portrait' or 'landscape'.
+
+            distribution : str (default: 'boxenplot')
+                Either 'boxplot' or 'boxenplot'.
+
+            scatter : bool (default: False)
+                If True, draw a stripplot.
+
         Example
         -------
         >>> from biomass.models import Nakakuki_Cell_2010
@@ -70,19 +81,34 @@ def run_simulation(
     warnings.filterwarnings("ignore")
     if viz_type not in ["best", "average", "original", "experiment"] and not viz_type.isdecimal():
         raise ValueError(
-            "Available viz_type are: " "'best','average','original','experiment','n(=1, 2, ...)'"
+            "Available viz_type are: 'best','average','original','experiment','n(=1, 2, ...)'"
         )
+
+    if param_range is None:
+        param_range = {}
+    param_range.setdefault("orientation", "portrait")
+    param_range.setdefault("distribution", "boxenplot")
+    param_range.setdefault("scatter", False)
+
+    if param_range["orientation"] not in ["portrait", "landscape"]:
+        raise ValueError("Available param_range['orientation'] are: 'portrait' or 'landscape'.")
+    if param_range["distribution"] not in ["boxplot", "boxenplot"]:
+        raise ValueError("Available param_range['distribution'] are: 'boxplot' or 'boxenplot'.")
+    if not isinstance(param_range["scatter"], bool):
+        raise TypeError("param_range['scatter'] must be a boolean.")
+
     SignalingSystems(model).simulate_all(
         viz_type=viz_type,
         show_all=show_all,
         stdev=stdev,
         save_format=save_format,
+        param_range=param_range,
     )
 
 
 def _check_optional_arguments(
     end: Optional[int],
-    options: Optional[dict],
+    options: Optional[Dict[str, Union[bool, int, float, str]]],
 ) -> Optional[NoReturn]:
     if options["local_search_method"].lower() not in ["mutation", "powell", "de"]:
         raise ValueError(

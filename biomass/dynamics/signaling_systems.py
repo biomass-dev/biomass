@@ -1,4 +1,5 @@
 import os
+from typing import Dict, Union
 
 import numpy as np
 
@@ -12,10 +13,12 @@ class SignalingSystems(TemporalDynamics):
 
     def simulate_all(
         self,
+        *,
         viz_type: str,
         show_all: bool,
         stdev: bool,
         save_format: str,
+        param_range: Dict[str, Union[bool, str]],
     ) -> None:
         n_file = [] if viz_type in ["original", "experiment"] else self.get_executable()
         simulations_all = np.full(
@@ -108,13 +111,12 @@ class SignalingSystems(TemporalDynamics):
                     )
                     for i, nth_paramset in enumerate(n_file):
                         popt[i, :] = self.get_individual(nth_paramset)
-                    self.plot_param_range(popt, save_format, portrait=True)
+                    self.plot_param_range(popt, save_format, **param_range)
             else:  # viz_type == 'original'
                 x = self.model.pval()
                 y0 = self.model.ival()
                 if self.model.sim.simulate(x, y0) is not None:
                     print("Simulation failed.\n")
-                # dynamic = self.model.sim
                 """
                 simulations_original : numpy array
                     Simulated values with original parameter values.

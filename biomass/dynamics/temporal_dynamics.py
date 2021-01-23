@@ -1,11 +1,22 @@
 import os
-from typing import List, Optional
+import warnings
+from typing import List, NoReturn, Optional
 
 import numpy as np
 import seaborn as sns
 from matplotlib import pyplot as plt
 
 from ..exec_model import BioMassModel, ExecModel
+
+
+class VisualizeWarning(UserWarning):
+    pass
+
+
+def _check_unknown_options(unknown_options: dict) -> Optional[NoReturn]:
+    if unknown_options:
+        msg = ", ".join(map(str, unknown_options.keys()))
+        warnings.warn(f"Unknown visualization options: {msg}", VisualizeWarning)
 
 
 class TemporalDynamics(ExecModel):
@@ -116,7 +127,10 @@ class TemporalDynamics(ExecModel):
         self,
         popt: np.ndarray,
         save_format: str,
-        portrait: bool,
+        orientation: str,
+        distribution: str,
+        scatter: bool,
+        **unknown_options,
     ) -> None:
         """
         Plot estimated parameter/initial values.
@@ -128,6 +142,7 @@ class TemporalDynamics(ExecModel):
 
         portrait : bool
         """
+        _check_unknown_options(unknown_options)
         os.makedirs(
             os.path.join(
                 self.model.path,
@@ -155,7 +170,7 @@ class TemporalDynamics(ExecModel):
                         )
                         / 2.5,
                     )
-                    if portrait
+                    if orientation == "portrait"
                     else (
                         (
                             len(self.model.sp.idx_params)
@@ -166,16 +181,30 @@ class TemporalDynamics(ExecModel):
                         6,
                     )
                 )
-                ax = sns.boxenplot(
-                    data=popt[:, : len(self.model.sp.idx_params)]
+                arguments_distribution = {
+                    "data": popt[:, : len(self.model.sp.idx_params)]
                     if val == "parameter_value"
                     else popt[:, len(self.model.sp.idx_params) :],
-                    orient="h" if portrait else "v",
-                    linewidth=0.5,
-                    palette="Set2",
-                )
+                    "orient": "h" if orientation == "portrait" else "v",
+                    "linewidth": 0.5,
+                    "palette": "Set2",
+                }
+                arguments_scatter = {
+                    "data": popt[:, : len(self.model.sp.idx_params)]
+                    if val == "parameter_value"
+                    else popt[:, len(self.model.sp.idx_params) :],
+                    "orient": "h" if orientation == "portrait" else "v",
+                    "size": 2.5,
+                    "color": ".26",
+                }
+                if distribution == "boxplot":
+                    ax = sns.boxplot(**arguments_distribution)
+                else:
+                    ax = sns.boxenplot(**arguments_distribution)
+                if scatter:
+                    ax = sns.stripplot(**arguments_scatter)
                 sns.despine()
-                if portrait:
+                if orientation == "portrait":
                     ax.set_xlabel(val.capitalize().replace("_", " "))
                     ax.set_xscale("log")
                     ax.set_ylabel("")
