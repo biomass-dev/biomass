@@ -147,48 +147,6 @@ from biomass import run_simulation
 run_simulation(model, viz_type='average', show_all=False, stdev=True)
 ```
 
-**viz_type** : _str_
-
-- `'average'`
-  : The average of simulation results with parameter sets in `out/`.
-
-- `'best'`
-  : The best simulation result in `out/`, simulation with `best_fit_param`.
-
-- `'original'`
-  : Simulation with the default parameters and initial values defined in `set_model.py`.
-
-- `'n(=1,2,...)'`
-  : Use the parameter set in `out/n/`.
-- `'experiment'`
-  : Draw the experimental data written in `observable.py` without simulation results.
-
-**show_all** : _bool_ (defaulf: False)
-
-- Whether to show all simulation results.
-
-**stdev** : _bool_ (defaulf: False)
-
-- If True, the standard deviation of simulated values will be shown (only when `viz_type == 'average'`).
-
-**save_format** : _str_ (default: "pdf")
-
-- Either "png" or "pdf", indicating whether to save figures as png or pdf format.
-
-**param_range** : _dict, optional_
-
-- orientation : _str_ (default: 'portrait')
-
-  - Either `'portrait'` or `'landscape'`.
-
-- distribution : _str_ (default: 'boxenplot')
-
-  - Either `'boxplot'` or `'boxenplot'`.
-
-- scatter : _bool_ (default: False)
-
-  - If `True`, draw a stripplot.
-
 ![simulation_average](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/simulation_average.png?raw=true)
 
 Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid lines denote simulations
@@ -206,50 +164,6 @@ from biomass import run_analysis
 
 run_analysis(model, target='reaction', metric='integral', style='barplot')
 ```
-
-**target** : _str_
-
-- `'reaction'`
-- `'initial_condition'`
-- `'parameter'`
-
-**metric** : _str_ (default: 'integral')
-
-- `'maximum'`
-  : The maximum value.
-
-- `'minimum'`
-  : The minimum value.
-
-- `'argmax'`
-  : The time to reach the maximum value.
-
-- `'argmin'`
-  : The time to reach the minimum value.
-
-- `'timepoint'`
-  : The simulated value at the time point set via options['timepoint'].
-
-- `'duration'`
-  : The time it takes to decline below the threshold set via options['duration'].
-
-- `'integral'`
-  : The integral of concentration over the observation time.
-
-**style** : _str_ (default: 'barplot')
-
-- `'barplot'`
-- `'heatmap'`
-
-**options** : _dict, optional_
-
-- **timepoint** : _int_ (default: model.sim.t[-1])
-
-  - (metric == `'timepoint'`) Which timepoint to use.
-
-- **duration**: _float_ (default: 0.5)
-
-  - (metric == `'duration'`) 0.1 for 10% of its maximum.
 
 ![sensitivity_PcFos](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/sensitivity_PcFos.png?raw=true)
 
