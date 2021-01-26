@@ -7,7 +7,7 @@ from typing import Any, Dict, List, NoReturn, Optional, Union
 from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
 from .dynamics import SignalingSystems
 from .estimation import GeneticAlgorithmContinue, GeneticAlgorithmInit
-from .exec_model import BioMassModel
+from .template import BioMassModel
 
 __all__ = ["optimize", "optimize_continue", "run_simulation", "run_analysis"]
 

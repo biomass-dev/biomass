@@ -18,7 +18,7 @@ def _check_duplicate(names: List[str], object: str) -> List[str]:
         raise NameError(f"Duplicate {object}: {', '.join(duplicate)}")
 
 
-class Model(object):
+class BioMassModel(object):
     def __init__(self) -> None:
         self.path = __path__[0]
         self.parameters = _check_duplicate(C.NAMES, "parameters")
@@ -38,14 +38,14 @@ def show_info() -> None:
     model_name = os.path.basename(os.path.dirname(__file__))
     print(
         f"{model_name} information\n" + ("-" * len(model_name)) + "------------\n"
-        f"{len(Model().species):d} species\n"
-        f"{len(Model().parameters):d} parameters, "
-        f"of which {len(Model().sp.idx_params):d} to be estimated"
+        f"{len(BioMassModel().species):d} species\n"
+        f"{len(BioMassModel().parameters):d} parameters, "
+        f"of which {len(BioMassModel().sp.idx_params):d} to be estimated"
     )
 
 
-def create() -> Model:
-    model = Model()
+def create() -> BioMassModel:
+    model = BioMassModel()
     if model.sim.normalization:
         for obs_name in model.obs:
             if (

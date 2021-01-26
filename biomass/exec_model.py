@@ -5,11 +5,7 @@ from typing import List, NamedTuple
 
 import numpy as np
 
-from .template import Model
-
-
-class BioMassModel(Model):
-    pass
+from .template import BioMassModel
 
 
 class OptimizedValues(NamedTuple):
