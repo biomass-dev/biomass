@@ -96,17 +96,6 @@ class ReactionSensitivity(ExecModel):
         """
         Load (or calculate) sensitivity coefficients.
         """
-        os.makedirs(
-            os.path.join(
-                self.model.path,
-                "figure",
-                "sensitivity",
-                "reaction",
-                f"{metric}",
-                "heatmap",
-            ),
-            exist_ok=True,
-        )
         if not os.path.isfile(
             os.path.join(
                 self.model.path,
@@ -219,6 +208,17 @@ class ReactionSensitivity(ExecModel):
         """
         Visualize sensitivity coefficients using barplot.
         """
+        os.makedirs(
+            os.path.join(
+                self.model.path,
+                "figure",
+                "sensitivity",
+                "reaction",
+                f"{metric}",
+                "barplot",
+            ),
+            exist_ok=True,
+        )
         options = self.model.viz.sensitivity_options
 
         # rcParams
@@ -309,6 +309,17 @@ class ReactionSensitivity(ExecModel):
         """
         Visualize sensitivity coefficients using heatmap.
         """
+        os.makedirs(
+            os.path.join(
+                self.model.path,
+                "figure",
+                "sensitivity",
+                "reaction",
+                f"{metric}",
+                "heatmap",
+            ),
+            exist_ok=True,
+        )
         options = self.model.viz.sensitivity_options
         # rcParams
         self.model.viz.set_sensitivity_rcParams()

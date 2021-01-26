@@ -107,17 +107,6 @@ class InitialConditionSensitivity(ExecModel):
         """
         Load (or calculate) sensitivity coefficients.
         """
-        os.makedirs(
-            os.path.join(
-                self.model.path,
-                "figure",
-                "sensitivity",
-                "initial_condition",
-                f"{metric}",
-                "heatmap",
-            ),
-            exist_ok=True,
-        )
         if not os.path.isfile(
             os.path.join(
                 self.model.path,
@@ -173,6 +162,17 @@ class InitialConditionSensitivity(ExecModel):
         """
         Visualize sensitivity coefficients using barplot.
         """
+        os.makedirs(
+            os.path.join(
+                self.model.path,
+                "figure",
+                "sensitivity",
+                "initial_condition",
+                f"{metric}",
+                "barplot",
+            ),
+            exist_ok=True,
+        )
         options = self.model.viz.sensitivity_options
 
         # rcParams
@@ -231,6 +231,7 @@ class InitialConditionSensitivity(ExecModel):
                     "sensitivity",
                     "initial_condition",
                     f"{metric}",
+                    "barplot",
                     f"{obs_name}.pdf",
                 ),
                 bbox_inches="tight",
@@ -266,6 +267,17 @@ class InitialConditionSensitivity(ExecModel):
         """
         Visualize sensitivity coefficients using heatmap.
         """
+        os.makedirs(
+            os.path.join(
+                self.model.path,
+                "figure",
+                "sensitivity",
+                "initial_condition",
+                f"{metric}",
+                "heatmap",
+            ),
+            exist_ok=True,
+        )
         options = self.model.viz.sensitivity_options
         # rcParams
         self.model.viz.set_sensitivity_rcParams()

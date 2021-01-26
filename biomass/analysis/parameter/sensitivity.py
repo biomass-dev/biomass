@@ -106,17 +106,6 @@ class ParameterSensitivity(ExecModel):
         """
         Load (or calculate) sensitivity coefficients.
         """
-        os.makedirs(
-            os.path.join(
-                self.model.path,
-                "figure",
-                "sensitivity",
-                "parameter",
-                f"{metric}",
-                "heatmap",
-            ),
-            exist_ok=True,
-        )
         if not os.path.isfile(
             os.path.join(
                 self.model.path,
@@ -189,6 +178,17 @@ class ParameterSensitivity(ExecModel):
         """
         Visualize sensitivity coefficients using barplot.
         """
+        os.makedirs(
+            os.path.join(
+                self.model.path,
+                "figure",
+                "sensitivity",
+                "parameter",
+                f"{metric}",
+                "barplot",
+            ),
+            exist_ok=True,
+        )
         options = self.model.viz.sensitivity_options
 
         # rcParams
@@ -245,6 +245,7 @@ class ParameterSensitivity(ExecModel):
                     "sensitivity",
                     "parameter",
                     f"{metric}",
+                    "barplot",
                     f"{obs_name}.pdf",
                 ),
                 bbox_inches="tight",
@@ -280,6 +281,17 @@ class ParameterSensitivity(ExecModel):
         """
         Visualize sensitivity coefficients using heatmap.
         """
+        os.makedirs(
+            os.path.join(
+                self.model.path,
+                "figure",
+                "sensitivity",
+                "parameter",
+                f"{metric}",
+                "heatmap",
+            ),
+            exist_ok=True,
+        )
         options = self.model.viz.sensitivity_options
         # rcParams
         self.model.viz.set_sensitivity_rcParams()
