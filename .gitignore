@@ -31,6 +31,9 @@ MANIFEST
 # pytest
 .pytest_cache/
 
+# mypy
+.mypy_cache/
+
 # Jupyter files
 *.ipynb
 .ipynb_checkpoints
@@ -51,8 +54,8 @@ sensitivity_coefficients/
 # simulation data
 simulation_data/
 
-# optimized_params
-*.csv
+# optimization results
+optimization_results/
 
 # swp
 *.swp

@@ -1,8 +1,9 @@
 import os
-import warnings
 import time
+import warnings
+from typing import NoReturn, Optional
+
 import numpy as np
-from typing import Optional, NoReturn
 
 from ...exec_model import BioMassModel, ExecModel
 from .rcga import RealCodedGeneticAlgorithm
@@ -15,7 +16,8 @@ class OptimizeWarning(UserWarning):
 def _check_unknown_options(unknown_options: dict) -> Optional[NoReturn]:
     if unknown_options:
         msg = ", ".join(map(str, unknown_options.keys()))
-        warnings.warn(f"Unknown solver options: {msg}", OptimizeWarning)
+        warnings.warn(f"Unknown optimization options: {msg}", OptimizeWarning)
+    return None
 
 
 class GeneticAlgorithmInit(ExecModel):
@@ -356,7 +358,6 @@ class GeneticAlgorithmContinue(ExecModel):
         self.search_rgn: np.ndarray = self.model.sp.get_region()
         self.n_population: int = int(popsize * self.search_rgn.shape[1])
         self.n_gene: int = self.search_rgn.shape[1]
-        self.n_children: int = 50
         self.max_generation: int = max_generation
         self.allowable_error: float = allowable_error
         self.local_search_method: str = local_search_method.lower()
@@ -434,7 +435,8 @@ class GeneticAlgorithmContinue(ExecModel):
                 best_individual
                 * 10
                 ** (
-                    np.random.rand(len(best_individual)) * np.log10(self.p0_bounds[1] / self.p0_bounds[0])
+                    np.random.rand(len(best_individual))
+                    * np.log10(self.p0_bounds[1] / self.p0_bounds[0])
                     + np.log10(self.p0_bounds[0])
                 )
             )

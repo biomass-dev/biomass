@@ -1,11 +1,11 @@
 import os
 import shutil
+
 import numpy as np
 
+from biomass import optimize, optimize_continue, run_analysis, run_simulation
 from biomass.models import mapk_cascade
 from biomass.result import OptimizationResults
-from biomass import optimize, optimize_continue, run_simulation, run_analysis
-
 
 model = mapk_cascade.create()
 
@@ -105,6 +105,14 @@ def test_save_result():
             model.path,
             "optimization_results",
             "fitness_assessment.csv",
+        )
+    )
+    res.trace_obj()
+    assert os.path.isfile(
+        os.path.join(
+            model.path,
+            "optimization_results",
+            "obj_func_traces.pdf",
         )
     )
 

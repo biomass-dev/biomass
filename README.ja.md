@@ -6,6 +6,7 @@
 [![Downloads](https://pepy.tech/badge/biomass)](https://pepy.tech/project/biomass)
 [![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&color=blue)](https://pypi.python.org/pypi/biomass/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg)](https://pypi.python.org/pypi/biomass/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ![logo2](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/logo2.png?raw=true)
 
@@ -16,7 +17,7 @@
 ## インストール
 
 ```
-$ pip install biomass
+$ pip3 install biomass
 ```
 
 ## 使い方
@@ -26,12 +27,12 @@ $ pip install biomass
 ```python
 from biomass.models import Nakakuki_Cell_2010
 
-Nakakuki_Cell_2010.show_properties()
+Nakakuki_Cell_2010.show_info()
 ```
 
 ```
-Model properties
-----------------
+Nakakuki_Cell_2010 information
+------------------------------
 36 species
 115 parameters, of which 75 to be estimated
 ```
@@ -161,6 +162,20 @@ run_simulation(model, viz_type='average', show_all=False, stdev=True)
 **save_format** : _str_ (default: "pdf")
 
 - 保存する図の拡張子（`"pdf"`または`"png"`）を指定します．
+
+**param_range** : _dict, optional_
+
+- orientation : _str_ (default: 'portrait')
+
+  - 図の向き（`'portrait'`または`'landscape'`）を指定します．
+
+- distribution : _str_ (default: 'boxenplot')
+
+  - プロットの種類（`'boxplot'`または`'boxenplot'`）を指定します．
+
+- scatter : _bool_ (default: False)
+
+  - `True`の場合，stripplot を付加します．
 
 ![simulation_best](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/simulation_best.png?raw=true)
 

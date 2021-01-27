@@ -1,12 +1,13 @@
 import os
 import sys
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 from typing import List
 
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+
 from ...exec_model import BioMassModel, ExecModel
-from .. import get_signaling_metric, dlnyi_dlnxj
+from .. import dlnyi_dlnxj, get_signaling_metric
 
 
 class InitialConditionSensitivity(ExecModel):
@@ -37,10 +38,7 @@ class InitialConditionSensitivity(ExecModel):
         Parameters
         ----------
         metric : str
-            - 'maximum': The maximum value.
-            - 'minimum': The minimum value.
-            - 'duration': The time it takes to decline below 10% of its maximum.
-            - 'integral': The integral of concentration over the observation time.
+            The signaling metric used for sensitivity analysis.
 
         nonzero_indices : list of int
             List of species index with nonzero initial conditions.
@@ -100,21 +98,15 @@ class InitialConditionSensitivity(ExecModel):
 
         return sensitivity_coefficients
 
-    def _load_sc(self, metric: str, nonzero_indices: List[int], options: dict) -> np.ndarray:
+    def _load_sc(
+        self,
+        metric: str,
+        nonzero_indices: List[int],
+        options: dict,
+    ) -> np.ndarray:
         """
         Load (or calculate) sensitivity coefficients.
         """
-        os.makedirs(
-            os.path.join(
-                self.model.path,
-                "figure",
-                "sensitivity",
-                "initial_condition",
-                f"{metric}",
-                "heatmap",
-            ),
-            exist_ok=True,
-        )
         if not os.path.isfile(
             os.path.join(
                 self.model.path,
@@ -170,13 +162,27 @@ class InitialConditionSensitivity(ExecModel):
         """
         Visualize sensitivity coefficients using barplot.
         """
+        os.makedirs(
+            os.path.join(
+                self.model.path,
+                "figure",
+                "sensitivity",
+                "initial_condition",
+                f"{metric}",
+                "barplot",
+            ),
+            exist_ok=True,
+        )
         options = self.model.viz.sensitivity_options
 
         # rcParams
         self.model.viz.set_sensitivity_rcParams()
 
         if len(options["cmap"]) < len(self.model.sim.conditions):
-            raise ValueError("len(sensitivity_options['cmap']) must be equal to or greater than len(sim.conditions).")
+            raise ValueError(
+                "len(sensitivity_options['cmap']) must be equal to "
+                "or greater than len(sim.conditions)."
+            )
         for k, obs_name in enumerate(self.model.obs):
             plt.figure(figsize=options["figsize"])
             plt.hlines([0], -options["width"], len(nonzero_indices), "k", lw=1)
@@ -205,11 +211,17 @@ class InitialConditionSensitivity(ExecModel):
                         label=condition,
                     )
             plt.xticks(
-                np.arange(len(nonzero_indices)) + options["width"] * 0.5 * (len(self.model.sim.conditions) - 1),
-                [self.model.viz.convert_species_name(self.model.species[i]) for i in nonzero_indices],
+                np.arange(len(nonzero_indices))
+                + options["width"] * 0.5 * (len(self.model.sim.conditions) - 1),
+                [
+                    self.model.viz.convert_species_name(self.model.species[i])
+                    for i in nonzero_indices
+                ],
                 rotation=90,
             )
-            plt.ylabel("Control coefficients on\n" + metric + " (" + obs_name.replace("_", " ") + ")")
+            plt.ylabel(
+                "Control coefficients on\n" + metric + " (" + obs_name.replace("_", " ") + ")"
+            )
             plt.xlim(-options["width"], len(nonzero_indices))
             plt.legend(loc=options["legend_loc"], frameon=False)
             plt.savefig(
@@ -219,6 +231,7 @@ class InitialConditionSensitivity(ExecModel):
                     "sensitivity",
                     "initial_condition",
                     f"{metric}",
+                    "barplot",
                     f"{obs_name}.pdf",
                 ),
                 bbox_inches="tight",
@@ -254,13 +267,26 @@ class InitialConditionSensitivity(ExecModel):
         """
         Visualize sensitivity coefficients using heatmap.
         """
+        os.makedirs(
+            os.path.join(
+                self.model.path,
+                "figure",
+                "sensitivity",
+                "initial_condition",
+                f"{metric}",
+                "heatmap",
+            ),
+            exist_ok=True,
+        )
         options = self.model.viz.sensitivity_options
         # rcParams
         self.model.viz.set_sensitivity_rcParams()
 
         for k, obs_name in enumerate(self.model.obs):
             for l, condition in enumerate(self.model.sim.conditions):
-                sensitivity_matrix = self._remove_nan(sensitivity_coefficients[:, :, k, l], normalize=False)
+                sensitivity_matrix = self._remove_nan(
+                    sensitivity_coefficients[:, :, k, l], normalize=False
+                )
                 if sensitivity_matrix.shape[0] > 1 and not np.all(sensitivity_matrix == 0.0):
                     g = sns.clustermap(
                         data=sensitivity_matrix,
@@ -272,7 +298,8 @@ class InitialConditionSensitivity(ExecModel):
                         col_cluster=False,
                         figsize=options["figsize"],
                         xticklabels=[
-                            self.model.viz.convert_species_name(self.model.species[i]) for i in nonzero_indices
+                            self.model.viz.convert_species_name(self.model.species[i])
+                            for i in nonzero_indices
                         ],
                         yticklabels=[],
                         # cbar_kws={"ticks": [-1, 0, 1]}
@@ -292,7 +319,7 @@ class InitialConditionSensitivity(ExecModel):
                     )
                     plt.close()
 
-    def analyze(self, metric: str, style: str, options: dict) -> None:
+    def analyze(self, *, metric: str, style: str, options: dict) -> None:
         """
         Perform sensitivity analysis.
         """

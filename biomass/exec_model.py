@@ -1,14 +1,11 @@
 import os
 import re
-import numpy as np
 from dataclasses import dataclass
 from typing import List, NamedTuple
 
-from .template import Model
+import numpy as np
 
-
-class BioMassModel(Model):
-    pass
+from .template import BioMassModel
 
 
 class OptimizedValues(NamedTuple):
@@ -16,7 +13,7 @@ class OptimizedValues(NamedTuple):
     initials: list
 
 
-@dataclass
+@dataclass(frozen=True)
 class ExecModel(object):
     model: BioMassModel
 

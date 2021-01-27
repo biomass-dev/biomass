@@ -1,94 +1,36 @@
 """BioMASS core functions"""
-import os
 import multiprocessing
+import os
 import warnings
-from typing import Optional, List, NoReturn
+from typing import Any, Dict, List, NoReturn, Optional, Union
 
-from .exec_model import BioMassModel
+from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
 from .dynamics import SignalingSystems
-from .estimation import GeneticAlgorithmInit, GeneticAlgorithmContinue
-from .analysis import (
-    ReactionSensitivity,
-    InitialConditionSensitivity,
-    ParameterSensitivity,
-)
+from .estimation import GeneticAlgorithmContinue, GeneticAlgorithmInit
+from .template import BioMassModel
 
-__all__ = ["run_simulation", "optimize", "optimize_continue", "run_analysis"]
+__all__ = ["optimize", "optimize_continue", "run_simulation", "run_analysis"]
 
 
-def run_simulation(
-    model: BioMassModel,
-    viz_type: str,
-    show_all: bool = False,
-    stdev: bool = False,
-    save_format: str = "pdf",
-) -> None:
-    """
-    Simulate ODE model with estimated parameter values.
-
-        Parameters
-        ----------
-        model : BioMassModel
-            Model for simulation.
-
-        viz_type : str
-            * 'average':
-                The average of simulation results with parameter sets in "out/".
-            * 'best':
-                The best simulation result in "out/", simulation with
-                "best_fit_param".
-            * 'original':
-                Simulation with the default parameters and initial values
-                defined in "set_model.py".
-            * 'n(=1,2,...)':
-                Use the parameter set in "out/n/".
-            * 'experiment'
-                Draw the experimental data written in observable.py without
-                simulation results.
-
-        show_all : bool
-            Whether to show all simulation results.
-
-        stdev : bool
-            If True, the standard deviation of simulated values will be shown
-            (only available for 'average' visualization type).
-
-        save_format : str (default: "pdf")
-            Either "png" or "pdf", indicating whether to save figures
-            as png or pdf format.
-
-        Example
-        -------
-        >>> from biomass.models import Nakakuki_Cell_2010
-        >>> from biomass import run_simulation
-        >>> model = Nakakuki_Cell_2010.create()
-        >>> run_simulation(
-                model,
-                viz_type='average',
-                show_all=False,
-                stdev=True,
-                save_format="png",
+def _check_optional_arguments(
+    end: Optional[int],
+    options: Optional[Dict[str, Any]],
+) -> Optional[NoReturn]:
+    if options is not None:
+        if options["local_search_method"].lower() not in ["mutation", "powell", "de"]:
+            raise ValueError(
+                f"'{options['local_search_method']}': "
+                "Invalid local_search_method. Should be one of ['mutation', 'Powell', 'DE']"
             )
-
-    """
-    warnings.filterwarnings("ignore")
-    if not viz_type in ["best", "average", "original", "experiment"] and not viz_type.isdecimal():
-        raise ValueError("Available viz_type are: 'best','average','original','experiment','n(=1, 2, ...)'")
-    SignalingSystems(model).simulate_all(
-        viz_type=viz_type,
-        show_all=show_all,
-        stdev=stdev,
-        save_format=save_format,
-    )
-
-
-def _check_optional_arguments(end: Optional[int], options: Optional[dict]) -> Optional[NoReturn]:
-    if options["local_search_method"].lower() not in ["mutation", "powell", "de"]:
-        raise ValueError(
-            f"'{options['local_search_method']}': Invalid local_search_method. Should be one of ['mutation', 'Powell', 'DE']"
-        )
-    elif isinstance(end, int) and options["local_search_method"].lower() == "de" and options["workers"] != 1:
-        raise AssertionError("daemonic processes are not allowed to have children. Set options['workers'] to 1.")
+        elif (
+            isinstance(end, int)
+            and options["local_search_method"].lower() == "de"
+            and options["workers"] != 1
+        ):
+            raise AssertionError(
+                "daemonic processes are not allowed to have children. Set options['workers'] to 1."
+            )
+    return None
 
 
 def optimize(
@@ -111,16 +53,16 @@ def optimize(
     end : int, optional
         When `end` is specified, parameter sets from `start` to `end` will be estimated.
 
-    options: dict, optional
+    options : dict, optional
         popsize : int (default: 5)
             A multiplier for setting the total population size.
             The population has popsize * len(search_param) individuals.
 
         max_generation : int (default: 10000)
-            Stop if Generation > max_generation.
+            Stop optimization if Generation > max_generation.
 
         allowable_error : float (default: 0.0)
-            Stop if Best Fitness <= allowable_error.
+            Stop optimization if Best Fitness <= allowable_error.
 
         local_search_method : str (default: 'mutation')
             Method used in local search. Should be one of
@@ -201,16 +143,16 @@ def optimize_continue(
     end : int, optional
         When `end` is specified, parameter sets from `start` to `end` will be estimated.
 
-    options: dict, optional
+    options : dict, optional
         popsize : int (default: 5)
             A multiplier for setting the total population size.
             The population has popsize * len(search_param) individuals.
 
         max_generation : int (default: 15000)
-            Stop if Generation > max_generation.
+            Stop optimization if Generation > max_generation.
 
         allowable_error : float (default: 0.0)
-            Stop if Best Fitness <= allowable_error.
+            Stop optimization if Best Fitness <= allowable_error.
 
         local_search_method : str (default: 'mutation')
             Method used in local search. Should be one of
@@ -274,6 +216,100 @@ def optimize_continue(
         p.close()
 
 
+def run_simulation(
+    model: BioMassModel,
+    viz_type: str,
+    show_all: bool = False,
+    stdev: bool = False,
+    save_format: str = "pdf",
+    param_range: Optional[Dict[str, Union[str, bool]]] = None,
+) -> None:
+    """
+    Simulate ODE model with estimated parameter values.
+
+        Parameters
+        ----------
+        model : BioMassModel
+            Model for simulation.
+
+        viz_type : str
+            * 'average':
+                The average of simulation results with parameter sets in "out/".
+            * 'best':
+                The best simulation result in "out/", simulation with
+                "best_fit_param".
+            * 'original':
+                Simulation with the default parameters and initial values
+                defined in "set_model.py".
+            * 'n(=1,2,...)':
+                Use the parameter set in "out/n/".
+            * 'experiment'
+                Draw the experimental data written in observable.py without
+                simulation results.
+
+        show_all : bool
+            Whether to show all simulation results.
+
+        stdev : bool
+            If True, the standard deviation of simulated values will be shown
+            (only available for 'average' visualization type).
+
+        save_format : str (default: "pdf")
+            Either "png" or "pdf", indicating whether to save figures
+            as png or pdf format.
+
+        param_range : dict, optional
+            orientation : str (default: 'portrait')
+                Either 'portrait' or 'landscape'.
+
+            distribution : str (default: 'boxenplot')
+                Either 'boxplot' or 'boxenplot'.
+
+            scatter : bool (default: False)
+                If True, draw a stripplot.
+
+        Example
+        -------
+        >>> from biomass.models import Nakakuki_Cell_2010
+        >>> from biomass import run_simulation
+        >>> model = Nakakuki_Cell_2010.create()
+        >>> run_simulation(
+                model,
+                viz_type='average',
+                show_all=False,
+                stdev=True,
+                save_format="png",
+            )
+
+    """
+    warnings.filterwarnings("ignore")
+    if viz_type not in ["best", "average", "original", "experiment"] and not viz_type.isdecimal():
+        raise ValueError(
+            "Available viz_type are: 'best','average','original','experiment','n(=1, 2, ...)'"
+        )
+
+    if param_range is None:
+        param_range = {}
+    param_range.setdefault("orientation", "portrait")
+    param_range.setdefault("distribution", "boxenplot")
+    param_range.setdefault("scatter", False)
+
+    if param_range["orientation"] not in ["portrait", "landscape"]:
+        raise ValueError("Available param_range['orientation'] are: 'portrait' or 'landscape'.")
+    if param_range["distribution"] not in ["boxplot", "boxenplot"]:
+        raise ValueError("Available param_range['distribution'] are: 'boxplot' or 'boxenplot'.")
+    if not isinstance(param_range["scatter"], bool):
+        raise TypeError("param_range['scatter'] must be a boolean.")
+
+    SignalingSystems(model).simulate_all(
+        viz_type=viz_type,
+        show_all=show_all,
+        stdev=stdev,
+        save_format=save_format,
+        param_range=param_range,
+    )
+
+
 def run_analysis(
     model,
     target: str,
@@ -316,7 +352,7 @@ def run_analysis(
     excluded_params : list of strings
         For parameter sensitivity analysis.
 
-    options: dict, optional
+    options : dict, optional
         timepoint : int (default: model.sim.t[-1])
             (metric=='timepoint') Which timepoint to use.
 

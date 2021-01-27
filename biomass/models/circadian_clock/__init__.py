@@ -1,12 +1,13 @@
+import os
 from typing import List
 
-from .name2idx import C, V
-from .set_model import param_values, initial_values
-from .observable import observables, NumericalSimulation, ExperimentalData
-from .viz import Visualization
 from .fitness import objective
-from .set_search_param import SearchParam
+from .name2idx import C, V
+from .observable import ExperimentalData, NumericalSimulation, observables
 from .reaction_network import ReactionNetwork
+from .set_model import initial_values, param_values
+from .set_search_param import SearchParam
+from .viz import Visualization
 
 
 def _check_duplicate(names: List[str], object: str) -> List[str]:
@@ -17,7 +18,7 @@ def _check_duplicate(names: List[str], object: str) -> List[str]:
         raise NameError(f"Duplicate {object}: {', '.join(duplicate)}")
 
 
-class Model(object):
+class BioMassModel(object):
     def __init__(self) -> None:
         self.path = __path__[0]
         self.parameters = _check_duplicate(C.NAMES, "parameters")
@@ -33,29 +34,33 @@ class Model(object):
         self.rxn = ReactionNetwork()
 
 
-def show_properties() -> None:
+def show_info() -> None:
+    model_name = os.path.basename(os.path.dirname(__file__))
     print(
-        "Model properties\n"
-        "----------------\n"
-        f"{len(Model().species):d} species\n"
-        f"{len(Model().parameters):d} parameters, "
-        f"of which {len(Model().sp.idx_params):d} to be estimated"
+        f"{model_name} information\n" + ("-" * len(model_name)) + "------------\n"
+        f"{len(BioMassModel().species):d} species\n"
+        f"{len(BioMassModel().parameters):d} parameters, "
+        f"of which {len(BioMassModel().sp.idx_params):d} to be estimated"
     )
 
 
-def create() -> Model:
-    model = Model()
+def create() -> BioMassModel:
+    model = BioMassModel()
     if model.sim.normalization:
         for obs_name in model.obs:
             if (
                 isinstance(model.sim.normalization[obs_name]["timepoint"], int)
-                and not model.sim.t[0] <= model.sim.normalization[obs_name]["timepoint"] <= model.sim.t[-1]
+                and not model.sim.t[0]
+                <= model.sim.normalization[obs_name]["timepoint"]
+                <= model.sim.t[-1]
             ):
                 raise ValueError("Normalization timepoint must lie within sim.t.")
             if not model.sim.normalization[obs_name]["condition"]:
                 model.sim.normalization[obs_name]["condition"] = model.sim.conditions
             else:
                 for c in model.sim.normalization[obs_name]["condition"]:
-                    if not c in model.sim.conditions:
-                        raise ValueError(f"Normalization condition '{c}' is not defined in sim.conditions.")
+                    if c not in model.sim.conditions:
+                        raise ValueError(
+                            f"Normalization condition '{c}' is not defined in sim.conditions."
+                        )
     return model

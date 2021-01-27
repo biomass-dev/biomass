@@ -6,6 +6,7 @@
 [![Downloads](https://pepy.tech/badge/biomass)](https://pepy.tech/project/biomass)
 [![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&color=blue)](https://pypi.python.org/pypi/biomass/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg)](https://pypi.python.org/pypi/biomass/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ## Modeling and Analysis of Signaling Systems
 
@@ -19,9 +20,9 @@ To overcome this problem, we developed BioMASS, a modeling platform tailored to 
 
 BioMASS supports:
 
-- Parameter Estimation of ODE Models
-- Sensitivity Analysis
-- Effective Visualization of Simulation Results
+- parameter estimation of ODE models
+- sensitivity analysis
+- effective visualization of simulation results
 
 currently implimented for modeling immediate-early gene response ([Nakakuki _et al._, **_Cell_**, 2010](https://doi.org/10.1016/j.cell.2010.03.054)).
 
@@ -30,22 +31,22 @@ currently implimented for modeling immediate-early gene response ([Nakakuki _et 
 The BioMASS library is available on [PyPI](https://pypi.org/project/biomass/).
 
 ```
-$ pip install biomass
+$ pip3 install biomass
 ```
 
 BioMASS supports Python 3.7 or newer.
 
-## Create an executable model
+## Model Construction
 
 ```python
 from biomass.models import Nakakuki_Cell_2010
 
-Nakakuki_Cell_2010.show_properties()
+Nakakuki_Cell_2010.show_info()
 ```
 
 ```
-Model properties
-----------------
+Nakakuki_Cell_2010 information
+------------------------------
 36 species
 115 parameters, of which 75 to be estimated
 ```
@@ -146,34 +147,6 @@ from biomass import run_simulation
 run_simulation(model, viz_type='average', show_all=False, stdev=True)
 ```
 
-**viz_type** : _str_
-
-- `'average'`
-  : The average of simulation results with parameter sets in `out/`.
-
-- `'best'`
-  : The best simulation result in `out/`, simulation with `best_fit_param`.
-
-- `'original'`
-  : Simulation with the default parameters and initial values defined in `set_model.py`.
-
-- `'n(=1,2,...)'`
-  : Use the parameter set in `out/n/`.
-- `'experiment'`
-  : Draw the experimental data written in `observable.py` without simulation results.
-
-**show_all** : _bool_ (defaulf: False)
-
-- Whether to show all simulation results.
-
-**stdev** : _bool_ (defaulf: False)
-
-- If True, the standard deviation of simulated values will be shown (only when `viz_type == 'average'`).
-
-**save_format** : _str_ (default: "pdf")
-
-- Either "png" or "pdf", indicating whether to save figures as png or pdf format.
-
 ![simulation_average](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/simulation_average.png?raw=true)
 
 Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid lines denote simulations
@@ -191,50 +164,6 @@ from biomass import run_analysis
 
 run_analysis(model, target='reaction', metric='integral', style='barplot')
 ```
-
-**target** : _str_
-
-- `'reaction'`
-- `'initial_condition'`
-- `'parameter'`
-
-**metric** : _str_ (default: 'integral')
-
-- `'maximum'`
-  : The maximum value.
-
-- `'minimum'`
-  : The minimum value.
-
-- `'argmax'`
-  : The time to reach the maximum value.
-
-- `'argmin'`
-  : The time to reach the minimum value.
-
-- `'timepoint'`
-  : The simulated value at the time point set via options['timepoint'].
-
-- `'duration'`
-  : The time it takes to decline below the threshold set via options['duration'].
-
-- `'integral'`
-  : The integral of concentration over the observation time.
-
-**style** : _str_ (default: 'barplot')
-
-- `'barplot'`
-- `'heatmap'`
-
-**options** : _dict, optional_
-
-- **timepoint** : _int_ (default: model.sim.t[-1])
-
-  - (metric == `'timepoint'`) Which timepoint to use.
-
-- **duration**: _float_ (default: 0.5)
-
-  - (metric == `'duration'`) 0.1 for 10% of its maximum.
 
 ![sensitivity_PcFos](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/sensitivity_PcFos.png?raw=true)
 
