@@ -3,7 +3,7 @@ from typing import Dict, Union
 
 import numpy as np
 
-from ..exec_model import BioMassModel
+from ..template import BioMassModel
 from .temporal_dynamics import TemporalDynamics
 
 

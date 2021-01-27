@@ -6,7 +6,8 @@ import numpy as np
 import seaborn as sns
 from matplotlib import pyplot as plt
 
-from ..exec_model import BioMassModel, ExecModel
+from ..exec_model import ExecModel
+from ..template import BioMassModel
 
 
 class VisualizeWarning(UserWarning):
@@ -17,6 +18,7 @@ def _check_unknown_options(unknown_options: dict) -> Optional[NoReturn]:
     if unknown_options:
         msg = ", ".join(map(str, unknown_options.keys()))
         warnings.warn(f"Unknown visualization options: {msg}", VisualizeWarning)
+    return None
 
 
 class TemporalDynamics(ExecModel):
@@ -50,6 +52,10 @@ class TemporalDynamics(ExecModel):
             If True, the standard deviation of simulated values will be shown
             (only available for 'average' visualization type).
 
+        save_format : str (default: "pdf")
+            Either "png" or "pdf", indicating whether to save figures
+            as png or pdf format.
+
         simulations_all : numpy array
             Array containing all simulated values.
 
@@ -65,7 +71,7 @@ class TemporalDynamics(ExecModel):
         )
         self.model.exp.set_data()
         self.model.viz.set_timecourse_rcParams()
-        timecourse = self.model.viz.get_timecourse_options()
+        singleplot = self.model.viz.get_timecourse_options()
         multiplot = self.model.viz.multiplot_observables()
 
         for mode in range(2):
@@ -73,8 +79,8 @@ class TemporalDynamics(ExecModel):
             # mode 1 : multiplot_observables
             set_fig = False
             for i, obs_name in enumerate(self.model.obs):
-                if len(timecourse[i]["cmap"]) < len(self.model.sim.conditions) or len(
-                    timecourse[i]["shape"]
+                if len(singleplot[i]["cmap"]) < len(self.model.sim.conditions) or len(
+                    singleplot[i]["shape"]
                 ) < len(self.model.sim.conditions):
                     raise ValueError(
                         "len(cmap), len(shape) must be equal to"
@@ -92,34 +98,34 @@ class TemporalDynamics(ExecModel):
                 if viz_type != "experiment":
                     if show_all:
                         self._plot_show_all(
-                            n_file, simulations_all, obs_name, mode, timecourse, multiplot
+                            n_file, simulations_all, obs_name, mode, singleplot, multiplot
                         )
                     if viz_type == "average":
                         normalized = self._normalize_array(
-                            n_file, simulations_all, obs_name, mode, timecourse, multiplot
+                            n_file, simulations_all, obs_name, mode, singleplot, multiplot
                         )
                         if (
                             self.model.sim.normalization
                             and self.model.sim.normalization[obs_name]["timepoint"] is None
                         ):
                             normalized = self._divide_by_maximum(normalized, obs_name)
-                        self._plot_average(normalized, obs_name, mode, timecourse, multiplot)
+                        self._plot_average(normalized, obs_name, mode, singleplot, multiplot)
                         if stdev:
-                            self._show_sd(normalized, obs_name, mode, timecourse, multiplot)
+                            self._show_sd(normalized, obs_name, mode, singleplot, multiplot)
                     else:
-                        self._plot_simulations(obs_name, mode, timecourse, multiplot)
-                if timecourse[i]["exp_data"] and self.model.exp.experiments[i] is not None:
+                        self._plot_simulations(obs_name, mode, singleplot, multiplot)
+                if singleplot[i]["exp_data"] and self.model.exp.experiments[i] is not None:
                     exp_t = self.model.exp.get_timepoint(obs_name)
                     if self.model.exp.error_bars[i] is not None:
                         self._plot_experimental_data_with_error_bars(
-                            viz_type, exp_t, obs_name, mode, timecourse, multiplot
+                            viz_type, exp_t, obs_name, mode, singleplot, multiplot
                         )
                     else:
                         self._plot_experimental_data_without_error_bars(
-                            viz_type, exp_t, obs_name, mode, timecourse, multiplot
+                            viz_type, exp_t, obs_name, mode, singleplot, multiplot
                         )
                 if mode == 0:
-                    self._save_mode_0(obs_name, timecourse, viz_type, save_format)
+                    self._save_mode_0(obs_name, singleplot, viz_type, save_format)
             if mode == 1 and multiplot["observables"]:
                 self._save_mode_1(multiplot, viz_type, save_format)
 
@@ -140,7 +146,19 @@ class TemporalDynamics(ExecModel):
         popt : numpy array
             Array containing all optimized parameter/initial values.
 
-        portrait : bool
+        save_format : str (default: "pdf")
+            Either "png" or "pdf", indicating whether to save figures
+            as png or pdf format.
+
+        orientation : str (default: 'portrait')
+            Either 'portrait' or 'landscape'.
+
+        distribution : str (default: 'boxenplot')
+            Either 'boxplot' or 'boxenplot'.
+
+        scatter : bool (default: False)
+            If True, draw a stripplot.
+
         """
         _check_unknown_options(unknown_options)
         os.makedirs(
@@ -241,7 +259,7 @@ class TemporalDynamics(ExecModel):
         simulations_all: np.ndarray,
         obs_name: str,
         mode: int,
-        timecourse: List[dict],
+        singleplot: List[dict],
         multiplot: dict,
     ) -> None:
         """
@@ -250,11 +268,11 @@ class TemporalDynamics(ExecModel):
         i = self.model.obs.index(obs_name)
         for j, _ in enumerate(n_file):
             for l, condition in enumerate(self.model.sim.conditions):
-                if (mode == 0 and condition not in timecourse[i]["dont_show"]) or (
+                if (mode == 0 and condition not in singleplot[i]["dont_show"]) or (
                     mode == 1 and condition == multiplot["condition"]
                 ):
                     plt.plot(
-                        np.array(self.model.sim.t) / timecourse[i]["divided_by"],
+                        np.array(self.model.sim.t) / singleplot[i]["divided_by"],
                         simulations_all[i, j, :, l]
                         / (
                             1
@@ -288,7 +306,7 @@ class TemporalDynamics(ExecModel):
                                 ]
                             )
                         ),
-                        color=timecourse[i]["cmap"][l]
+                        color=singleplot[i]["cmap"][l]
                         if mode == 0
                         else multiplot["cmap"][multiplot["observables"].index(obs_name)],
                         alpha=0.05,
@@ -300,7 +318,7 @@ class TemporalDynamics(ExecModel):
         simulations_all: np.ndarray,
         obs_name: str,
         mode: int,
-        timecourse: List[dict],
+        singleplot: List[dict],
         multiplot: dict,
     ) -> np.ndarray:
         """
@@ -310,7 +328,7 @@ class TemporalDynamics(ExecModel):
         i = self.model.obs.index(obs_name)
         for j, _ in enumerate(n_file):
             for l, condition in enumerate(self.model.sim.conditions):
-                if (mode == 0 and condition not in timecourse[i]["dont_show"]) or (
+                if (mode == 0 and condition not in singleplot[i]["dont_show"]) or (
                     mode == 1 and condition == multiplot["condition"]
                 ):
                     normalized[i, j, :, l] = simulations_all[i, j, :, l] / (
@@ -368,7 +386,7 @@ class TemporalDynamics(ExecModel):
         normalized: np.ndarray,
         obs_name: str,
         mode: int,
-        timecourse: List[dict],
+        singleplot: List[dict],
         multiplot: dict,
     ) -> None:
         """
@@ -376,16 +394,16 @@ class TemporalDynamics(ExecModel):
         """
         i = self.model.obs.index(obs_name)
         for l, condition in enumerate(self.model.sim.conditions):
-            if (mode == 0 and condition not in timecourse[i]["dont_show"]) or (
+            if (mode == 0 and condition not in singleplot[i]["dont_show"]) or (
                 mode == 1 and condition == multiplot["condition"]
             ):
                 plt.plot(
-                    np.array(self.model.sim.t) / timecourse[i]["divided_by"],
+                    np.array(self.model.sim.t) / singleplot[i]["divided_by"],
                     np.nanmean(normalized[i, :, :, l], axis=0),
-                    color=timecourse[i]["cmap"][l]
+                    color=singleplot[i]["cmap"][l]
                     if mode == 0
                     else multiplot["cmap"][multiplot["observables"].index(obs_name)],
-                    label=condition if mode == 0 else timecourse[i]["ylabel"],
+                    label=condition if mode == 0 else singleplot[i]["ylabel"],
                 )
 
     def _show_sd(
@@ -393,7 +411,7 @@ class TemporalDynamics(ExecModel):
         normalized: np.ndarray,
         obs_name: str,
         mode: int,
-        timecourse: List[dict],
+        singleplot: List[dict],
         multiplot: dict,
     ) -> None:
         """
@@ -401,7 +419,7 @@ class TemporalDynamics(ExecModel):
         """
         i = self.model.obs.index(obs_name)
         for l, condition in enumerate(self.model.sim.conditions):
-            if (mode == 0 and condition not in timecourse[i]["dont_show"]) or (
+            if (mode == 0 and condition not in singleplot[i]["dont_show"]) or (
                 mode == 1 and condition == multiplot["condition"]
             ):
                 y_mean = np.nanmean(normalized[i, :, :, l], axis=0)
@@ -410,11 +428,11 @@ class TemporalDynamics(ExecModel):
                     for k, _ in enumerate(self.model.sim.t)
                 ]
                 plt.fill_between(
-                    np.array(self.model.sim.t) / timecourse[i]["divided_by"],
+                    np.array(self.model.sim.t) / singleplot[i]["divided_by"],
                     y_mean - y_std,
                     y_mean + y_std,
                     lw=0,
-                    color=timecourse[i]["cmap"][l]
+                    color=singleplot[i]["cmap"][l]
                     if mode == 0
                     else multiplot["cmap"][multiplot["observables"].index(obs_name)],
                     alpha=0.1,
@@ -424,7 +442,7 @@ class TemporalDynamics(ExecModel):
         self,
         obs_name: str,
         mode: int,
-        timecourse: List[dict],
+        singleplot: List[dict],
         multiplot: dict,
     ) -> None:
         """
@@ -432,11 +450,11 @@ class TemporalDynamics(ExecModel):
         """
         i = self.model.obs.index(obs_name)
         for l, condition in enumerate(self.model.sim.conditions):
-            if (mode == 0 and condition not in timecourse[i]["dont_show"]) or (
+            if (mode == 0 and condition not in singleplot[i]["dont_show"]) or (
                 mode == 1 and condition == multiplot["condition"]
             ):
                 plt.plot(
-                    np.array(self.model.sim.t) / timecourse[i]["divided_by"],
+                    np.array(self.model.sim.t) / singleplot[i]["divided_by"],
                     self.model.sim.simulations[i, :, l]
                     / (
                         1
@@ -464,10 +482,10 @@ class TemporalDynamics(ExecModel):
                             ]
                         )
                     ),
-                    color=timecourse[i]["cmap"][l]
+                    color=singleplot[i]["cmap"][l]
                     if mode == 0
                     else multiplot["cmap"][multiplot["observables"].index(obs_name)],
-                    label=condition if mode == 0 else timecourse[i]["ylabel"],
+                    label=condition if mode == 0 else singleplot[i]["ylabel"],
                 )
 
     def _plot_experimental_data_with_error_bars(
@@ -476,7 +494,7 @@ class TemporalDynamics(ExecModel):
         exp_t: Optional[List[int]],
         obs_name: str,
         mode: int,
-        timecourse: List[dict],
+        singleplot: List[dict],
         multiplot: dict,
     ) -> None:
         """
@@ -486,30 +504,30 @@ class TemporalDynamics(ExecModel):
         for l, condition in enumerate(self.model.sim.conditions):
             if (
                 condition in self.model.exp.experiments[i]
-                and (mode == 0 and condition not in timecourse[i]["dont_show"])
+                and (mode == 0 and condition not in singleplot[i]["dont_show"])
                 or (mode == 1 and condition == multiplot["condition"])
             ):
                 exp_data = plt.errorbar(
-                    np.array(exp_t) / timecourse[i]["divided_by"],
+                    np.array(exp_t) / singleplot[i]["divided_by"],
                     self.model.exp.experiments[i][condition],
                     yerr=self.model.exp.error_bars[i][condition],
-                    color=timecourse[i]["cmap"][l]
+                    color=singleplot[i]["cmap"][l]
                     if mode == 0
                     else multiplot["cmap"][multiplot["observables"].index(obs_name)],
-                    ecolor=timecourse[i]["cmap"][l]
+                    ecolor=singleplot[i]["cmap"][l]
                     if mode == 0
                     else multiplot["cmap"][multiplot["observables"].index(obs_name)],
                     elinewidth=1,
                     capsize=8,
                     markerfacecolor="None",
-                    markeredgecolor=timecourse[i]["cmap"][l]
+                    markeredgecolor=singleplot[i]["cmap"][l]
                     if mode == 0
                     else multiplot["cmap"][multiplot["observables"].index(obs_name)],
-                    fmt=timecourse[i]["shape"][l]
+                    fmt=singleplot[i]["shape"][l]
                     if mode == 0
                     else multiplot["shape"][multiplot["observables"].index(obs_name)],
                     clip_on=False,
-                    label=timecourse[i]["ylabel"]
+                    label=singleplot[i]["ylabel"]
                     if mode == 1 and viz_type == "experiment"
                     else None,
                 )
@@ -524,7 +542,7 @@ class TemporalDynamics(ExecModel):
         exp_t: Optional[List[int]],
         obs_name: str,
         mode: int,
-        timecourse: List[dict],
+        singleplot: List[dict],
         multiplot: dict,
     ) -> None:
         """
@@ -534,24 +552,24 @@ class TemporalDynamics(ExecModel):
         for l, condition in enumerate(self.model.sim.conditions):
             if (
                 condition in self.model.exp.experiments[i]
-                and (mode == 0 and condition not in timecourse[i]["dont_show"])
+                and (mode == 0 and condition not in singleplot[i]["dont_show"])
                 or (mode == 1 and condition == multiplot["condition"])
             ):
                 plt.plot(
-                    np.array(exp_t) / timecourse[i]["divided_by"],
+                    np.array(exp_t) / singleplot[i]["divided_by"],
                     self.model.exp.experiments[i][condition],
-                    timecourse[i]["shape"][l]
+                    singleplot[i]["shape"][l]
                     if mode == 0
                     else multiplot["shape"][multiplot["observables"].index(obs_name)],
                     markerfacecolor="None",
-                    markeredgecolor=timecourse[i]["cmap"][l]
+                    markeredgecolor=singleplot[i]["cmap"][l]
                     if mode == 0
                     else multiplot["cmap"][multiplot["observables"].index(obs_name)],
-                    color=timecourse[i]["cmap"][l]
+                    color=singleplot[i]["cmap"][l]
                     if mode == 0
                     else multiplot["cmap"][multiplot["observables"].index(obs_name)],
                     clip_on=False,
-                    label=timecourse[i]["ylabel"]
+                    label=singleplot[i]["ylabel"]
                     if mode == 1 and viz_type == "experiment"
                     else None,
                 )
@@ -559,7 +577,7 @@ class TemporalDynamics(ExecModel):
     def _save_mode_0(
         self,
         obs_name: str,
-        timecourse: List[dict],
+        singleplot: List[dict],
         viz_type: str,
         save_format: str,
     ) -> None:
@@ -567,19 +585,19 @@ class TemporalDynamics(ExecModel):
         Plot time course of each observable.
         """
         i = self.model.obs.index(obs_name)
-        if timecourse[i]["xlim"]:
-            plt.xlim(timecourse[i]["xlim"])
-        if timecourse[i]["xticks"] is not None:
-            plt.xticks(timecourse[i]["xticks"])
-        plt.xlabel(timecourse[i]["xlabel"])
-        if timecourse[i]["ylim"]:
-            plt.ylim(timecourse[i]["ylim"])
-        if timecourse[i]["yticks"] is not None:
-            plt.yticks(timecourse[i]["yticks"])
-        plt.ylabel(timecourse[i]["ylabel"])
-        if timecourse[i]["legend_loc"] is not None:
+        if singleplot[i]["xlim"]:
+            plt.xlim(singleplot[i]["xlim"])
+        if singleplot[i]["xticks"] is not None:
+            plt.xticks(singleplot[i]["xticks"])
+        plt.xlabel(singleplot[i]["xlabel"])
+        if singleplot[i]["ylim"]:
+            plt.ylim(singleplot[i]["ylim"])
+        if singleplot[i]["yticks"] is not None:
+            plt.yticks(singleplot[i]["yticks"])
+        plt.ylabel(singleplot[i]["ylabel"])
+        if singleplot[i]["legend_loc"] is not None:
             plt.legend(
-                loc=timecourse[i]["legend_loc"],
+                loc=singleplot[i]["legend_loc"],
                 frameon=False,
                 fontsize=12,
             )
