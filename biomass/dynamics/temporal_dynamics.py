@@ -52,6 +52,10 @@ class TemporalDynamics(ExecModel):
             If True, the standard deviation of simulated values will be shown
             (only available for 'average' visualization type).
 
+        save_format : str (default: "pdf")
+            Either "png" or "pdf", indicating whether to save figures
+            as png or pdf format.
+
         simulations_all : numpy array
             Array containing all simulated values.
 
@@ -142,7 +146,19 @@ class TemporalDynamics(ExecModel):
         popt : numpy array
             Array containing all optimized parameter/initial values.
 
-        portrait : bool
+        save_format : str (default: "pdf")
+            Either "png" or "pdf", indicating whether to save figures
+            as png or pdf format.
+
+        orientation : str (default: 'portrait')
+            Either 'portrait' or 'landscape'.
+
+        distribution : str (default: 'boxenplot')
+            Either 'boxplot' or 'boxenplot'.
+
+        scatter : bool (default: False)
+            If True, draw a stripplot.
+
         """
         _check_unknown_options(unknown_options)
         os.makedirs(
