@@ -6,7 +6,8 @@ import numpy as np
 import seaborn as sns
 from matplotlib import pyplot as plt
 
-from ..exec_model import BioMassModel, ExecModel
+from ..exec_model import ExecModel
+from ..template import BioMassModel
 
 
 class VisualizeWarning(UserWarning):

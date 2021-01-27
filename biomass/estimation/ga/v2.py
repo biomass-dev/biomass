@@ -5,7 +5,8 @@ from typing import NoReturn, Optional
 
 import numpy as np
 
-from ...exec_model import BioMassModel, ExecModel
+from ...exec_model import ExecModel
+from ...template import BioMassModel
 from .rcga import RealCodedGeneticAlgorithm
 
 

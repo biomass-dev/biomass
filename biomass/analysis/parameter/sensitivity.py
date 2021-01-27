@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-from ...exec_model import BioMassModel, ExecModel
+from ...exec_model import ExecModel
+from ...template import BioMassModel
 from .. import dlnyi_dlnxj, get_signaling_metric
 
 
