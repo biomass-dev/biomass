@@ -2,7 +2,7 @@
 import multiprocessing
 import os
 import warnings
-from typing import Any, Dict, List, NoReturn, Optional, Union
+from typing import List, NoReturn, Optional
 
 from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
 from .dynamics import SignalingSystems
@@ -14,7 +14,7 @@ __all__ = ["optimize", "optimize_continue", "run_simulation", "run_analysis"]
 
 def _check_optional_arguments(
     end: Optional[int],
-    options: Optional[Dict[str, Any]],
+    options: Optional[dict],
 ) -> Optional[NoReturn]:
     if options is not None:
         if options["local_search_method"].lower() not in ["mutation", "powell", "de"]:
@@ -222,7 +222,7 @@ def run_simulation(
     show_all: bool = False,
     stdev: bool = False,
     save_format: str = "pdf",
-    param_range: Optional[Dict[str, Union[str, bool]]] = None,
+    param_range: Optional[dict] = None,
 ) -> None:
     """
     Simulate ODE model with estimated parameter values.
