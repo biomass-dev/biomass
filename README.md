@@ -8,7 +8,7 @@
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg)](https://pypi.python.org/pypi/biomass/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-## Modeling and Analysis of Signaling Systems
+## **M**odeling and **A**nalysis of **S**ignaling **S**ystems
 
 <img align="left" src="https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/logo.png?raw=true" width="300">
 
@@ -174,3 +174,7 @@ Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HR
 When using BioMASS, please cite:
 
 - Imoto, H., Zhang, S. & Okada, M. A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway. _Cancers_. **12**, 2878 (2020). https://doi.org/10.3390/cancers12102878
+
+## Author
+
+[Hiroaki Imoto](https://github.com/himoto)
