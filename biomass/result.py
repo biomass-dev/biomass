@@ -203,12 +203,12 @@ class OptimizationResults(ExecModel):
         plt.rcParams["font.size"] = 18
         plt.rcParams["lines.linewidth"] = 1.0
         # ---
-        for i in n_file:
+        for paramset in n_file:
             with open(
                 os.path.join(
                     self.model.path,
                     "out",
-                    f"{i:d}",
+                    f"{paramset:d}",
                     "optimization.log",
                 ),
                 mode="r",
