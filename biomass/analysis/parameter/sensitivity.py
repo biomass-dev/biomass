@@ -1,5 +1,6 @@
 import os
 import sys
+from dataclasses import dataclass
 from typing import List
 
 import matplotlib.pyplot as plt
@@ -11,12 +12,12 @@ from ...template import BioMassModel
 from .. import dlnyi_dlnxj, get_signaling_metric
 
 
+@dataclass
 class ParameterSensitivity(ExecModel):
     """Sensitivity for parameters"""
 
-    def __init__(self, model: BioMassModel, excluded_params: List[str]) -> None:
-        super().__init__(model)
-        self.excluded_params = excluded_params
+    model: BioMassModel
+    excluded_params: List[str]
 
     def _get_param_indices(self) -> List[int]:
         param_indices = []

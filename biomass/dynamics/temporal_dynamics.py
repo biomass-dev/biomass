@@ -1,5 +1,6 @@
 import os
 import warnings
+from dataclasses import dataclass
 from typing import List, NoReturn, Optional
 
 import numpy as np
@@ -21,9 +22,9 @@ def _check_unknown_options(unknown_options: dict) -> Optional[NoReturn]:
     return None
 
 
+@dataclass
 class TemporalDynamics(ExecModel):
-    def __init__(self, model: BioMassModel) -> None:
-        super().__init__(model)
+    model: BioMassModel
 
     def plot_timecourse(
         self,

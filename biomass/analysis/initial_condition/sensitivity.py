@@ -1,5 +1,6 @@
 import os
 import sys
+from dataclasses import dataclass
 from typing import List
 
 import matplotlib.pyplot as plt
@@ -11,11 +12,11 @@ from ...template import BioMassModel
 from .. import dlnyi_dlnxj, get_signaling_metric
 
 
+@dataclass
 class InitialConditionSensitivity(ExecModel):
     """Sensitivity for species with nonzero initial conditions"""
 
-    def __init__(self, model: BioMassModel) -> None:
-        super().__init__(model)
+    model: BioMassModel
 
     def _get_nonzero_indices(self) -> List[int]:
         nonzero_indices = []

@@ -1,4 +1,5 @@
 import os
+from dataclasses import dataclass
 from typing import Dict, Union
 
 import numpy as np
@@ -7,9 +8,9 @@ from ..template import BioMassModel
 from .temporal_dynamics import TemporalDynamics
 
 
+@dataclass
 class SignalingSystems(TemporalDynamics):
-    def __init__(self, model: BioMassModel) -> None:
-        super().__init__(model)
+    model: BioMassModel
 
     def simulate_all(
         self,
