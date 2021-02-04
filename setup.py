@@ -1,6 +1,7 @@
 import os
 import sys
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
 
 
 def get_version() -> str:
@@ -15,7 +16,7 @@ def get_version() -> str:
 def main():
     # Python version check.
     if sys.version_info[:2] < (3, 7):
-        sys.exit("BioMASS requires at least Python version 3.7")
+        sys.exit("biomass requires at least Python version 3.7")
 
     # set long_description and requirements
     here = os.path.abspath(os.path.dirname(__file__))
@@ -34,11 +35,28 @@ def main():
         url="https://github.com/okadalabipr/biomass",
         packages=find_packages(exclude=["tests"]),
         install_requires=requirements.splitlines(),
+        extras_require={
+            "dev": [
+                "black==20.8b1",
+                "flake8",
+                "isort",
+                "pre-commit",
+                "pytest",
+            ]
+        },
         python_requires=">=3.7",
-        keywords=["systems", "biology", "modeling", "optimization", "sensitivity", "analysis"],
+        keywords=[
+            "systems",
+            "biology",
+            "modeling",
+            "optimization",
+            "sensitivity",
+            "analysis",
+        ],
         classifiers=[
             "Intended Audience :: Science/Research",
             "License :: OSI Approved :: MIT License",
+            "Natural Language :: English",
             "Operating System :: OS Independent",
             "Programming Language :: Python :: 3",
             "Programming Language :: Python :: 3 :: Only",
