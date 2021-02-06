@@ -276,6 +276,7 @@ class ReactionSensitivity(ExecModel):
                         "sensitivity",
                         "reaction",
                         f"{metric}",
+                        "barplot",
                         f"{obs_name}.pdf",
                     ),
                     bbox_inches="tight",
