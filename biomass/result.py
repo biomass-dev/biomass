@@ -1,5 +1,6 @@
 import csv
 import os
+from dataclasses import dataclass
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -8,9 +9,11 @@ from .exec_model import ExecModel
 from .template import BioMassModel
 
 
+@dataclass
 class OptimizationResults(ExecModel):
-    def __init__(self, model: BioMassModel) -> None:
-        super().__init__(model)
+    model: BioMassModel
+
+    def __post_init__(self) -> None:
         os.makedirs(
             os.path.join(
                 self.model.path,
