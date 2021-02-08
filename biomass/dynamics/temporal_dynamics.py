@@ -1,7 +1,7 @@
 import os
 import warnings
 from dataclasses import dataclass
-from typing import List, NoReturn, Optional
+from typing import List, Optional
 
 import numpy as np
 import seaborn as sns
@@ -15,11 +15,10 @@ class VisualizeWarning(UserWarning):
     pass
 
 
-def _check_unknown_options(unknown_options: dict) -> Optional[NoReturn]:
+def _check_unknown_options(unknown_options: dict) -> None:
     if unknown_options:
         msg = ", ".join(map(str, unknown_options.keys()))
         warnings.warn(f"Unknown visualization options: {msg}", VisualizeWarning)
-    return None
 
 
 @dataclass

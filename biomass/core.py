@@ -16,7 +16,9 @@ def _check_optional_arguments(
     end: Optional[int],
     options: Optional[dict],
 ) -> Optional[NoReturn]:
-    if options is not None:
+    if options is None:
+        return None
+    elif isinstance(options, dict):
         if options["local_search_method"].lower() not in ["mutation", "powell", "de"]:
             raise ValueError(
                 f"'{options['local_search_method']}': "
@@ -30,7 +32,10 @@ def _check_optional_arguments(
             raise AssertionError(
                 "daemonic processes are not allowed to have children. Set options['workers'] to 1."
             )
-    return None
+        else:
+            return None
+    else:
+        raise TypeError("options must be dict or None.")
 
 
 def optimize(

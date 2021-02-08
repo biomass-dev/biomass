@@ -1,7 +1,6 @@
 import os
 import time
 import warnings
-from typing import NoReturn, Optional
 
 import numpy as np
 
@@ -14,11 +13,10 @@ class OptimizeWarning(UserWarning):
     pass
 
 
-def _check_unknown_options(unknown_options: dict) -> Optional[NoReturn]:
+def _check_unknown_options(unknown_options: dict) -> None:
     if unknown_options:
         msg = ", ".join(map(str, unknown_options.keys()))
         warnings.warn(f"Unknown optimization options: {msg}", OptimizeWarning)
-    return None
 
 
 class GeneticAlgorithmInit(ExecModel):
