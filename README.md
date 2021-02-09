@@ -10,7 +10,7 @@
 
 ## **M**odeling and **A**nalysis of **S**ignaling **S**ystems
 
-<img align="left" src="https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/logo.png?raw=true" width="300">
+<img align="left" src="resources/images/logo.png" width="300">
 
 Mathematical modeling is a powerful method for the analysis of complex biological systems. Although there are many researches devoted on producing models to describe dynamical cellular signaling systems, most of these models are limited and do not cover multiple pathways. Therefore, there is a challenge to combine these models to enable understanding at a larger scale. Nevertheless, larger network means that it gets more difficult to estimate parameters to reproduce dynamic experimental data needed for deeper understanding of a system.
 
@@ -147,7 +147,7 @@ from biomass import run_simulation
 run_simulation(model, viz_type='average', show_all=False, stdev=True)
 ```
 
-![simulation_average](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/simulation_average.png?raw=true)
+![simulation_average](resources/images/simulation_average.png)
 
 Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid lines denote simulations
 
@@ -165,7 +165,7 @@ from biomass import run_analysis
 run_analysis(model, target='reaction', metric='integral', style='barplot')
 ```
 
-![sensitivity_PcFos](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/sensitivity_PcFos.png?raw=true)
+![sensitivity_PcFos](resources/images/sensitivity_PcFos.png)
 
 Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HRG). Numbers above bars indicate the reaction indices, and error bars correspond to simulation standard deviation.
 
