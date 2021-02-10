@@ -6,7 +6,7 @@ from typing import NoReturn, Optional
 from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
 from .dynamics import SignalingSystems
 from .estimation import GeneticAlgorithmContinue, GeneticAlgorithmInit
-from .template import BioMassModel
+from .exec_model import ModelObject
 
 __all__ = ["optimize", "optimize_continue", "run_simulation", "run_analysis"]
 
@@ -38,7 +38,7 @@ def _check_optional_arguments(
 
 
 def optimize(
-    model: BioMassModel,
+    model: ModelObject,
     start: int,
     end: Optional[int] = None,
     options: Optional[dict] = None,
@@ -48,7 +48,7 @@ def optimize(
 
     Paremters
     ---------
-    model : BioMassModel
+    model : ModelObject
         Model for parameter estimation.
 
     start : int
@@ -128,7 +128,7 @@ def optimize(
 
 
 def optimize_continue(
-    model: BioMassModel,
+    model: ModelObject,
     start: int,
     end: Optional[int] = None,
     options: Optional[dict] = None,
@@ -138,7 +138,7 @@ def optimize_continue(
 
     Paremters
     ---------
-    model : BioMassModel
+    model : ModelObject
         Model for parameter estimation.
 
     start : int
@@ -221,7 +221,7 @@ def optimize_continue(
 
 
 def run_simulation(
-    model: BioMassModel,
+    model: ModelObject,
     viz_type: str,
     show_all: bool = False,
     stdev: bool = False,
@@ -233,7 +233,7 @@ def run_simulation(
 
     Parameters
     ----------
-    model : BioMassModel
+    model : ModelObject
         Model for simulation.
 
     viz_type : str
@@ -317,7 +317,7 @@ def run_simulation(
 
 
 def run_analysis(
-    model: BioMassModel,
+    model: ModelObject,
     target: str,
     metric: str = "integral",
     style: str = "barplot",
@@ -334,7 +334,7 @@ def run_analysis(
 
     Paremters
     ---------
-    model : BioMassModel
+    model : ModelObject
         Model for sensitivity analysis.
 
     target : str

@@ -4,8 +4,7 @@ import warnings
 
 import numpy as np
 
-from ...exec_model import ExecModel
-from ...template import BioMassModel
+from ...exec_model import ExecModel, ModelObject
 from .rcga import RealCodedGeneticAlgorithm
 
 
@@ -22,7 +21,7 @@ def _check_unknown_options(unknown_options: dict) -> None:
 class GeneticAlgorithmInit(ExecModel):
     def __init__(
         self,
-        model: BioMassModel,
+        model: ModelObject,
         popsize: int,
         max_generation: int,
         allowable_error: float,
@@ -342,7 +341,7 @@ class GeneticAlgorithmInit(ExecModel):
 class GeneticAlgorithmContinue(ExecModel):
     def __init__(
         self,
-        model: BioMassModel,
+        model: ModelObject,
         popsize: int,
         max_generation: int,
         allowable_error: float,

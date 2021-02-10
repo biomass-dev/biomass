@@ -7,8 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-from ...exec_model import ExecModel
-from ...template import BioMassModel
+from ...exec_model import ExecModel, ModelObject
 from .. import dlnyi_dlnxj, get_signaling_metric
 
 
@@ -16,7 +15,7 @@ from .. import dlnyi_dlnxj, get_signaling_metric
 class InitialConditionSensitivity(ExecModel):
     """Sensitivity for species with nonzero initial conditions"""
 
-    model: BioMassModel
+    model: ModelObject
 
     def _get_nonzero_indices(self, excluded_initials: List[str]) -> List[int]:
         nonzero_indices = []

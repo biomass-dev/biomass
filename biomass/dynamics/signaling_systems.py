@@ -4,13 +4,13 @@ from typing import Dict, Union
 
 import numpy as np
 
-from ..template import BioMassModel
+from ..exec_model import ModelObject
 from .temporal_dynamics import TemporalDynamics
 
 
 @dataclass
 class SignalingSystems(TemporalDynamics):
-    model: BioMassModel
+    model: ModelObject
 
     def simulate_all(
         self,

@@ -5,13 +5,12 @@ from dataclasses import dataclass
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .exec_model import ExecModel
-from .template import BioMassModel
+from .exec_model import ExecModel, ModelObject
 
 
 @dataclass
 class OptimizationResults(ExecModel):
-    model: BioMassModel
+    model: ModelObject
 
     def __post_init__(self) -> None:
         os.makedirs(

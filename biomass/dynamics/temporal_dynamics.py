@@ -7,8 +7,7 @@ import numpy as np
 import seaborn as sns
 from matplotlib import pyplot as plt
 
-from ..exec_model import ExecModel
-from ..template import BioMassModel
+from ..exec_model import ExecModel, ModelObject
 
 
 class VisualizeWarning(UserWarning):
@@ -23,7 +22,7 @@ def _check_unknown_options(unknown_options: dict) -> None:
 
 @dataclass
 class TemporalDynamics(ExecModel):
-    model: BioMassModel
+    model: ModelObject
 
     def plot_timecourse(
         self,
