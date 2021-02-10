@@ -3,10 +3,17 @@ import shutil
 
 import numpy as np
 
-from biomass import OptimizationResults, optimize, optimize_continue, run_analysis, run_simulation
+from biomass import (
+    ModelObject,
+    OptimizationResults,
+    optimize,
+    optimize_continue,
+    run_analysis,
+    run_simulation,
+)
 from biomass.models import mapk_cascade
 
-model = mapk_cascade.create()
+model = ModelObject(mapk_cascade.create())
 
 for dir in [
     "figure",
