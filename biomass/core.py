@@ -1,8 +1,7 @@
 """BioMASS core functions"""
 import multiprocessing
 import os
-import warnings
-from typing import List, NoReturn, Optional
+from typing import NoReturn, Optional
 
 from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
 from .dynamics import SignalingSystems
@@ -71,9 +70,9 @@ def optimize(
 
         local_search_method : str (default: 'mutation')
             Method used in local search. Should be one of
-            - 'mutation' : NDM/MGG
-            - 'Powell' : Modified Powell method
-            - 'DE' : Differential Evolution (strategy: best2bin)
+            * 'mutation' : NDM/MGG
+            * 'Powell' : Modified Powell method
+            * 'DE' : Differential Evolution (strategy: best2bin)
 
         n_children : int (default: 200)
             (method='mutation') The number of children generated in NDM/MGG.
@@ -161,9 +160,9 @@ def optimize_continue(
 
         local_search_method : str (default: 'mutation')
             Method used in local search. Should be one of
-            - 'mutation' : NDM/MGG
-            - 'Powell' : Modified Powell method
-            - 'DE' : Differential Evolution (strategy: best2bin)
+            * 'mutation' : NDM/MGG
+            * 'Powell' : Modified Powell method
+            * 'DE' : Differential Evolution (strategy: best2bin)
 
         n_children : int (default: 200)
             (method='mutation') The number of children generated in NDM/MGG.
@@ -232,66 +231,68 @@ def run_simulation(
     """
     Simulate ODE model with estimated parameter values.
 
-        Parameters
-        ----------
-        model : BioMassModel
-            Model for simulation.
+    Parameters
+    ----------
+    model : BioMassModel
+        Model for simulation.
 
-        viz_type : str
-            * 'average':
-                The average of simulation results with parameter sets in "out/".
-            * 'best':
-                The best simulation result in "out/", simulation with
-                "best_fit_param".
-            * 'original':
-                Simulation with the default parameters and initial values
-                defined in "set_model.py".
-            * 'n(=1,2,...)':
-                Use the parameter set in "out/n/".
-            * 'experiment'
-                Draw the experimental data written in observable.py without
-                simulation results.
+    viz_type : str
+        * 'average':
+            The average of simulation results with parameter sets in "out/".
+        * 'best':
+            The best simulation result in "out/", simulation with
+            "best_fit_param".
+        * 'original':
+            Simulation with the default parameters and initial values
+            defined in "set_model.py".
+        * 'n(=1,2,...)':
+            Use the parameter set in "out/n/".
+        * 'experiment'
+            Draw the experimental data written in observable.py without
+            simulation results.
 
-        show_all : bool
-            Whether to show all simulation results.
+    show_all : bool
+        Whether to show all simulation results.
 
-        stdev : bool
-            If True, the standard deviation of simulated values will be shown
-            (only available for 'average' visualization type).
+    stdev : bool
+        If True, the standard deviation of simulated values will be shown
+        (only available for 'average' visualization type).
 
-        save_format : str (default: "pdf")
-            Either "png" or "pdf", indicating whether to save figures
-            as png or pdf format.
+    save_format : str (default: "pdf")
+        Either "png" or "pdf", indicating whether to save figures
+        as png or pdf format.
 
-        param_range : dict, optional
-            orientation : str (default: 'portrait')
-                Either 'portrait' or 'landscape'.
+    param_range : dict, optional
+        orientation : str (default: 'portrait')
+            Either 'portrait' or 'landscape'.
 
-            distribution : str (default: 'boxenplot')
-                Either 'boxplot' or 'boxenplot'.
+        distribution : str (default: 'boxenplot')
+            Either 'boxplot' or 'boxenplot'.
 
-            scatter : bool (default: False)
-                If True, draw a stripplot.
+        scatter : bool (default: False)
+            If True, draw a stripplot.
 
-        Example
-        -------
-        >>> from biomass.models import Nakakuki_Cell_2010
-        >>> from biomass import run_simulation
-        >>> model = Nakakuki_Cell_2010.create()
-        >>> run_simulation(
-                model,
-                viz_type='average',
-                show_all=False,
-                stdev=True,
-                save_format="png",
-            )
+    Example
+    -------
+    >>> from biomass.models import Nakakuki_Cell_2010
+    >>> from biomass import run_simulation
+    >>> model = Nakakuki_Cell_2010.create()
+    >>> run_simulation(
+            model,
+            viz_type='average',
+            show_all=False,
+            stdev=True,
+            save_format="png",
+        )
 
     """
-    warnings.filterwarnings("ignore")
     if viz_type not in ["best", "average", "original", "experiment"] and not viz_type.isdecimal():
         raise ValueError(
             "Available viz_type are: 'best','average','original','experiment','n(=1, 2, ...)'"
         )
+
+    if save_format not in ["pdf", "png"]:
+        raise ValueError("save_format must be either 'pdf' or 'png'.")
 
     if param_range is None:
         param_range = {}
@@ -316,11 +317,11 @@ def run_simulation(
 
 
 def run_analysis(
-    model,
+    model: BioMassModel,
     target: str,
     metric: str = "integral",
     style: str = "barplot",
-    excluded_params: List[str] = [],
+    save_format: str = "pdf",
     options: Optional[dict] = None,
 ) -> None:
     """
@@ -337,27 +338,37 @@ def run_analysis(
         Model for sensitivity analysis.
 
     target : str
-        - 'reaction'
-        - 'initial_condition'
-        - 'parameter'
+        * 'reaction'
+        * 'initial_condition'
+        * 'parameter'
 
     metric : str (default: 'integral')
-        - 'maximum' : The maximum value.
-        - 'minimum' : The minimum value.
-        - 'argmax' : The time to reach the maximum value.
-        - 'argmin' : The time to reach the minimum value.
-        - 'timepoint' : The simulated value at the time point set via options['timepoint'].
-        - 'duration' :  The time it takes to decline below the threshold set via options['duration'].
-        - 'integral' : The integral of concentration over the observation time.
+        * 'maximum' : The maximum value.
+        * 'minimum' : The minimum value.
+        * 'argmax' : The time to reach the maximum value.
+        * 'argmin' : The time to reach the minimum value.
+        * 'timepoint' : The simulated value at the time point set via options['timepoint'].
+        * 'duration' :  The time it takes to decline below the threshold set via options['duration'].
+        * 'integral' : The integral of concentration over the observation time.
 
     style : str (default: 'barplot')
-        - 'barplot'
-        - 'heatmap'
+        * 'barplot'
+        * 'heatmap'
 
-    excluded_params : list of strings
-        For parameter sensitivity analysis.
+    save_format : str (default: "pdf")
+        Either "png" or "pdf", indicating whether to save figures
+        as png or pdf format.
 
     options : dict, optional
+        show_indices : bool (default: True)
+            (target == 'reaction') Set to True to put reaction index on each bar.
+
+        excluded_params : list of strings
+            (target == 'parameter') List of parameters which are not used for analysis.
+
+        excluded_initials : list of strings
+            (target == 'initial_condition') List of species which are not used for analysis.
+
         timepoint : int (default: model.sim.t[-1])
             (metric=='timepoint') Which timepoint to use.
 
@@ -374,9 +385,11 @@ def run_analysis(
     >>> run_analysis(
             model,
             target='parameter',
-            excluded_params=[
-                'a', 'Vn', 'Vc', 'Ligand', 'EGF', 'HRG', 'no_ligand'
-            ]
+            options = {
+                'excluded_params': [
+                    'a', 'Vn', 'Vc', 'Ligand', 'EGF', 'HRG', 'no_ligand'
+                ]
+            }
         )
 
     2. Initial condition
@@ -392,8 +405,14 @@ def run_analysis(
         )
 
     """
+    if save_format not in ["pdf", "png"]:
+        raise ValueError("save_format must be either 'pdf' or 'png'.")
+
     if options is None:
         options = {}
+    options.setdefault("show_indices", True)
+    options.setdefault("excluded_params", [])
+    options.setdefault("excluded_initials", [])
     options.setdefault("timepoint", model.sim.t[-1])
     options.setdefault("duration", 0.5)
 
@@ -402,23 +421,25 @@ def run_analysis(
     if not 0.0 < options["duration"] < 1.0:
         raise ValueError("options['duration'] must lie within (0, 1).")
 
-    warnings.filterwarnings("ignore")
     if target == "reaction":
         ReactionSensitivity(model).analyze(
             metric=metric,
             style=style,
+            save_format=save_format,
+            options=options,
+        )
+    elif target == "parameter":
+        ParameterSensitivity(model).analyze(
+            metric=metric,
+            style=style,
+            save_format=save_format,
             options=options,
         )
     elif target == "initial_condition":
         InitialConditionSensitivity(model).analyze(
             metric=metric,
             style=style,
-            options=options,
-        )
-    elif target == "parameter":
-        ParameterSensitivity(model, excluded_params).analyze(
-            metric=metric,
-            style=style,
+            save_format=save_format,
             options=options,
         )
     else:

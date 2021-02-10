@@ -17,13 +17,12 @@ class ParameterSensitivity(ExecModel):
     """Sensitivity for parameters"""
 
     model: BioMassModel
-    excluded_params: List[str]
 
-    def _get_param_indices(self) -> List[int]:
+    def _get_param_indices(self, excluded_params: List[str]) -> List[int]:
         param_indices = []
         x = self.model.pval()
         for i, val in enumerate(x):
-            if self.model.parameters[i] not in self.excluded_params and val != 0.0:
+            if self.model.parameters[i] not in excluded_params and val != 0.0:
                 param_indices.append(i)
         if not param_indices:
             raise ValueError("No nonzero parameters.")
@@ -176,6 +175,7 @@ class ParameterSensitivity(ExecModel):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         param_indices: List[int],
+        save_format: str,
     ) -> None:
         """
         Visualize sensitivity coefficients using barplot.
@@ -248,8 +248,9 @@ class ParameterSensitivity(ExecModel):
                     "parameter",
                     f"{metric}",
                     "barplot",
-                    f"{obs_name}.pdf",
+                    f"{obs_name}." + save_format,
                 ),
+                dpi=600 if save_format == "png" else None,
                 bbox_inches="tight",
             )
             plt.close()
@@ -279,6 +280,7 @@ class ParameterSensitivity(ExecModel):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         param_indices: List[int],
+        save_format: str,
     ) -> None:
         """
         Visualize sensitivity coefficients using heatmap.
@@ -326,23 +328,25 @@ class ParameterSensitivity(ExecModel):
                             "parameter",
                             f"{metric}",
                             "heatmap",
-                            f"{condition}_{obs_name}.pdf",
+                            f"{condition}_{obs_name}." + save_format,
                         ),
+                        dpi=600 if save_format == "png" else None,
                         bbox_inches="tight",
                     )
                     plt.close()
 
-    def analyze(self, *, metric: str, style: str, options: dict) -> None:
+    def analyze(self, *, metric: str, style: str, save_format: str, options: dict) -> None:
         """
         Perform sensitivity analysis.
         """
-        param_indices = self._get_param_indices()
+        param_indices = self._get_param_indices(options["excluded_params"])
         sensitivity_coefficients = self._load_sc(metric, param_indices, options)
         if style == "barplot":
             self._barplot_sensitivity(
                 metric,
                 sensitivity_coefficients,
                 param_indices,
+                save_format,
             )
         elif style == "heatmap":
             if len(param_indices) < 2:
@@ -352,6 +356,7 @@ class ParameterSensitivity(ExecModel):
                     metric,
                     sensitivity_coefficients,
                     param_indices,
+                    save_format,
                 )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")

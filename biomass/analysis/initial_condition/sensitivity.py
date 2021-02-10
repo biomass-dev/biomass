@@ -18,11 +18,11 @@ class InitialConditionSensitivity(ExecModel):
 
     model: BioMassModel
 
-    def _get_nonzero_indices(self) -> List[int]:
+    def _get_nonzero_indices(self, excluded_initials: List[str]) -> List[int]:
         nonzero_indices = []
         y0 = self.model.ival()
         for i, val in enumerate(y0):
-            if val != 0.0:
+            if self.model.species[i] not in excluded_initials and val != 0.0:
                 nonzero_indices.append(i)
         if not nonzero_indices:
             raise ValueError("No nonzero initial conditions.")
@@ -52,7 +52,6 @@ class InitialConditionSensitivity(ExecModel):
         """
 
         rate = 1.01  # 1% change
-        nonzero_indices = self._get_nonzero_indices()
         n_file = self.get_executable()
 
         signaling_metric = np.full(
@@ -160,6 +159,7 @@ class InitialConditionSensitivity(ExecModel):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         nonzero_indices: List[int],
+        save_format: str,
     ) -> None:
         """
         Visualize sensitivity coefficients using barplot.
@@ -234,8 +234,9 @@ class InitialConditionSensitivity(ExecModel):
                     "initial_condition",
                     f"{metric}",
                     "barplot",
-                    f"{obs_name}.pdf",
+                    f"{obs_name}." + save_format,
                 ),
+                dpi=600 if save_format == "png" else None,
                 bbox_inches="tight",
             )
             plt.close()
@@ -265,6 +266,7 @@ class InitialConditionSensitivity(ExecModel):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         nonzero_indices: List[int],
+        save_format: str,
     ) -> None:
         """
         Visualize sensitivity coefficients using heatmap.
@@ -315,23 +317,25 @@ class InitialConditionSensitivity(ExecModel):
                             "initial_condition",
                             f"{metric}",
                             "heatmap",
-                            f"{condition}_{obs_name}.pdf",
+                            f"{condition}_{obs_name}." + save_format,
                         ),
+                        dpi=600 if save_format == "png" else None,
                         bbox_inches="tight",
                     )
                     plt.close()
 
-    def analyze(self, *, metric: str, style: str, options: dict) -> None:
+    def analyze(self, *, metric: str, style: str, save_format: str, options: dict) -> None:
         """
         Perform sensitivity analysis.
         """
-        nonzero_indices = self._get_nonzero_indices()
+        nonzero_indices = self._get_nonzero_indices(options["excluded_initials"])
         sensitivity_coefficients = self._load_sc(metric, nonzero_indices, options)
         if style == "barplot":
             self._barplot_sensitivity(
                 metric,
                 sensitivity_coefficients,
                 nonzero_indices,
+                save_format,
             )
         elif style == "heatmap":
             if len(nonzero_indices) < 2:
@@ -341,6 +345,7 @@ class InitialConditionSensitivity(ExecModel):
                     metric,
                     sensitivity_coefficients,
                     nonzero_indices,
+                    save_format,
                 )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")
