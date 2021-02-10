@@ -3,9 +3,8 @@ import shutil
 
 import numpy as np
 
-from biomass import optimize, optimize_continue, run_analysis, run_simulation
+from biomass import OptimizationResults, optimize, optimize_continue, run_analysis, run_simulation
 from biomass.models import mapk_cascade
-from biomass.result import OptimizationResults
 
 model = mapk_cascade.create()
 
