@@ -18,13 +18,9 @@ To overcome this problem, we developed BioMASS, a modeling platform tailored to 
 
 ## Features
 
-BioMASS supports:
-
 - parameter estimation of ODE models
 - sensitivity analysis
 - effective visualization of simulation results
-
-currently implimented for modeling immediate-early gene response ([Nakakuki _et al._, **_Cell_**, 2010](https://doi.org/10.1016/j.cell.2010.03.054)).
 
 ## Installation
 
