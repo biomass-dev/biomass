@@ -65,6 +65,10 @@ def optimize(
         max_generation : int (default: 10000)
             Stop optimization if Generation > max_generation.
 
+        initial_threshold : float (default: 1e12)
+            Threshold on objective function value used to generate initial population.
+            Default value is 1e12 (numerically solvable).
+
         allowable_error : float (default: 0.0)
             Stop optimization if Best Fitness <= allowable_error.
 
@@ -108,6 +112,7 @@ def optimize(
         options = {}
     options.setdefault("popsize", 5)
     options.setdefault("max_generation", 10000)
+    options.setdefault("initial_threshold", 1e12)
     options.setdefault("allowable_error", 0.0)
     options.setdefault("local_search_method", "mutation")
     options.setdefault("n_children", 200)
@@ -155,6 +160,10 @@ def optimize_continue(
         max_generation : int (default: 15000)
             Stop optimization if Generation > max_generation.
 
+        initial_threshold : float (default: 1e12)
+            Threshold on objective function value used to generate initial population.
+            Default value is 1e12 (numerically solvable).
+
         allowable_error : float (default: 0.0)
             Stop optimization if Best Fitness <= allowable_error.
 
@@ -201,6 +210,7 @@ def optimize_continue(
         options = {}
     options.setdefault("popsize", 5)
     options.setdefault("max_generation", 15000)
+    options.setdefault("initial_threshold", 1e12)
     options.setdefault("allowable_error", 0.0)
     options.setdefault("local_search_method", "mutation")
     options.setdefault("n_children", 200)

@@ -24,6 +24,7 @@ class GeneticAlgorithmInit(ExecModel):
         model: ModelObject,
         popsize: int,
         max_generation: int,
+        initial_threshold: float,
         allowable_error: float,
         local_search_method: str,
         n_children: int,
@@ -37,6 +38,7 @@ class GeneticAlgorithmInit(ExecModel):
         self.n_population: int = int(popsize * self.search_rgn.shape[1])
         self.n_gene: int = self.search_rgn.shape[1]
         self.max_generation: int = max_generation
+        self.initial_threshold: float = initial_threshold
         self.allowable_error: float = allowable_error
         self.local_search_method: str = local_search_method.lower()
         self.n_children: int = n_children
@@ -115,7 +117,7 @@ class GeneticAlgorithmInit(ExecModel):
         ) as f:
             f.write("Generating the initial population. . .\n")
         for i in range(self.n_population):
-            while 1e12 <= population[i, -1] or np.isnan(population[i, -1]):
+            while self.initial_threshold <= population[i, -1] or np.isnan(population[i, -1]):
                 population[i, : self.n_gene] = np.random.rand(self.n_gene)
                 population[i, -1] = self.model.obj_func(population[i, : self.n_gene])
             with open(
@@ -344,6 +346,7 @@ class GeneticAlgorithmContinue(ExecModel):
         model: ModelObject,
         popsize: int,
         max_generation: int,
+        initial_threshold: float,
         allowable_error: float,
         local_search_method: str,
         n_children: int,
@@ -357,6 +360,7 @@ class GeneticAlgorithmContinue(ExecModel):
         self.n_population: int = int(popsize * self.search_rgn.shape[1])
         self.n_gene: int = self.search_rgn.shape[1]
         self.max_generation: int = max_generation
+        self.initial_threshold: float = initial_threshold
         self.allowable_error: float = allowable_error
         self.local_search_method: str = local_search_method.lower()
         self.n_children: int = n_children
@@ -409,7 +413,7 @@ class GeneticAlgorithmContinue(ExecModel):
                 "\nGenerating the initial population. . .\n"
             )
         for i in range(self.n_population):
-            while 1e12 <= population[i, -1]:
+            while self.initial_threshold <= population[i, -1]:
                 population[i, : self.n_gene] = self._encode_bestIndivVal2randGene(best_individual)
                 population[i, : self.n_gene] = np.clip(population[i, : self.n_gene], 0.0, 1.0)
                 population[i, -1] = self.model.obj_func(population[i, : self.n_gene])
