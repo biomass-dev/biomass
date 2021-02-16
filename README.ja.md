@@ -8,7 +8,7 @@
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg)](https://pypi.python.org/pypi/biomass/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-![logo2](resources/images/logo2.png)
+![logo2](https://raw.githubusercontent.com/okadalabipr/biomass/master/resources/images/logo2.png)
 
 当ソフトウェアは，細胞内シグナル伝達機構の数理モデリングを目的としたツールです．実験から得られた実測データに基づいてモデル内のパラメータを最適化し，その結果に基づいた解析により，細胞応答に対する反応ネットワーク内の重要な要素を同定することができます．
 
@@ -177,7 +177,7 @@ run_simulation(model, viz_type='average', show_all=False, stdev=True)
 
   - `True`の場合，stripplot を付加します．
 
-![simulation_best](resources/images/simulation_best.png)
+![simulation_best](https://raw.githubusercontent.com/okadalabipr/biomass/master/resources/images/simulation_best.png)
 
 点（青, EGF; 赤, HRG）は実験データ，線はシミュレーション結果を表す
 
@@ -271,7 +271,7 @@ if self.perturbation:
 
   - (metric == `'duration'`) 0 から 1 の間の実数を指定します．例えば，最大値の 10%まで減少する時間を metric に使用する場合には 0.1 に設定します．
 
-![sensitivity_PcFos](resources/images/sensitivity_PcFos.png)
+![sensitivity_PcFos](https://raw.githubusercontent.com/okadalabipr/biomass/master/resources/images/sensitivity_PcFos.png)
 
 pc-Fos の積分値に対する感度係数（青, EGF; 赤, HRG）．棒の上下の数字は反応番号を，エラーバーは標準偏差を表す．
 
