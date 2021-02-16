@@ -5,7 +5,75 @@ from typing import List, NamedTuple
 
 import numpy as np
 
-from .template import BioMassModel
+
+class ModelObject(object):
+    """
+    The BioMASS model object.
+
+    Parameters
+    ----------
+    model : BioMassModel
+        A user-defined BioMass model.
+
+    Attributes
+    ----------
+    path : str
+        Path to the model.
+
+    parameters : list of strings
+        Names of model parameters.
+
+    species : list of strings
+        Names of model species.
+
+    obs : list of strings
+        Names of model observables.
+
+    pval : Callable
+        Numerical values of the parameters.
+
+    ival : Callable
+        Initial values.
+
+    obj_func : Callable
+        An objective function to be minimized for parameter estimation.
+
+    sim : NumericalSimulation
+        Simulation conditions and results.
+
+    exp : ExperimentalData
+        Experimental measurements used to estimate model parameters.
+
+    viz : Visualization
+        Plotting parameters for customizing figure properties.
+
+    sp : SearchParam
+        Model parameters to optimize and search region.
+
+    rxn : ReactionNetwork
+        Reaction indices grouped according to biological processes.
+
+    Example
+    -------
+    >>> from biomass import ModelObject
+    >>> import user_defined_model
+    >>> model = ModelObject(user_defined_model.create())
+
+    """
+
+    def __init__(self, model):
+        self.path = model.path
+        self.parameters = model.parameters
+        self.species = model.species
+        self.obs = model.obs
+        self.pval = model.pval
+        self.ival = model.ival
+        self.obj_func = model.obj_func
+        self.sim = model.sim
+        self.exp = model.exp
+        self.viz = model.viz
+        self.sp = model.sp
+        self.rxn = model.rxn
 
 
 class OptimizedValues(NamedTuple):
@@ -13,9 +81,9 @@ class OptimizedValues(NamedTuple):
     initials: list
 
 
-@dataclass(frozen=True)
+@dataclass
 class ExecModel(object):
-    model: BioMassModel
+    model: ModelObject
 
     def get_individual(self, paramset: int) -> np.ndarray:
         best_generation = np.load(

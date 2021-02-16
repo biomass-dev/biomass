@@ -3,11 +3,17 @@ import shutil
 
 import numpy as np
 
-from biomass import optimize, optimize_continue, run_analysis, run_simulation
+from biomass import (
+    ModelObject,
+    OptimizationResults,
+    optimize,
+    optimize_continue,
+    run_analysis,
+    run_simulation,
+)
 from biomass.models import mapk_cascade
-from biomass.result import OptimizationResults
 
-model = mapk_cascade.create()
+model = ModelObject(mapk_cascade.create())
 
 for dir in [
     "figure",
@@ -38,8 +44,15 @@ def test_optimize():
             "overwrite": True,
         },
     )
-    for i in range(1, 4):
-        with open(model.path + f"/out/{i:d}/optimization.log") as f:
+    for paramset in range(1, 4):
+        with open(
+            os.path.join(
+                model.path,
+                "out",
+                f"{paramset:d}",
+                "optimization.log",
+            )
+        ) as f:
             logs = f.readlines()
         assert logs[-1][:13] == "Generation3: "
 
@@ -53,8 +66,15 @@ def test_optimize():
             "local_search_method": "Powell",
         },
     )
-    for i in range(1, 4):
-        with open(model.path + f"/out/{i:d}/optimization.log") as f:
+    for paramset in range(1, 4):
+        with open(
+            os.path.join(
+                model.path,
+                "out",
+                f"{paramset:d}",
+                "optimization.log",
+            )
+        ) as f:
             logs = f.readlines()
         assert logs[-1][:13] == "Generation6: "
 
@@ -62,10 +82,22 @@ def test_optimize():
         model=model,
         start=1,
         end=3,
-        options={"popsize": 3, "max_generation": 9, "local_search_method": "DE", "workers": 1},
+        options={
+            "popsize": 3,
+            "max_generation": 9,
+            "local_search_method": "DE",
+            "workers": 1,
+        },
     )
-    for i in range(1, 4):
-        with open(model.path + f"/out/{i:d}/optimization.log") as f:
+    for paramset in range(1, 4):
+        with open(
+            os.path.join(
+                model.path,
+                "out",
+                f"{paramset:d}",
+                "optimization.log",
+            )
+        ) as f:
             logs = f.readlines()
         assert logs[-1][:13] == "Generation9: "
 
@@ -78,14 +110,14 @@ def test_run_simulation():
     run_simulation(model, viz_type="average", stdev=True)
     run_simulation(model, viz_type="best", show_all=True)
     for npy_file in [
-        "simulation_data/simulations_original.npy",
-        "simulation_data/simulations_1.npy",
-        "simulation_data/simulations_2.npy",
-        "simulation_data/simulations_3.npy",
-        "simulation_data/simulations_all.npy",
-        "simulation_data/simulations_best.npy",
+        ["simulation_data", "simulations_original.npy"],
+        ["simulation_data", "simulations_1.npy"],
+        ["simulation_data", "simulations_2.npy"],
+        ["simulation_data", "simulations_3.npy"],
+        ["simulation_data", "simulations_all.npy"],
+        ["simulation_data", "simulations_best.npy"],
     ]:
-        simulated_value = np.load(os.path.join(model.path, npy_file))
+        simulated_value = np.load(os.path.join(model.path, *npy_file))
         assert np.isfinite(simulated_value).all()
 
 

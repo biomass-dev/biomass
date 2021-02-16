@@ -8,9 +8,9 @@
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg)](https://pypi.python.org/pypi/biomass/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-## Modeling and Analysis of Signaling Systems
+## **M**odeling and **A**nalysis of **S**ignaling **S**ystems
 
-<img align="left" src="https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/logo.png?raw=true" width="300">
+<img align="left" src="resources/images/logo.png" width="300">
 
 Mathematical modeling is a powerful method for the analysis of complex biological systems. Although there are many researches devoted on producing models to describe dynamical cellular signaling systems, most of these models are limited and do not cover multiple pathways. Therefore, there is a challenge to combine these models to enable understanding at a larger scale. Nevertheless, larger network means that it gets more difficult to estimate parameters to reproduce dynamic experimental data needed for deeper understanding of a system.
 
@@ -18,13 +18,9 @@ To overcome this problem, we developed BioMASS, a modeling platform tailored to 
 
 ## Features
 
-BioMASS supports:
-
 - parameter estimation of ODE models
 - sensitivity analysis
 - effective visualization of simulation results
-
-currently implimented for modeling immediate-early gene response ([Nakakuki _et al._, **_Cell_**, 2010](https://doi.org/10.1016/j.cell.2010.03.054)).
 
 ## Installation
 
@@ -147,7 +143,7 @@ from biomass import run_simulation
 run_simulation(model, viz_type='average', show_all=False, stdev=True)
 ```
 
-![simulation_average](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/simulation_average.png?raw=true)
+![simulation_average](resources/images/simulation_average.png)
 
 Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid lines denote simulations
 
@@ -165,7 +161,7 @@ from biomass import run_analysis
 run_analysis(model, target='reaction', metric='integral', style='barplot')
 ```
 
-![sensitivity_PcFos](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/sensitivity_PcFos.png?raw=true)
+![sensitivity_PcFos](resources/images/sensitivity_PcFos.png)
 
 Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HRG). Numbers above bars indicate the reaction indices, and error bars correspond to simulation standard deviation.
 
@@ -174,3 +170,7 @@ Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HR
 When using BioMASS, please cite:
 
 - Imoto, H., Zhang, S. & Okada, M. A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway. _Cancers_. **12**, 2878 (2020). https://doi.org/10.3390/cancers12102878
+
+## Author
+
+[Hiroaki Imoto](https://github.com/himoto)

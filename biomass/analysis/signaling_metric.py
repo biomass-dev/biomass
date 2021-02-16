@@ -69,9 +69,7 @@ def get_signaling_metric(
         "duration",
         "integral",
     ]
-    if metric not in available_metrics:
-        raise ValueError(f"Available metrics are: {', '.join(available_metrics)}")
-    elif metric == "maximum":
+    if metric == "maximum":
         return np.max(timecourse)
     elif metric == "minimum":
         return np.min(timecourse)
@@ -85,6 +83,8 @@ def get_signaling_metric(
         return _get_duration(timecourse, options["duration"])
     elif metric == "integral":
         return simps(timecourse)
+    else:
+        raise ValueError(f"Available metrics are: {', '.join(available_metrics)}")
 
 
 def dlnyi_dlnxj(
@@ -138,10 +138,14 @@ def dlnyi_dlnxj(
                     if np.isnan(signaling_metric[i, j, k, l]):
                         sensitivity_coefficients[i, j, k, l] = np.nan
                     elif (
-                        fabs(signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l])
+                        signaling_metric[i, -1, k, l] == 0.0
+                        or fabs(signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l])
                         < epsilon
-                        or (signaling_metric[i, j, k, l] / signaling_metric[i, -1, k, l]) < 0
+                        or (signaling_metric[i, j, k, l] / signaling_metric[i, -1, k, l]) <= 0
                     ):
+                        # 1. Signaling metric before adding perturbation is zero
+                        # 2. Absolute change caused by perturbation is too small
+                        # 3. Antilogarithm <= 0
                         sensitivity_coefficients[i, j, k, l] = 0.0
                     else:
                         sensitivity_coefficients[i, j, k, l] = log(

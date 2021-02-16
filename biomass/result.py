@@ -1,16 +1,18 @@
 import csv
 import os
+from dataclasses import dataclass
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .exec_model import ExecModel
-from .template import BioMassModel
+from .exec_model import ExecModel, ModelObject
 
 
+@dataclass
 class OptimizationResults(ExecModel):
-    def __init__(self, model: BioMassModel) -> None:
-        super().__init__(model)
+    model: ModelObject
+
+    def __post_init__(self) -> None:
         os.makedirs(
             os.path.join(
                 self.model.path,
@@ -203,12 +205,12 @@ class OptimizationResults(ExecModel):
         plt.rcParams["font.size"] = 18
         plt.rcParams["lines.linewidth"] = 1.0
         # ---
-        for i in n_file:
+        for paramset in n_file:
             with open(
                 os.path.join(
                     self.model.path,
                     "out",
-                    f"{i:d}",
+                    f"{paramset:d}",
                     "optimization.log",
                 ),
                 mode="r",

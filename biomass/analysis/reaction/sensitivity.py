@@ -1,21 +1,21 @@
 import os
 import sys
-from typing import List
+from dataclasses import dataclass
+from typing import Dict, List
 
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-from ...exec_model import ExecModel
-from ...template import BioMassModel
+from ...exec_model import ExecModel, ModelObject
 from .. import dlnyi_dlnxj, get_signaling_metric
 
 
+@dataclass
 class ReactionSensitivity(ExecModel):
     """Sensitivity for rate equations"""
 
-    def __init__(self, model: BioMassModel) -> None:
-        super().__init__(model)
+    model: ModelObject
 
     def _calc_sensitivity_coefficients(
         self,
@@ -52,9 +52,9 @@ class ReactionSensitivity(ExecModel):
         for i, nth_paramset in enumerate(n_file):
             optimized = self.load_param(nth_paramset)
             for j, rxn_idx in enumerate(reaction_indices):
-                perturbation = {}
+                perturbation: Dict[int, float] = {}
                 for idx in reaction_indices:
-                    perturbation[idx] = 1
+                    perturbation[idx] = 1.0
                 perturbation[rxn_idx] = rate
                 if (
                     self.model.sim.simulate(optimized.params, optimized.initials, perturbation)
@@ -205,6 +205,8 @@ class ReactionSensitivity(ExecModel):
         sensitivity_coefficients: np.ndarray,
         biological_processes: List[List[int]],
         reaction_indices: List[int],
+        save_format: str,
+        show_indices: bool,
     ) -> None:
         """
         Visualize sensitivity coefficients using barplot.
@@ -260,7 +262,10 @@ class ReactionSensitivity(ExecModel):
                         align="center",
                         label=condition,
                     )
-                self._write_reaction_indices(reaction_indices, average, stdev, options["width"])
+                if show_indices:
+                    self._write_reaction_indices(
+                        reaction_indices, average, stdev, options["width"]
+                    )
                 plt.hlines([0], -options["width"], len(reaction_indices), "k", lw=1)
                 plt.xticks([])
                 plt.ylabel(
@@ -275,8 +280,10 @@ class ReactionSensitivity(ExecModel):
                         "sensitivity",
                         "reaction",
                         f"{metric}",
-                        f"{obs_name}.pdf",
+                        "barplot",
+                        f"{obs_name}." + save_format,
                     ),
+                    dpi=600 if save_format == "png" else None,
                     bbox_inches="tight",
                 )
                 plt.close()
@@ -306,6 +313,7 @@ class ReactionSensitivity(ExecModel):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         reaction_indices: List[int],
+        save_format: str,
     ) -> None:
         """
         Visualize sensitivity coefficients using heatmap.
@@ -352,13 +360,14 @@ class ReactionSensitivity(ExecModel):
                             "reaction",
                             f"{metric}",
                             "heatmap",
-                            f"{condition}_{obs_name}.pdf",
+                            f"{condition}_{obs_name}." + save_format,
                         ),
+                        dpi=600 if save_format == "png" else None,
                         bbox_inches="tight",
                     )
                     plt.close()
 
-    def analyze(self, *, metric: str, style: str, options: dict) -> None:
+    def analyze(self, *, metric: str, style: str, save_format: str, options: dict) -> None:
         """
         Perform sensitivity analysis.
         """
@@ -374,12 +383,15 @@ class ReactionSensitivity(ExecModel):
                 sensitivity_coefficients,
                 biological_processes,
                 reaction_indices,
+                save_format,
+                options["show_indices"],
             )
         elif style == "heatmap":
             self._heatmap_sensitivity(
                 metric,
                 sensitivity_coefficients,
                 reaction_indices,
+                save_format,
             )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")

@@ -1,12 +1,12 @@
 import os
 import shutil
+
 import numpy as np
 
+from biomass import ModelObject, run_simulation
 from biomass.models import circadian_clock
-from biomass import run_simulation
 
-
-model = circadian_clock.create()
+model = ModelObject(circadian_clock.create())
 
 for dir in ["figure", "simulation_data"]:
     if os.path.isdir(os.path.join(model.path, dir)):

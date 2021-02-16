@@ -8,7 +8,7 @@
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg)](https://pypi.python.org/pypi/biomass/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-![logo2](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/logo2.png?raw=true)
+![logo2](resources/images/logo2.png)
 
 当ソフトウェアは，細胞内シグナル伝達機構の数理モデリングを目的としたツールです．実験から得られた実測データに基づいてモデル内のパラメータを最適化し，その結果に基づいた解析により，細胞応答に対する反応ネットワーク内の重要な要素を同定することができます．
 
@@ -177,7 +177,7 @@ run_simulation(model, viz_type='average', show_all=False, stdev=True)
 
   - `True`の場合，stripplot を付加します．
 
-![simulation_best](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/simulation_best.png?raw=true)
+![simulation_best](resources/images/simulation_best.png)
 
 点（青, EGF; 赤, HRG）は実験データ，線はシミュレーション結果を表す
 
@@ -245,9 +245,23 @@ if self.perturbation:
 - `'barplot'`
 - `'heatmap'`
 
+**save_format** : _str_ (default: "pdf")
+
+- 保存する図の拡張子（`"pdf"`または`"png"`）を指定します．
+
 **options** : _dict, optional_
 
-詳細な metric を設定します．
+- **show_indices** : _bool_ (default: True)
+
+  - (target == `'reaction'`) 図中に反応番号を書くかを指定します．
+
+- **excluded_params** : _List[str]_ (default: [])
+
+  - (target == `'parameter'`) 解析の対象から外すパラメータを指定します．
+
+- **excluded_initials** : _List[str]_ (default: [])
+
+  - (target == `'initial_condition'`) 解析の対象から外す初期値を指定します．
 
 - **timepoint** : _int_ (default: model.sim.t[-1])
 
@@ -257,7 +271,7 @@ if self.perturbation:
 
   - (metric == `'duration'`) 0 から 1 の間の実数を指定します．例えば，最大値の 10%まで減少する時間を metric に使用する場合には 0.1 に設定します．
 
-![sensitivity_PcFos](https://github.com/okadalabipr/biomass_docs.jl/blob/master/docs/src/assets/sensitivity_PcFos.png?raw=true)
+![sensitivity_PcFos](resources/images/sensitivity_PcFos.png)
 
 pc-Fos の積分値に対する感度係数（青, EGF; 赤, HRG）．棒の上下の数字は反応番号を，エラーバーは標準偏差を表す．
 
@@ -268,3 +282,7 @@ pc-Fos の積分値に対する感度係数（青, EGF; 赤, HRG）．棒の上�
 ## 免責事項
 
 当ソフトウェアの出力結果の正確性や妥当性につきまして，一切の保障はいたしません．また当ソフトウェアを用いることで生じたあらゆる損害について，一切の責任を負いません．
+
+## 作成者
+
+[井元宏明](https://github.com/himoto)
