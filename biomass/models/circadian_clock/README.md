@@ -8,14 +8,31 @@ Leloup, J.-C. & Goldbeter, A. Toward a detailed computational model for the mamm
 
 - [Leloup2003_CircClock_DD](https://www.ebi.ac.uk/biomodels/BIOMD0000000073)
 
-## Simulate model
+## Simulation using BioMASS
+
+Run this with Jupyter Notebook
 
 ```python
+import os
+from IPython.display import Image, display_png
+
 from biomass.models import circadian_clock
 from biomass import run_simulation
 
 model = circadian_clock.create()
 
-run_simulation(model, viz_type='original')
-# Result : biomass/models/circadian_clock/figure/simulation/original
+run_simulation(model, viz_type='original', save_format="png")
+
+for observable in model.obs:
+    with open(
+        os.path.join(
+            model.path,
+            "figure",
+            "simulation",
+            "original",
+            f"{observable}.png",
+        ),
+        mode="rb",
+    ) as f:
+        display_png(Image(f.read()))
 ```
