@@ -1,6 +1,6 @@
 import numpy as np
 
-from biomass.solver import solve_ode
+from biomass.dynamics import solve_ode
 
 from .name2idx import C, V
 from .set_model import DifferentialEquation

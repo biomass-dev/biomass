@@ -6,8 +6,6 @@ import numpy as np
 from scipy.integrate import solve_ivp
 from scipy.integrate._ivp.ivp import OdeResult
 
-__all__ = ["solve_ode", "get_steady_state"]
-
 
 def solve_ode(
     diffeq: Callable,
