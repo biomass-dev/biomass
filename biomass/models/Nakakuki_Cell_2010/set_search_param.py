@@ -1,6 +1,6 @@
 import numpy as np
 
-from biomass.estimation import convert_space, initialize_search_param
+from biomass.estimation import convert_scale, initialize_search_param
 
 from .name2idx import C, V
 from .set_model import initial_values, param_values
@@ -205,7 +205,7 @@ class SearchParam(object):
 
         ------------------------------------------------------------------------
         """
-        search_rgn = convert_space(
+        search_rgn = convert_scale(
             region=search_rgn,
             parameters=C.NAMES,
             species=V.NAMES,

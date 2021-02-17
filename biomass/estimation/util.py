@@ -81,7 +81,7 @@ def initialize_search_param(
     return search_param
 
 
-def convert_space(
+def convert_scale(
     region: np.ndarray,
     parameters: List[str],
     species: List[str],
@@ -89,7 +89,7 @@ def convert_space(
     estimated_initials: List[int],
 ) -> Union[np.ndarray, NoReturn]:
     """
-    Convert search space from linear scale to logarithmic scale.
+    Convert search region from linear scale to logarithmic scale.
 
     Parameters
     ----------
