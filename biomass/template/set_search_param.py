@@ -1,7 +1,9 @@
 import numpy as np
 
+from biomass.estimation import convert_space, initialize_search_param
+
 from .name2idx import C, V
-from .set_model import param_values, initial_values
+from .set_model import initial_values, param_values
 
 
 class SearchParam(object):
@@ -17,7 +19,14 @@ class SearchParam(object):
         x = param_values()
         y0 = initial_values()
 
-        search_param = self._init_search_param(x, y0)
+        search_param = initialize_search_param(
+            parameters=C.NAMES,
+            species=V.NAMES,
+            param_values=x,
+            initial_values=y0,
+            estimated_params=self.idx_params,
+            estimated_initials=self.idx_initials,
+        )
 
         search_rgn = np.zeros((2, len(x) + len(y0)))
         # Default: 0.1 ~ 10
@@ -32,7 +41,13 @@ class SearchParam(object):
         # search_rgn[:,C.parameter] = [lower_bound, upper_bound]
         # search_rgn[:,V.specie+len(x)] = [lower_bound, upper_bound]
 
-        search_rgn = self._conv_lin2log(search_rgn)
+        search_rgn = convert_space(
+            region=search_rgn,
+            parameters=C.NAMES,
+            species=V.NAMES,
+            estimated_params=self.idx_params,
+            estimated_initials=self.idx_initials,
+        )
 
         return search_rgn
 
@@ -60,73 +75,3 @@ class SearchParam(object):
         indiv_gene = (np.log10(indiv) - search_rgn[0, :]) / (search_rgn[1, :] - search_rgn[0, :])
 
         return indiv_gene
-
-    def _init_search_param(self, x, y0):
-        """Initialize search_param"""
-        if len(self.idx_params) != len(set(self.idx_params)):
-            raise ValueError(
-                "Duplicate parameters (C.): {}".format(
-                    [C.NAMES[idx] for idx in [name for name in set(self.idx_params) if self.idx_params.count(name) > 1]]
-                )
-            )
-        elif len(self.idx_initials) != len(set(self.idx_initials)):
-            raise ValueError(
-                "Duplicate species (V.): {}".format(
-                    [
-                        V.NAMES[idx]
-                        for idx in [name for name in set(self.idx_initials) if self.idx_initials.count(name) > 1]
-                    ]
-                )
-            )
-        search_param = np.empty(len(self.idx_params) + len(self.idx_initials))
-        for i, j in enumerate(self.idx_params):
-            search_param[i] = x[j]
-        for i, j in enumerate(self.idx_initials):
-            search_param[i + len(self.idx_params)] = y0[j]
-
-        if np.any(search_param == 0.0):
-            message = "search_param must not contain zero."
-            for idx in self.idx_params:
-                if x[int(idx)] == 0.0:
-                    raise ValueError('"C.{}" in idx_params: '.format(C.NAMES[int(idx)]) + message)
-            for idx in self.idx_initials:
-                if y0[int(idx)] == 0.0:
-                    raise ValueError('"V.{}" in idx_initials: '.format(V.NAMES[int(idx)]) + message)
-
-        return search_param
-
-    def _conv_lin2log(self, search_rgn):
-        """Convert Linear scale to Logarithmic scale"""
-        for i in range(search_rgn.shape[1]):
-            if np.min(search_rgn[:, i]) < 0.0:
-                msg = "search_rgn[lower_bound, upper_bound] must be positive."
-                if i <= C.NUM:
-                    raise ValueError('"C.{}": '.format(C.NAMES[i]) + msg)
-                else:
-                    raise ValueError('"V.{}": '.format(V.NAMES[i - C.NUM]) + msg)
-            elif np.min(search_rgn[:, i]) == 0 and np.max(search_rgn[:, i]) > 0:
-                msg = "lower_bound must be larger than 0."
-                if i <= C.NUM:
-                    raise ValueError('"C.{}" '.format(C.NAMES[i]) + msg)
-                else:
-                    raise ValueError('"V.{}" '.format(V.NAMES[i - C.NUM]) + msg)
-            elif search_rgn[1, i] - search_rgn[0, i] < 0.0:
-                msg = "lower_bound must be smaller than upper_bound."
-                if i <= C.NUM:
-                    raise ValueError('"C.{}" : '.format(C.NAMES[i]) + msg)
-                else:
-                    raise ValueError('"V.{}" : '.format(V.NAMES[i - C.NUM]) + msg)
-        difference = list(
-            set(np.where(np.any(search_rgn != 0.0, axis=0))[0])
-            ^ set(np.append(self.idx_params, [C.NUM + idx for idx in self.idx_initials]))
-        )
-        if len(difference) > 0:
-            msg = "in both search_idx and search_rgn"
-            for idx in difference:
-                if idx <= C.NUM:
-                    raise ValueError('Set "C.{}" '.format(C.NAMES[int(idx)]) + msg)
-                else:
-                    raise ValueError('Set "V.{}" '.format(V.NAMES[int(idx - C.NUM)]) + msg)
-        search_rgn = search_rgn[:, np.any(search_rgn != 0.0, axis=0)]
-
-        return np.log10(search_rgn)
