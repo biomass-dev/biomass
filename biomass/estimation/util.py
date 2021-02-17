@@ -73,12 +73,25 @@ def initialize_search_param(
         message = "search_param must not contain zero."
         for idx in estimated_params:
             if param_values[int(idx)] == 0.0:
-                raise ValueError(f'"C.{parameters[int(idx)]}" in idx_params: ' + message)
+                raise ValueError(f"'C.{parameters[int(idx)]}' in self.idx_params: " + message)
         for idx in estimated_initials:
             if initial_values[int(idx)] == 0.0:
-                raise ValueError(f'"V.{species[int(idx)]}" in idx_initials: ' + message)
-
+                raise ValueError(f"'V.{species[int(idx)]}' in self.idx_initials: " + message)
     return search_param
+
+
+def _raise_value_error(
+    parameters: List[str],
+    species: List[str],
+    search_param_index: int,
+    message: str,
+) -> NoReturn:
+    """
+    Raise ValueError when user-defined search_rgn is not appropriate.
+    """
+    if search_param_index <= len(parameters):
+        raise ValueError(f"'C.{parameters[search_param_index]}': " + message)
+    raise ValueError(f"'V.{species[search_param_index - len(parameters)]}': " + message)
 
 
 def convert_scale(
@@ -113,32 +126,40 @@ def convert_scale(
     region : numpy ndarray
         Search bounds for parameters and/or initial conditions to be estimated.
     """
-    for i in range(region.shape[1]):
-        if np.min(region[:, i]) < 0.0:
-            msg = "region[lower_bound, upper_bound] must be positive."
-            if i <= len(parameters):
-                raise ValueError(f'"C.{parameters[i]}": ' + msg)
-            raise ValueError(f'"V.{species[i - len(parameters)]}": ' + msg)
-        elif np.min(region[:, i]) == 0 and np.max(region[:, i]) > 0:
-            msg = "lower_bound must be larger than 0."
-            if i <= len(parameters):
-                raise ValueError(f'"C.{parameters[i]}" ' + msg)
-            raise ValueError(f'"V.{species[i - len(parameters)]}" ' + msg)
-        elif region[1, i] - region[0, i] < 0.0:
-            msg = "lower_bound must be smaller than upper_bound."
-            if i <= len(parameters):
-                raise ValueError(f'"C.{parameters[i]}" : ' + msg)
-            raise ValueError(f'"V.{species[i - len(parameters)]}" : ' + msg)
+    for idx_search in range(region.shape[1]):
+        if np.min(region[:, idx_search]) < 0.0:
+            _raise_value_error(
+                parameters,
+                species,
+                idx_search,
+                "search_rgn[lower_bound, upper_bound] must be positive.",
+            )
+        elif np.min(region[:, idx_search]) == 0 and np.max(region[:, idx_search]) > 0:
+            _raise_value_error(
+                parameters,
+                species,
+                idx_search,
+                "lower_bound must be larger than 0.",
+            )
+        elif region[0, idx_search] > region[1, idx_search]:
+            _raise_value_error(
+                parameters,
+                species,
+                idx_search,
+                "lower_bound must be smaller than upper_bound.",
+            )
     difference = list(
         set(np.where(np.any(region != 0.0, axis=0))[0])
         ^ set(np.append(estimated_params, [len(parameters) + idx for idx in estimated_initials]))
     )
     if len(difference) > 0:
-        msg = "in both search_idx and region"
-        for idx in difference:
-            if idx <= len(parameters):
-                raise ValueError(f'Set "C.{parameters[int(idx)]}" ' + msg)
-            raise ValueError(f'Set "V.{species[int(idx - len(parameters))]}" ' + msg)
+        for idx_diff in difference:
+            _raise_value_error(
+                parameters,
+                species,
+                idx_diff,
+                "should be set in both search_idx and search_rgn.",
+            )
 
     search_rgn = region[:, np.any(region != 0.0, axis=0)]
 
