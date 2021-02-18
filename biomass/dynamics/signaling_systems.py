@@ -1,6 +1,5 @@
 import os
 from dataclasses import dataclass
-from typing import Dict, Union
 
 import numpy as np
 
@@ -19,7 +18,7 @@ class SignalingSystems(TemporalDynamics):
         show_all: bool,
         stdev: bool,
         save_format: str,
-        param_range: Dict[str, Union[bool, str]],
+        param_range: dict,
     ) -> None:
         n_file = [] if viz_type in ["original", "experiment"] else self.get_executable()
         simulations_all = np.full(
@@ -149,7 +148,7 @@ class SignalingSystems(TemporalDynamics):
 
         """
         optimized = self.load_param(nth_paramset)
-        if self.model.sim.simulate(optimized.params, optimized.initials) is None:
+        if self.model.sim.simulate(*optimized) is None:
             is_successful = True
         else:
             print(f"Simulation failed. #{nth_paramset:d}\n")
