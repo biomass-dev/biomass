@@ -8,18 +8,16 @@
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg)](https://pypi.python.org/pypi/biomass/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-## **M**odeling and **A**nalysis of **S**ignaling **S**ystems
-
 <img align="left" src="https://raw.githubusercontent.com/okadalabipr/biomass/master/resources/images/logo.png" width="300">
 
 Mathematical modeling is a powerful method for the analysis of complex biological systems. Although there are many researches devoted on producing models to describe dynamical cellular signaling systems, most of these models are limited and do not cover multiple pathways. Therefore, there is a challenge to combine these models to enable understanding at a larger scale. Nevertheless, larger network means that it gets more difficult to estimate parameters to reproduce dynamic experimental data needed for deeper understanding of a system.
 
-To overcome this problem, we developed BioMASS, a modeling platform tailored to optimizing mathematical models of biological processes. By using BioMASS, users can efficiently optimize kinetic parameters to fit user-defined models to experimental data, while performing analysis on reaction networks to predict critical components affecting cellular output.
+To overcome this problem, we developed BioMASS, a Python framework for **M**odeling and **A**nalysis of **S**ignaling **S**ystems. The BioMASS framework allows efficient optimization of multiple parameter sets simultaneously and generates the multiple parameter candidates that explain the signaling dynamics of interest. These parameter candidates can be further evaluated by their distribution and sensitivity analysis as a part of alternative information about the hidden regulatory mechanism of the system.
 
 ## Features
 
 - parameter estimation of ODE models
-- sensitivity analysis
+- local sensitivity analysis
 - effective visualization of simulation results
 
 ## Installation

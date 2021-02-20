@@ -8,14 +8,31 @@ Kholodenko, B. N. Negative feedback and ultrasensitivity can bring about oscilla
 
 - [Kholodenko2000 - Ultrasensitivity and negative feedback bring oscillations in MAPK cascade](https://www.ebi.ac.uk/biomodels/BIOMD0000000010)
 
-## Simulate model
+## Simulation using BioMASSS
+
+Run this with Jupyter Notebook
 
 ```python
+import os
+from IPython.display import Image, display_png
+
 from biomass.models import mapk_cascade
 from biomass import run_simulation
 
 model = mapk_cascade.create()
 
-run_simulation(model, viz_type='original')
-# Result : biomass/models/mapk_cascade/figure/simulation/original
+run_simulation(model, viz_type='original', save_format="png")
+
+for observable in model.obs:
+    with open(
+        os.path.join(
+            model.path,
+            "figure",
+            "simulation",
+            "original",
+            f"{observable}.png",
+        ),
+        mode="rb",
+    ) as f:
+        display_png(Image(f.read()))
 ```
