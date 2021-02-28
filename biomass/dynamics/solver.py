@@ -114,7 +114,7 @@ def get_steady_state(
         elapsed_time = time.time() - start
         if maximum_wait_time < elapsed_time:
             warnings.warn(
-                f"couldn't reach steady state until maximum_wait_time(={maximum_wait_time}).",
+                f"couldn't reach steady state within maximum_wait_time(={maximum_wait_time}).",
                 RuntimeWarning,
             )
             return []

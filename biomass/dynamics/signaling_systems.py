@@ -45,10 +45,8 @@ class SignalingSystems(TemporalDynamics):
                     if self._validate(nth_paramset):
                         for j, _ in enumerate(self.model.obs):
                             simulations_all[j, i, :, :] = self.model.sim.simulations[j, :, :]
-                """
-                simulations_all : numpy array
-                    All simulated values with estimated parameter sets.
-                """
+                # simulations_all : numpy array
+                # All simulated values with estimated parameter sets.
                 np.save(
                     os.path.join(
                         self.model.path,
@@ -101,7 +99,7 @@ class SignalingSystems(TemporalDynamics):
                             ),
                             self.model.sim.simulations,
                         )
-                """Visualization of estimated parameter values"""
+                # Visualization of estimated parameter values
                 if 2 <= len(n_file):
                     popt = np.empty(
                         (
@@ -117,10 +115,8 @@ class SignalingSystems(TemporalDynamics):
                 y0 = self.model.ival()
                 if self.model.sim.simulate(x, y0) is not None:
                     print("Simulation failed.\n")
-                """
-                simulations_original : numpy array
-                    Simulated values with original parameter values.
-                """
+                # simulations_original : numpy array
+                # Simulated values with original parameter values.
                 np.save(
                     os.path.join(
                         self.model.path,
