@@ -1,4 +1,4 @@
-from typing import List, NoReturn, Union
+from typing import List, NoReturn
 
 import numpy as np
 
@@ -10,7 +10,7 @@ def initialize_search_param(
     initial_values: list,
     estimated_params: List[int],
     estimated_initials: List[int],
-) -> Union[np.ndarray, NoReturn]:
+) -> np.ndarray:
     """
     Initialize search_param.
 
@@ -108,7 +108,7 @@ def convert_scale(
     species: List[str],
     estimated_params: List[int],
     estimated_initials: List[int],
-) -> Union[np.ndarray, NoReturn]:
+) -> np.ndarray:
     """
     Convert search region from linear scale to logarithmic scale.
 
