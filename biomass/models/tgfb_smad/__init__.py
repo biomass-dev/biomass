@@ -20,10 +20,10 @@ def _check_duplicate(names: List[str], object: str) -> List[str]:
 
 class BioMassModel(object):
     def __init__(self) -> None:
-        self.path = __path__[0]
-        self.parameters = _check_duplicate(C.NAMES, "parameters")
-        self.species = _check_duplicate(V.NAMES, "species")
-        self.obs = _check_duplicate(observables, "observables")
+        self._path = __path__[0]
+        self._parameters = _check_duplicate(C.NAMES, "parameters")
+        self._species = _check_duplicate(V.NAMES, "species")
+        self._obs = _check_duplicate(observables, "observables")
         self.pval = param_values
         self.ival = initial_values
         self.obj_func = objective
@@ -32,6 +32,22 @@ class BioMassModel(object):
         self.viz = Visualization()
         self.sp = SearchParam()
         self.rxn = ReactionNetwork()
+
+    @property
+    def path(self) -> str:
+        return self._path
+
+    @property
+    def parameters(self) -> List[str]:
+        return self._parameters
+
+    @property
+    def species(self) -> List[str]:
+        return self._species
+
+    @property
+    def obs(self) -> List[str]:
+        return self._obs
 
 
 def show_info() -> None:

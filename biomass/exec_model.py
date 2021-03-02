@@ -62,10 +62,10 @@ class ModelObject(object):
     """
 
     def __init__(self, model):
-        self.path = model.path
-        self.parameters = model.parameters
-        self.species = model.species
-        self.obs = model.obs
+        self._path = model.path
+        self._parameters = model.parameters
+        self._species = model.species
+        self._obs = model.obs
         self.pval = model.pval
         self.ival = model.ival
         self.obj_func = model.obj_func
@@ -74,6 +74,22 @@ class ModelObject(object):
         self.viz = model.viz
         self.sp = model.sp
         self.rxn = model.rxn
+
+    @property
+    def path(self) -> str:
+        return self._path
+
+    @property
+    def parameters(self) -> List[str]:
+        return self._parameters
+
+    @property
+    def species(self) -> List[str]:
+        return self._species
+
+    @property
+    def obs(self) -> List[str]:
+        return self._obs
 
 
 class OptimizedValues(NamedTuple):
