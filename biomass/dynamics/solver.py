@@ -1,6 +1,6 @@
 import time
 import warnings
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Tuple, Union
 
 import numpy as np
 from scipy.integrate import solve_ivp
@@ -12,8 +12,8 @@ __all__ = ["solve_ode", "get_steady_state"]
 def solve_ode(
     diffeq: Callable,
     y0: Union[list, np.ndarray],
-    t: range,
-    f_params: tuple,
+    t: Union[range, List[int]],
+    f_params: Tuple[float, ...],
     method: str = "BDF",
     options: Optional[dict] = None,
 ) -> Optional[OdeResult]:
