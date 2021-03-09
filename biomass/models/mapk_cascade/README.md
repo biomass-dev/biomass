@@ -21,7 +21,7 @@ from biomass import run_simulation
 
 model = mapk_cascade.create()
 
-run_simulation(model, viz_type='original', save_format="png")
+run_simulation(model, viz_type="original", save_format="png")
 
 for observable in model.obs:
     with open(

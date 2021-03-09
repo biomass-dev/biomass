@@ -127,9 +127,12 @@ def optimize(
         ga_init.run(int(start))
     else:
         n_proc = max(1, multiprocessing.cpu_count() - 1)
-        p = multiprocessing.Pool(processes=n_proc)
-        p.map(ga_init.run, range(int(start), int(end) + 1))
-        p.close()
+        with multiprocessing.Pool(processes=n_proc) as p:
+            for _ in p.imap_unordered(
+                ga_init.run,
+                range(int(start), int(end) + 1),
+            ):
+                pass
 
 
 def optimize_continue(
@@ -225,9 +228,12 @@ def optimize_continue(
         ga_continue.run(int(start))
     else:
         n_proc = max(1, multiprocessing.cpu_count() - 1)
-        p = multiprocessing.Pool(processes=n_proc)
-        p.map(ga_continue.run, range(int(start), int(end) + 1))
-        p.close()
+        with multiprocessing.Pool(processes=n_proc) as p:
+            for _ in p.imap_unordered(
+                ga_continue.run,
+                range(int(start), int(end) + 1),
+            ):
+                pass
 
 
 def run_simulation(

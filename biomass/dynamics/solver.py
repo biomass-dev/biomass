@@ -1,6 +1,6 @@
 import time
 import warnings
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Tuple, Union
 
 import numpy as np
 from scipy.integrate import solve_ivp
@@ -12,8 +12,8 @@ __all__ = ["solve_ode", "get_steady_state"]
 def solve_ode(
     diffeq: Callable,
     y0: Union[list, np.ndarray],
-    t: range,
-    f_params: tuple,
+    t: Union[range, List[int]],
+    f_params: Tuple[float, ...],
     method: str = "BDF",
     options: Optional[dict] = None,
 ) -> Optional[OdeResult]:
@@ -114,7 +114,7 @@ def get_steady_state(
         elapsed_time = time.time() - start
         if maximum_wait_time < elapsed_time:
             warnings.warn(
-                f"couldn't reach steady state until maximum_wait_time(={maximum_wait_time}).",
+                f"couldn't reach steady state within maximum_wait_time(={maximum_wait_time}).",
                 RuntimeWarning,
             )
             return []

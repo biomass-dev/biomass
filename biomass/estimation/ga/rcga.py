@@ -127,8 +127,8 @@ class RealCodedGeneticAlgorithm(object):
             family = family[np.argsort(family[:, -1]), :]
             population[ip[0], :] = family[0, :]  # Elite
         elif method == "powell":
-            lower = np.min(population[ip, : self.n_gene], axis=0)
-            upper = np.max(population[ip, : self.n_gene], axis=0)
+            lower = np.min(population[:, : self.n_gene], axis=0)
+            upper = np.max(population[:, : self.n_gene], axis=0)
             direc = np.identity(self.n_gene) * 0.3 * (upper - lower)
             res = minimize(
                 self.obj_func,
@@ -151,14 +151,16 @@ class RealCodedGeneticAlgorithm(object):
                 population[ip[0], : self.n_gene] = res.x
                 population[ip[0], -1] = obj_val
         elif method == "de":
+            lower = np.min(population[:, : self.n_gene], axis=0)
+            upper = np.max(population[:, : self.n_gene], axis=0)
             res = differential_evolution(
                 self.obj_func,
-                ((0.0, 1.0),) * self.n_gene,
+                tuple(zip(lower, upper)),
                 strategy="best2bin",
-                mutation=0.1,
+                mutation=(0.0, 0.3),
                 recombination=0.9,
                 maxiter=self.maxiter,
-                popsize=1,
+                popsize=2,
                 polish=False,
                 init=population[ip, : self.n_gene],
                 updating="immediate" if self.workers == 1 else "deferred",

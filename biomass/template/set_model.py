@@ -8,11 +8,11 @@ class DifferentialEquation(object):
     def diffeq(self, t, y, *x):
         """Kinetic equations"""
         # v : flux vector
-        # v = {}
+        v = {}
 
-        # if self.perturbation:
-        #    for i, dv in self.perturbation.items():
-        #        v[i] = v[i] * dv
+        if self.perturbation:
+            for i, dv in self.perturbation.items():
+                v[i] = v[i] * dv
 
         dydt = [0] * V.NUM
 

@@ -1,4 +1,4 @@
-from typing import List, NoReturn, Union
+from typing import List, NoReturn
 
 import numpy as np
 
@@ -10,7 +10,7 @@ def initialize_search_param(
     initial_values: list,
     estimated_params: List[int],
     estimated_initials: List[int],
-) -> Union[np.ndarray, NoReturn]:
+) -> np.ndarray:
     """
     Initialize search_param.
 
@@ -42,27 +42,35 @@ def initialize_search_param(
     if len(estimated_params) != len(set(estimated_params)):
         raise ValueError(
             "Duplicate parameters (C.): {}".format(
-                [
-                    parameters[idx]
-                    for idx in [
-                        name for name in set(estimated_params) if estimated_params.count(name) > 1
+                ", ".join(
+                    [
+                        parameters[idx]
+                        for idx in [
+                            name
+                            for name in set(estimated_params)
+                            if estimated_params.count(name) > 1
+                        ]
                     ]
-                ]
+                )
             )
         )
-    elif len(estimated_initials) != len(set(estimated_initials)):
+
+    if len(estimated_initials) != len(set(estimated_initials)):
         raise ValueError(
-            "Duplicate species (V.): {}".format(
-                [
-                    species[idx]
-                    for idx in [
-                        name
-                        for name in set(estimated_initials)
-                        if estimated_initials.count(name) > 1
+            "Duplicate initial conditions (V.): {}".format(
+                ", ".join(
+                    [
+                        species[idx]
+                        for idx in [
+                            name
+                            for name in set(estimated_initials)
+                            if estimated_initials.count(name) > 1
+                        ]
                     ]
-                ]
+                )
             )
         )
+
     search_param = np.empty(len(estimated_params) + len(estimated_initials))
     for i, j in enumerate(estimated_params):
         search_param[i] = param_values[j]
@@ -100,7 +108,7 @@ def convert_scale(
     species: List[str],
     estimated_params: List[int],
     estimated_initials: List[int],
-) -> Union[np.ndarray, NoReturn]:
+) -> np.ndarray:
     """
     Convert search region from linear scale to logarithmic scale.
 

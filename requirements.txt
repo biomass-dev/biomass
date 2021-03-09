@@ -1,4 +1,4 @@
-matplotlib
+matplotlib>=3.0
 numpy
-scipy>=1.2.0
+scipy>=1.2
 seaborn
