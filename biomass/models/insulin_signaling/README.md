@@ -4,6 +4,10 @@
 
 Kubota, H. _et al._ Temporal Coding of Insulin Action through Multiplexing of the AKT Pathway. _Mol. Cell_ **46**, 820–832 (2012). https://doi.org/10.1016/j.molcel.2012.04.018
 
+## BioModels
+
+- [Kubota2012_InsulinAction_AKTpathway](https://www.ebi.ac.uk/biomodels/MODEL1204060000)
+
 ## Simulation using BioMASS
 
 Run this with Jupyter Notebook
