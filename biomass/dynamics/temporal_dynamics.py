@@ -1,7 +1,7 @@
 import os
 import warnings
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import numpy as np
 import seaborn as sns
@@ -177,27 +177,7 @@ class TemporalDynamics(ExecModel):
             ):
                 continue
             else:
-                fig = plt.figure(
-                    figsize=(
-                        8,
-                        (
-                            len(self.model.sp.idx_params)
-                            if val == "parameter_value"
-                            else len(self.model.sp.idx_initials)
-                        )
-                        / 2.5,
-                    )
-                    if orientation == "portrait"
-                    else (
-                        (
-                            len(self.model.sp.idx_params)
-                            if val == "parameter_value"
-                            else len(self.model.sp.idx_initials)
-                        )
-                        / 2.2,
-                        6,
-                    )
-                )
+                fig = plt.figure(figsize=self._set_figsize(orientation, val))
                 arguments_distribution = {
                     "data": popt[:, : len(self.model.sp.idx_params)]
                     if val == "parameter_value"
@@ -652,3 +632,27 @@ class TemporalDynamics(ExecModel):
             bbox_inches="tight",
         )
         plt.close()
+
+    def _set_figsize(self, orientation: str, val: str) -> Tuple[float, float]:
+        figsize = (
+            (
+                8.0,
+                (
+                    len(self.model.sp.idx_params)
+                    if val == "parameter_value"
+                    else len(self.model.sp.idx_initials)
+                )
+                / 2.5,
+            )
+            if orientation == "portrait"
+            else (
+                (
+                    len(self.model.sp.idx_params)
+                    if val == "parameter_value"
+                    else len(self.model.sp.idx_initials)
+                )
+                / 2.2,
+                6.0,
+            )
+        )
+        return figsize
