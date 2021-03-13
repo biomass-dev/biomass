@@ -51,9 +51,10 @@ from biomass import optimize
 optimize(
     model=model, start=1, options={
         "popsize": 3,
-        "max_generation": 1000,
+        "max_generation": 100,
         "allowable_error": 0.5,
         "local_search_method": "DE",
+        "maxiter": 50,
     }
 )
 ```
@@ -93,9 +94,10 @@ from biomass import optimize_continue
 optimize_continue(
     model=model, start=1, options={
         "popsize": 3,
-        "max_generation": 1000,
+        "max_generation": 200,
         "allowable_error": 0.5,
         "local_search_method": "DE",
+        "maxiter": 50,
     }
 )
 ```
@@ -108,10 +110,10 @@ from biomass import optimize
 optimize(
     model=model, start=1, end=10, options={
         "popsize": 5,
-        "max_generation": 2000,
+        "max_generation": 100,
         "allowable_error": 0.5,
-        "local_search_method": "mutation",
-        "n_children": 50
+        "local_search_method": "DE",
+        "maxiter": 50,
     }
 )
 ```
