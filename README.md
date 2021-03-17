@@ -24,13 +24,13 @@ To overcome this problem, we developed _BioMASS_, a Python framework for **M**od
 
 The BioMASS library is available on [PyPI](https://pypi.org/project/biomass/).
 
-```shell
+```bash
 $ pip install biomass
 ```
 
 BioMASS supports Python 3.7 or newer.
 
-## Example
+## Usage
 
 - [Circadian clock](https://github.com/okadalabipr/biomass/tree/master/biomass/models/circadian_clock)
 - [Immediate-early gene response](https://github.com/okadalabipr/biomass/tree/master/biomass/models/Nakakuki_Cell_2010)
