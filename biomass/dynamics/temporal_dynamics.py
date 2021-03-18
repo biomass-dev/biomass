@@ -1,6 +1,7 @@
 import os
 import warnings
 from dataclasses import dataclass
+from math import isnan
 from typing import List, Optional, Tuple
 
 import numpy as np
@@ -355,7 +356,7 @@ class TemporalDynamics(ExecModel):
                 )
             )
         norm_max = np.max(mean_vec)
-        if not np.isnan(norm_max) and norm_max != 0.0:
+        if not isnan(norm_max) and norm_max != 0.0:
             normalized[self.model.obs.index(obs_name), :, :, :] /= norm_max
 
         return normalized

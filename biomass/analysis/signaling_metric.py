@@ -1,4 +1,4 @@
-from math import fabs, log
+from math import fabs, isnan, log
 from typing import List, Optional, Union
 
 import numpy as np
@@ -10,15 +10,15 @@ def _get_duration(
     below_threshold: float,
 ) -> int:
     """
-    Calculation of the duration as the time it takes to decline below the threshold
+    Calculation of the duration as the time it takes to decline below the threshold.
 
     Parameters
     ----------
     timecourse : array
-        Simulated time course data
+        Simulated time course data.
 
     below_threshold : float (from 0.0 to 1.0)
-        0.1 for 10% of its maximum
+        0.1 for 10% of its maximum.
 
     Returns
     -------
@@ -46,10 +46,10 @@ def get_signaling_metric(
     Parameters
     ----------
     metric : str
-        'maximum', 'minimum', 'duration' or 'integral'
+        Should be one of available_metrics.
 
     timecourse : array
-        Simulated time course data
+        Simulated time course data.
 
     options: dict
         Options for detailed setting of signaling metric.
@@ -135,7 +135,7 @@ def dlnyi_dlnxj(
         for j, _ in enumerate(perturbed_idx):
             for k, _ in enumerate(observables):
                 for l, _ in enumerate(conditions):
-                    if np.isnan(signaling_metric[i, j, k, l]):
+                    if isnan(signaling_metric[i, j, k, l]):
                         sensitivity_coefficients[i, j, k, l] = np.nan
                     elif (
                         signaling_metric[i, -1, k, l] == 0.0

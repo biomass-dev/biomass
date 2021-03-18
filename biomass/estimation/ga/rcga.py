@@ -13,6 +13,7 @@ References
 """
 
 from dataclasses import dataclass, field
+from math import isnan
 from typing import Callable
 
 import numpy as np
@@ -75,7 +76,7 @@ class RealCodedGeneticAlgorithm(object):
         )
         population[ip[1], :] = family[random_child_idx, :]
 
-        if 1e12 <= population[ip[1], -1] or np.isnan(population[ip[1], -1]):
+        if 1e12 <= population[ip[1], -1] or isnan(population[ip[1], -1]):
             population[ip[1], -1] = self.obj_func(population[ip[1], : self.n_gene])
 
         population = population[np.argsort(population[:, -1]), :]

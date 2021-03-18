@@ -1,6 +1,7 @@
 import os
 import time
 import warnings
+from math import isnan
 
 import numpy as np
 
@@ -117,7 +118,7 @@ class GeneticAlgorithmInit(ExecModel):
         ) as f:
             f.write("Generating the initial population. . .\n")
         for i in range(self.n_population):
-            while self.initial_threshold <= population[i, -1] or np.isnan(population[i, -1]):
+            while self.initial_threshold <= population[i, -1] or isnan(population[i, -1]):
                 population[i, : self.n_gene] = np.random.rand(self.n_gene)
                 population[i, -1] = self.model.obj_func(population[i, : self.n_gene])
             with open(
