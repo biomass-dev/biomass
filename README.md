@@ -24,21 +24,22 @@ To overcome this problem, we developed _BioMASS_, a Python framework for **M**od
 
 The BioMASS library is available on [PyPI](https://pypi.org/project/biomass/).
 
-```
-$ pip3 install biomass
+```bash
+$ pip install biomass
 ```
 
 BioMASS supports Python 3.7 or newer.
 
-## Example
+## Usage
 
-- [Circadian clock](biomass/models/circadian_clock/README.md)
-- [MAPK cascade](biomass/models/mapk_cascade/README.md)
-- [Immediate-early gene response](biomass/models/Nakakuki_Cell_2010/README.md)
-- [NF-κB pathway](biomass/models/nfkb_pathway/README.md)
-- [TGF-β/SMAD pathway](biomass/models/tgfb_smad/README.md)
+- [Circadian clock](https://github.com/okadalabipr/biomass/tree/master/biomass/models/circadian_clock)
+- [Immediate-early gene response](https://github.com/okadalabipr/biomass/tree/master/biomass/models/Nakakuki_Cell_2010)
+- [Insulin signaling](https://github.com/okadalabipr/biomass/tree/master/biomass/models/insulin_signaling)
+- [MAPK cascade](https://github.com/okadalabipr/biomass/tree/master/biomass/models/mapk_cascade)
+- [NF-κB pathway](https://github.com/okadalabipr/biomass/tree/master/biomass/models/nfkb_pathway)
+- [TGF-β/SMAD pathway](https://github.com/okadalabipr/biomass/tree/master/biomass/models/tgfb_smad)
 
-We will use the model of immediate-early gene response ([Nakakuki_Cell_2010](biomass/models/Nakakuki_Cell_2010)) for parameter estimation, visualization of simulation results and sensitivity analysis.
+We will use the model of immediate-early gene response ([Nakakuki_Cell_2010](https://github.com/okadalabipr/biomass/tree/master/biomass/models/Nakakuki_Cell_2010)) for parameter estimation, visualization of simulation results and sensitivity analysis.
 
 ### Model Construction
 
@@ -69,9 +70,10 @@ from biomass import optimize
 optimize(
     model=model, start=1, options={
         "popsize": 3,
-        "max_generation": 1000,
+        "max_generation": 100,
         "allowable_error": 0.5,
         "local_search_method": "DE",
+        "maxiter": 50,
     }
 )
 ```
@@ -111,9 +113,10 @@ from biomass import optimize_continue
 optimize_continue(
     model=model, start=1, options={
         "popsize": 3,
-        "max_generation": 1000,
+        "max_generation": 200,
         "allowable_error": 0.5,
         "local_search_method": "DE",
+        "maxiter": 50,
     }
 )
 ```
@@ -126,10 +129,10 @@ from biomass import optimize
 optimize(
     model=model, start=1, end=10, options={
         "popsize": 5,
-        "max_generation": 2000,
+        "max_generation": 100,
         "allowable_error": 0.5,
-        "local_search_method": "mutation",
-        "n_children": 50
+        "local_search_method": "DE",
+        "maxiter": 50,
     }
 )
 ```

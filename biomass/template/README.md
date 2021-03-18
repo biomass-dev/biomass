@@ -14,7 +14,9 @@ A brief description of each file/folder is below:
 
 ## Examples
 
-- [`Nakakuki_Cell_2010`](/biomass/models/Nakakuki_Cell_2010)
-- [`mapk_cascade`](/biomass/models/mapk_cascade)
-- [`circadian_clock`](/biomass/models/circadian_clock)
-- [`tgfb_smad`](/biomass/models/tgfb_smad)
+- [Circadian clock](/biomass/models/circadian_clock)
+- [Immediate-early gene response](/biomass/models/Nakakuki_Cell_2010)
+- [Insulin signaling](/biomass/models/insulin_signaling)
+- [MAPK cascade](/biomass/models/mapk_cascade)
+- [NF-κB pathway](/biomass/models/nfkb_pathway)
+- [TGF-β/SMAD pathway](/biomass/models/tgfb_smad)

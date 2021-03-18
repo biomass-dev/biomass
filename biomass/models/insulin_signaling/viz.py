@@ -16,44 +16,44 @@ class Visualization(object):
     timecourse_options : list of dict
         Plotting options for figure/simulation/<viz_type>/<each_observable>.
 
-        Keys
-        ----
-        * 'divided_by' : int or float (default: 1)
-            Convert time unit. (e.g. sec -> min).
+            Keys
+            ----
+            * 'divided_by' : int or float (default: 1)
+                Convert time unit. (e.g. sec -> min).
 
-        * 'xlim' : tuple
-            Set the x limits of the current axes.
+            * 'xlim' : tuple
+                Set the x limits of the current axes.
 
-        * 'xticks' : list (default: None)
-            Set the current tick locations of the x-axis.
+            * 'xticks' : list (default: None)
+                Set the current tick locations of the x-axis.
 
-        * 'xlabel' : str (default: 'Time')
-            Set the label for the x-axis.
+            * 'xlabel' : str (default: 'Time')
+                Set the label for the x-axis.
 
-        * 'ylim' : tuple
-            Set the y limits of the current axes.
+            * 'ylim' : tuple
+                Set the y limits of the current axes.
 
-        * 'yticks' : list (default: None)
-            Set the current tick locations of the y-axis.
+            * 'yticks' : list (default: None)
+                Set the current tick locations of the y-axis.
 
-        * 'ylabel' : str (default: observables[i].replace('__', '\n').replace('_', ' '))
-            Set the label for the y-axis.
+            * 'ylabel' : str (default: observables[i].replace('__', '\n').replace('_', ' '))
+                Set the label for the y-axis.
 
-        * 'exp_data' : bool (default: True)
-            if False, experimental data will not be shown.
+            * 'exp_data' : bool (default: True)
+                if False, experimental data will not be shown.
 
-        * 'legend_loc' : Location String (default: None)
-            Set the location of the legend. If 'legend_loc' is None,
-            pyplot.legend will not be shown.
+            * 'legend_loc' : Location String (default: None)
+                Set the location of the legend. If 'legend_loc' is None,
+                pyplot.legend will not be shown.
 
-        * 'cmap' : list or tuple
-            Set colormap.
+            * 'cmap' : list or tuple
+                Set colormap.
 
-        * 'shape' : list or tuple of strings (default: Line2D.filled_markers)
-            Set markers.
+            * 'shape' : list or tuple of strings (default: Line2D.filled_markers)
+                Set markers.
 
-        * 'dont_show' : list of strings
-            Set conditions you don't want to plot.
+            * 'dont_show' : list of strings
+                Set conditions you don't want to plot.
 
     multiplot_options : dict
         Plotting options for figure/simulation/<viz_type>/multiplot_observables.
@@ -106,35 +106,15 @@ class Visualization(object):
         }
 
     def get_timecourse_options(self):
-        for i, _ in enumerate(observables):
-            self.timecourse_options[i]["divided_by"] = 60
-            self.timecourse_options[i]["xlim"] = (0, 150)
-            self.timecourse_options[i]["xticks"] = [20 * i for i in range(8)]
-            self.timecourse_options[i]["xlabel"] = "TIME (min)"
-            self.timecourse_options[i]["ylim"] = (0, 310)
-            self.timecourse_options[i]["yticks"] = [50 * i for i in range(7)]
-            self.timecourse_options[i]["exp_data"] = False
 
-            self.timecourse_options[observables.index("biphosphorylated_MAPK")][
-                "ylabel"
-            ] = "ERK-PP"
-            self.timecourse_options[observables.index("unphosphorylated_MAPK")]["ylabel"] = "ERK"
+        for i, _ in enumerate(observables):
+            self.timecourse_options[i]["xticks"] = [120 * i for i in range(5)]
+            self.timecourse_options[i]["xlabel"] = "time (min)"
+            self.timecourse_options[i]["yticks"] = [0.2 * i for i in range(6)]
 
         return self.timecourse_options
 
     def multiplot_observables(self):
-        self.multiplot_options["fig_name"] = "oscillations_in_the_MAPK_concentrations"
-        self.multiplot_options["observables"] = [
-            "biphosphorylated_MAPK",
-            "unphosphorylated_MAPK",
-        ]
-        self.multiplot_options["condition"] = "control"
-        self.multiplot_options["xlim"] = (0, 150)
-        self.multiplot_options["xticks"] = [20 * i for i in range(8)]
-        self.multiplot_options["xlabel"] = "TIME (min)"
-        self.multiplot_options["ylim"] = (0, 310)
-        self.multiplot_options["yticks"] = [50 * i for i in range(7)]
-        self.multiplot_options["ylabel"] = "MAPK concentrations (nM)"
 
         return self.multiplot_options
 
@@ -173,13 +153,5 @@ class Visualization(object):
     def convert_species_name(name):
         """figure/sensitivity/initial_condition
         - Sensitivity for species with nonzero initial conditions
-        """
-        """
-        if name == 'MKKK':
-            return 'Raf'
-        elif name == 'MKK':
-            return 'MEK'
-        elif name == 'MAPK':
-            return 'ERK'
         """
         return name
