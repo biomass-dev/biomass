@@ -22,7 +22,7 @@ $ pip3 install biomass
 
 ## 使い方
 
-#### 実行可能なモデルの生成
+#### モデルの準備
 
 ```python
 from biomass.models import Nakakuki_Cell_2010
@@ -59,9 +59,9 @@ optimize(
 )
 ```
 
-世代交代毎に，最良のパラメータセットが`out/n/`に保存されます．
+世代交代毎に，最良のパラメータセットが **out/n/** に保存されます．
 
-進捗は`out/n/optimization.log`で見ることができます．
+進捗は **out/n/optimization.log** で見ることができます．
 
 ```
 Generation1: Best Fitness = 5.864228e+00
