@@ -241,7 +241,7 @@ class ReactionSensitivity(ExecModel):
             nan_idx = []
             for i in range(sensitivity_array.shape[0]):
                 for j in range(sensitivity_array.shape[1]):
-                    if any(np.isnan(sensitivity_array[i, j, :])):
+                    if np.isnan(sensitivity_array[i, j, :]).any():
                         nan_idx.append(i)
             sensitivity_array = np.delete(sensitivity_array, nan_idx, axis=0)
             if sensitivity_array.size != 0:
@@ -295,7 +295,7 @@ class ReactionSensitivity(ExecModel):
         """
         nan_idx = []
         for i in range(sensitivity_matrix.shape[0]):
-            if any(np.isnan(sensitivity_matrix[i, :])):
+            if np.isnan(sensitivity_matrix[i, :]).any():
                 nan_idx.append(i)
             else:
                 pass

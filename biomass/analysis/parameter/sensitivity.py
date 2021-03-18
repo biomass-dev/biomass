@@ -207,7 +207,7 @@ class ParameterSensitivity(ExecModel):
                 sensitivity_matrix = sensitivity_coefficients[:, :, k, l]
                 nan_idx = []
                 for m in range(sensitivity_matrix.shape[0]):
-                    if any(np.isnan(sensitivity_matrix[m, :])):
+                    if np.isnan(sensitivity_matrix[m, :]).any():
                         nan_idx.append(m)
                 sensitivity_matrix = np.delete(sensitivity_matrix, nan_idx, axis=0)
                 if sensitivity_matrix.size != 0:
@@ -261,7 +261,7 @@ class ParameterSensitivity(ExecModel):
         """
         nan_idx = []
         for i in range(sensitivity_matrix.shape[0]):
-            if any(np.isnan(sensitivity_matrix[i, :])):
+            if np.isnan(sensitivity_matrix[i, :]).any():
                 nan_idx.append(i)
             else:
                 pass
