@@ -20,6 +20,9 @@ class SignalingSystems(TemporalDynamics):
         save_format: str,
         param_range: dict,
     ) -> None:
+        """
+        Run simulation and save figures.
+        """
         n_file = [] if viz_type in ["original", "experiment"] else self.get_executable()
         simulations_all = np.full(
             (
@@ -152,7 +155,11 @@ class SignalingSystems(TemporalDynamics):
 
         return is_successful
 
-    def _write_best_fit_param(self, best_paramset: int) -> None:
+    def _write_best_fit_param(
+        self,
+        best_paramset: int,
+        indentation: str = " " * 4,
+    ) -> None:
         """
         Create best_fit_param.txt in out/.
 
@@ -172,11 +179,11 @@ class SignalingSystems(TemporalDynamics):
             ),
             mode="w",
         ) as f:
-            f.write(f"# param set: {best_paramset:d}\n")
-            f.write("\n### param_values\n")
-            for i, param in enumerate(self.model.parameters):
-                f.write(f"x[C.{param}] = {optimized.params[i]:8.3e}\n")
-            f.write("\n### initial_values\n")
-            for i, specie in enumerate(self.model.species):
+            f.write(f"# parameter set: {best_paramset:d}\n")
+            f.write(f"\n\ndef param_values():\n{indentation}x = [0] * C.NUM\n")
+            for i, name in enumerate(self.model.parameters):
+                f.write(f"{indentation}x[C.{name}] = {optimized.params[i]:8.3e}\n")
+            f.write(f"\n\ndef initial_values():\n{indentation}y0 = [0] * V.NUM\n")
+            for i, name in enumerate(self.model.species):
                 if optimized.initials[i] != 0:
-                    f.write(f"y0[V.{specie}] = {optimized.initials[i]:8.3e}\n")
+                    f.write(f"{indentation}y0[V.{name}] = {optimized.initials[i]:8.3e}\n")
