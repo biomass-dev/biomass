@@ -7,8 +7,11 @@ from typing import List, Optional, Tuple
 import numpy as np
 import seaborn as sns
 from matplotlib import pyplot as plt
+from matplotlib.axes._axes import _log as matplotlib_axes_logger
 
 from ..exec_model import ExecModel, ModelObject
+
+matplotlib_axes_logger.setLevel("ERROR")
 
 
 class VisualizeWarning(UserWarning):
