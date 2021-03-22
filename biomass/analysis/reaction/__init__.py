@@ -1,1 +1,1 @@
-from .sensitivity import ReactionSensitivity
+from .sensitivity import ReactionSensitivity, is_duplicate

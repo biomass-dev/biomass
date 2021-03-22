@@ -395,3 +395,27 @@ class ReactionSensitivity(ExecModel):
             )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")
+
+
+def is_duplicate(
+    reactions: Dict[str, List[int]],
+    biological_processes: List[List[int]],
+) -> bool:
+    reaction_indices = (
+        sum(biological_processes, []) if len(reactions) > 1 else biological_processes[0]
+    )
+    duplicate_reaction = [i for i in set(reaction_indices) if reaction_indices.count(i) > 1]
+    if not duplicate_reaction:
+        return False
+    else:
+        which_process = []
+        for reaction_index in duplicate_reaction:
+            for process, indices in reactions.items():
+                if reaction_index in indices:
+                    which_process.append(process)
+        raise ValueError(
+            "Duplicate reaction: {} found in {}.".format(
+                ", ".join(map(str, duplicate_reaction)),
+                ", ".join(which_process),
+            )
+        )
