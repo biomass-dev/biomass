@@ -40,10 +40,10 @@ Nakakuki, T. _et al._ Ligand-specific c-Fos expression emerges from the spatiote
    optimize(
       model=model, start=1, end=10, options={
          "popsize": 5,
-         "max_generation": 1000,
+         "max_generation": 100,
          "allowable_error": 0.5,
-         "local_search_method": "mutation",
-         "n_children": 200
+         "local_search_method": "DE",
+         "maxiter": 30
       }
    )
    ```
