@@ -1,16 +1,32 @@
 import os
 import sys
+from typing import List
 
 from setuptools import find_packages, setup
 
 
 def get_version() -> str:
-    """Read version from file"""
+
     version_filepath = os.path.join(os.path.dirname(__file__), "biomass", "version.py")
     with open(version_filepath) as f:
         for line in f:
             if line.startswith("__version__"):
                 return line.strip().split()[-1][1:-1]
+    assert False
+
+
+def get_long_description() -> str:
+
+    readme_filepath = os.path.join(os.path.dirname(__file__), "README.md")
+    with open(readme_filepath) as f:
+        return f.read()
+
+
+def get_install_requires() -> List[str]:
+
+    requirements_filepath = os.path.join(os.path.dirname(__file__), "requirements.txt")
+    with open(requirements_filepath) as f:
+        return f.read().splitlines()
 
 
 def main():
@@ -18,16 +34,11 @@ def main():
     if sys.version_info[:2] < (3, 7):
         sys.exit("biomass requires at least Python version 3.7")
 
-    # set long_description and requirements
-    here = os.path.abspath(os.path.dirname(__file__))
-    long_description = open(os.path.join(here, "README.md")).read()
-    requirements = open(os.path.join(here, "requirements.txt")).read()
-
     setup(
         name="biomass",
         version=get_version(),
         description="A Python Framework for Modeling and Analysis of Signaling Systems",
-        long_description=long_description,
+        long_description=get_long_description(),
         long_description_content_type="text/markdown",
         license="MIT",
         author="Hiroaki Imoto",
@@ -35,7 +46,7 @@ def main():
         url="https://github.com/okadalabipr/biomass",
         download_url="https://pypi.org/project/biomass/",
         packages=find_packages(exclude=["tests"]),
-        install_requires=requirements.splitlines(),
+        install_requires=get_install_requires(),
         extras_require={
             "dev": [
                 "black==20.8b1",
