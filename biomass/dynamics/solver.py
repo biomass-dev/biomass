@@ -1,4 +1,6 @@
+import math
 import operator
+import sys
 from typing import Callable, List, Optional, Tuple, Union
 
 import numpy as np
@@ -23,19 +25,14 @@ def solve_ode(
     ----------
     diffeq : callable f(t, y, *x)
         Right-hand side of the differential equation.
-
     y0 : array
         Initial condition on y (can be a vector).
-
     t : array
         A sequence of time points for which to solve for y.
-
     f_params : tuple
         Model parameters.
-
     method : str (default: "BDF")
         Integration method to use.
-
     options : dict, optional
         Options passed to a chosen solver.
 
@@ -80,35 +77,30 @@ def get_steady_state(
     ----------
     diffeq : callable f(t, y, *x)
         Right-hand side of the differential equation.
-
     y0 : array
         Initial condition on y (can be a vector).
-
     f_params : tuple
         Model parameters.
-
     dt : float (default: 1.0)
         The step size used to calculate the steady state.
-
     atol : float (default: 1e-8)
         Absolute tolerance for solution.
-
     rtol : float (default: 1e-8)
         Relative tolerance for solution.
-
     eps : float (default: 1e-6)
         Run until a time t for which the maximal absolute value of the
         regularized relative derivative was smaller than eps.
 
     Returns
     -------
-    y0 : List[float]
+    steady_state : List[float]
         Steady state concentrations of all species.
         Return an empty list if simulation failed.
     """
+
     sol = ode(lambda t, y, f_args: diffeq(t, y, *f_args))
     sol.set_integrator(
-        "vode",
+        "zvode",
         method="bdf",
         with_jacobian=True,
         atol=atol,
@@ -123,8 +115,8 @@ def get_steady_state(
         if (
             np.max(
                 np.abs(
-                    np.array(list(map(operator.sub, sol.y, ys[-1])))
-                    / np.array([(yi + eps) for yi in sol.y])
+                    np.real_if_close(list(map(operator.sub, sol.y, ys[-1])))
+                    / np.real_if_close([(yi + eps) for yi in sol.y])
                 )
             )
             < eps
@@ -132,7 +124,12 @@ def get_steady_state(
             break
         else:
             ys.append(sol.y)
-    if sol.successful() and isinstance(sol.y, np.ndarray):
-        return sol.y.tolist()
-    else:
+    steady_state = np.real_if_close(sol.y).tolist() if sol.successful() else []
+    try:
+        for i, val in enumerate(steady_state):
+            if math.fabs(val) < sys.float_info.epsilon:
+                steady_state[i] = 0.0
+        return steady_state
+    except TypeError:
+        # np.imag(np.real_if_close(sol.y)).any() != 0.0
         return []
