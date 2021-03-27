@@ -112,11 +112,13 @@ def get_steady_state(
     ys = [y0]
     while sol.successful():
         sol.integrate(sol.t + dt)
-        if (
+        if np.iscomplex(np.real_if_close(sol.y, tol=1)).any():
+            return []
+        elif (
             np.max(
                 np.abs(
-                    np.real_if_close(list(map(operator.sub, sol.y, ys[-1])))
-                    / np.real_if_close([(yi + eps) for yi in sol.y])
+                    np.real(list(map(operator.sub, sol.y, ys[-1])))
+                    / np.real([(yi + eps) for yi in sol.y])
                 )
             )
             < eps
@@ -124,12 +126,8 @@ def get_steady_state(
             break
         else:
             ys.append(sol.y)
-    steady_state = np.real_if_close(sol.y).tolist() if sol.successful() else []
-    try:
-        for i, val in enumerate(steady_state):
-            if math.fabs(val) < sys.float_info.epsilon:
-                steady_state[i] = 0.0
-        return steady_state
-    except TypeError:
-        # np.imag(np.real_if_close(sol.y)).any() != 0.0
-        return []
+    steady_state = np.real(sol.y).tolist() if sol.successful() else []
+    for i, val in enumerate(steady_state):
+        if math.fabs(val) < sys.float_info.epsilon:
+            steady_state[i] = 0.0
+    return steady_state
