@@ -5,8 +5,8 @@ from math import isnan
 
 import numpy as np
 
-from ...exec_model import ExecModel, ModelObject
-from .rcga import RealCodedGeneticAlgorithm
+from ..exec_model import ExecModel, ModelObject
+from .step import OptimizeStep
 
 
 class OptimizeWarning(UserWarning):
@@ -136,7 +136,13 @@ class GeneticAlgorithmInit(ExecModel):
         return population
 
     def _ga_v2(self, nth_paramset: int) -> None:
-        """ga_v2 optimizes an objective function through the following procedure.
+        """
+        Minimize the distance between model simulation and experimental data
+        using genetic algorithm.
+
+        Notes
+        -----
+        ga_v2 optimizes an objective function through the following procedure.
 
         1. Initialization
             As an initial population, create np individuals randomly.
@@ -206,7 +212,7 @@ class GeneticAlgorithmInit(ExecModel):
             Stop if the halting criteria are satisfied.
             Otherwise, Generation <- Generation + 1, and return to the step 2.
         """
-        rcga = RealCodedGeneticAlgorithm(
+        step = OptimizeStep(
             self.model.obj_func,
             self.n_population,
             self.n_gene,
@@ -269,11 +275,11 @@ class GeneticAlgorithmInit(ExecModel):
         generation = 1
         while generation < self.max_generation:
             ip = np.random.choice(self.n_population, self.n_gene + 2, replace=False)
-            population = rcga.converging(ip, population)
-            population = rcga.local_search(ip, population, self.local_search_method)
+            population = step.converging(ip, population)
+            population = step.local_search(ip, population, self.local_search_method)
             for _ in range(n_iter - 1):
                 ip = np.random.choice(self.n_population, self.n_gene + 2, replace=False)
-                population = rcga.converging(ip, population)
+                population = step.converging(ip, population)
             # Adaptation of n_iter
             if generation % len(n0) == len(n0) - 1:
                 n0[-1] = population[0, -1]
@@ -407,12 +413,7 @@ class GeneticAlgorithmContinue(ExecModel):
             ),
             mode="a",
         ) as f:
-            f.write(
-                "\n########################################"
-                "\n############### Continue ###############"
-                "\n########################################"
-                "\nGenerating the initial population. . .\n"
-            )
+            f.write("\n#####\n##### Continue\n#####\nGenerating the initial population. . .\n")
         for i in range(self.n_population):
             while self.initial_threshold <= population[i, -1]:
                 population[i, : self.n_gene] = self._encode_bestIndivVal2randGene(best_individual)
@@ -449,7 +450,7 @@ class GeneticAlgorithmContinue(ExecModel):
         return rand_gene
 
     def _my_ga_continue(self, nth_paramset: int) -> None:
-        rcga = RealCodedGeneticAlgorithm(
+        step = OptimizeStep(
             self.model.obj_func,
             self.n_population,
             self.n_gene,
@@ -528,11 +529,11 @@ class GeneticAlgorithmContinue(ExecModel):
         generation = 1 + int(count_num)
         while generation < self.max_generation:
             ip = np.random.choice(self.n_population, self.n_gene + 2, replace=False)
-            population = rcga.converging(ip, population)
-            population = rcga.local_search(ip, population, self.local_search_method)
+            population = step.converging(ip, population)
+            population = step.local_search(ip, population, self.local_search_method)
             for _ in range(n_iter - 1):
                 ip = np.random.choice(self.n_population, self.n_gene + 2, replace=False)
-                population = rcga.converging(ip, population)
+                population = step.converging(ip, population)
             if generation % len(n0) == len(n0) - 1:
                 n0[-1] = population[0, -1]
                 if n0[0] == n0[-1]:

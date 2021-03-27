@@ -21,7 +21,7 @@ from scipy.optimize import differential_evolution, minimize
 
 
 @dataclass(frozen=True)
-class RealCodedGeneticAlgorithm(object):
+class OptimizeStep(object):
     obj_func: Callable[[np.ndarray], float]
     n_population: int
     n_gene: int
@@ -161,7 +161,7 @@ class RealCodedGeneticAlgorithm(object):
                 mutation=(0.0, 0.3),
                 recombination=0.9,
                 maxiter=self.maxiter,
-                popsize=2,
+                popsize=1,
                 polish=False,
                 init=population[ip, : self.n_gene],
                 updating="immediate" if self.workers == 1 else "deferred",
