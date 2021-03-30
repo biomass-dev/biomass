@@ -1,7 +1,7 @@
 """BioMASS core functions"""
 import multiprocessing
 import os
-from typing import NoReturn, Optional
+from typing import Optional
 
 from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
 from .dynamics import SignalingSystems
@@ -14,9 +14,9 @@ __all__ = ["optimize", "optimize_continue", "run_simulation", "run_analysis"]
 def _check_optional_arguments(
     end: Optional[int],
     options: Optional[dict],
-) -> Optional[NoReturn]:
+) -> None:
     if options is None:
-        return None
+        pass
     elif isinstance(options, dict):
         if options["local_search_method"].lower() not in ["mutation", "powell", "de"]:
             raise ValueError(
@@ -31,8 +31,6 @@ def _check_optional_arguments(
             raise AssertionError(
                 "daemonic processes are not allowed to have children. Set options['workers'] to 1."
             )
-        else:
-            return None
     else:
         raise TypeError("options must be dict or None.")
 
