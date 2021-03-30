@@ -1,3 +1,4 @@
+import sys
 from math import fabs, isnan, log
 from typing import List, Optional, Union
 
@@ -94,7 +95,6 @@ def dlnyi_dlnxj(
     observables: List[str],
     conditions: List[str],
     rate: float,
-    epsilon: float = 1e-9,
 ) -> np.ndarray:
     """
     Numerical computation of sensitivities using finite difference approximations
@@ -120,9 +120,6 @@ def dlnyi_dlnxj(
     rate : float ~ 1
         1.01 for 1% change.
 
-    epsilon : float << 1
-        If |M - M*| < epsilon, sensitivity_coefficient = 0.
-
     Returns
     -------
     sensitivity_coefficients: numpy array
@@ -138,9 +135,9 @@ def dlnyi_dlnxj(
                     if isnan(signaling_metric[i, j, k, l]):
                         sensitivity_coefficients[i, j, k, l] = np.nan
                     elif (
-                        signaling_metric[i, -1, k, l] == 0.0
+                        fabs(signaling_metric[i, -1, k, l]) < sys.float_info.epsilon
                         or fabs(signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l])
-                        < epsilon
+                        < sys.float_info.epsilon
                         or (signaling_metric[i, j, k, l] / signaling_metric[i, -1, k, l]) <= 0
                     ):
                         # 1. Signaling metric before adding perturbation is zero
