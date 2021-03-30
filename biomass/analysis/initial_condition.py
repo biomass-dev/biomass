@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-from ...exec_model import ExecModel, ModelObject
-from .. import dlnyi_dlnxj, get_signaling_metric
+from ..exec_model import ExecModel, ModelObject
+from .util import dlnyi_dlnxj, get_signaling_metric
 
 
 @dataclass
