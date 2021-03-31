@@ -53,7 +53,7 @@ class NumericalSimulation(DifferentialEquation):
             self.perturbation = _perturbation
         # get steady state
         x[C.Ligand] = x[C.no_ligand]  # No ligand
-        y0 = get_steady_state(self.diffeq, y0, tuple(x), step_size=100)
+        y0 = get_steady_state(self.diffeq, y0, tuple(x))
         if not y0:
             return False
         # add ligand

@@ -1,13 +1,17 @@
 import os
 import warnings
 from dataclasses import dataclass
+from math import isnan
 from typing import List, Optional, Tuple
 
 import numpy as np
 import seaborn as sns
 from matplotlib import pyplot as plt
+from matplotlib.axes._axes import _log as matplotlib_axes_logger
 
 from ..exec_model import ExecModel, ModelObject
+
+matplotlib_axes_logger.setLevel("ERROR")
 
 
 class VisualizeWarning(UserWarning):
@@ -355,7 +359,7 @@ class TemporalDynamics(ExecModel):
                 )
             )
         norm_max = np.max(mean_vec)
-        if not np.isnan(norm_max) and norm_max != 0.0:
+        if not isnan(norm_max) and norm_max != 0.0:
             normalized[self.model.obs.index(obs_name), :, :, :] /= norm_max
 
         return normalized

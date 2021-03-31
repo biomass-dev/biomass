@@ -41,7 +41,7 @@ BioMASS supports Python 3.7 or newer.
 
 We will use the model of immediate-early gene response ([Nakakuki_Cell_2010](https://github.com/okadalabipr/biomass/tree/master/biomass/models/Nakakuki_Cell_2010)) for parameter estimation, visualization of simulation results and sensitivity analysis.
 
-### Model Construction
+### Model Preparation
 
 ```python
 from biomass.models import Nakakuki_Cell_2010
@@ -78,9 +78,9 @@ optimize(
 )
 ```
 
-The temporary result will be saved in `out/n/` after each iteration.
+The temporary result will be saved in **out/n/** after each iteration.
 
-Progress list: `out/n/optimization.log`
+Progress list: **out/n/optimization.log**
 
 ```
 Generation1: Best Fitness = 5.864228e+00
