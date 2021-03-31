@@ -40,7 +40,7 @@ def main():
         description="A Python Framework for Modeling and Analysis of Signaling Systems",
         long_description=get_long_description(),
         long_description_content_type="text/markdown",
-        license="MIT",
+        license="Apache 2.0",
         author="Hiroaki Imoto",
         author_email="himoto@protein.osaka-u.ac.jp",
         url="https://github.com/okadalabipr/biomass",
@@ -67,7 +67,7 @@ def main():
         ],
         classifiers=[
             "Intended Audience :: Science/Research",
-            "License :: OSI Approved :: MIT License",
+            "License :: OSI Approved :: Apache Software License",
             "Natural Language :: English",
             "Operating System :: OS Independent",
             "Programming Language :: Python :: 3",
