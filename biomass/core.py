@@ -1,6 +1,5 @@
 """BioMASS core functions"""
 import multiprocessing
-import os
 from typing import Optional
 
 from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
@@ -457,23 +456,8 @@ def run_analysis(
             options=options,
         )
     else:
-        here = os.path.abspath(os.path.dirname(__file__))
-        files = os.listdir(os.path.join(here, "analysis"))
         raise ValueError(
-            "Available targets are: '"
-            + "', '".join(
-                [
-                    available_target
-                    for available_target in files
-                    if os.path.isdir(
-                        os.path.join(
-                            here,
-                            "analysis",
-                            available_target,
-                        )
-                    )
-                    and available_target != "__pycache__"
-                ]
+            "Available targets are: '{}".format(
+                "', '".join(["reaction", "parameter", "initial_condition"]) + "'."
             )
-            + "'."
         )
