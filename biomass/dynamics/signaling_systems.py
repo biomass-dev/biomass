@@ -1,4 +1,6 @@
 import os
+import sys
+import warnings
 from dataclasses import dataclass
 
 import numpy as np
@@ -44,10 +46,10 @@ class SignalingSystems(TemporalDynamics):
             if len(n_file) > 0:
                 if len(n_file) == 1 and viz_type == "average":
                     raise ValueError(f"viz_type should be 'best', not '{viz_type}'.")
-                for i, nth_paramset in enumerate(n_file):
+                for j, nth_paramset in enumerate(n_file):
                     if self._validate(nth_paramset):
-                        for j, _ in enumerate(self.model.obs):
-                            simulations_all[j, i, :, :] = self.model.sim.simulations[j, :, :]
+                        for i, _ in enumerate(self.model.obs):
+                            simulations_all[i, j, :, :] = self.model.sim.simulations[i, :, :]
                 # simulations_all : numpy array
                 # All simulated values with estimated parameter sets.
                 np.save(
@@ -56,7 +58,7 @@ class SignalingSystems(TemporalDynamics):
                         "simulation_data",
                         "simulations_all.npy",
                     ),
-                    simulations_all,
+                    self._preprocessing(simulations_all),
                 )
                 best_fitness_all = np.full(len(n_file), np.inf)
                 for i, nth_paramset in enumerate(n_file):
@@ -100,7 +102,7 @@ class SignalingSystems(TemporalDynamics):
                                 "simulation_data",
                                 f"simulations_{int(viz_type):d}.npy",
                             ),
-                            self.model.sim.simulations,
+                            self._preprocessing(self.model.sim.simulations),
                         )
                 # Visualization of estimated parameter values
                 if 2 <= len(n_file):
@@ -117,7 +119,7 @@ class SignalingSystems(TemporalDynamics):
                 x = self.model.pval()
                 y0 = self.model.ival()
                 if self.model.sim.simulate(x, y0) is not None:
-                    print("Simulation failed.\n")
+                    warnings.warn("Simulation failed. #original", RuntimeWarning)
                 # simulations_original : numpy array
                 # Simulated values with original parameter values.
                 np.save(
@@ -126,10 +128,32 @@ class SignalingSystems(TemporalDynamics):
                         "simulation_data",
                         "simulations_original.npy",
                     ),
-                    self.model.sim.simulations,
+                    self._preprocessing(self.model.sim.simulations),
                 )
 
         self.plot_timecourse(n_file, viz_type, show_all, stdev, save_format, simulations_all)
+
+    def _preprocessing(self, simulated_values: np.ndarray) -> np.ndarray:
+        """
+        Replace small value in time-course simulated values to zero
+        when all(abs(time_course) < sys.float_info.epsilon).
+
+        Parameters
+        ----------
+        simulated_values : matrix (len(t) × len(self.model.sim.t))
+        """
+        if simulated_values.ndim == 2:
+            for k, time_course in enumerate(simulated_values.T):
+                if np.all(np.abs(time_course) < sys.float_info.epsilon):
+                    simulated_values[:, k] = np.zeros(len(self.model.sim.t))
+        elif simulated_values.ndim == 3:
+            for i, _ in enumerate(self.model.obs):
+                simulated_values[i] = self._preprocessing(simulated_values[i])
+        elif simulated_values.ndim == 4:
+            for j in range(simulated_values.shape[1]):
+                for i, _ in enumerate(self.model.obs):
+                    simulated_values[i, j] = self._preprocessing(simulated_values[i, j])
+        return simulated_values
 
     def _validate(self, nth_paramset: int) -> bool:
         """
@@ -150,7 +174,7 @@ class SignalingSystems(TemporalDynamics):
         if self.model.sim.simulate(*optimized) is None:
             is_successful = True
         else:
-            print(f"Simulation failed. #{nth_paramset:d}\n")
+            warnings.warn(f"Simulation failed. #{nth_paramset:d}", RuntimeWarning)
             is_successful = False
 
         return is_successful
