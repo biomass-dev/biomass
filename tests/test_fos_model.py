@@ -43,7 +43,10 @@ def test_run_simulation():
     with pytest.warns(RuntimeWarning) as record:
         run_simulation(model, viz_type="original")
     # check that the message matches
-    assert record[-1].message.args[0] == "Simulation failed. #original"
+    assert record[-1].message.args[0] in [
+        "Simulation failed. #original",
+        "invalid value encountered in true_divide",
+    ]
     run_simulation(model, viz_type="average", stdev=True)
     assert os.path.isfile(
         os.path.join(
