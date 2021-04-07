@@ -117,7 +117,9 @@ class TemporalDynamics(ExecModel):
                             self._show_sd(normalized, obs_name, mode, singleplot, multiplot)
                     else:
                         self._plot_simulations(obs_name, mode, singleplot, multiplot)
-                if singleplot[i]["exp_data"] and self.model.exp.experiments[i] is not None:
+                if (
+                    viz_type == "experiment" or singleplot[i]["exp_data"]
+                ) and self.model.exp.experiments[i] is not None:
                     exp_t = self.model.exp.get_timepoint(obs_name)
                     if self.model.exp.error_bars[i] is not None:
                         self._plot_experimental_data_with_error_bars(
