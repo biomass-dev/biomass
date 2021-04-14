@@ -10,20 +10,20 @@ from .set_search_param import SearchParam
 from .viz import Visualization
 
 
-def _check_duplicate(names: List[str], object: str) -> List[str]:
+def _check_duplicate(names: List[str]) -> List[str]:
     duplicate = [name for name in set(names) if names.count(name) > 1]
     if not duplicate:
         return names
     else:
-        raise NameError(f"Duplicate {object}: {', '.join(duplicate)}")
+        raise NameError(f"Duplicate observables: {', '.join(duplicate)}")
 
 
 class BioMassModel(object):
     def __init__(self) -> None:
         self._path = __path__[0]
-        self._parameters = _check_duplicate(C.NAMES, "parameters")
-        self._species = _check_duplicate(V.NAMES, "species")
-        self._obs = _check_duplicate(observables, "observables")
+        self._parameters = C.NAMES
+        self._species = V.NAMES
+        self._obs = _check_duplicate(observables)
         self.pval = param_values
         self.ival = initial_values
         self.obj_func = objective

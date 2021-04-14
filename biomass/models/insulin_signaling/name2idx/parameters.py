@@ -1,4 +1,7 @@
-NAMES = [
+from dataclasses import make_dataclass
+from typing import Dict, List
+
+NAMES: List[str] = [
     "k1_synthesis",
     "k1_InsIRcom",
     "k2_InsIRcom",
@@ -27,7 +30,17 @@ NAMES = [
     "k1_G6PaseDeg",
 ]
 
-for idx, name in enumerate(NAMES):
-    exec("{} = {:d}".format(name, idx))
+NUM: int = len(NAMES)
 
-NUM = len(NAMES)
+Parameters = make_dataclass(
+    cls_name="Parameters",
+    fields=[(name, int) for name in NAMES],
+    namespace={"NAMES": NAMES, "NUM": NUM},
+    frozen=True,
+)
+
+name2idx: Dict[str, int] = {k: v for v, k in enumerate(NAMES)}
+
+C = Parameters(**name2idx)
+
+del name2idx
