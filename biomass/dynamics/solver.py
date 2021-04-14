@@ -1,6 +1,7 @@
 import math
 import operator
 import sys
+import time
 from typing import Callable, List, Optional, Tuple, Union
 
 import numpy as np
@@ -69,6 +70,7 @@ def get_steady_state(
     atol: float = 1e-8,
     rtol: float = 1e-8,
     eps: float = 1e-6,
+    maximum_wait_time: Union[int, float] = 60.0,
 ) -> List[float]:
     """
     Use an ODE solver to find the steady state for the untreated condition.
@@ -90,6 +92,8 @@ def get_steady_state(
     eps : float (default: 1e-6)
         Run until a time t for which the maximal absolute value of the
         regularized relative derivative was smaller than eps.
+    maximum_wait_time : int or float (default: 60.0 = 1 min.)
+        The longest time a user can wait for the system to reach the steady state.
 
     Returns
     -------
@@ -110,9 +114,13 @@ def get_steady_state(
     sol.set_f_params(f_params)
 
     ys = [y0]
+    start = time.time()
     while sol.successful():
         sol.integrate(sol.t + dt)
-        if np.iscomplex(np.real_if_close(sol.y, tol=1)).any():
+        if (
+            np.iscomplex(np.real_if_close(sol.y, tol=1)).any()
+            or (time.time() - start) > maximum_wait_time
+        ):
             return []
         elif (
             np.max(

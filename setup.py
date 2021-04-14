@@ -32,7 +32,7 @@ def get_install_requires() -> List[str]:
 def main():
     # Python version check.
     if sys.version_info[:2] < (3, 7):
-        sys.exit("biomass requires at least Python version 3.7")
+        raise RuntimeError("biomass requires at least Python version 3.7")
 
     setup(
         name="biomass",
