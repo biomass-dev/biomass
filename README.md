@@ -43,6 +43,18 @@ We will use the model of immediate-early gene response ([Nakakuki_Cell_2010](htt
 
 ### Model Preparation
 
+A brief description of each file/folder is below:
+
+| Name                  | Content                                                                                                  |
+| --------------------- | -------------------------------------------------------------------------------------------------------- |
+| `name2idx/`           | Names of model parameters and species                                                                    |
+| `set_model.py`        | Differential equation, parameters and initial condition                                                  |
+| `observalbe.py`       | Observables, simulations and experimental data                                                           |
+| `viz.py`              | Plotting parameters for customizing figure properties                                                    |
+| `set_search_param.py` | Model parameters to optimize and search region                                                           |
+| `fitness.py`          | An objective function to be minimized, i.e., the distance between model simulation and experimental data |
+| `reaction_network.py` | Reaction indices grouped according to biological processes                                               |
+
 ```python
 from biomass.models import Nakakuki_Cell_2010
 
