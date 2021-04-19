@@ -247,7 +247,7 @@ class ParameterSensitivity(ExecModel):
                     "parameter",
                     f"{metric}",
                     "barplot",
-                    f"{obs_name}." + save_format,
+                    f"{obs_name}.{save_format}",
                 ),
                 dpi=600 if save_format == "png" else None,
                 bbox_inches="tight",
@@ -318,6 +318,8 @@ class ParameterSensitivity(ExecModel):
                         yticklabels=[],
                         # cbar_kws={"ticks": [-1, 0, 1]}
                     )
+                    cbar = g.ax_heatmap.collections[0].colorbar
+                    cbar.ax.tick_params(labelsize=8)
                     plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90)
                     plt.savefig(
                         os.path.join(
@@ -327,7 +329,7 @@ class ParameterSensitivity(ExecModel):
                             "parameter",
                             f"{metric}",
                             "heatmap",
-                            f"{condition}_{obs_name}." + save_format,
+                            f"{condition}_{obs_name}.{save_format}",
                         ),
                         dpi=600 if save_format == "png" else None,
                         bbox_inches="tight",
