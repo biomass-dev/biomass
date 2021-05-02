@@ -102,8 +102,7 @@ class ReactionSensitivity(ExecModel):
                 self.model.path,
                 "sensitivity_coefficients",
                 "reaction",
-                f"{metric}",
-                "sc.npy",
+                f"{metric}.npy",
             )
         ):
             os.makedirs(
@@ -111,7 +110,6 @@ class ReactionSensitivity(ExecModel):
                     self.model.path,
                     "sensitivity_coefficients",
                     "reaction",
-                    f"{metric}",
                 ),
                 exist_ok=True,
             )
@@ -126,7 +124,6 @@ class ReactionSensitivity(ExecModel):
                     "sensitivity_coefficients",
                     "reaction",
                     f"{metric}",
-                    "sc",
                 ),
                 sensitivity_coefficients,
             )
@@ -136,8 +133,7 @@ class ReactionSensitivity(ExecModel):
                     self.model.path,
                     "sensitivity_coefficients",
                     "reaction",
-                    f"{metric}",
-                    "sc.npy",
+                    f"{metric}.npy",
                 )
             )
 

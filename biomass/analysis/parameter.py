@@ -111,8 +111,7 @@ class ParameterSensitivity(ExecModel):
                 self.model.path,
                 "sensitivity_coefficients",
                 "parameter",
-                f"{metric}",
-                "sc.npy",
+                f"{metric}.npy",
             )
         ):
             os.makedirs(
@@ -120,7 +119,6 @@ class ParameterSensitivity(ExecModel):
                     self.model.path,
                     "sensitivity_coefficients",
                     "parameter",
-                    f"{metric}",
                 ),
                 exist_ok=True,
             )
@@ -135,7 +133,6 @@ class ParameterSensitivity(ExecModel):
                     "sensitivity_coefficients",
                     "parameter",
                     f"{metric}",
-                    "sc",
                 ),
                 sensitivity_coefficients,
             )
@@ -145,12 +142,11 @@ class ParameterSensitivity(ExecModel):
                     self.model.path,
                     "sensitivity_coefficients",
                     "parameter",
-                    f"{metric}",
-                    "sc.npy",
+                    f"{metric}.npy",
                 )
             )
             if len(param_indices) != sensitivity_coefficients.shape[1]:
-                # User changed excluded_params after the last trial
+                # User changed options['excluded_params'] after the last trial
                 sensitivity_coefficients = self._calc_sensitivity_coefficients(
                     metric,
                     param_indices,
@@ -162,7 +158,6 @@ class ParameterSensitivity(ExecModel):
                         "sensitivity_coefficients",
                         "parameter",
                         f"{metric}",
-                        "sc",
                     ),
                     sensitivity_coefficients,
                 )

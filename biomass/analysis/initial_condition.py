@@ -112,8 +112,7 @@ class InitialConditionSensitivity(ExecModel):
                 self.model.path,
                 "sensitivity_coefficients",
                 "initial_condition",
-                f"{metric}",
-                "sc.npy",
+                f"{metric}.npy",
             )
         ):
             os.makedirs(
@@ -121,7 +120,6 @@ class InitialConditionSensitivity(ExecModel):
                     self.model.path,
                     "sensitivity_coefficients",
                     "initial_condition",
-                    f"{metric}",
                 ),
                 exist_ok=True,
             )
@@ -136,7 +134,6 @@ class InitialConditionSensitivity(ExecModel):
                     "sensitivity_coefficients",
                     "initial_condition",
                     f"{metric}",
-                    "sc",
                 ),
                 sensitivity_coefficients,
             )
@@ -146,10 +143,25 @@ class InitialConditionSensitivity(ExecModel):
                     self.model.path,
                     "sensitivity_coefficients",
                     "initial_condition",
-                    f"{metric}",
-                    "sc.npy",
+                    f"{metric}.npy",
                 )
             )
+            if len(nonzero_indices) != sensitivity_coefficients.shape[1]:
+                # User changed options['excluded_initials'] after the last trial
+                sensitivity_coefficients = self._calc_sensitivity_coefficients(
+                    metric,
+                    nonzero_indices,
+                    options,
+                )
+                np.save(
+                    os.path.join(
+                        self.model.path,
+                        "sensitivity_coefficients",
+                        "initial_condition",
+                        f"{metric}",
+                    ),
+                    sensitivity_coefficients,
+                )
 
         return sensitivity_coefficients
 

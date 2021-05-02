@@ -170,8 +170,7 @@ def test_sensitivity_analysis():
                     model.path,
                     "sensitivity_coefficients",
                     target,
-                    metric,
-                    "sc.npy",
+                    f"{metric}.npy",
                 )
             )
             assert np.isfinite(sensitivity_coefficients).all()
