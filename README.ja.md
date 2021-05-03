@@ -118,13 +118,16 @@ optimize(
 )
 ```
 
-- 最適化したパラメータの取得
+- データの取得と可視化
 
 ```python
 from biomass.result import OptimizationResults
 
 res = OptimizationResults(model)
+# Export optimized parameters in CSV format
 res.to_csv()
+# Visualize objective function traces for different optimization runs
+res.trace_obj()
 ```
 
 ---

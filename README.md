@@ -149,13 +149,16 @@ optimize(
 )
 ```
 
-- Exporting optimized parameters in CSV format
+- Data Export and Visualization
 
 ```python
 from biomass.result import OptimizationResults
 
 res = OptimizationResults(model)
+# Export optimized parameters in CSV format
 res.to_csv()
+# Visualize objective function traces for different optimization runs
+res.trace_obj()
 ```
 
 ### Visualization of Simulation Results
