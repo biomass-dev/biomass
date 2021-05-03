@@ -25,9 +25,10 @@ $ pip3 install biomass
 #### モデルの準備
 
 ```python
+from biomass import Model
 from biomass.models import Nakakuki_Cell_2010
 
-Nakakuki_Cell_2010.show_info()
+Model(Nakakuki_Cell_2010.__package__).show_info()
 ```
 
 ```
@@ -38,7 +39,7 @@ Nakakuki_Cell_2010 information
 ```
 
 ```python
-model = Nakakuki_Cell_2010.create()
+model = Model(Nakakuki_Cell_2010.__package__).create()
 ```
 
 #### ODE モデルのパラメータ推定 (n = 1, 2, 3, · · ·)

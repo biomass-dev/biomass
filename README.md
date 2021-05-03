@@ -56,9 +56,10 @@ A brief description of each file/folder is below:
 | `reaction_network.py` | Reaction indices grouped according to biological processes                                               |
 
 ```python
+from biomass import Model
 from biomass.models import Nakakuki_Cell_2010
 
-Nakakuki_Cell_2010.show_info()
+Model(Nakakuki_Cell_2010.__package__).show_info()
 ```
 
 ```
@@ -69,7 +70,7 @@ Nakakuki_Cell_2010 information
 ```
 
 ```python
-model = Nakakuki_Cell_2010.create()
+model = Model(Nakakuki_Cell_2010.__package__).create()
 ```
 
 ### Parameter Estimation of ODE Models (_n_ = 1, 2, 3, · · ·)
