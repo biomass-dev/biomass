@@ -3,10 +3,10 @@ import shutil
 
 import numpy as np
 
-from biomass import ModelObject, run_simulation
+from biomass import Model, run_simulation
 from biomass.models import insulin_signaling
 
-model = ModelObject(insulin_signaling.create())
+model = Model(insulin_signaling.__package__).create()
 
 for dir in ["figure", "simulation_data"]:
     if os.path.isdir(os.path.join(model.path, dir)):
