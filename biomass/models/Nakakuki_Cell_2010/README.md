@@ -14,8 +14,9 @@ Nakakuki, T. _et al._ Ligand-specific c-Fos expression emerges from the spatiote
 
    ```python
    from biomass.models import Nakakuki_Cell_2010
+   from biomass import Model
 
-   Nakakuki_Cell_2010.show_info()
+   Model(Nakakuki_Cell_2010.__package__).show_info()
    ```
 
    ↓
@@ -28,7 +29,7 @@ Nakakuki, T. _et al._ Ligand-specific c-Fos expression emerges from the spatiote
    ```
 
    ```python
-   model = Nakakuki_Cell_2010.create()
+   model = Model(Nakakuki_Cell_2010.__package__).create()
    ```
 
 1. Parameter estimation
