@@ -37,9 +37,14 @@ class Model(object):
             print(f"cannot import '{p.name}' from '{p.parent}'.")
             del p
 
-    def create(self) -> ModelObject:
+    def create(self, show_info: bool = False) -> ModelObject:
         """
         Build a biomass model.
+
+        Parameters
+        ----------
+        show_info : bool (default: False)
+            Set to 'True' to print the information related to model size.
 
         Examples
         --------
@@ -65,17 +70,15 @@ class Model(object):
                             raise ValueError(
                                 f"Normalization condition '{c}' is not defined in sim.conditions."
                             )
+        if show_info:
+            model_name = Path(model.path).name
+            print(
+                f"{model_name} information\n" + ("-" * len(model_name)) + "------------\n"
+                f"{len(model.species):d} species\n"
+                f"{len(model.parameters):d} parameters, "
+                f"of which {len(model.sp.idx_params):d} to be estimated"
+            )
         return model
-
-    def show_info(self) -> None:
-        model = self.create()
-        model_name = Path(model.path).name
-        print(
-            f"{model_name} information\n" + ("-" * len(model_name)) + "------------\n"
-            f"{len(model.species):d} species\n"
-            f"{len(model.parameters):d} parameters, "
-            f"of which {len(model.sp.idx_params):d} to be estimated"
-        )
 
 
 def _check_optional_arguments(
