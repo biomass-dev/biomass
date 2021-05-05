@@ -3,10 +3,10 @@ import shutil
 
 import numpy as np
 
-from biomass import ModelObject, run_simulation
+from biomass import Model, run_simulation
 from biomass.models import tgfb_smad
 
-model = ModelObject(tgfb_smad.create())
+model = Model(tgfb_smad.__package__).create()
 
 
 for dir in ["figure", "simulation_data"]:

@@ -3,10 +3,10 @@ import shutil
 
 import numpy as np
 
-from biomass import ModelObject, run_simulation
+from biomass import Model, run_simulation
 from biomass.models import nfkb_pathway
 
-model = ModelObject(nfkb_pathway.create())
+model = Model(nfkb_pathway.__package__).create()
 
 
 for dir in ["figure", "simulation_data"]:

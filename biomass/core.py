@@ -1,13 +1,84 @@
 """BioMASS core functions"""
 import multiprocessing
-from typing import Optional
+import os
+from dataclasses import dataclass
+from importlib import import_module
+from pathlib import Path
+from typing import Any, Optional
 
 from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
 from .dynamics import SignalingSystems
 from .estimation import GeneticAlgorithmContinue, GeneticAlgorithmInit
 from .exec_model import ModelObject
 
-__all__ = ["optimize", "optimize_continue", "run_simulation", "run_analysis"]
+__all__ = ["Model", "optimize", "optimize_continue", "run_simulation", "run_analysis"]
+
+
+@dataclass
+class Model(object):
+    """
+    The BioMASS model object.
+
+    Attributes
+    ----------
+    pkg_name: str
+        Path (dot-sepalated) to a biomass model directory.
+        Use '__package__'.
+    """
+
+    pkg_name: str
+
+    def _load_model(self) -> Any:
+        try:
+            biomass_model = import_module(self.pkg_name)
+            return biomass_model
+        except ImportError:
+            p = Path(self.pkg_name.replace(".", os.sep))
+            print(f"cannot import '{p.name}' from '{p.parent}'.")
+            del p
+
+    def create(self, show_info: bool = False) -> ModelObject:
+        """
+        Build a biomass model.
+
+        Parameters
+        ----------
+        show_info : bool (default: False)
+            Set to 'True' to print the information related to model size.
+
+        Examples
+        --------
+        >>> from biomass import Model
+        >>> import your_model
+        >>> model = Model(your_model.__package__).create()
+        """
+        model = ModelObject(self.pkg_name.replace(".", os.sep), self._load_model())
+        if model.sim.normalization:
+            for obs_name in model.obs:
+                if (
+                    isinstance(model.sim.normalization[obs_name]["timepoint"], int)
+                    and not model.sim.t[0]
+                    <= model.sim.normalization[obs_name]["timepoint"]
+                    <= model.sim.t[-1]
+                ):
+                    raise ValueError("Normalization timepoint must lie within sim.t.")
+                if not model.sim.normalization[obs_name]["condition"]:
+                    model.sim.normalization[obs_name]["condition"] = model.sim.conditions
+                else:
+                    for c in model.sim.normalization[obs_name]["condition"]:
+                        if c not in model.sim.conditions:
+                            raise ValueError(
+                                f"Normalization condition '{c}' is not defined in sim.conditions."
+                            )
+        if show_info:
+            model_name = Path(model.path).name
+            print(
+                f"{model_name} information\n" + ("-" * len(model_name)) + "------------\n"
+                f"{len(model.species):d} species\n"
+                f"{len(model.parameters):d} parameters, "
+                f"of which {len(model.sp.idx_params):d} to be estimated"
+            )
+        return model
 
 
 def _check_optional_arguments(

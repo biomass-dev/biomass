@@ -17,9 +17,9 @@ import os
 from IPython.display import Image, display_png
 
 from biomass.models import mapk_cascade
-from biomass import run_simulation
+from biomass import Model, run_simulation
 
-model = mapk_cascade.create()
+model = Model(mapk_cascade.__package__).create()
 
 run_simulation(model, viz_type="original", save_format="png")
 

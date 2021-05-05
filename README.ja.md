@@ -25,20 +25,19 @@ $ pip3 install biomass
 #### モデルの準備
 
 ```python
+from biomass import Model
 from biomass.models import Nakakuki_Cell_2010
 
-Nakakuki_Cell_2010.show_info()
+model = Model(Nakakuki_Cell_2010.__package__).create(show_info=True)
 ```
+
+↓
 
 ```
 Nakakuki_Cell_2010 information
 ------------------------------
 36 species
 115 parameters, of which 75 to be estimated
-```
-
-```python
-model = Nakakuki_Cell_2010.create()
 ```
 
 #### ODE モデルのパラメータ推定 (n = 1, 2, 3, · · ·)
