@@ -35,7 +35,6 @@ class Model(object):
         except ImportError:
             p = Path(self.pkg_name.replace(".", os.sep))
             print(f"cannot import '{p.name}' from '{p.parent}'.")
-            del p
 
     def create(self, show_info: bool = False) -> ModelObject:
         """
