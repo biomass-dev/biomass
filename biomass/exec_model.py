@@ -12,44 +12,35 @@ class ModelObject(object):
 
     Parameters
     ----------
-    model : BioMassModel
-        A user-defined BioMass model.
+    path : str
+        Path to a biomass model.
+    biomass_model : Any
+        A package containing biomass model properties.
 
     Attributes
     ----------
     path : str
         Path to the model.
-
     parameters : list of strings
         Names of model parameters.
-
     species : list of strings
         Names of model species.
-
     obs : list of strings
         Names of model observables.
-
     pval : Callable
         Numerical values of the parameters.
-
     ival : Callable
         Initial values.
-
     obj_func : Callable
         An objective function to be minimized for parameter estimation.
-
     sim : NumericalSimulation
         Simulation conditions and results.
-
     exp : ExperimentalData
         Experimental measurements used to estimate model parameters.
-
     viz : Visualization
         Plotting parameters for customizing figure properties.
-
     sp : SearchParam
         Model parameters to optimize and search region.
-
     rxn : ReactionNetwork
         Reaction indices grouped according to biological processes.
     """
