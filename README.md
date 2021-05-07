@@ -56,20 +56,19 @@ A brief description of each file/folder is below:
 | `reaction_network.py` | Reaction indices grouped according to biological processes                                               |
 
 ```python
+from biomass import Model
 from biomass.models import Nakakuki_Cell_2010
 
-Nakakuki_Cell_2010.show_info()
+model = Model(Nakakuki_Cell_2010.__package__).create(show_info=True)
 ```
+
+↓
 
 ```
 Nakakuki_Cell_2010 information
 ------------------------------
 36 species
 115 parameters, of which 75 to be estimated
-```
-
-```python
-model = Nakakuki_Cell_2010.create()
 ```
 
 ### Parameter Estimation of ODE Models (_n_ = 1, 2, 3, · · ·)
@@ -149,13 +148,16 @@ optimize(
 )
 ```
 
-- Exporting optimized parameters in CSV format
+- Data Export and Visualization
 
 ```python
 from biomass.result import OptimizationResults
 
 res = OptimizationResults(model)
+# Export optimized parameters in CSV format
 res.to_csv()
+# Visualize objective function traces for different optimization runs
+res.trace_obj()
 ```
 
 ### Visualization of Simulation Results

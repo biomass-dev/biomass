@@ -1,7 +1,7 @@
 import os
 import re
 from dataclasses import dataclass
-from typing import List, NamedTuple
+from typing import Any, List, NamedTuple
 
 import numpy as np
 
@@ -52,28 +52,25 @@ class ModelObject(object):
 
     rxn : ReactionNetwork
         Reaction indices grouped according to biological processes.
-
-    Example
-    -------
-    >>> from biomass import ModelObject
-    >>> import user_defined_model
-    >>> model = ModelObject(user_defined_model.create())
-
     """
 
-    def __init__(self, model):
-        self._path = model.path
-        self._parameters = model.parameters
-        self._species = model.species
-        self._obs = model.obs
-        self.pval = model.pval
-        self.ival = model.ival
-        self.obj_func = model.obj_func
-        self.sim = model.sim
-        self.exp = model.exp
-        self.viz = model.viz
-        self.sp = model.sp
-        self.rxn = model.rxn
+    def __init__(
+        self,
+        path: str,
+        biomass_model: Any,
+    ):
+        self._path = path
+        self._parameters = biomass_model.C.NAMES
+        self._species = biomass_model.V.NAMES
+        self._obs = biomass_model.observables
+        self.pval = biomass_model.param_values
+        self.ival = biomass_model.initial_values
+        self.obj_func = biomass_model.objective
+        self.sim = biomass_model.NumericalSimulation()
+        self.exp = biomass_model.ExperimentalData()
+        self.viz = biomass_model.Visualization()
+        self.sp = biomass_model.SearchParam()
+        self.rxn = biomass_model.ReactionNetwork()
 
     @property
     def path(self) -> str:
@@ -89,7 +86,11 @@ class ModelObject(object):
 
     @property
     def obs(self) -> List[str]:
-        return self._obs
+        duplicate = [name for name in set(self._obs) if self._obs.count(name) > 1]
+        if not duplicate:
+            return self._obs
+        else:
+            raise NameError(f"Duplicate observables: {', '.join(duplicate)}")
 
 
 class OptimizedValues(NamedTuple):

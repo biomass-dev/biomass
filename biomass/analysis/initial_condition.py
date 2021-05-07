@@ -112,8 +112,7 @@ class InitialConditionSensitivity(ExecModel):
                 self.model.path,
                 "sensitivity_coefficients",
                 "initial_condition",
-                f"{metric}",
-                "sc.npy",
+                f"{metric}.npy",
             )
         ):
             os.makedirs(
@@ -121,7 +120,6 @@ class InitialConditionSensitivity(ExecModel):
                     self.model.path,
                     "sensitivity_coefficients",
                     "initial_condition",
-                    f"{metric}",
                 ),
                 exist_ok=True,
             )
@@ -136,7 +134,6 @@ class InitialConditionSensitivity(ExecModel):
                     "sensitivity_coefficients",
                     "initial_condition",
                     f"{metric}",
-                    "sc",
                 ),
                 sensitivity_coefficients,
             )
@@ -146,10 +143,25 @@ class InitialConditionSensitivity(ExecModel):
                     self.model.path,
                     "sensitivity_coefficients",
                     "initial_condition",
-                    f"{metric}",
-                    "sc.npy",
+                    f"{metric}.npy",
                 )
             )
+            if len(nonzero_indices) != sensitivity_coefficients.shape[1]:
+                # User changed options['excluded_initials'] after the last trial
+                sensitivity_coefficients = self._calc_sensitivity_coefficients(
+                    metric,
+                    nonzero_indices,
+                    options,
+                )
+                np.save(
+                    os.path.join(
+                        self.model.path,
+                        "sensitivity_coefficients",
+                        "initial_condition",
+                        f"{metric}",
+                    ),
+                    sensitivity_coefficients,
+                )
 
         return sensitivity_coefficients
 
@@ -233,7 +245,7 @@ class InitialConditionSensitivity(ExecModel):
                     "initial_condition",
                     f"{metric}",
                     "barplot",
-                    f"{obs_name}." + save_format,
+                    f"{obs_name}.{save_format}",
                 ),
                 dpi=600 if save_format == "png" else None,
                 bbox_inches="tight",
@@ -307,6 +319,8 @@ class InitialConditionSensitivity(ExecModel):
                         yticklabels=[],
                         # cbar_kws={"ticks": [-1, 0, 1]}
                     )
+                    cbar = g.ax_heatmap.collections[0].colorbar
+                    cbar.ax.tick_params(labelsize=8)
                     plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90)
                     plt.savefig(
                         os.path.join(
@@ -316,7 +330,7 @@ class InitialConditionSensitivity(ExecModel):
                             "initial_condition",
                             f"{metric}",
                             "heatmap",
-                            f"{condition}_{obs_name}." + save_format,
+                            f"{condition}_{obs_name}.{save_format}",
                         ),
                         dpi=600 if save_format == "png" else None,
                         bbox_inches="tight",

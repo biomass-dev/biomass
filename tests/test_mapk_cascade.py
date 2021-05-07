@@ -4,7 +4,7 @@ import shutil
 import numpy as np
 
 from biomass import (
-    ModelObject,
+    Model,
     OptimizationResults,
     optimize,
     optimize_continue,
@@ -13,7 +13,7 @@ from biomass import (
 )
 from biomass.models import mapk_cascade
 
-model = ModelObject(mapk_cascade.create())
+model = Model(mapk_cascade.__package__).create()
 
 for dir in [
     "figure",
@@ -170,8 +170,7 @@ def test_sensitivity_analysis():
                     model.path,
                     "sensitivity_coefficients",
                     target,
-                    metric,
-                    "sc.npy",
+                    f"{metric}.npy",
                 )
             )
             assert np.isfinite(sensitivity_coefficients).all()

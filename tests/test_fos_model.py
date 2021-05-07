@@ -4,7 +4,7 @@ from distutils.dir_util import copy_tree
 
 import pytest
 
-from biomass import ModelObject, run_simulation
+from biomass import Model, run_simulation
 from biomass.models import Nakakuki_Cell_2010
 
 # from biomass import run_analysis
@@ -32,7 +32,7 @@ copy_tree(
     ),
 )
 
-model = ModelObject(Nakakuki_Cell_2010.create())
+model = Model(Nakakuki_Cell_2010.__package__).create()
 
 for dir in ["figure", "simulation_data", "sensitivity_coefficients"]:
     if os.path.isdir(os.path.join(model.path, dir)):

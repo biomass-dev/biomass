@@ -17,9 +17,9 @@ import os
 from IPython.display import Image, display_png
 
 from biomass.models import circadian_clock
-from biomass import run_simulation
+from biomass import Model, run_simulation
 
-model = circadian_clock.create()
+model = Model(circadian_clock.__package__).create()
 
 run_simulation(model, viz_type="original", save_format="png")
 
