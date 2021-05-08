@@ -161,8 +161,8 @@ def optimize(
         overwrite : bool (default: False)
             If True, the out/n folder will be overwritten.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import optimize
     >>> model = Nakakuki_Cell_2010.create()
@@ -262,8 +262,8 @@ def optimize_continue(
                 - lower_bound = po_bounds[0] * best_parameter_value
                 - upper_bound = p0_bounds[1] * best_parameter_value
 
-    Example
-    -------
+    Examples
+    --------
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import optimize_continue
     >>> model = Nakakuki_Cell_2010.create()
@@ -355,8 +355,8 @@ def run_simulation(
         scatter : bool (default: False)
             If True, draw a stripplot.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import run_simulation
     >>> model = Nakakuki_Cell_2010.create()
@@ -458,8 +458,8 @@ def run_analysis(
         duration : float (default: 0.5)
             (metric=='duration') 0.1 for 10% of its maximum.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import run_analysis
     >>> model = Nakakuki_Cell_2010.create()

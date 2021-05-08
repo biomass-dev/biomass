@@ -30,8 +30,8 @@ class OptimizationResults(ExecModel):
         optimization_results/optimized_params.csv
         optimization_results/optimized_initials.csv
 
-        Example
-        -------
+        Examples
+        --------
         >>> from biomass.models import Nakakuki_Cell_2010
         >>> from biomass.result import OptimizationResults
         >>> model = Nakakuki_Cell_2010.create()
@@ -150,8 +150,8 @@ class OptimizationResults(ExecModel):
         ------
         fitness_assessment.csv
 
-        Example
-        -------
+        Examples
+        --------
         >>> from biomass.models import Nakakuki_Cell_2010
         >>> from biomass.result import OptimizationResults
         >>> model = Nakakuki_Cell_2010.create()
@@ -188,8 +188,8 @@ class OptimizationResults(ExecModel):
         ------
         obj_func_traces.pdf
 
-        Example
-        -------
+        Examples
+        --------
         >>> from biomass.models import Nakakuki_Cell_2010
         >>> from biomass.result import OptimizationResults
         >>> model = Nakakuki_Cell_2010.create()
