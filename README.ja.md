@@ -1,11 +1,11 @@
 # BioMASS
 
 [![Actions Status](https://github.com/okadalabipr/biomass/workflows/Tests/badge.svg)](https://github.com/okadalabipr/biomass/actions)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/okadalabipr/biomass.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/okadalabipr/biomass/context:python)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&logoColor=white)](https://pypi.python.org/pypi/biomass/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Downloads](https://pepy.tech/badge/biomass)](https://pepy.tech/project/biomass)
-[![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&color=blue)](https://pypi.python.org/pypi/biomass/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg)](https://pypi.python.org/pypi/biomass/)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/okadalabipr/biomass.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/okadalabipr/biomass/context:python)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ![logo2](https://raw.githubusercontent.com/okadalabipr/biomass/master/resources/images/logo2.png)
@@ -25,20 +25,19 @@ $ pip3 install biomass
 #### モデルの準備
 
 ```python
+from biomass import Model
 from biomass.models import Nakakuki_Cell_2010
 
-Nakakuki_Cell_2010.show_info()
+model = Model(Nakakuki_Cell_2010.__package__).create(show_info=True)
 ```
+
+↓
 
 ```
 Nakakuki_Cell_2010 information
 ------------------------------
 36 species
 115 parameters, of which 75 to be estimated
-```
-
-```python
-model = Nakakuki_Cell_2010.create()
 ```
 
 #### ODE モデルのパラメータ推定 (n = 1, 2, 3, · · ·)
@@ -118,13 +117,16 @@ optimize(
 )
 ```
 
-- 最適化したパラメータの取得
+- データの取得と可視化
 
 ```python
 from biomass.result import OptimizationResults
 
 res = OptimizationResults(model)
+# Export optimized parameters in CSV format
 res.to_csv()
+# Visualize objective function traces for different optimization runs
+res.trace_obj()
 ```
 
 ---

@@ -3,10 +3,10 @@ import shutil
 
 import numpy as np
 
-from biomass import ModelObject, run_simulation
+from biomass import Model, run_simulation
 from biomass.models import circadian_clock
 
-model = ModelObject(circadian_clock.create())
+model = Model(circadian_clock.__package__).create()
 
 for dir in ["figure", "simulation_data"]:
     if os.path.isdir(os.path.join(model.path, dir)):

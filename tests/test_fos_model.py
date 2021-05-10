@@ -2,7 +2,9 @@ import os
 import shutil
 from distutils.dir_util import copy_tree
 
-from biomass import ModelObject, run_simulation
+import pytest
+
+from biomass import Model, run_simulation
 from biomass.models import Nakakuki_Cell_2010
 
 # from biomass import run_analysis
@@ -30,7 +32,7 @@ copy_tree(
     ),
 )
 
-model = ModelObject(Nakakuki_Cell_2010.create())
+model = Model(Nakakuki_Cell_2010.__package__).create()
 
 for dir in ["figure", "simulation_data", "sensitivity_coefficients"]:
     if os.path.isdir(os.path.join(model.path, dir)):
@@ -38,6 +40,13 @@ for dir in ["figure", "simulation_data", "sensitivity_coefficients"]:
 
 
 def test_run_simulation():
+    with pytest.warns(RuntimeWarning) as record:
+        run_simulation(model, viz_type="original")
+    # check that the message matches
+    assert record[-1].message.args[0] in [
+        "Simulation failed. #original",
+        "invalid value encountered in true_divide",
+    ]
     run_simulation(model, viz_type="average", stdev=True)
     assert os.path.isfile(
         os.path.join(

@@ -102,8 +102,7 @@ class ReactionSensitivity(ExecModel):
                 self.model.path,
                 "sensitivity_coefficients",
                 "reaction",
-                f"{metric}",
-                "sc.npy",
+                f"{metric}.npy",
             )
         ):
             os.makedirs(
@@ -111,7 +110,6 @@ class ReactionSensitivity(ExecModel):
                     self.model.path,
                     "sensitivity_coefficients",
                     "reaction",
-                    f"{metric}",
                 ),
                 exist_ok=True,
             )
@@ -126,7 +124,6 @@ class ReactionSensitivity(ExecModel):
                     "sensitivity_coefficients",
                     "reaction",
                     f"{metric}",
-                    "sc",
                 ),
                 sensitivity_coefficients,
             )
@@ -136,8 +133,7 @@ class ReactionSensitivity(ExecModel):
                     self.model.path,
                     "sensitivity_coefficients",
                     "reaction",
-                    f"{metric}",
-                    "sc.npy",
+                    f"{metric}.npy",
                 )
             )
 
@@ -281,7 +277,7 @@ class ReactionSensitivity(ExecModel):
                         "reaction",
                         f"{metric}",
                         "barplot",
-                        f"{obs_name}." + save_format,
+                        f"{obs_name}.{save_format}",
                     ),
                     dpi=600 if save_format == "png" else None,
                     bbox_inches="tight",
@@ -339,7 +335,7 @@ class ReactionSensitivity(ExecModel):
                     sensitivity_coefficients[:, :, k, l], normalize=False
                 )
                 if sensitivity_matrix.shape[0] > 1 and not np.all(sensitivity_matrix == 0.0):
-                    sns.clustermap(
+                    g = sns.clustermap(
                         data=sensitivity_matrix,
                         center=0,
                         robust=True,
@@ -352,6 +348,8 @@ class ReactionSensitivity(ExecModel):
                         yticklabels=[],
                         # cbar_kws={"ticks": [-1, 0, 1]}
                     )
+                    cbar = g.ax_heatmap.collections[0].colorbar
+                    cbar.ax.tick_params(labelsize=8)
                     plt.savefig(
                         os.path.join(
                             self.model.path,
@@ -360,7 +358,7 @@ class ReactionSensitivity(ExecModel):
                             "reaction",
                             f"{metric}",
                             "heatmap",
-                            f"{condition}_{obs_name}." + save_format,
+                            f"{condition}_{obs_name}.{save_format}",
                         ),
                         dpi=600 if save_format == "png" else None,
                         bbox_inches="tight",

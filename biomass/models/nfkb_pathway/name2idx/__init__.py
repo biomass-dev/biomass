@@ -1,2 +1,2 @@
-from . import parameters as C
-from . import species as V
+from .parameters import C
+from .species import V

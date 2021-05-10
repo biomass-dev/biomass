@@ -1,5 +1,8 @@
 import os
+import sys
+import warnings
 from dataclasses import dataclass
+from typing import List
 
 import numpy as np
 
@@ -23,7 +26,7 @@ class SignalingSystems(TemporalDynamics):
         """
         Run simulation and save figures.
         """
-        n_file = [] if viz_type in ["original", "experiment"] else self.get_executable()
+        n_file: List[int] = [] if viz_type in ["original", "experiment"] else self.get_executable()
         simulations_all = np.full(
             (
                 len(self.model.obs),
@@ -44,38 +47,14 @@ class SignalingSystems(TemporalDynamics):
             if len(n_file) > 0:
                 if len(n_file) == 1 and viz_type == "average":
                     raise ValueError(f"viz_type should be 'best', not '{viz_type}'.")
-                for i, nth_paramset in enumerate(n_file):
+                for j, nth_paramset in enumerate(n_file):
                     if self._validate(nth_paramset):
-                        for j, _ in enumerate(self.model.obs):
-                            simulations_all[j, i, :, :] = self.model.sim.simulations[j, :, :]
+                        for i, _ in enumerate(self.model.obs):
+                            simulations_all[i, j, :, :] = self.model.sim.simulations[i, :, :]
                 # simulations_all : numpy array
                 # All simulated values with estimated parameter sets.
-                np.save(
-                    os.path.join(
-                        self.model.path,
-                        "simulation_data",
-                        "simulations_all.npy",
-                    ),
-                    simulations_all,
-                )
-                best_fitness_all = np.full(len(n_file), np.inf)
-                for i, nth_paramset in enumerate(n_file):
-                    if os.path.isfile(
-                        os.path.join(
-                            self.model.path,
-                            "out",
-                            f"{nth_paramset:d}",
-                            "best_fitness.npy",
-                        )
-                    ):
-                        best_fitness_all[i] = np.load(
-                            os.path.join(
-                                self.model.path,
-                                "out",
-                                f"{nth_paramset:d}",
-                                "best_fitness.npy",
-                            )
-                        )
+                self._save_simulations(viz_type, simulations_all)
+                best_fitness_all = self._get_best_objval(n_file)
                 best_paramset = n_file[np.argmin(best_fitness_all)]
                 self._write_best_fit_param(best_paramset)
                 if viz_type == "average":
@@ -83,25 +62,12 @@ class SignalingSystems(TemporalDynamics):
                 elif viz_type == "best":
                     is_successful = self._validate(int(best_paramset))
                     if is_successful:
-                        np.save(
-                            os.path.join(
-                                self.model.path,
-                                "simulation_data",
-                                "simulations_best.npy",
-                            ),
-                            self.model.sim.simulations,
-                        )
-                else:  # viz_type == 'n(=1,2,...)'
+                        self._save_simulations(viz_type, self.model.sim.simulations)
+                else:
+                    # viz_type == 'n(=1,2,...)'
                     is_successful = self._validate(int(viz_type))
                     if is_successful:
-                        np.save(
-                            os.path.join(
-                                self.model.path,
-                                "simulation_data",
-                                f"simulations_{int(viz_type):d}.npy",
-                            ),
-                            self.model.sim.simulations,
-                        )
+                        self._save_simulations(viz_type, self.model.sim.simulations)
                 # Visualization of estimated parameter values
                 if 2 <= len(n_file):
                     popt = np.empty(
@@ -113,23 +79,76 @@ class SignalingSystems(TemporalDynamics):
                     for i, nth_paramset in enumerate(n_file):
                         popt[i, :] = self.get_individual(nth_paramset)
                     self.plot_param_range(popt, save_format, **param_range)
-            else:  # viz_type == 'original'
+            else:
+                # viz_type == 'original'
                 x = self.model.pval()
                 y0 = self.model.ival()
                 if self.model.sim.simulate(x, y0) is not None:
-                    print("Simulation failed.\n")
+                    warnings.warn("Simulation failed. #original", RuntimeWarning)
                 # simulations_original : numpy array
                 # Simulated values with original parameter values.
-                np.save(
-                    os.path.join(
-                        self.model.path,
-                        "simulation_data",
-                        "simulations_original.npy",
-                    ),
-                    self.model.sim.simulations,
-                )
+                self._save_simulations(viz_type, self.model.sim.simulations)
 
         self.plot_timecourse(n_file, viz_type, show_all, stdev, save_format, simulations_all)
+
+    def _preprocessing(self, simulated_values: np.ndarray) -> np.ndarray:
+        """
+        Replace small value in time-course simulated values to zero
+        when all(abs(time_course) < sys.float_info.epsilon).
+
+        Parameters
+        ----------
+        simulated_values : matrix (len(t) × len(self.model.sim.t))
+        """
+        if simulated_values.ndim == 2:
+            for k, time_course in enumerate(simulated_values.T):
+                if np.all(np.abs(time_course) < sys.float_info.epsilon):
+                    simulated_values[:, k] = np.zeros(len(self.model.sim.t))
+        elif simulated_values.ndim == 3:
+            for i, _ in enumerate(self.model.obs):
+                simulated_values[i] = self._preprocessing(simulated_values[i])
+        elif simulated_values.ndim == 4:
+            for j in range(simulated_values.shape[1]):
+                for i, _ in enumerate(self.model.obs):
+                    simulated_values[i, j] = self._preprocessing(simulated_values[i, j])
+        return simulated_values
+
+    def _save_simulations(self, viz_type: str, simulated_values: np.ndarray) -> None:
+        """
+        Save time course simulated values to simulation_data/.
+        """
+        np.save(
+            os.path.join(
+                self.model.path,
+                "simulation_data",
+                "simulations_{}.npy".format(viz_type if simulated_values.ndim < 4 else "all"),
+            ),
+            self._preprocessing(simulated_values),
+        )
+
+    def _get_best_objval(self, n_file: List[int]) -> np.ndarray:
+        """
+        Get best objective function values from parameter estimation results (out/).
+        """
+        best_fitness_all = np.full(len(n_file), np.inf)
+        for i, nth_paramset in enumerate(n_file):
+            if os.path.isfile(
+                os.path.join(
+                    self.model.path,
+                    "out",
+                    f"{nth_paramset:d}",
+                    "best_fitness.npy",
+                )
+            ):
+                best_fitness_all[i] = np.load(
+                    os.path.join(
+                        self.model.path,
+                        "out",
+                        f"{nth_paramset:d}",
+                        "best_fitness.npy",
+                    )
+                )
+        return best_fitness_all
 
     def _validate(self, nth_paramset: int) -> bool:
         """
@@ -150,7 +169,7 @@ class SignalingSystems(TemporalDynamics):
         if self.model.sim.simulate(*optimized) is None:
             is_successful = True
         else:
-            print(f"Simulation failed. #{nth_paramset:d}\n")
+            warnings.warn(f"Simulation failed. #{nth_paramset:d}", RuntimeWarning)
             is_successful = False
 
         return is_successful
@@ -170,7 +189,6 @@ class SignalingSystems(TemporalDynamics):
 
         """
         optimized = self.load_param(best_paramset)
-
         with open(
             os.path.join(
                 self.model.path,

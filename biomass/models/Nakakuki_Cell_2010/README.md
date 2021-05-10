@@ -13,9 +13,10 @@ Nakakuki, T. _et al._ Ligand-specific c-Fos expression emerges from the spatiote
 1. Model construction
 
    ```python
+   from biomass import Model
    from biomass.models import Nakakuki_Cell_2010
 
-   Nakakuki_Cell_2010.show_info()
+   model = Model(Nakakuki_Cell_2010.__package__).create(show_info=True)
    ```
 
    ↓
@@ -25,10 +26,6 @@ Nakakuki, T. _et al._ Ligand-specific c-Fos expression emerges from the spatiote
    ------------------------------
    36 species
    115 parameters, of which 75 to be estimated
-   ```
-
-   ```python
-   model = Nakakuki_Cell_2010.create()
    ```
 
 1. Parameter estimation

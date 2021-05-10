@@ -1,14 +1,83 @@
 """BioMASS core functions"""
 import multiprocessing
 import os
-from typing import Optional
+from dataclasses import dataclass
+from importlib import import_module
+from pathlib import Path
+from typing import Any, Optional
 
 from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
 from .dynamics import SignalingSystems
 from .estimation import GeneticAlgorithmContinue, GeneticAlgorithmInit
 from .exec_model import ModelObject
 
-__all__ = ["optimize", "optimize_continue", "run_simulation", "run_analysis"]
+__all__ = ["Model", "optimize", "optimize_continue", "run_simulation", "run_analysis"]
+
+
+@dataclass
+class Model(object):
+    """
+    The BioMASS model object.
+
+    Attributes
+    ----------
+    pkg_name: str
+        Path (dot-sepalated) to a biomass model directory.
+        Use '__package__'.
+    """
+
+    pkg_name: str
+
+    def _load_model(self) -> Any:
+        try:
+            biomass_model = import_module(self.pkg_name)
+            return biomass_model
+        except ImportError:
+            p = Path(self.pkg_name.replace(".", os.sep))
+            print(f"cannot import '{p.name}' from '{p.parent}'.")
+
+    def create(self, show_info: bool = False) -> ModelObject:
+        """
+        Build a biomass model.
+
+        Parameters
+        ----------
+        show_info : bool (default: False)
+            Set to 'True' to print the information related to model size.
+
+        Examples
+        --------
+        >>> from biomass import Model
+        >>> import your_model
+        >>> model = Model(your_model.__package__).create()
+        """
+        model = ModelObject(self.pkg_name.replace(".", os.sep), self._load_model())
+        if model.sim.normalization:
+            for obs_name in model.obs:
+                if (
+                    isinstance(model.sim.normalization[obs_name]["timepoint"], int)
+                    and not model.sim.t[0]
+                    <= model.sim.normalization[obs_name]["timepoint"]
+                    <= model.sim.t[-1]
+                ):
+                    raise ValueError("Normalization timepoint must lie within sim.t.")
+                if not model.sim.normalization[obs_name]["condition"]:
+                    model.sim.normalization[obs_name]["condition"] = model.sim.conditions
+                else:
+                    for c in model.sim.normalization[obs_name]["condition"]:
+                        if c not in model.sim.conditions:
+                            raise ValueError(
+                                f"Normalization condition '{c}' is not defined in sim.conditions."
+                            )
+        if show_info:
+            model_name = Path(model.path).name
+            print(
+                f"{model_name} information\n" + ("-" * len(model_name)) + "------------\n"
+                f"{len(model.species):d} species\n"
+                f"{len(model.parameters):d} parameters, "
+                f"of which {len(model.sp.idx_params):d} to be estimated"
+            )
+        return model
 
 
 def _check_optional_arguments(
@@ -92,8 +161,8 @@ def optimize(
         overwrite : bool (default: False)
             If True, the out/n folder will be overwritten.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import optimize
     >>> model = Nakakuki_Cell_2010.create()
@@ -193,8 +262,8 @@ def optimize_continue(
                 - lower_bound = po_bounds[0] * best_parameter_value
                 - upper_bound = p0_bounds[1] * best_parameter_value
 
-    Example
-    -------
+    Examples
+    --------
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import optimize_continue
     >>> model = Nakakuki_Cell_2010.create()
@@ -286,8 +355,8 @@ def run_simulation(
         scatter : bool (default: False)
             If True, draw a stripplot.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import run_simulation
     >>> model = Nakakuki_Cell_2010.create()
@@ -389,8 +458,8 @@ def run_analysis(
         duration : float (default: 0.5)
             (metric=='duration') 0.1 for 10% of its maximum.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import run_analysis
     >>> model = Nakakuki_Cell_2010.create()
@@ -457,23 +526,8 @@ def run_analysis(
             options=options,
         )
     else:
-        here = os.path.abspath(os.path.dirname(__file__))
-        files = os.listdir(os.path.join(here, "analysis"))
         raise ValueError(
-            "Available targets are: '"
-            + "', '".join(
-                [
-                    available_target
-                    for available_target in files
-                    if os.path.isdir(
-                        os.path.join(
-                            here,
-                            "analysis",
-                            available_target,
-                        )
-                    )
-                    and available_target != "__pycache__"
-                ]
+            "Available targets are: '{}".format(
+                "', '".join(["reaction", "parameter", "initial_condition"]) + "'."
             )
-            + "'."
         )

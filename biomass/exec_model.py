@@ -1,7 +1,7 @@
 import os
 import re
 from dataclasses import dataclass
-from typing import List, NamedTuple
+from typing import Any, List, NamedTuple
 
 import numpy as np
 
@@ -12,68 +12,56 @@ class ModelObject(object):
 
     Parameters
     ----------
-    model : BioMassModel
-        A user-defined BioMass model.
+    path : str
+        Path to a biomass model.
+    biomass_model : Any
+        A package containing biomass model properties.
 
     Attributes
     ----------
     path : str
         Path to the model.
-
     parameters : list of strings
         Names of model parameters.
-
     species : list of strings
         Names of model species.
-
     obs : list of strings
         Names of model observables.
-
     pval : Callable
         Numerical values of the parameters.
-
     ival : Callable
         Initial values.
-
     obj_func : Callable
         An objective function to be minimized for parameter estimation.
-
     sim : NumericalSimulation
         Simulation conditions and results.
-
     exp : ExperimentalData
         Experimental measurements used to estimate model parameters.
-
     viz : Visualization
         Plotting parameters for customizing figure properties.
-
     sp : SearchParam
         Model parameters to optimize and search region.
-
     rxn : ReactionNetwork
         Reaction indices grouped according to biological processes.
-
-    Example
-    -------
-    >>> from biomass import ModelObject
-    >>> import user_defined_model
-    >>> model = ModelObject(user_defined_model.create())
-
     """
 
-    def __init__(self, model):
-        self._path = model.path
-        self._parameters = model.parameters
-        self._species = model.species
-        self._obs = model.obs
-        self.pval = model.pval
-        self.ival = model.ival
-        self.obj_func = model.obj_func
-        self.sim = model.sim
-        self.exp = model.exp
-        self.viz = model.viz
-        self.sp = model.sp
-        self.rxn = model.rxn
+    def __init__(
+        self,
+        path: str,
+        biomass_model: Any,
+    ):
+        self._path = path
+        self._parameters = biomass_model.C.NAMES
+        self._species = biomass_model.V.NAMES
+        self._obs = biomass_model.observables
+        self.pval = biomass_model.param_values
+        self.ival = biomass_model.initial_values
+        self.obj_func = biomass_model.objective
+        self.sim = biomass_model.NumericalSimulation()
+        self.exp = biomass_model.ExperimentalData()
+        self.viz = biomass_model.Visualization()
+        self.sp = biomass_model.SearchParam()
+        self.rxn = biomass_model.ReactionNetwork()
 
     @property
     def path(self) -> str:
@@ -89,7 +77,11 @@ class ModelObject(object):
 
     @property
     def obs(self) -> List[str]:
-        return self._obs
+        duplicate = [name for name in set(self._obs) if self._obs.count(name) > 1]
+        if not duplicate:
+            return self._obs
+        else:
+            raise NameError(f"Duplicate observables: {', '.join(duplicate)}")
 
 
 class OptimizedValues(NamedTuple):
