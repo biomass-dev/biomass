@@ -29,7 +29,7 @@ def get_install_requires() -> List[str]:
         return f.read().splitlines()
 
 
-def main():
+def setup_package():
     # Python version check.
     if sys.version_info[:2] < (3, 7):
         raise RuntimeError("biomass requires at least Python version 3.7")
@@ -49,7 +49,7 @@ def main():
         install_requires=get_install_requires(),
         extras_require={
             "dev": [
-                "black==20.8b1",
+                "black>=20.8b1",
                 "flake8",
                 "isort",
                 "pre-commit",
@@ -85,4 +85,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    setup_package()
