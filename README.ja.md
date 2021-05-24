@@ -4,7 +4,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&logoColor=white)](https://pypi.python.org/pypi/biomass/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Downloads](https://pepy.tech/badge/biomass)](https://pepy.tech/project/biomass)
-[![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg)](https://pypi.python.org/pypi/biomass/)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg?logo=Python&logoColor=white)](https://pypi.python.org/pypi/biomass/)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/okadalabipr/biomass.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/okadalabipr/biomass/context:python)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
@@ -17,7 +17,7 @@
 ## インストール
 
 ```
-$ pip3 install biomass
+$ pip install biomass
 ```
 
 ## 使い方
@@ -58,9 +58,9 @@ optimize(
 )
 ```
 
-世代交代毎に，最良のパラメータセットが **out/n/** に保存されます．
+世代交代毎に，最良のパラメータセットが `out/n/` に保存されます．
 
-進捗は **out/n/optimization.log** で見ることができます．
+進捗は `out/n/optimization.log` で見ることができます．
 
 ```
 Generation1: Best Fitness = 5.864228e+00
