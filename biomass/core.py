@@ -305,7 +305,8 @@ def optimize_continue(
 
 def run_simulation(
     model: ModelObject,
-    viz_type: str,
+    *,
+    viz_type: str = "original",
     show_all: bool = False,
     stdev: bool = False,
     save_format: str = "pdf",
@@ -401,6 +402,7 @@ def run_simulation(
 
 def run_analysis(
     model: ModelObject,
+    *,
     target: str,
     metric: str = "integral",
     style: str = "barplot",

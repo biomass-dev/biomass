@@ -21,7 +21,7 @@ def test_simulate_successful():
 
 
 def test_run_simulation():
-    run_simulation(model, viz_type="original")
+    run_simulation(model)
     simulated_value = np.load(
         os.path.join(
             model.path,
