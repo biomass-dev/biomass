@@ -200,10 +200,13 @@ class OptimizationResults(ExecModel):
         n_file = self.get_executable()
         # matplotlib
         plt.figure(figsize=(4, 3))
+        plt.rcParams["font.size"] = 15
+        plt.rcParams["axes.linewidth"] = 1.5
+        plt.rcParams["xtick.major.width"] = 1.5
+        plt.rcParams["ytick.major.width"] = 1.5
+        plt.rcParams["lines.linewidth"] = 1.2
         plt.gca().spines["right"].set_visible(False)
         plt.gca().spines["top"].set_visible(False)
-        plt.rcParams["font.size"] = 18
-        plt.rcParams["lines.linewidth"] = 1.0
         # ---
         for paramset in n_file:
             with open(
@@ -222,10 +225,7 @@ class OptimizationResults(ExecModel):
                 if line.startswith("Generation"):
                     iters.append(line.lstrip("Generation").split(":")[0])
                     obj_val.append(line.split("=")[-1].strip())
-            plt.plot(
-                [int(num) for num in iters],
-                [float(val) for val in obj_val],
-            )
+            plt.plot([int(num) - 1 for num in iters], [float(val) for val in obj_val])
         plt.xlabel("Iteration")
         plt.ylabel("Objective function value")
         plt.savefig(
@@ -236,3 +236,4 @@ class OptimizationResults(ExecModel):
             ),
             bbox_inches="tight",
         )
+        plt.close()
