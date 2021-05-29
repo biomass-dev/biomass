@@ -57,6 +57,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 
 # -- Options for HTML output -------------------------------------------------
+from sphinx.application import Sphinx
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
@@ -72,3 +73,7 @@ html_static_path = ["_static"]
 bibtex_bibfiles = ["citation.bib"]
 bibtex_reference_style = "author_year"
 bibtex_default_style = "alpha"
+
+
+def setup(app: Sphinx) -> None:
+    app.add_css_file("css/custom.css")
