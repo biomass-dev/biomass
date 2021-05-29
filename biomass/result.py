@@ -25,18 +25,21 @@ class OptimizationResults(ExecModel):
         """
         Save optimized parameters as CSV file format.
 
-        Output
-        ------
-        optimization_results/optimized_params.csv
-        optimization_results/optimized_initials.csv
-
         Examples
         --------
+        >>> from biomass import Model
         >>> from biomass.models import Nakakuki_Cell_2010
         >>> from biomass.result import OptimizationResults
-        >>> model = Nakakuki_Cell_2010.create()
+        >>> model = Model(Nakakuki_Cell_2010.__package__).create()
         >>> res = OptimizationResults(model)
         >>> res.to_csv()
+
+        Notes
+        -----
+        Output:
+
+        * optimization_results/optimized_params.csv
+        * optimization_results/optimized_initials.csv
 
         """
         n_file = self.get_executable()
@@ -146,17 +149,21 @@ class OptimizationResults(ExecModel):
             If True, an objective value simulated with original parameters
             will also be shown.
 
-        Output
-        ------
-        fitness_assessment.csv
-
         Examples
         --------
+        >>> from biomass import Model
         >>> from biomass.models import Nakakuki_Cell_2010
         >>> from biomass.result import OptimizationResults
-        >>> model = Nakakuki_Cell_2010.create()
+        >>> model = Model(Nakakuki_Cell_2010.__package__).create()
         >>> res = OptimizationResults(model)
         >>> res.dynamic_assessment()
+
+        Notes
+        -----
+        Output:
+
+        * optimization_results/fitness_assessment.csv
+
 
         """
         with open(
@@ -184,17 +191,20 @@ class OptimizationResults(ExecModel):
         """
         Visualize objective function traces for different optimization runs.
 
-        Output
-        ------
-        obj_func_traces.pdf
-
         Examples
         --------
+        >>> from biomass import Model
         >>> from biomass.models import Nakakuki_Cell_2010
         >>> from biomass.result import OptimizationResults
-        >>> model = Nakakuki_Cell_2010.create()
+        >>> model = Model(Nakakuki_Cell_2010.__package__).create()
         >>> res = OptimizationResults(model)
         >>> res.trace_obj()
+
+        Notes
+        -----
+        Output:
+
+        * optimization_results/obj_func_traces.pdf
 
         """
         n_file = self.get_executable()
