@@ -177,66 +177,54 @@ class TemporalDynamics(ExecModel):
 
         self.model.viz.set_param_range_rcParams()
 
-        for val in ["parameter_value", "initial_value"]:
-            if (val == "parameter_value" and len(self.model.sp.idx_params) == 0) or (
-                val == "initial_value" and len(self.model.sp.idx_initials) == 0
-            ):
-                continue
-            else:
-                fig = plt.figure(figsize=self._set_figsize(orientation, val))
-                arguments_distribution = {
-                    "data": popt[:, : len(self.model.sp.idx_params)]
-                    if val == "parameter_value"
-                    else popt[:, len(self.model.sp.idx_params) :],
-                    "orient": "h" if orientation == "portrait" else "v",
-                    "linewidth": 0.5,
-                    "palette": "Set2",
-                }
-                arguments_scatter = {
-                    "data": popt[:, : len(self.model.sp.idx_params)]
-                    if val == "parameter_value"
-                    else popt[:, len(self.model.sp.idx_params) :],
-                    "orient": "h" if orientation == "portrait" else "v",
-                    "size": 2.5,
-                    "color": ".26",
-                }
-                if distribution == "boxplot":
-                    ax = sns.boxplot(**arguments_distribution)
-                else:
-                    ax = sns.boxenplot(**arguments_distribution)
-                if scatter:
-                    ax = sns.stripplot(**arguments_scatter)
-                sns.despine()
-                if orientation == "portrait":
-                    ax.set_xlabel(val.capitalize().replace("_", " "))
-                    ax.set_xscale("log")
-                    ax.set_ylabel("")
-                    ax.set_yticklabels(
-                        [self.model.parameters[i] for i in self.model.sp.idx_params]
-                        if val == "parameter_value"
-                        else [self.model.species[i] for i in self.model.sp.idx_initials]
-                    )
-                else:
-                    ax.set_xlabel("")
-                    ax.set_xticklabels(
-                        [self.model.parameters[i] for i in self.model.sp.idx_params]
-                        if val == "parameter_value"
-                        else [self.model.species[i] for i in self.model.sp.idx_initials],
-                        rotation=90,
-                    )
-                    ax.set_ylabel(val.capitalize().replace("_", " "))
-                    ax.set_yscale("log")
-                plt.savefig(
-                    os.path.join(
-                        self.model.path,
-                        "figure",
-                        "param_range",
-                        f"estimated_{val}s." + save_format,
-                    ),
-                    dpi=600 if save_format == "png" else None,
-                    bbox_inches="tight",
-                )
-                plt.close(fig)
+        fig = plt.figure(figsize=self._set_figsize(orientation))
+        arguments_distribution = {
+            "data": popt,
+            "orient": "h" if orientation == "portrait" else "v",
+            "linewidth": 0.5,
+            "color": "lightsteelblue",
+        }
+        arguments_scatter = {
+            "data": popt,
+            "orient": "h" if orientation == "portrait" else "v",
+            "size": 2.5,
+            "color": ".26",
+        }
+        if distribution == "boxplot":
+            ax = sns.boxplot(**arguments_distribution)
+        else:
+            ax = sns.boxenplot(**arguments_distribution)
+        if scatter:
+            ax = sns.stripplot(**arguments_scatter)
+        sns.despine()
+        if orientation == "portrait":
+            ax.set_xlabel("Parameter value")
+            ax.set_xscale("log")
+            ax.set_ylabel("")
+            ax.set_yticklabels(
+                [self.model.parameters[i] for i in self.model.sp.idx_params]
+                + ["init_" + self.model.species[i] for i in self.model.sp.idx_initials]
+            )
+        else:
+            ax.set_xlabel("")
+            ax.set_xticklabels(
+                [self.model.parameters[i] for i in self.model.sp.idx_params]
+                + ["init_" + self.model.species[i] for i in self.model.sp.idx_initials],
+                rotation=90,
+            )
+            ax.set_ylabel("Parameter value")
+            ax.set_yscale("log")
+        plt.savefig(
+            os.path.join(
+                self.model.path,
+                "figure",
+                "param_range",
+                f"estimated_parameter_sets." + save_format,
+            ),
+            dpi=600 if save_format == "png" else None,
+            bbox_inches="tight",
+        )
+        plt.close(fig)
 
     def _plot_show_all(
         self,
@@ -639,26 +627,10 @@ class TemporalDynamics(ExecModel):
         )
         plt.close()
 
-    def _set_figsize(self, orientation: str, val: str) -> Tuple[float, float]:
+    def _set_figsize(self, orientation: str) -> Tuple[float, float]:
         figsize = (
-            (
-                8.0,
-                (
-                    len(self.model.sp.idx_params)
-                    if val == "parameter_value"
-                    else len(self.model.sp.idx_initials)
-                )
-                / 2.5,
-            )
+            (8.0, (len(self.model.sp.idx_params) + len(self.model.sp.idx_initials)) / 2.5)
             if orientation == "portrait"
-            else (
-                (
-                    len(self.model.sp.idx_params)
-                    if val == "parameter_value"
-                    else len(self.model.sp.idx_initials)
-                )
-                / 2.2,
-                6.0,
-            )
+            else ((len(self.model.sp.idx_params) + len(self.model.sp.idx_initials)) / 2.2, 6.0)
         )
         return figsize

@@ -71,6 +71,15 @@ def initialize_search_param(
             )
         )
 
+    for name in [parameters[i] for i in estimated_params]:
+        if name.startswith("init_") and name.lstrip("init_") in [
+            species[j] for j in estimated_initials
+        ]:
+            raise NameError(
+                f"{name}: The parameter name prefix 'init_' "
+                "indicates the initial value of a dynamic variable.",
+            )
+
     search_param = np.empty(len(estimated_params) + len(estimated_initials))
     for i, j in enumerate(estimated_params):
         search_param[i] = param_values[j]

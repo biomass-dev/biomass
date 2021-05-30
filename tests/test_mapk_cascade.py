@@ -119,6 +119,14 @@ def test_run_simulation():
     ]:
         simulated_value = np.load(os.path.join(model.path, *npy_file))
         assert np.isfinite(simulated_value).all()
+    assert os.path.isfile(
+        os.path.join(model.path, "figure", "param_range", "estimated_parameter_sets.pdf")
+    )
+    for viz_type in ["original", "1", "2", "3", "average", "best"]:
+        for obs_name in model.obs:
+            assert os.path.isfile(
+                os.path.join(model.path, "figure", "simulation", f"{viz_type}", f"{obs_name}.pdf")
+            )
 
 
 def test_save_result():
