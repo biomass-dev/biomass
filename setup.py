@@ -29,7 +29,7 @@ def get_install_requires() -> List[str]:
         return f.read().splitlines()
 
 
-def main():
+def setup_package():
     # Python version check.
     if sys.version_info[:2] < (3, 7):
         raise RuntimeError("biomass requires at least Python version 3.7")
@@ -45,16 +45,22 @@ def main():
         author_email="himoto@protein.osaka-u.ac.jp",
         url="https://github.com/okadalabipr/biomass",
         download_url="https://pypi.org/project/biomass/",
-        packages=find_packages(exclude=["tests"]),
+        packages=find_packages(exclude=["tests", "docs"]),
         install_requires=get_install_requires(),
         extras_require={
             "dev": [
-                "black==20.8b1",
+                "black>=20.8b1",
                 "flake8",
                 "isort",
                 "pre-commit",
                 "pytest",
-            ]
+            ],
+            "docs": [
+                "sphinx>=1.7",
+                "sphinx_rtd_theme>=0.3",
+                "sphinx_autodoc_typehints>=1.10",
+                "sphinxcontrib-bibtex>=2.2",
+            ],
         },
         python_requires=">=3.7",
         keywords=[
@@ -85,4 +91,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    setup_package()

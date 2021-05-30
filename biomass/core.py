@@ -111,10 +111,10 @@ def optimize(
     options: Optional[dict] = None,
 ) -> None:
     """
-    Run GA for parameter estimation.
+    Estimate model parameters from experimental data.
 
-    Paremters
-    ---------
+    Parameters
+    ----------
     model : ModelObject
         Model for parameter estimation.
 
@@ -125,47 +125,47 @@ def optimize(
         When `end` is specified, parameter sets from `start` to `end` will be estimated.
 
     options : dict, optional
-        popsize : int (default: 5)
+        * popsize : int (default: 5)
             A multiplier for setting the total population size.
             The population has popsize * len(search_param) individuals.
 
-        max_generation : int (default: 10000)
+        * max_generation : int (default: 10000)
             Stop optimization if Generation > max_generation.
 
-        initial_threshold : float (default: 1e12)
+        * initial_threshold : float (default: 1e12)
             Threshold on objective function value used to generate initial population.
             Default value is 1e12 (numerically solvable).
 
-        allowable_error : float (default: 0.0)
+        * allowable_error : float (default: 0.0)
             Stop optimization if Best Fitness <= allowable_error.
 
-        local_search_method : str (default: 'mutation')
+        * local_search_method : str (default: 'mutation')
             Method used in local search. Should be one of
             * 'mutation' : NDM/MGG
             * 'Powell' : Modified Powell method
             * 'DE' : Differential Evolution (strategy: best2bin)
 
-        n_children : int (default: 200)
+        * n_children : int (default: 200)
             (method='mutation') The number of children generated in NDM/MGG.
 
-        maxiter : int (default: 10)
+        * maxiter : int (default: 10)
             (method='Powell' or 'DE') The maximum number of iterations
             over which the entire population is evolved.
 
-        workers : int (default: -1 if `end` is None else 1)
+        * workers : int (default: -1 if `end` is None else 1)
             (method='DE') The population is subdivided into workers sections and
             evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
             all available CPU cores. Set workers to 1 when searching multiple
             parameter sets simultaneously.
 
-        overwrite : bool (default: False)
+        * overwrite : bool (default: False)
             If True, the out/n folder will be overwritten.
 
     Examples
     --------
     >>> from biomass.models import Nakakuki_Cell_2010
-    >>> from biomass import optimize
-    >>> model = Nakakuki_Cell_2010.create()
+    >>> from biomass import Model, optimize
+    >>> model = Model(Nakakuki_Cell_2010.__package__).create()
     >>> optimize(
             model=model, start=1, end=10,
             options={
@@ -209,10 +209,10 @@ def optimize_continue(
     options: Optional[dict] = None,
 ) -> None:
     """
-    Continue running GA from where you stopped in the last parameter search.
+    Continue running optimization from where you stopped in the last parameter search.
 
-    Paremters
-    ---------
+    Parameters
+    ----------
     model : ModelObject
         Model for parameter estimation.
 
@@ -223,40 +223,40 @@ def optimize_continue(
         When `end` is specified, parameter sets from `start` to `end` will be estimated.
 
     options : dict, optional
-        popsize : int (default: 5)
+        * popsize : int (default: 5)
             A multiplier for setting the total population size.
             The population has popsize * len(search_param) individuals.
 
-        max_generation : int (default: 15000)
+        * max_generation : int (default: 15000)
             Stop optimization if Generation > max_generation.
 
-        initial_threshold : float (default: 1e12)
+        * initial_threshold : float (default: 1e12)
             Threshold on objective function value used to generate initial population.
             Default value is 1e12 (numerically solvable).
 
-        allowable_error : float (default: 0.0)
+        * allowable_error : float (default: 0.0)
             Stop optimization if Best Fitness <= allowable_error.
 
-        local_search_method : str (default: 'mutation')
+        * local_search_method : str (default: 'mutation')
             Method used in local search. Should be one of
             * 'mutation' : NDM/MGG
             * 'Powell' : Modified Powell method
             * 'DE' : Differential Evolution (strategy: best2bin)
 
-        n_children : int (default: 200)
+        * n_children : int (default: 200)
             (method='mutation') The number of children generated in NDM/MGG.
 
-        maxiter : int (default: 10)
+        * maxiter : int (default: 10)
             (method='Powell' or 'DE') The maximum number of iterations
             over which the entire population is evolved.
 
-        workers : int (default: -1 if `end` is None else 1)
+        * workers : int (default: -1 if `end` is None else 1)
             (method='DE') The population is subdivided into workers sections and
             evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
             all available CPU cores. Set workers to 1 when searching multiple
             parameter sets simultaneously.
 
-        p0_bounds : list of floats (default: [0.1, 10.0])
+        * p0_bounds : list of floats (default: [0.1, 10.0])
             Generate initial population using best parameter values in the last
             parameter search.
                 - lower_bound = po_bounds[0] * best_parameter_value
@@ -265,8 +265,8 @@ def optimize_continue(
     Examples
     --------
     >>> from biomass.models import Nakakuki_Cell_2010
-    >>> from biomass import optimize_continue
-    >>> model = Nakakuki_Cell_2010.create()
+    >>> from biomass import Model, optimize_continue
+    >>> model = Model(Nakakuki_Cell_2010.__package__).create()
     >>> optimize_continue(
             model=model, start=1, end=10,
             options={
@@ -305,7 +305,8 @@ def optimize_continue(
 
 def run_simulation(
     model: ModelObject,
-    viz_type: str,
+    *,
+    viz_type: str = "original",
     show_all: bool = False,
     stdev: bool = False,
     save_format: str = "pdf",
@@ -346,20 +347,20 @@ def run_simulation(
         as png or pdf format.
 
     param_range : dict, optional
-        orientation : str (default: 'portrait')
+        * orientation : str (default: 'portrait')
             Either 'portrait' or 'landscape'.
 
-        distribution : str (default: 'boxenplot')
+        * distribution : str (default: 'boxenplot')
             Either 'boxplot' or 'boxenplot'.
 
-        scatter : bool (default: False)
+        * scatter : bool (default: False)
             If True, draw a stripplot.
 
     Examples
     --------
     >>> from biomass.models import Nakakuki_Cell_2010
-    >>> from biomass import run_simulation
-    >>> model = Nakakuki_Cell_2010.create()
+    >>> from biomass import Model, run_simulation
+    >>> model = Model(Nakakuki_Cell_2010.__package__).create()
     >>> run_simulation(
             model,
             viz_type='average',
@@ -401,6 +402,7 @@ def run_simulation(
 
 def run_analysis(
     model: ModelObject,
+    *,
     target: str,
     metric: str = "integral",
     style: str = "barplot",
@@ -408,14 +410,14 @@ def run_analysis(
     options: Optional[dict] = None,
 ) -> None:
     """
-    Perform sensitivity analysis to identify critical parameters, species or
+    Employ sensitivity analysis to identify critical parameters, species or
     reactions in the complex biological network.
 
     The sensitivity S(y,x) was calculated according to the following equation:
     S(y,x) = d ln(yi) / d ln (xj), where yi is the signaling metric and xj is
     each nonzero species, parameter value or reaction rate.
 
-    Paremters
+    Parameters
     ---------
     model : ModelObject
         Model for sensitivity analysis.
@@ -443,28 +445,27 @@ def run_analysis(
         as png or pdf format.
 
     options : dict, optional
-        show_indices : bool (default: True)
+        * show_indices : bool (default: True)
             (target == 'reaction') Set to True to put reaction index on each bar.
 
-        excluded_params : list of strings
+        * excluded_params : list of strings
             (target == 'parameter') List of parameters which are not used for analysis.
 
-        excluded_initials : list of strings
+        * excluded_initials : list of strings
             (target == 'initial_condition') List of species which are not used for analysis.
 
-        timepoint : int (default: model.sim.t[-1])
+        * timepoint : int (default: model.sim.t[-1])
             (metric=='timepoint') Which timepoint to use.
 
-        duration : float (default: 0.5)
+        * duration : float (default: 0.5)
             (metric=='duration') 0.1 for 10% of its maximum.
 
     Examples
     --------
     >>> from biomass.models import Nakakuki_Cell_2010
-    >>> from biomass import run_analysis
-    >>> model = Nakakuki_Cell_2010.create()
-
-    1. Parameter
+    >>> from biomass import Model, run_analysis
+    >>> model = Model(Nakakuki_Cell_2010.__package__).create()
+    >>> (Parameter)
     >>> run_analysis(
             model,
             target='parameter',
@@ -474,14 +475,12 @@ def run_analysis(
                 ]
             }
         )
-
-    2. Initial condition
+    >>> (Initial condition)
     >>> run_analysis(
             model,
             target='initial_condition',
         )
-
-    3. Reaction
+    >>> (Reaction)
     >>> run_analysis(
             model,
             target='reaction',
