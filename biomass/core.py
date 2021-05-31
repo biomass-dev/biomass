@@ -167,12 +167,12 @@ def optimize(
     >>> from biomass import Model, optimize
     >>> model = Model(Nakakuki_Cell_2010.__package__).create()
     >>> optimize(
-            model=model, start=1, end=10,
-            options={
-                'max_generation': 10000,
-                'allowable_error': 0.5
-            }
-        )
+    ...     model=model, start=1, end=10,
+    ...     options={
+    ...         'max_generation': 10000,
+    ...         'allowable_error': 0.5
+    ...     }
+    ... )
 
     """
     if options is None:
@@ -268,12 +268,12 @@ def optimize_continue(
     >>> from biomass import Model, optimize_continue
     >>> model = Model(Nakakuki_Cell_2010.__package__).create()
     >>> optimize_continue(
-            model=model, start=1, end=10,
-            options={
-                'max_generation': 20000,
-                'allowable_error': 0.5
-            }
-        )
+    ...     model=model, start=1, end=10,
+    ...     options={
+    ...         'max_generation': 20000,
+    ...         'allowable_error': 0.5
+    ...     }
+    ... )
 
     """
     if options is None:
@@ -362,12 +362,12 @@ def run_simulation(
     >>> from biomass import Model, run_simulation
     >>> model = Model(Nakakuki_Cell_2010.__package__).create()
     >>> run_simulation(
-            model,
-            viz_type='average',
-            show_all=False,
-            stdev=True,
-            save_format="png",
-        )
+    ...     model,
+    ...     viz_type='average',
+    ...     show_all=False,
+    ...     stdev=True,
+    ...     save_format="png",
+    ... )
 
     """
     if viz_type not in ["best", "average", "original", "experiment"] and not viz_type.isdecimal():
@@ -465,26 +465,20 @@ def run_analysis(
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import Model, run_analysis
     >>> model = Model(Nakakuki_Cell_2010.__package__).create()
-    >>> (Parameter)
+    >>> # Parameters
     >>> run_analysis(
-            model,
-            target='parameter',
-            options = {
-                'excluded_params': [
-                    'a', 'Vn', 'Vc', 'Ligand', 'EGF', 'HRG', 'no_ligand'
-                ]
-            }
-        )
-    >>> (Initial condition)
-    >>> run_analysis(
-            model,
-            target='initial_condition',
-        )
-    >>> (Reaction)
-    >>> run_analysis(
-            model,
-            target='reaction',
-        )
+    ...     model,
+    ...     target='parameter',
+    ...     options = {
+    ...         'excluded_params': [
+    ...             'a', 'Vn', 'Vc', 'Ligand', 'EGF', 'HRG', 'no_ligand'
+    ...         ]
+    ...     }
+    ... )
+    >>> # Initial condition
+    >>> run_analysis(model, target='initial_condition')
+    >>> # Reaction
+    >>> run_analysis(model, target='reaction')
 
     """
     if save_format not in ["pdf", "png"]:
