@@ -1,6 +1,7 @@
 # BioMASS
 
 [![Actions Status](https://github.com/okadalabipr/biomass/workflows/Tests/badge.svg)](https://github.com/okadalabipr/biomass/actions)
+[![Documentation Status](https://readthedocs.org/projects/biomass-core/badge/?version=latest)](https://biomass-core.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&logoColor=white)](https://pypi.python.org/pypi/biomass/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Downloads](https://pepy.tech/badge/biomass)](https://pepy.tech/project/biomass)
@@ -35,7 +36,7 @@ BioMASS supports Python 3.7 or newer.
 ### Parameter estimation
 
 ```python
-from biomass import Model, optimize
+from biomass import Model, optimize, run_simulation
 from biomass.models import Nakakuki_Cell_2010
 
 model = Model(Nakakuki_Cell_2010.__package__).create()
@@ -44,6 +45,11 @@ optimize(model, start=1, end=10)
 ```
 
 ![estimated_parameter_sets](https://raw.githubusercontent.com/okadalabipr/biomass/master/docs/_static/img/estimated_parameter_sets.png)
+
+```python
+run_simulation(model, viz_type="average")
+```
+
 ![simulation_average](https://raw.githubusercontent.com/okadalabipr/biomass/master/docs/_static/img/simulation_average.png)
 Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid lines denote simulations.
 
