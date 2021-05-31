@@ -45,6 +45,10 @@ def setup_package():
         author_email="himoto@protein.osaka-u.ac.jp",
         url="https://github.com/okadalabipr/biomass",
         download_url="https://pypi.org/project/biomass/",
+        project_urls={
+            "Documentation": "https://biomass-core.readthedocs.io/en/latest/",
+            "Source Code": "https://github.com/okadalabipr/biomass",
+        },
         packages=find_packages(exclude=["tests", "docs"]),
         install_requires=get_install_requires(),
         extras_require={
