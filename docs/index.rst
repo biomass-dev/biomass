@@ -1,6 +1,10 @@
 .. image:: https://github.com/okadalabipr/biomass/workflows/Tests/badge.svg
    :target: https://github.com/okadalabipr/biomass/actions
 
+.. image:: https://readthedocs.org/projects/biomass-core/badge/?version=latest
+   :target: https://biomass-core.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
+
 .. image:: https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&logoColor=white
    :target: https://pypi.python.org/pypi/biomass/
 
@@ -19,12 +23,8 @@
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
 
-BioMASS
-=======
-
-.. image:: https://raw.githubusercontent.com/okadalabipr/biomass/master/docs/_static/img/logo.png
-   :width: 300px
-   :align: left
+BioMASS documentation
+=====================
 
 Mathematical modeling is a powerful method for the analysis of complex biological systems.
 Although there are many researches devoted on producing models to describe dynamical cellular signaling systems, most of these models are limited and do not cover multiple pathways.
@@ -35,9 +35,11 @@ To overcome this problem, we developed *BioMASS*, a Python framework for Modelin
 The BioMASS framework allows efficient optimization of multiple parameter sets simultaneously and generates the multiple parameter candidates that explain the signaling dynamics of interest.
 These parameter candidates can be further evaluated by their distribution and sensitivity analysis as a part of alternative information about the hidden regulatory mechanism of the system.
 
+Contents
+--------
+
 .. toctree::
    :maxdepth: 1
-   :hidden:
 
    installation
    models
