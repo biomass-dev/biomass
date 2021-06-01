@@ -138,6 +138,12 @@ Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid li
 Sensitivity analysis
 --------------------
 
+.. code-block:: python
+
+    from biomass import run_analysis
+
+    run_analysis(model, target='reaction', metric='integral', style='barplot')
+
 The single parameter sensitivity of each reaction is defined by
 
 .. math:: C^{M}_{i} = d \ln{M} / d \ln{v_{i}}
