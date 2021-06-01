@@ -1,6 +1,7 @@
 # BioMASS
 
 [![Actions Status](https://github.com/okadalabipr/biomass/workflows/Tests/badge.svg)](https://github.com/okadalabipr/biomass/actions)
+[![Documentation Status](https://img.shields.io/readthedocs/biomass-core/latest.svg?logo=read%20the%20docs&logoColor=white&&label=Docs&version=latest)](https://biomass-core.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&logoColor=white)](https://pypi.python.org/pypi/biomass/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Downloads](https://pepy.tech/badge/biomass)](https://pepy.tech/project/biomass)
@@ -44,8 +45,26 @@ optimize(model, start=1, end=10)
 ```
 
 ![estimated_parameter_sets](https://raw.githubusercontent.com/okadalabipr/biomass/master/docs/_static/img/estimated_parameter_sets.png)
+
+```python
+from biomass import run_simulation
+
+run_simulation(model, viz_type="average")
+```
+
 ![simulation_average](https://raw.githubusercontent.com/okadalabipr/biomass/master/docs/_static/img/simulation_average.png)
 Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid lines denote simulations.
+
+### Sensitivity analysis
+
+```python
+from biomass import run_analysis
+
+run_analysis(model, target='reaction', metric='integral')
+```
+
+![sensitivity_PcFos](https://raw.githubusercontent.com/okadalabipr/biomass/master/docs/_static/img/sensitivity_PcFos.png)
+Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HRG). Numbers above bars indicate the reaction indices, and error bars correspond to simulation standard deviation.
 
 ## Author
 

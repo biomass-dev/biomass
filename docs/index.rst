@@ -1,30 +1,8 @@
-.. image:: https://github.com/okadalabipr/biomass/workflows/Tests/badge.svg
-   :target: https://github.com/okadalabipr/biomass/actions
+|Actions Status| |Documentation Status| |PyPI version| |License| |Downloads| |Python versions| |Code quality| |Code style|
 
-.. image:: https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&logoColor=white
-   :target: https://pypi.python.org/pypi/biomass/
-
-.. image:: https://img.shields.io/badge/License-Apache%202.0-green.svg
-   :target: https://opensource.org/licenses/Apache-2.0
-   
-.. image:: https://pepy.tech/badge/biomass
-   :target: https://pepy.tech/project/biomass
-
-.. image:: https://img.shields.io/pypi/pyversions/biomass.svg?logo=Python&logoColor=white
-   :target: https://pypi.python.org/pypi/biomass/
-
-.. image:: https://img.shields.io/lgtm/grade/python/g/okadalabipr/biomass.svg?logo=lgtm&logoWidth=18
-   :target: https://lgtm.com/projects/g/okadalabipr/biomass/context:python
-
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-   :target: https://github.com/psf/black
-
-BioMASS
-=======
-
-.. image:: https://raw.githubusercontent.com/okadalabipr/biomass/master/docs/_static/img/logo.png
-   :width: 300px
-   :align: left
+=====================
+BioMASS documentation
+=====================
 
 Mathematical modeling is a powerful method for the analysis of complex biological systems.
 Although there are many researches devoted on producing models to describe dynamical cellular signaling systems, most of these models are limited and do not cover multiple pathways.
@@ -35,9 +13,11 @@ To overcome this problem, we developed *BioMASS*, a Python framework for Modelin
 The BioMASS framework allows efficient optimization of multiple parameter sets simultaneously and generates the multiple parameter candidates that explain the signaling dynamics of interest.
 These parameter candidates can be further evaluated by their distribution and sensitivity analysis as a part of alternative information about the hidden regulatory mechanism of the system.
 
+Contents
+========
+
 .. toctree::
-   :maxdepth: 1
-   :hidden:
+   :maxdepth: 2
 
    installation
    models
@@ -46,14 +26,43 @@ These parameter candidates can be further evaluated by their distribution and se
    citation
 
 Author & Maintainer
--------------------
+===================
 
-`Hiroaki Imoto`_
+`Hiroaki Imoto <https://github.com/himoto>`_
 
 License
--------
+=======
 
-`Apache License 2.0`_
+`Apache License 2.0 <https://github.com/okadalabipr/biomass/blob/master/LICENSE>`_
 
-.. _`Hiroaki Imoto`: https://github.com/himoto
-.. _`Apache License 2.0`: https://github.com/okadalabipr/biomass/blob/master/LICENSE
+.. |Actions Status| image:: https://github.com/okadalabipr/biomass/workflows/Tests/badge.svg
+   :target: https://github.com/okadalabipr/biomass/actions
+   :alt: Actions Status
+
+.. |Documentation Status| image:: https://img.shields.io/readthedocs/biomass-core/latest.svg?logo=read%20the%20docs&logoColor=white&&label=Docs&version=latest
+   :target: https://biomass-core.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
+
+.. |PyPI version| image:: https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&logoColor=white
+   :target: https://pypi.python.org/pypi/biomass/
+   :alt: PyPI version
+
+.. |License| image:: https://img.shields.io/badge/License-Apache%202.0-green.svg
+   :target: https://opensource.org/licenses/Apache-2.0
+   :alt: License
+
+.. |Downloads| image:: https://pepy.tech/badge/biomass
+   :target: https://pepy.tech/project/biomass
+   :alt: Downloads
+
+.. |Python versions| image:: https://img.shields.io/pypi/pyversions/biomass.svg?logo=Python&logoColor=white
+   :target: https://pypi.python.org/pypi/biomass/
+   :alt: Python versions
+
+.. |Code quality| image:: https://img.shields.io/lgtm/grade/python/g/okadalabipr/biomass.svg?logo=lgtm&logoWidth=18
+   :target: https://lgtm.com/projects/g/okadalabipr/biomass/context:python
+   :alt: Code quality: Python
+
+.. |Code style| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
+   :alt: Code style: black

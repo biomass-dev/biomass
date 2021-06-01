@@ -19,13 +19,8 @@ sys.path.insert(0, os.path.abspath("../"))
 # -- Project information -----------------------------------------------------
 from datetime import datetime
 
-try:
-    from biomass import __author__
-except ImportError:
-    __author__ = "Hiroaki Imoto"
-
 project = "BioMASS"
-author = __author__
+author = "Hiroaki Imoto"
 copyright = f"{datetime.now():%Y}, {author}"
 
 

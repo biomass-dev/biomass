@@ -4,7 +4,7 @@ Installation
 PyPI
 ^^^^
 
-Install Pasmopy from PyPI using::
+Install BioMASS from PyPI using::
 
    pip install biomass
 

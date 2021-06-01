@@ -13,6 +13,9 @@ class OptimizationResults(ExecModel):
     model: ModelObject
 
     def __post_init__(self) -> None:
+        """
+        Create optimization_results/ in the model folder.
+        """
         os.makedirs(
             os.path.join(
                 self.model.path,
