@@ -19,21 +19,12 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   about
    installation
    models
    usage
    modules/index
    citation
-
-Author & Maintainer
-===================
-
-`Hiroaki Imoto <https://github.com/himoto>`_
-
-License
-=======
-
-`Apache License 2.0 <https://github.com/okadalabipr/biomass/blob/master/LICENSE>`_
 
 .. |Actions Status| image:: https://github.com/okadalabipr/biomass/workflows/Tests/badge.svg
    :target: https://github.com/okadalabipr/biomass/actions
