@@ -49,7 +49,7 @@ optimize(model, start=1, end=10)
 ```python
 from biomass import run_simulation
 
-run_simulation(model, viz_type="average")
+run_simulation(model, viz_type="average", stdev=True)
 ```
 
 ![simulation_average](https://raw.githubusercontent.com/okadalabipr/biomass/master/docs/_static/img/simulation_average.png)
