@@ -47,12 +47,16 @@ class OptimizationResults(ExecModel):
         """
         n_file = self.get_executable()
 
-        if len(self.model.sp.idx_params) > 0:
+        if len(self.model.sp.idx_params) + len(self.model.sp.idx_initials) > 0:
             optimized_params = np.empty(
-                (len(self.model.sp.idx_params) + 2, len(n_file) + 1), dtype="<U21"
+                (
+                    len(self.model.sp.idx_params) + len(self.model.sp.idx_initials) + 2,
+                    len(n_file) + 1,
+                ),
+                dtype="<U21",
             )
-            for i, parameter_index in enumerate(self.model.sp.idx_params):
-                for j, nth_paramset in enumerate(sorted(n_file), start=1):
+            for j, nth_paramset in enumerate(sorted(n_file), start=1):
+                for i, parameter_index in enumerate(self.model.sp.idx_params):
                     best_generation = np.load(
                         os.path.join(
                             self.model.path,
@@ -79,10 +83,17 @@ class OptimizationResults(ExecModel):
                     )
                     optimized_params[0, 0] = ""
                     optimized_params[1, 0] = "*Error*"
-                    optimized_params[i + 2, 0] = self.model.parameters[parameter_index]
                     optimized_params[0, j] = str(nth_paramset)
                     optimized_params[1, j] = f"{error:8.3e}"
+                    optimized_params[i + 2, 0] = self.model.parameters[parameter_index]
                     optimized_params[i + 2, j] = f"{best_individual[i]:8.3e}"
+                for i, species_index in enumerate(self.model.sp.idx_initials):
+                    optimized_params[i + len(self.model.sp.idx_params) + 2, 0] = (
+                        "init_" + self.model.species[species_index]
+                    )
+                    optimized_params[
+                        i + len(self.model.sp.idx_params) + 2, j
+                    ] = f"{best_individual[i+len(self.model.sp.idx_params)]:8.3e}"
             with open(
                 os.path.join(
                     self.model.path,
@@ -93,54 +104,6 @@ class OptimizationResults(ExecModel):
             ) as f:
                 writer = csv.writer(f, lineterminator="\n")
                 writer.writerows(optimized_params)
-        if len(self.model.sp.idx_initials) > 0:
-            optimized_initials = np.empty(
-                (len(self.model.sp.idx_initials) + 2, len(n_file) + 1), dtype="<U21"
-            )
-            for i, species_index in enumerate(self.model.sp.idx_initials):
-                for j, nth_paramset in enumerate(sorted(n_file), start=1):
-                    best_generation = np.load(
-                        os.path.join(
-                            self.model.path,
-                            "out",
-                            f"{nth_paramset:d}",
-                            "generation.npy",
-                        )
-                    )
-                    best_individual = np.load(
-                        os.path.join(
-                            self.model.path,
-                            "out",
-                            f"{nth_paramset:d}",
-                            f"fit_param{int(best_generation):d}.npy",
-                        )
-                    )
-                    error = np.load(
-                        os.path.join(
-                            self.model.path,
-                            "out",
-                            f"{nth_paramset:d}",
-                            "best_fitness.npy",
-                        )
-                    )
-                    optimized_initials[0, 0] = ""
-                    optimized_initials[1, 0] = "*Error*"
-                    optimized_initials[i + 2, 0] = self.model.species[species_index]
-                    optimized_initials[0, j] = str(nth_paramset)
-                    optimized_initials[1, j] = f"{error:8.3e}"
-                    optimized_initials[
-                        i + 2, j
-                    ] = f"{best_individual[i+len(self.model.sp.idx_params)]:8.3e}"
-            with open(
-                os.path.join(
-                    self.model.path,
-                    "optimization_results",
-                    "optimized_initials.csv",
-                ),
-                mode="w",
-            ) as f:
-                writer = csv.writer(f, lineterminator="\n")
-                writer.writerows(optimized_initials)
 
     def dynamic_assessment(self, include_original: bool = False) -> None:
         """
@@ -166,7 +129,6 @@ class OptimizationResults(ExecModel):
         Output:
 
         * optimization_results/fitness_assessment.csv
-
 
         """
         with open(
