@@ -19,24 +19,15 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   about
    installation
    models
    usage
    modules/index
    citation
 
-Author & Maintainer
-===================
-
-`Hiroaki Imoto <https://github.com/himoto>`_
-
-License
-=======
-
-`Apache License 2.0 <https://github.com/okadalabipr/biomass/blob/master/LICENSE>`_
-
-.. |Actions Status| image:: https://github.com/okadalabipr/biomass/workflows/Tests/badge.svg
-   :target: https://github.com/okadalabipr/biomass/actions
+.. |Actions Status| image:: https://github.com/biomass-dev/biomass/workflows/Tests/badge.svg
+   :target: https://github.com/biomass-dev/biomass/actions
    :alt: Actions Status
 
 .. |Documentation Status| image:: https://img.shields.io/readthedocs/biomass-core/latest.svg?logo=read%20the%20docs&logoColor=white&&label=Docs&version=latest
@@ -59,8 +50,8 @@ License
    :target: https://pypi.python.org/pypi/biomass/
    :alt: Python versions
 
-.. |Code quality| image:: https://img.shields.io/lgtm/grade/python/g/okadalabipr/biomass.svg?logo=lgtm&logoWidth=18
-   :target: https://lgtm.com/projects/g/okadalabipr/biomass/context:python
+.. |Code quality| image:: https://img.shields.io/lgtm/grade/python/g/biomass-dev/biomass.svg?logo=lgtm&logoWidth=18
+   :target: https://lgtm.com/projects/g/biomass-dev/biomass/context:python
    :alt: Code quality: Python
 
 .. |Code style| image:: https://img.shields.io/badge/code%20style-black-000000.svg

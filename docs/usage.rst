@@ -120,7 +120,7 @@ Progress list: ``out/n/optimization.log``::
     # Visualize objective function traces for different optimization runs
     res.trace_obj()
 
-.. image:: https://raw.githubusercontent.com/okadalabipr/biomass/master/docs/_static/img/estimated_parameter_sets.png
+.. image:: https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/estimated_parameter_sets.png
 
 Visualization of simulation results
 -----------------------------------
@@ -131,7 +131,7 @@ Visualization of simulation results
 
     run_simulation(model, viz_type='average', show_all=False, stdev=True)
 
-.. image:: https://raw.githubusercontent.com/okadalabipr/biomass/master/docs/_static/img/simulation_average.png
+.. image:: https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/simulation_average.png
 
 Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid lines denote simulations.
 
@@ -151,7 +151,7 @@ The single parameter sensitivity of each reaction is defined by
 where v\ :sub:`i`\ is the i\ :sup:`th`\ reaction rate, v is reaction vector v = (v\ :sub:`1`\, v\ :sub:`2`\, ...) and M is a signaling metric, e.g., time-integrated response, duration.
 Sensitivity coefficients were calculated using finite difference approximations with 1% changes in the reaction rates.
 
-.. image:: https://raw.githubusercontent.com/okadalabipr/biomass/master/docs/_static/img/sensitivity_PcFos.png
+.. image:: https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/sensitivity_PcFos.png
 
 Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HRG). Numbers above bars indicate the reaction indices, and error bars correspond to simulation standard deviation.
 
