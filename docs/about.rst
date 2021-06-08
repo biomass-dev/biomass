@@ -219,5 +219,5 @@ Contact
 
 Please contact us with any questions or comments via `Issues`_ |  `Discussions`_ on GitHub.
 
-.. _Issues: https://github.com/okadalabipr/biomass/issues
-.. _Discussions: https://github.com/okadalabipr/biomass/discussions
+.. _Issues: https://github.com/biomass-dev/biomass/issues
+.. _Discussions: https://github.com/biomass-dev/biomass/discussions

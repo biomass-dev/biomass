@@ -43,11 +43,11 @@ def setup_package():
         license="Apache 2.0",
         author="Hiroaki Imoto",
         author_email="himoto@protein.osaka-u.ac.jp",
-        url="https://github.com/okadalabipr/biomass",
+        url="https://github.com/biomass-dev/biomass",
         download_url="https://pypi.org/project/biomass/",
         project_urls={
             "Documentation": "https://biomass-core.readthedocs.io/en/latest/",
-            "Source Code": "https://github.com/okadalabipr/biomass",
+            "Source Code": "https://github.com/biomass-dev/biomass",
         },
         packages=find_packages(exclude=["tests", "docs"]),
         install_requires=get_install_requires(),
