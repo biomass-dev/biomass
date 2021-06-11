@@ -4,7 +4,7 @@ from distutils.dir_util import copy_tree
 
 import pytest
 
-from biomass import Model, run_simulation
+from biomass import Model, OptimizationResults, run_simulation
 from biomass.models import Nakakuki_Cell_2010
 
 # from biomass import run_analysis
@@ -55,13 +55,22 @@ def test_run_simulation():
             "simulations_all.npy",
         )
     )
-    assert os.path.isfile(
-        os.path.join(model.path, "figure", "param_range", "estimated_parameter_sets.pdf")
-    )
     for obs_name in model.obs:
         assert os.path.isfile(
             os.path.join(model.path, "figure", "simulation", "average", f"{obs_name}.pdf")
         )
+
+
+def test_save_resuts():
+    res = OptimizationResults(model)
+    res.savefig(figsize=(16, 5), boxplot_kws={"orient": "v"})
+    assert os.path.isfile(
+        os.path.join(
+            model.path,
+            "optimization_results",
+            "estimated_parameter_sets.pdf",
+        )
+    )
 
 
 def test_cleanup():

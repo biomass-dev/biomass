@@ -1,27 +1,15 @@
 import os
-import warnings
 from dataclasses import dataclass
 from math import isnan
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 import numpy as np
-import seaborn as sns
 from matplotlib import pyplot as plt
 from matplotlib.axes._axes import _log as matplotlib_axes_logger
 
 from ..exec_model import ExecModel, ModelObject
 
 matplotlib_axes_logger.setLevel("ERROR")
-
-
-class VisualizeWarning(UserWarning):
-    pass
-
-
-def _check_unknown_options(unknown_options: dict) -> None:
-    if unknown_options:
-        msg = ", ".join(map(str, unknown_options.keys()))
-        warnings.warn(f"Unknown visualization options: {msg}", VisualizeWarning)
 
 
 @dataclass
@@ -133,98 +121,6 @@ class TemporalDynamics(ExecModel):
                     self._save_mode_0(obs_name, singleplot, viz_type, save_format)
             if mode == 1 and multiplot["observables"]:
                 self._save_mode_1(multiplot, viz_type, save_format)
-
-    def plot_param_range(
-        self,
-        popt: np.ndarray,
-        save_format: str,
-        orientation: str,
-        distribution: str,
-        scatter: bool,
-        **unknown_options,
-    ) -> None:
-        """
-        Plot estimated parameter/initial values.
-
-        Parameters
-        ----------
-        popt : numpy array
-            Array containing all optimized parameter/initial values.
-
-        save_format : str (default: "pdf")
-            Either "png" or "pdf", indicating whether to save figures
-            as png or pdf format.
-
-        orientation : str (default: 'portrait')
-            Either 'portrait' or 'landscape'.
-
-        distribution : str (default: 'boxenplot')
-            Either 'boxplot' or 'boxenplot'.
-
-        scatter : bool (default: False)
-            If True, draw a stripplot.
-
-        """
-        _check_unknown_options(unknown_options)
-        os.makedirs(
-            os.path.join(
-                self.model.path,
-                "figure",
-                "param_range",
-            ),
-            exist_ok=True,
-        )
-
-        self.model.viz.set_param_range_rcParams()
-
-        fig = plt.figure(figsize=self._set_figsize(orientation))
-        arguments_distribution = {
-            "data": popt,
-            "orient": "h" if orientation == "portrait" else "v",
-            "linewidth": 0.5,
-            "color": "lightsteelblue",
-        }
-        arguments_scatter = {
-            "data": popt,
-            "orient": "h" if orientation == "portrait" else "v",
-            "size": 2.5,
-            "color": ".26",
-        }
-        if distribution == "boxplot":
-            ax = sns.boxplot(**arguments_distribution)
-        else:
-            ax = sns.boxenplot(**arguments_distribution)
-        if scatter:
-            ax = sns.stripplot(**arguments_scatter)
-        sns.despine()
-        if orientation == "portrait":
-            ax.set_xlabel("Parameter value")
-            ax.set_xscale("log")
-            ax.set_ylabel("")
-            ax.set_yticklabels(
-                [self.model.parameters[i] for i in self.model.sp.idx_params]
-                + ["init_" + self.model.species[i] for i in self.model.sp.idx_initials]
-            )
-        else:
-            ax.set_xlabel("")
-            ax.set_xticklabels(
-                [self.model.parameters[i] for i in self.model.sp.idx_params]
-                + ["init_" + self.model.species[i] for i in self.model.sp.idx_initials],
-                rotation=90,
-            )
-            ax.set_ylabel("Parameter value")
-            ax.set_yscale("log")
-        plt.savefig(
-            os.path.join(
-                self.model.path,
-                "figure",
-                "param_range",
-                f"estimated_parameter_sets." + save_format,
-            ),
-            dpi=600 if save_format == "png" else None,
-            bbox_inches="tight",
-        )
-        plt.close(fig)
 
     def _plot_show_all(
         self,
@@ -626,11 +522,3 @@ class TemporalDynamics(ExecModel):
             bbox_inches="tight",
         )
         plt.close()
-
-    def _set_figsize(self, orientation: str) -> Tuple[float, float]:
-        figsize = (
-            (8.0, (len(self.model.sp.idx_params) + len(self.model.sp.idx_initials)) / 2.5)
-            if orientation == "portrait"
-            else ((len(self.model.sp.idx_params) + len(self.model.sp.idx_initials)) / 2.2, 6.0)
-        )
-        return figsize
