@@ -1,9 +1,12 @@
 import csv
 import os
 from dataclasses import dataclass
+from typing import Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import seaborn as sns
 
 from .exec_model import ExecModel, ModelObject
 
@@ -30,9 +33,8 @@ class OptimizationResults(ExecModel):
 
         Examples
         --------
-        >>> from biomass import Model
+        >>> from biomass import Model, OptimizationResults
         >>> from biomass.models import Nakakuki_Cell_2010
-        >>> from biomass.result import OptimizationResults
         >>> model = Model(Nakakuki_Cell_2010.__package__).create()
         >>> res = OptimizationResults(model)
         >>> res.to_csv()
@@ -105,6 +107,76 @@ class OptimizationResults(ExecModel):
                 writer = csv.writer(f, lineterminator="\n")
                 writer.writerows(optimized_params)
 
+    def savefig(
+        self,
+        figsize: tuple = (6.4, 4.8),
+        boxplot_kws: Optional[dict] = None,
+    ) -> None:
+        """
+        Visualize estimated parameter sets using `seaborn.boxplot`.
+
+        Parameters
+        ----------
+        figsize : tuple (default: (6.4, 4.8))
+            Width, height in inches.
+        boxplot_kws : dict, optional
+            Keyword arguments to pass to `seaborn.boxplot`.
+
+        Examples
+        --------
+        >>> from biomass import Model, OptimizationResults
+        >>> from biomass.models import Nakakuki_Cell_2010
+        >>> model = Model(Nakakuki_Cell_2010.__package__).create()
+        >>> res = OptimizationResults(model)
+        >>> res.savefig(figsize=(16,5), boxplot_kws={"orient": "v"})
+
+        Notes
+        -----
+        Output:
+
+        * optimization_results/estimated_parameter_sets.pdf
+        """
+        if not os.path.isfile(
+            os.path.join(
+                self.model.path,
+                "optimization_results",
+                "optimized_params.csv",
+            )
+        ):
+            self.to_csv()
+        if boxplot_kws is None:
+            boxplot_kws = {}
+        boxplot_kws.setdefault("orient", "h")
+
+        df = pd.read_csv(
+            os.path.join(
+                self.model.path,
+                "optimization_results",
+                "optimized_params.csv",
+            ),
+            index_col=0,
+        )
+        df.drop("*Error*", inplace=True)
+
+        plt.figure(figsize=figsize)
+        ax = sns.boxplot(data=df.T, **boxplot_kws)
+        if boxplot_kws["orient"] == "h":
+            ax.set_xscale("log")
+            ax.set_xlabel("Parameter value")
+        elif boxplot_kws["orient"] == "v":
+            ax.set_yscale("log")
+            ax.set_ylabel("Parameter value")
+            ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
+        sns.despine()
+        plt.savefig(
+            os.path.join(
+                self.model.path,
+                "optimization_results",
+                "estimated_parameter_sets.pdf",
+            ),
+            bbox_inches="tight",
+        )
+
     def dynamic_assessment(self, include_original: bool = False) -> None:
         """
         Compute objective values using estimated parameters.
@@ -117,9 +189,8 @@ class OptimizationResults(ExecModel):
 
         Examples
         --------
-        >>> from biomass import Model
+        >>> from biomass import Model, OptimizationResults
         >>> from biomass.models import Nakakuki_Cell_2010
-        >>> from biomass.result import OptimizationResults
         >>> model = Model(Nakakuki_Cell_2010.__package__).create()
         >>> res = OptimizationResults(model)
         >>> res.dynamic_assessment()
@@ -158,9 +229,8 @@ class OptimizationResults(ExecModel):
 
         Examples
         --------
-        >>> from biomass import Model
+        >>> from biomass import Model, OptimizationResults
         >>> from biomass.models import Nakakuki_Cell_2010
-        >>> from biomass.result import OptimizationResults
         >>> model = Model(Nakakuki_Cell_2010.__package__).create()
         >>> res = OptimizationResults(model)
         >>> res.trace_obj()
