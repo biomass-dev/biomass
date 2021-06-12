@@ -45,7 +45,6 @@ class OptimizationResults(ExecModel):
 
         * optimization_results/optimized_params.csv
         * optimization_results/optimized_initials.csv
-
         """
         n_file = self.get_executable()
 
@@ -146,7 +145,7 @@ class OptimizationResults(ExecModel):
             self.to_csv()
         if boxplot_kws is None:
             boxplot_kws = {}
-        boxplot_kws.setdefault("orient", "h")
+        boxplot_kws.setdefault("orient", "v")
 
         df = pd.read_csv(
             os.path.join(
@@ -167,6 +166,8 @@ class OptimizationResults(ExecModel):
             ax.set_yscale("log")
             ax.set_ylabel("Parameter value")
             ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
+        else:
+            raise ValueError("boxplot_kws['orient'] must be either 'v' or 'h'.")
         sns.despine()
         plt.savefig(
             os.path.join(
@@ -200,7 +201,6 @@ class OptimizationResults(ExecModel):
         Output:
 
         * optimization_results/fitness_assessment.csv
-
         """
         with open(
             os.path.join(
