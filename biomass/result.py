@@ -1,7 +1,7 @@
 import csv
 import os
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -108,7 +108,8 @@ class OptimizationResults(ExecModel):
 
     def savefig(
         self,
-        figsize: tuple = (6.4, 4.8),
+        *,
+        figsize: Optional[Tuple[float, float]] = None,
         boxplot_kws: Optional[dict] = None,
     ) -> None:
         """
@@ -116,7 +117,7 @@ class OptimizationResults(ExecModel):
 
         Parameters
         ----------
-        figsize : tuple (default: (6.4, 4.8))
+        figsize : Tuple[float, float], optional
             Width, height in inches.
         boxplot_kws : dict, optional
             Keyword arguments to pass to `seaborn.boxplot`.
@@ -157,7 +158,8 @@ class OptimizationResults(ExecModel):
         )
         df.drop("*Error*", inplace=True)
 
-        plt.figure(figsize=figsize)
+        if isinstance(figsize, tuple) and len(figsize) == 2:
+            plt.figure(figsize=figsize)
         ax = sns.boxplot(data=df.T, **boxplot_kws)
         if boxplot_kws["orient"] == "h":
             ax.set_xscale("log")
