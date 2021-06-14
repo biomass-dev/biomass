@@ -3,14 +3,27 @@ from .name2idx import C, V
 
 class DifferentialEquation(object):
     def __init__(self, perturbation):
+        super(DifferentialEquation, self).__init__()
         self.perturbation = perturbation
 
     # Refined Model
     def diffeq(self, t, y, *x):
         v = {}
         # Rate equations
-        v[1] = x[C.V1] * x[C.a] * y[V.ppMEKc] * y[V.ERKc] / (x[C.Km1] * (1 + y[V.pERKc] / x[C.Km2]) + y[V.ERKc])
-        v[2] = x[C.V2] * x[C.a] * y[V.ppMEKc] * y[V.pERKc] / (x[C.Km2] * (1 + y[V.ERKc] / x[C.Km1]) + y[V.pERKc])
+        v[1] = (
+            x[C.V1]
+            * x[C.a]
+            * y[V.ppMEKc]
+            * y[V.ERKc]
+            / (x[C.Km1] * (1 + y[V.pERKc] / x[C.Km2]) + y[V.ERKc])
+        )
+        v[2] = (
+            x[C.V2]
+            * x[C.a]
+            * y[V.ppMEKc]
+            * y[V.pERKc]
+            / (x[C.Km2] * (1 + y[V.ERKc] / x[C.Km1]) + y[V.pERKc])
+        )
         v[3] = x[C.V3] * y[V.pERKc] / (x[C.Km3] * (1 + y[V.ppERKc] / x[C.Km4]) + y[V.pERKc])
         v[4] = x[C.V4] * y[V.ppERKc] / (x[C.Km4] * (1 + y[V.pERKc] / x[C.Km3]) + y[V.ppERKc])
         v[5] = x[C.V5] * y[V.pERKn] / (x[C.Km5] * (1 + y[V.ppERKn] / x[C.Km6]) + y[V.pERKn])
@@ -18,7 +31,9 @@ class DifferentialEquation(object):
         v[7] = x[C.KimERK] * y[V.ERKc] - x[C.KexERK] * (x[C.Vn] / x[C.Vc]) * y[V.ERKn]
         v[8] = x[C.KimpERK] * y[V.pERKc] - x[C.KexpERK] * (x[C.Vn] / x[C.Vc]) * y[V.pERKn]
         v[9] = x[C.KimppERK] * y[V.ppERKc] - x[C.KexppERK] * (x[C.Vn] / x[C.Vc]) * y[V.ppERKn]
-        v[10] = x[C.V10] * y[V.ppERKn] ** x[C.n10] / (x[C.Km10] ** x[C.n10] + y[V.ppERKn] ** x[C.n10])
+        v[10] = (
+            x[C.V10] * y[V.ppERKn] ** x[C.n10] / (x[C.Km10] ** x[C.n10] + y[V.ppERKn] ** x[C.n10])
+        )
         v[11] = x[C.p11] * y[V.PreduspmRNAn]
         v[12] = x[C.p12] * y[V.duspmRNAc]
         v[13] = x[C.p13] * y[V.duspmRNAc]
@@ -42,7 +57,11 @@ class DifferentialEquation(object):
         v[31] = (
             x[C.V31]
             * (y[V.pCREBn] * y[V.pElk1n]) ** x[C.n31]
-            / (x[C.Km31] ** x[C.n31] + (y[V.pCREBn] * y[V.pElk1n]) ** x[C.n31] + (y[V.Fn] / x[C.KF31]) ** x[C.nF31])
+            / (
+                x[C.Km31] ** x[C.n31]
+                + (y[V.pCREBn] * y[V.pElk1n]) ** x[C.n31]
+                + (y[V.Fn] / x[C.KF31]) ** x[C.nF31]
+            )
         )
         v[32] = x[C.p32] * y[V.PrecfosmRNAn]
         v[33] = x[C.p33] * y[V.cfosmRNAc]
@@ -69,7 +88,9 @@ class DifferentialEquation(object):
         v[54] = x[C.p54] * y[V.pDUSPn] * y[V.pERKn] - x[C.m54] * y[V.pDUSPn_pERKn]
         v[55] = x[C.p55] * y[V.pDUSPn_pERKn]
         v[56] = x[C.p56] * y[V.pDUSPn] * y[V.ERKn] - x[C.m56] * y[V.pDUSPn_ERKn]
-        v[57] = x[C.V57] * y[V.pcFOSn] ** x[C.n57] / (x[C.Km57] ** x[C.n57] + y[V.pcFOSn] ** x[C.n57])
+        v[57] = (
+            x[C.V57] * y[V.pcFOSn] ** x[C.n57] / (x[C.Km57] ** x[C.n57] + y[V.pcFOSn] ** x[C.n57])
+        )
         v[58] = x[C.p58] * y[V.PreFmRNAn]
         v[59] = x[C.p59] * y[V.FmRNAc]
         v[60] = x[C.p60] * y[V.FmRNAc]
@@ -137,9 +158,29 @@ class DifferentialEquation(object):
         dydt[V.pcFOSc] = v[35] + v[36] - v[37] - v[39] - v[41]
         dydt[V.pcFOSn] = v[41] * (x[C.Vc] / x[C.Vn]) + v[42] + v[43] - v[44] - v[46]
         dydt[V.DUSPc] = v[13] - v[14] + v[15] - v[16] - v[18]
-        dydt[V.DUSPn] = v[18] * (x[C.Vc] / x[C.Vn]) - v[20] + v[21] - v[22] - v[47] + v[48] - v[49] + v[50] - v[51]
+        dydt[V.DUSPn] = (
+            v[18] * (x[C.Vc] / x[C.Vn])
+            - v[20]
+            + v[21]
+            - v[22]
+            - v[47]
+            + v[48]
+            - v[49]
+            + v[50]
+            - v[51]
+        )
         dydt[V.pDUSPc] = v[14] - v[15] - v[17] - v[19]
-        dydt[V.pDUSPn] = v[19] * (x[C.Vc] / x[C.Vn]) + v[20] - v[21] - v[23] - v[52] + v[53] - v[54] + v[55] - v[56]
+        dydt[V.pDUSPn] = (
+            v[19] * (x[C.Vc] / x[C.Vn])
+            + v[20]
+            - v[21]
+            - v[23]
+            - v[52]
+            + v[53]
+            - v[54]
+            + v[55]
+            - v[56]
+        )
         dydt[V.DUSPn_ERKn] = v[51]
         dydt[V.DUSPn_pERKn] = v[49] - v[50]
         dydt[V.DUSPn_ppERKn] = v[47] - v[48]

@@ -5,12 +5,17 @@ class DifferentialEquation(object):
     """Kinetic equations comprising the computational model of the MAPK cascade."""
 
     def __init__(self, perturbation):
+        super(DifferentialEquation, self).__init__()
         self.perturbation = perturbation
 
     def diffeq(self, t, y, *x):
         # Rate equation
         v = {}
-        v[1] = x[C.V1] * y[V.MKKK] / ((1 + (y[V.MAPK_PP] / x[C.KI]) ** x[C.n]) * (x[C.K1] + y[V.MKKK]))
+        v[1] = (
+            x[C.V1]
+            * y[V.MKKK]
+            / ((1 + (y[V.MAPK_PP] / x[C.KI]) ** x[C.n]) * (x[C.K1] + y[V.MKKK]))
+        )
         v[2] = x[C.V2] * y[V.MKKK_P] / (x[C.K2] + y[V.MKKK_P])
         v[3] = x[C.k3] * y[V.MKKK_P] * y[V.MKK] / (x[C.K3] + y[V.MKK])
         v[4] = x[C.k4] * y[V.MKKK_P] * y[V.MKK_P] / (x[C.K3] + y[V.MKK_P])
