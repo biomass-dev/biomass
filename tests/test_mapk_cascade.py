@@ -119,9 +119,6 @@ def test_run_simulation():
     ]:
         simulated_value = np.load(os.path.join(model.path, *npy_file))
         assert np.isfinite(simulated_value).all()
-    assert os.path.isfile(
-        os.path.join(model.path, "figure", "param_range", "estimated_parameter_sets.pdf")
-    )
     for viz_type in ["original", "1", "2", "3", "average", "best"]:
         for obs_name in model.obs:
             assert os.path.isfile(
@@ -137,6 +134,14 @@ def test_save_result():
             model.path,
             "optimization_results",
             "optimized_params.csv",
+        )
+    )
+    res.savefig()
+    assert os.path.isfile(
+        os.path.join(
+            model.path,
+            "optimization_results",
+            "estimated_parameter_sets.pdf",
         )
     )
     res.dynamic_assessment(include_original=True)

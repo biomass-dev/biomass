@@ -310,7 +310,6 @@ def run_simulation(
     show_all: bool = False,
     stdev: bool = False,
     save_format: str = "pdf",
-    param_range: Optional[dict] = None,
 ) -> None:
     """
     Simulate ODE model with estimated parameter values.
@@ -346,16 +345,6 @@ def run_simulation(
         Either "png" or "pdf", indicating whether to save figures
         as png or pdf format.
 
-    param_range : dict, optional
-        * orientation : str (default: 'portrait')
-            Either 'portrait' or 'landscape'.
-
-        * distribution : str (default: 'boxenplot')
-            Either 'boxplot' or 'boxenplot'.
-
-        * scatter : bool (default: False)
-            If True, draw a stripplot.
-
     Examples
     --------
     >>> from biomass.models import Nakakuki_Cell_2010
@@ -378,25 +367,11 @@ def run_simulation(
     if save_format not in ["pdf", "png"]:
         raise ValueError("save_format must be either 'pdf' or 'png'.")
 
-    if param_range is None:
-        param_range = {}
-    param_range.setdefault("orientation", "portrait")
-    param_range.setdefault("distribution", "boxenplot")
-    param_range.setdefault("scatter", False)
-
-    if param_range["orientation"] not in ["portrait", "landscape"]:
-        raise ValueError("Available param_range['orientation'] are: 'portrait' or 'landscape'.")
-    if param_range["distribution"] not in ["boxplot", "boxenplot"]:
-        raise ValueError("Available param_range['distribution'] are: 'boxplot' or 'boxenplot'.")
-    if not isinstance(param_range["scatter"], bool):
-        raise TypeError("param_range['scatter'] must be a boolean.")
-
     SignalingSystems(model).simulate_all(
         viz_type=viz_type,
         show_all=show_all,
         stdev=stdev,
         save_format=save_format,
-        param_range=param_range,
     )
 
 

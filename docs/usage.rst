@@ -115,10 +115,10 @@ Progress list: ``out/n/optimization.log``::
     from biomass.result import OptimizationResults
 
     res = OptimizationResults(model)
-    # Export optimized parameters in CSV format
+    # Export estimated parameters in CSV format
     res.to_csv()
-    # Visualize objective function traces for different optimization runs
-    res.trace_obj()
+    # Visualize estimated parameter sets
+    res.savefig(figsize=(16,5), boxplot_kws={"orient": "v"})
 
 .. image:: https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/estimated_parameter_sets.png
 

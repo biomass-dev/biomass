@@ -21,7 +21,6 @@ class SignalingSystems(TemporalDynamics):
         show_all: bool,
         stdev: bool,
         save_format: str,
-        param_range: dict,
     ) -> None:
         """
         Run simulation and save figures.
@@ -68,17 +67,6 @@ class SignalingSystems(TemporalDynamics):
                     is_successful = self._validate(int(viz_type))
                     if is_successful:
                         self._save_simulations(viz_type, self.model.sim.simulations)
-                # Visualization of estimated parameter values
-                if 2 <= len(n_file):
-                    popt = np.empty(
-                        (
-                            len(n_file),
-                            len(self.model.sp.idx_params) + len(self.model.sp.idx_initials),
-                        )
-                    )
-                    for i, nth_paramset in enumerate(n_file):
-                        popt[i, :] = self.get_individual(nth_paramset)
-                    self.plot_param_range(popt, save_format, **param_range)
             else:
                 # viz_type == 'original'
                 x = self.model.pval()
