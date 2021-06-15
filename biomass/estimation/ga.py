@@ -35,7 +35,7 @@ class GeneticAlgorithmInit(ExecModel):
         **unknown_options,
     ) -> None:
         super().__init__(model)
-        self.search_rgn: np.ndarray = self.model.sp.get_region()
+        self.search_rgn: np.ndarray = self.model.problem.get_region()
         self.n_population: int = int(popsize * self.search_rgn.shape[1])
         self.n_gene: int = self.search_rgn.shape[1]
         self.max_generation: int = max_generation
@@ -120,7 +120,9 @@ class GeneticAlgorithmInit(ExecModel):
         for i in range(self.n_population):
             while self.initial_threshold <= population[i, -1] or isnan(population[i, -1]):
                 population[i, : self.n_gene] = np.random.rand(self.n_gene)
-                population[i, -1] = self.model.obj_func(population[i, : self.n_gene])
+                population[i, -1] = self.model.problem.objective(
+                    self.model.problem.gene2val(population[i, : self.n_gene])
+                )
             with open(
                 os.path.join(
                     self.model.path,
@@ -213,7 +215,8 @@ class GeneticAlgorithmInit(ExecModel):
             Otherwise, Generation <- Generation + 1, and return to the step 2.
         """
         step = OptimizeStep(
-            self.model.obj_func,
+            self.model.problem.objective,
+            self.model.problem.gene2val,
             self.n_population,
             self.n_gene,
             self.n_children,
@@ -239,7 +242,7 @@ class GeneticAlgorithmInit(ExecModel):
                 "\n----------------------------------------\n\n"
                 + f"Generation1: Best Fitness = {population[0, -1]:e}\n"
             )
-        best_individual = self.model.sp.gene2val(population[0, : self.n_gene])
+        best_individual = self.model.problem.gene2val(population[0, : self.n_gene])
         best_fitness = population[0, -1]
 
         np.save(
@@ -290,7 +293,9 @@ class GeneticAlgorithmInit(ExecModel):
             else:
                 n0[generation % len(n0)] = population[0, -1]
 
-            best_individual = self.model.sp.gene2val(population[0, : self.n_gene])
+            best_individual = self.model.problem.gene2val(
+                population[0, : self.n_gene]
+            )
             if population[0, -1] < best_fitness:
                 np.save(
                     os.path.join(
@@ -363,7 +368,7 @@ class GeneticAlgorithmContinue(ExecModel):
         **unknown_options,
     ) -> None:
         super().__init__(model)
-        self.search_rgn: np.ndarray = self.model.sp.get_region()
+        self.search_rgn: np.ndarray = self.model.problem.get_region()
         self.n_population: int = int(popsize * self.search_rgn.shape[1])
         self.n_gene: int = self.search_rgn.shape[1]
         self.max_generation: int = max_generation
@@ -418,7 +423,9 @@ class GeneticAlgorithmContinue(ExecModel):
             while self.initial_threshold <= population[i, -1]:
                 population[i, : self.n_gene] = self._encode_bestIndivVal2randGene(best_individual)
                 population[i, : self.n_gene] = np.clip(population[i, : self.n_gene], 0.0, 1.0)
-                population[i, -1] = self.model.obj_func(population[i, : self.n_gene])
+                population[i, -1] = self.model.problem.objective(
+                    self.model.problem.gene2val(population[i, : self.n_gene])
+                )
             with open(
                 os.path.join(
                     self.model.path,
@@ -451,7 +458,8 @@ class GeneticAlgorithmContinue(ExecModel):
 
     def _my_ga_continue(self, nth_paramset: int) -> None:
         step = OptimizeStep(
-            self.model.obj_func,
+            self.model.problem.objective,
+            self.model.problem.gene2val,
             self.n_population,
             self.n_gene,
             self.n_children,
@@ -485,18 +493,17 @@ class GeneticAlgorithmContinue(ExecModel):
                 f"fit_param{int(best_generation):d}.npy",
             )
         )
-        best_individual_gene = self.model.sp.val2gene(best_individual)
-        best_fitness = self.model.obj_func(best_individual_gene)
+        best_fitness = self.model.problem.objective(best_individual)
 
         if self.max_generation <= count_num:
             raise ValueError(f"max_generation should be larger than {int(count_num):d}")
 
         population = self._set_continue(nth_paramset)
         if best_fitness < population[0, -1]:
-            population[0, : self.n_gene] = best_individual_gene
+            population[0, : self.n_gene] = self.model.problem.val2gene(best_individual)
             population[0, -1] = best_fitness
         else:
-            best_individual = self.model.sp.gene2val(population[0, : self.n_gene])
+            best_individual = self.model.problem.gene2val(population[0, : self.n_gene])
             best_fitness = population[0, -1]
             np.save(
                 os.path.join(
@@ -543,7 +550,7 @@ class GeneticAlgorithmContinue(ExecModel):
             else:
                 n0[generation % len(n0)] = population[0, -1]
 
-            best_individual = self.model.sp.gene2val(population[0, : self.n_gene])
+            best_individual = self.model.problem.gene2val(population[0, : self.n_gene])
             if population[0, -1] < best_fitness:
                 np.save(
                     os.path.join(

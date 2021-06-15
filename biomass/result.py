@@ -48,16 +48,16 @@ class OptimizationResults(ExecModel):
         """
         n_file = self.get_executable()
 
-        if len(self.model.sp.idx_params) + len(self.model.sp.idx_initials) > 0:
+        if len(self.model.problem.idx_params) + len(self.model.problem.idx_initials) > 0:
             optimized_params = np.empty(
                 (
-                    len(self.model.sp.idx_params) + len(self.model.sp.idx_initials) + 2,
+                    len(self.model.problem.idx_params) + len(self.model.problem.idx_initials) + 2,
                     len(n_file) + 1,
                 ),
                 dtype="<U21",
             )
             for j, nth_paramset in enumerate(sorted(n_file), start=1):
-                for i, parameter_index in enumerate(self.model.sp.idx_params):
+                for i, parameter_index in enumerate(self.model.problem.idx_params):
                     best_generation = np.load(
                         os.path.join(
                             self.model.path,
@@ -88,13 +88,13 @@ class OptimizationResults(ExecModel):
                     optimized_params[1, j] = f"{error:8.3e}"
                     optimized_params[i + 2, 0] = self.model.parameters[parameter_index]
                     optimized_params[i + 2, j] = f"{best_individual[i]:8.3e}"
-                for i, species_index in enumerate(self.model.sp.idx_initials):
-                    optimized_params[i + len(self.model.sp.idx_params) + 2, 0] = (
+                for i, species_index in enumerate(self.model.problem.idx_initials):
+                    optimized_params[i + len(self.model.problem.idx_params) + 2, 0] = (
                         "init_" + self.model.species[species_index]
                     )
                     optimized_params[
-                        i + len(self.model.sp.idx_params) + 2, j
-                    ] = f"{best_individual[i+len(self.model.sp.idx_params)]:8.3e}"
+                        i + len(self.model.problem.idx_params) + 2, j
+                    ] = f"{best_individual[i+len(self.model.problem.idx_params)]:8.3e}"
             with open(
                 os.path.join(
                     self.model.path,
@@ -217,12 +217,12 @@ class OptimizationResults(ExecModel):
             if include_original:
                 x = self.model.pval()
                 y0 = self.model.ival()
-                obj_val = self.model.obj_func(None, x, y0)
+                obj_val = self.model.problem.objective(None, x, y0)
                 writer.writerow(["original", f"{obj_val:8.3e}"])
             n_file = self.get_executable()
             for paramset in sorted(n_file):
                 optimized = self.load_param(paramset)
-                obj_val = self.model.obj_func(None, *optimized)
+                obj_val = self.model.problem.objective(None, *optimized)
                 writer.writerow([f"{paramset:d}", f"{obj_val:8.3e}"])
 
     def trace_obj(self) -> None:

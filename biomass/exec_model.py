@@ -31,16 +31,10 @@ class ModelObject(object):
         Numerical values of the parameters.
     ival : Callable
         Initial values.
-    obj_func : Callable
-        An objective function to be minimized for parameter estimation.
-    sim : NumericalSimulation
-        Simulation conditions and results.
-    exp : ExperimentalData
-        Experimental measurements used to estimate model parameters.
+    problem : OptimizationProblem
+        The optimization problem.
     viz : Visualization
         Plotting parameters for customizing figure properties.
-    sp : SearchParam
-        Model parameters to optimize and search region.
     rxn : ReactionNetwork
         Reaction indices grouped according to biological processes.
     """
@@ -53,14 +47,10 @@ class ModelObject(object):
         self._path = path
         self._parameters = biomass_model.C.NAMES
         self._species = biomass_model.V.NAMES
-        self._obs = biomass_model.observables
         self.pval = biomass_model.param_values
         self.ival = biomass_model.initial_values
-        self.obj_func = biomass_model.objective
-        self.sim = biomass_model.NumericalSimulation()
-        self.exp = biomass_model.ExperimentalData()
+        self.problem = biomass_model.OptimizationProblem()
         self.viz = biomass_model.Visualization()
-        self.sp = biomass_model.SearchParam()
         self.rxn = biomass_model.ReactionNetwork()
 
     @property
@@ -76,10 +66,12 @@ class ModelObject(object):
         return self._species
 
     @property
-    def obs(self) -> List[str]:
-        duplicate = [name for name in set(self._obs) if self._obs.count(name) > 1]
+    def observables(self) -> List[str]:
+        duplicate = [
+            name for name in set(self.problem.obs_names) if self.problem.obs_names.count(name) > 1
+        ]
         if not duplicate:
-            return self._obs
+            return self.problem.obs_names
         else:
             raise NameError(f"Duplicate observables: {', '.join(duplicate)}")
 
@@ -114,7 +106,7 @@ class ExecModel(object):
 
     def load_param(self, paramset: int) -> OptimizedValues:
         best_individual = self.get_individual(paramset)
-        (x, y0) = self.model.sp.update(best_individual)
+        (x, y0) = self.model.problem.update(best_individual)
         return OptimizedValues(x, y0)
 
     def get_executable(self) -> List[int]:

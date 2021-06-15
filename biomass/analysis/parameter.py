@@ -57,8 +57,8 @@ class ParameterSensitivity(ExecModel):
             (
                 len(n_file),
                 len(param_indices) + 1,
-                len(self.model.obs),
-                len(self.model.sim.conditions),
+                len(self.model.observables),
+                len(self.model.problem.conditions),
             ),
             np.nan,
         )
@@ -67,11 +67,11 @@ class ParameterSensitivity(ExecModel):
             for j, idx in enumerate(param_indices):
                 x = optimized.params[:]
                 x[idx] = optimized.params[idx] * rate
-                if self.model.sim.simulate(x, optimized.initials) is None:
-                    for k, _ in enumerate(self.model.obs):
-                        for l, _ in enumerate(self.model.sim.conditions):
+                if self.model.problem.simulate(x, optimized.initials) is None:
+                    for k, _ in enumerate(self.model.observables):
+                        for l, _ in enumerate(self.model.problem.conditions):
                             signaling_metric[i, j, k, l] = get_signaling_metric(
-                                metric, self.model.sim.simulations[k, :, l], options
+                                metric, self.model.problem.simulations[k, :, l], options
                             )
                 sys.stdout.write(
                     "\r{:d} / {:d}".format(
@@ -80,18 +80,18 @@ class ParameterSensitivity(ExecModel):
                 )
             # Signaling metric without perturbation (j=-1)
             x = optimized.params[:]
-            if self.model.sim.simulate(x, optimized.initials) is None:
-                for k, _ in enumerate(self.model.obs):
-                    for l, _ in enumerate(self.model.sim.conditions):
+            if self.model.problem.simulate(x, optimized.initials) is None:
+                for k, _ in enumerate(self.model.observables):
+                    for l, _ in enumerate(self.model.problem.conditions):
                         signaling_metric[i, -1, k, l] = get_signaling_metric(
-                            metric, self.model.sim.simulations[k, :, l], options
+                            metric, self.model.problem.simulations[k, :, l], options
                         )
         sensitivity_coefficients = dlnyi_dlnxj(
             signaling_metric,
             n_file,
             param_indices,
-            self.model.obs,
-            self.model.sim.conditions,
+            self.model.observables,
+            self.model.problem.conditions,
             rate,
         )
 
@@ -190,15 +190,15 @@ class ParameterSensitivity(ExecModel):
         # rcParams
         self.model.viz.set_sensitivity_rcParams()
 
-        if len(options["cmap"]) < len(self.model.sim.conditions):
+        if len(options["cmap"]) < len(self.model.problem.conditions):
             raise ValueError(
                 "len(sensitivity_options['cmap']) must be equal to "
-                "or greater than len(sim.conditions)."
+                "or greater than len(problem.conditions)."
             )
-        for k, obs_name in enumerate(self.model.obs):
+        for k, obs_name in enumerate(self.model.observables):
             plt.figure(figsize=options["figsize"])
             plt.hlines([0], -options["width"], len(param_indices), "k", lw=1)
-            for l, condition in enumerate(self.model.sim.conditions):
+            for l, condition in enumerate(self.model.problem.conditions):
                 sensitivity_matrix = sensitivity_coefficients[:, :, k, l]
                 nan_idx = []
                 for m in range(sensitivity_matrix.shape[0]):
@@ -224,7 +224,7 @@ class ParameterSensitivity(ExecModel):
                     )
             plt.xticks(
                 np.arange(len(param_indices))
-                + options["width"] * 0.5 * (len(self.model.sim.conditions) - 1),
+                + options["width"] * 0.5 * (len(self.model.problem.conditions) - 1),
                 [self.model.parameters[i] for i in param_indices],
                 fontsize=6,
                 rotation=90,
@@ -294,8 +294,8 @@ class ParameterSensitivity(ExecModel):
         # rcParams
         self.model.viz.set_sensitivity_rcParams()
 
-        for k, obs_name in enumerate(self.model.obs):
-            for l, condition in enumerate(self.model.sim.conditions):
+        for k, obs_name in enumerate(self.model.observables):
+            for l, condition in enumerate(self.model.problem.conditions):
                 sensitivity_matrix = self._remove_nan(
                     sensitivity_coefficients[:, :, k, l], normalize=False
                 )

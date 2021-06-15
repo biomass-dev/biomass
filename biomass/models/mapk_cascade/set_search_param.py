@@ -9,36 +9,37 @@ from .set_model import initial_values, param_values
 class SearchParam(object):
     """Specify model parameters and/or initial values to optimize"""
 
-    # parameters
-    idx_params = [
-        C.V1,
-        # C.n,
-        C.KI,
-        C.K1,
-        C.V2,
-        C.K2,
-        C.k3,
-        C.K3,
-        C.k4,
-        C.K4,
-        C.V5,
-        C.K5,
-        C.V6,
-        C.K6,
-        C.k7,
-        C.K7,
-        C.k8,
-        C.K8,
-        C.V9,
-        C.K9,
-        C.V10,
-        C.K10,
-    ]
+    def __init__(self):
+        # parameters
+        self.idx_params: list = [
+            C.V1,
+            # C.n,
+            C.KI,
+            C.K1,
+            C.V2,
+            C.K2,
+            C.k3,
+            C.K3,
+            C.k4,
+            C.K4,
+            C.V5,
+            C.K5,
+            C.V6,
+            C.K6,
+            C.k7,
+            C.K7,
+            C.k8,
+            C.K8,
+            C.V9,
+            C.K9,
+            C.V10,
+            C.K10,
+        ]
 
-    # initial values
-    idx_initials = [
-        # V.(specie)
-    ]
+        # initial values
+        self.idx_initials: list = [
+            # V.(specie)
+        ]
 
     def get_region(self):
         x = param_values()

@@ -5,20 +5,26 @@ from biomass.dynamics.solver import solve_ode
 from .name2idx import C, V
 from .set_model import DifferentialEquation
 
-observables = [
-    "biphosphorylated_MAPK",
-    "unphosphorylated_MAPK",
-]
 
-
-class NumericalSimulation(DifferentialEquation):
-    """Simulate a model using scipy.integrate.ode
+class Observable(DifferentialEquation):
+    """
+    Correlating model simulations and experimental measurements.
 
     Attributes
     ----------
+    obs_names : list of strings
+        Names of model observables.
+
+    t : range
+        Simulation time span.
+
+    conditions : list of strings
+        Expetimental conditions.
+
+    simulations : numpy.ndarray
+        The numpy array to store simulation results.
+
     normalization : nested dict
-        Keys for each observable
-        ------------------------
         * 'timepoint' : Optional[int]
             The time point at which simulated values are normalized.
             If None, the maximum value will be used for normalization.
@@ -27,21 +33,34 @@ class NumericalSimulation(DifferentialEquation):
             The experimental conditions to use for normalization.
             If empty, all conditions defined in sim.conditions will be used.
 
+    experiments : list of dict
+        Time series data.
+
+    error_bars : list of dict
+        Error bars to show in figures.
+
     """
 
     def __init__(self):
-        super().__init__(perturbation={})
-        self.normalization = {}
+        try:
+            super(Observable, self).__init__(perturbation={})
+        except AttributeError:
+            pass
+        self.obs_names: list = [
+            "biphosphorylated_MAPK",
+            "unphosphorylated_MAPK",
+        ]
+        self.t: range = range(150 * 60 + 1)
+        self.conditions: list = ["control"]
+        self.simulations: np.ndarray = np.empty(
+            (len(self.obs_names), len(self.t), len(self.conditions))
+        )
+        self.normalization: dict = {}
+        self.experiments: list = [None] * len(self.obs_names)
+        self.error_bars: list = [None] * len(self.obs_names)
 
-    t = range(150 * 60 + 1)
-
-    # Experimental conditions
-    conditions = ["control"]
-
-    simulations = np.empty((len(observables), len(t), len(conditions)))
-
-    def simulate(self, x, y0, _perturbation={}):
-        if _perturbation:
+    def simulate(self, x, y0, _perturbation=None):
+        if _perturbation is not None:
             self.perturbation = _perturbation
         for i, condition in enumerate(self.conditions):
             if condition == "control":
@@ -69,35 +88,16 @@ class NumericalSimulation(DifferentialEquation):
             if sol is None:
                 return False
             else:
-                self.simulations[observables.index("biphosphorylated_MAPK"), :, i] = sol.y[
+                self.simulations[self.obs_names.index("biphosphorylated_MAPK"), :, i] = sol.y[
                     V.MAPK_PP, :
                 ]
-                self.simulations[observables.index("unphosphorylated_MAPK"), :, i] = sol.y[
+                self.simulations[self.obs_names.index("unphosphorylated_MAPK"), :, i] = sol.y[
                     V.MAPK, :
                 ]
 
-
-class ExperimentalData(object):
-    """
-    Set experimental data.
-
-    Attributes
-    ----------
-    experiments : list of dict
-        Time series data.
-
-    error_bars : list of dict
-        Error bars to show in figures.
-
-    """
-
-    def __init__(self):
-        self.experiments = [None] * len(observables)
-        self.error_bars = [None] * len(observables)
-
     def set_data(self):
         # Test data
-        self.experiments[observables.index("biphosphorylated_MAPK")] = {
+        self.experiments[self.obs_names.index("biphosphorylated_MAPK")] = {
             "control": [
                 10.0,
                 298.59241599,
@@ -131,7 +131,7 @@ class ExperimentalData(object):
                 293.92385296,
             ]
         }
-        self.experiments[observables.index("unphosphorylated_MAPK")] = {
+        self.experiments[self.obs_names.index("unphosphorylated_MAPK")] = {
             "control": [
                 2.80000000e02,
                 1.02084698e-01,
@@ -166,7 +166,6 @@ class ExperimentalData(object):
             ]
         }
 
-    @staticmethod
-    def get_timepoint(obs_name):
-        if obs_name in observables:
+    def get_timepoint(self, obs_name):
+        if obs_name in self.obs_names:
             return [60 * i for i in range(0, 150, 5)]

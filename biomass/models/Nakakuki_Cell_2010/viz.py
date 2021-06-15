@@ -1,10 +1,10 @@
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 
-from .observable import observables
+from .observable import Observable
 
 
-class Visualization(object):
+class Visualization(Observable):
     """
     Plotting parameters for customizing figure properties
 
@@ -16,8 +16,6 @@ class Visualization(object):
     timecourse_options : list of dict
         Plotting options for figure/simulation/<viz_type>/<each_observable>.
 
-            Keys
-            ----
             * 'divided_by' : int or float (default: 1)
                 Convert time unit. (e.g. sec -> min).
 
@@ -36,7 +34,7 @@ class Visualization(object):
             * 'yticks' : list (default: None)
                 Set the current tick locations of the y-axis.
 
-            * 'ylabel' : str (default: observables[i].replace('__', '\n').replace('_', ' '))
+            * 'ylabel' : str (default: self.obs_names[i].replace('__', '\n').replace('_', ' '))
                 Set the label for the y-axis.
 
             * 'exp_data' : bool (default: True)
@@ -64,6 +62,8 @@ class Visualization(object):
     """
 
     def __init__(self):
+        super().__init__()
+        
         self.cm = plt.cm.get_cmap("tab10")
 
         self.timecourse_options = [
@@ -74,14 +74,14 @@ class Visualization(object):
                 "xlabel": "Time",
                 "ylim": (),
                 "yticks": None,
-                "ylabel": observables[i].replace("__", "\n").replace("_", " "),
+                "ylabel": self.obs_names[i].replace("__", "\n").replace("_", " "),
                 "exp_data": True,
                 "legend_loc": None,
                 "cmap": [self.cm.colors[j] for j in range(10)],
                 "shape": Line2D.filled_markers,
                 "dont_show": [],
             }
-            for i, _ in enumerate(observables)
+            for i, _ in enumerate(self.obs_names)
         ]
 
         self.multiplot_options = {
@@ -107,7 +107,7 @@ class Visualization(object):
 
     def get_timecourse_options(self):
         """
-        for i, _ in enumerate(observables):
+        for i, _ in enumerate(self.obs_names):
             self.timecourse_options[i]['divided_by'] = 60  # sec. -> min.
             self.timecourse_options[i]['xlim'] = (-5, 95)
             self.timecourse_options[i]['xticks'] = [0, 30, 60, 90]
@@ -119,35 +119,35 @@ class Visualization(object):
             self.timecourse_options[i]['dont_show'] = []
 
         self.timecourse_options[
-            observables.index('Phosphorylated_MEKc')
+            self.obs_names.index('Phosphorylated_MEKc')
         ]['ylabel'] = 'Phosphorylated MEK\n(cytoplasm)'
 
         self.timecourse_options[
-            observables.index('Phosphorylated_ERKc')
+            self.obs_names.index('Phosphorylated_ERKc')
         ]['ylabel'] = 'Phosphorylated ERK\n(cytoplasm)'
 
         self.timecourse_options[
-            observables.index('Phosphorylated_RSKw')
+            self.obs_names.index('Phosphorylated_RSKw')
         ]['ylabel'] = 'Phosphorylated RSK\n(whole cell)'
 
         self.timecourse_options[
-            observables.index('Phosphorylated_CREBw')
+            self.obs_names.index('Phosphorylated_CREBw')
         ]['ylabel'] = 'Phosphorylated CREB\n(whole cell)'
 
         self.timecourse_options[
-            observables.index('dusp_mRNA')
+            self.obs_names.index('dusp_mRNA')
         ]['ylabel'] = r'$\it{dusp}$'+' mRNA\nexpression'
 
         self.timecourse_options[
-            observables.index('cfos_mRNA')
+            self.obs_names.index('cfos_mRNA')
         ]['ylabel'] = r'$\it{c}$'+'-'+r'$\it{fos}$'+' mRNA\nexpression'
 
         self.timecourse_options[
-            observables.index('cFos_Protein')
+            self.obs_names.index('cFos_Protein')
         ]['ylabel'] = 'c-Fos Protein\nexpression'
 
         self.timecourse_options[
-            observables.index('Phosphorylated_cFos')
+            self.obs_names.index('Phosphorylated_cFos')
         ]['ylabel'] = 'Phosphorylated c-Fos\nProtein expression'
         """
         return self.timecourse_options

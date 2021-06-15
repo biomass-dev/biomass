@@ -1,10 +1,10 @@
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 
-from .observable import observables
+from .observable import Observable
 
 
-class Visualization(object):
+class Visualization(Observable):
     """
     Plotting parameters for customizing figure properties
 
@@ -16,8 +16,6 @@ class Visualization(object):
     timecourse_options : list of dict
         Plotting options for figure/simulation/<viz_type>/<each_observable>.
 
-            Keys
-            ----
             * 'divided_by' : int or float (default: 1)
                 Convert time unit. (e.g. sec -> min).
 
@@ -36,7 +34,7 @@ class Visualization(object):
             * 'yticks' : list (default: None)
                 Set the current tick locations of the y-axis.
 
-            * 'ylabel' : str (default: observables[i].replace('__', '\n').replace('_', ' '))
+            * 'ylabel' : str (default: self.obs_names[i].replace('__', '\n').replace('_', ' '))
                 Set the label for the y-axis.
 
             * 'exp_data' : bool (default: True)
@@ -64,6 +62,8 @@ class Visualization(object):
     """
 
     def __init__(self):
+        super().__init__()
+
         self.cm = plt.cm.get_cmap("tab10")
 
         self.timecourse_options = [
@@ -74,14 +74,14 @@ class Visualization(object):
                 "xlabel": "Time",
                 "ylim": (),
                 "yticks": None,
-                "ylabel": observables[i].replace("__", "\n").replace("_", " "),
+                "ylabel": self.obs_names[i].replace("__", "\n").replace("_", " "),
                 "exp_data": True,
                 "legend_loc": "best",
                 "cmap": [self.cm.colors[j] for j in range(10)],
                 "shape": Line2D.filled_markers,
                 "dont_show": [],
             }
-            for i, _ in enumerate(observables)
+            for i, _ in enumerate(self.obs_names)
         ]
 
         self.multiplot_options = {
@@ -106,7 +106,7 @@ class Visualization(object):
         }
 
     def get_timecourse_options(self):
-        for i, _ in enumerate(observables):
+        for i, _ in enumerate(self.obs_names):
             self.timecourse_options[i]["xlim"] = (-10, 210)
             self.timecourse_options[i]["xticks"] = [50 * i for i in range(5)]
             self.timecourse_options[i]["xlabel"] = "Time (min)"
@@ -152,13 +152,5 @@ class Visualization(object):
     def convert_species_name(name):
         """figure/sensitivity/initial_condition
         - Sensitivity for species with nonzero initial conditions
-        """
-        """
-        if name == 'MP':
-            return 'Per mRNA'
-        elif name == 'MC':
-            return 'Cry mRNA'
-        elif name == 'MB':
-            return 'Bmal1 mRNA'
         """
         return name
