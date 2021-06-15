@@ -7,7 +7,7 @@ from .set_search_param import SearchParam
 
 class OptimizationProblem(Observable, SearchParam):
     def __init__(self):
-        super().__init__()
+        super(OptimizationProblem, self).__init__()
 
     @property
     def bounds(self):
