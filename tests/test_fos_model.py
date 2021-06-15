@@ -55,7 +55,7 @@ def test_run_simulation():
             "simulations_all.npy",
         )
     )
-    for obs_name in model.obs:
+    for obs_name in model.observables:
         assert os.path.isfile(
             os.path.join(model.path, "figure", "simulation", "average", f"{obs_name}.pdf")
         )

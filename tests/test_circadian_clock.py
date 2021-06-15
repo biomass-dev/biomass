@@ -16,7 +16,7 @@ for dir in ["figure", "simulation_data"]:
 def test_simulate_successful():
     x = model.pval()
     y0 = model.ival()
-    assert model.sim.simulate(x, y0) is None
+    assert model.problem.simulate(x, y0) is None
 
 
 def test_run_simulation():
