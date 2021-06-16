@@ -42,10 +42,7 @@ class Observable(DifferentialEquation):
     """
 
     def __init__(self):
-        try:
-            super(Observable, self).__init__(perturbation={})
-        except AttributeError:
-            pass
+        super(Observable, self).__init__(perturbation={})
         self.obs_names = [
             "Phosphorylated_MEKc",
             "Phosphorylated_ERKc",

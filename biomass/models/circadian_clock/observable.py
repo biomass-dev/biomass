@@ -42,7 +42,7 @@ class Observable(DifferentialEquation):
     """
 
     def __init__(self):
-        super().__init__(perturbation={})
+        super(Observable, self).__init__(perturbation={})
         self.obs_names: list = [
             "Per_mRNA",
             "Cry_mRNA",
