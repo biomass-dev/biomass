@@ -18,6 +18,9 @@ class Visualization(Observable):
 
             * 'divided_by' : int or float (default: 1)
                 Convert time unit. (e.g. sec -> min).
+            
+            * 'figsize' : tuple (default: (4, 3))
+                Width, height in inches.
 
             * 'xlim' : tuple
                 Set the x limits of the current axes.
@@ -69,6 +72,7 @@ class Visualization(Observable):
         self.timecourse_options = [
             {
                 "divided_by": 1,
+                "figsize": (4, 3),
                 "xlim": (),
                 "xticks": None,
                 "xlabel": "Time",
@@ -85,7 +89,8 @@ class Visualization(Observable):
         ]
 
         self.multiplot_options = {
-            "fig_name": "multiplot_observables",
+            "fname": "multiplot_observables",
+            "figsize": (4, 3),
             "observables": [],
             "condition": None,
             "xlim": (),

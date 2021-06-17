@@ -80,9 +80,9 @@ class TemporalDynamics(ExecModel):
                 if mode == 1 and obs_name not in multiplot["observables"]:
                     continue
                 if mode == 0:
-                    plt.figure(figsize=(4, 3))
+                    plt.figure(figsize=singleplot[i]["figsize"])
                 elif mode == 1 and not set_fig:
-                    plt.figure(figsize=(4, 3))
+                    plt.figure(figsize=multiplot["figsize"])
                     set_fig = True
                 plt.gca().spines["right"].set_visible(False)
                 plt.gca().spines["top"].set_visible(False)
@@ -516,7 +516,7 @@ class TemporalDynamics(ExecModel):
                 "figure",
                 "simulation",
                 f"{viz_type}",
-                f"{multiplot['fig_name']}." + save_format,
+                f"{multiplot['fname']}." + save_format,
             ),
             dpi=600 if save_format == "png" else None,
             bbox_inches="tight",
