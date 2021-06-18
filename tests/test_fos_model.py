@@ -1,10 +1,13 @@
 import os
 import shutil
+import warnings
 from distutils.dir_util import copy_tree
 
 import pytest
+from scipy.optimize import differential_evolution
 
 from biomass import Model, OptimizationResults, run_simulation
+from biomass.estimation import ExternalOptimizer
 from biomass.models import Nakakuki_Cell_2010
 
 # from biomass import run_analysis
@@ -71,6 +74,27 @@ def test_save_resuts():
             "estimated_parameter_sets.pdf",
         )
     )
+
+
+def test_external_optimizer():
+    optimizer = ExternalOptimizer(model, differential_evolution)
+    res = optimizer.run(
+        model.problem.objective,
+        model.problem.bounds,
+        strategy="rand1bin",
+        maxiter=5,
+        popsize=3,
+        tol=1e-4,
+        mutation=0.1,
+        polish=False,
+        workers=-1,
+    )
+
+    optimizer.import_solution(res.x, x_id=0)
+    for fname in ["optimization.log", "count_num.npy", "generation.npy", "fit_param5.npy"]:
+        assert os.path.isfile(os.path.join(model.path, "out", "0", f"{fname}"))
+    assert run_simulation(model, viz_type="0") is None
+    assert os.path.isdir(os.path.join(model.path, "figure", "simulation", "0"))
 
 
 def test_cleanup():
