@@ -1,10 +1,9 @@
 import os
 import shutil
-import warnings
 from distutils.dir_util import copy_tree
 
 import pytest
-from scipy.optimize import differential_evolution
+from scipy.optimize import OptimizeResult, differential_evolution
 
 from biomass import Model, OptimizationResults, run_simulation
 from biomass.estimation import ExternalOptimizer
@@ -89,9 +88,23 @@ def test_external_optimizer():
         polish=False,
         workers=-1,
     )
-
+    assert isinstance(res, OptimizeResult)
     optimizer.import_solution(res.x, x_id=0)
-    for fname in ["optimization.log", "count_num.npy", "generation.npy", "fit_param5.npy"]:
+    n_iter: int = 0
+    with open(
+        os.path.join(model.path, "out", "0", "optimization.log"),
+        mode="r",
+        encoding="utf-8",
+    ) as f:
+        log_file = f.readlines()
+    for message in log_file:
+        if len(message.strip()) > 0:
+            n_iter += 1
+    for fname in [
+        "count_num.npy",
+        "generation.npy",
+        f"fit_param{n_iter}.npy",
+    ]:
         assert os.path.isfile(os.path.join(model.path, "out", "0", f"{fname}"))
     assert run_simulation(model, viz_type="0") is None
     assert os.path.isdir(os.path.join(model.path, "figure", "simulation", "0"))
