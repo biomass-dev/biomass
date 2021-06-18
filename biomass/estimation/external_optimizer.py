@@ -67,7 +67,7 @@ class ExternalOptimizer(object):
         """
         Import the solution of the optimization to the model.
         The solution vector `x` will be saved to `path_to_model`/out/`x_id`/.
-        Use `run_simulation` to visualize the optimization result.
+        Use `biomass.run_simulation` to visualize the optimization result.
 
         Parameters
         ----------
@@ -96,11 +96,11 @@ class ExternalOptimizer(object):
         ...     workers=-1,
         ... )
 
-        differential_evolution step 1: f(x)= 7.05589
-        differential_evolution step 2: f(x)= 5.59166
-        differential_evolution step 3: f(x)= 2.80301
-        ...
-        differential_evolution step 100: f(x)= 0.724357
+        differential_evolution step 1: f(x)= 7.05589\n
+        differential_evolution step 2: f(x)= 5.59166\n
+        differential_evolution step 3: f(x)= 2.80301\n
+        ...\n
+        differential_evolution step 100: f(x)= 0.724357\n
 
         >>> optimizer.import_solution(res.x, x_id=0)
         >>> run_simulation(model, viz_type="0")
