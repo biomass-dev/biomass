@@ -221,3 +221,10 @@ Please contact us with any questions or comments via `Issues`_ |  `Discussions`_
 
 .. _Issues: https://github.com/biomass-dev/biomass/issues
 .. _Discussions: https://github.com/biomass-dev/biomass/discussions
+
+Citation
+^^^^^^^^
+
+When using BioMASS, please cite the following paper:
+
+Imoto, H., Zhang, S. & Okada, M. A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway. *Cancers* **12**, 2878 (2020). :cite:p:`cancers12102878`
