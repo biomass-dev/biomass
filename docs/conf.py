@@ -65,7 +65,7 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 
 # bibliography
-bibtex_bibfiles = ["citation.bib"]
+bibtex_bibfiles = ["references.bib"]
 bibtex_reference_style = "author_year"
 bibtex_default_style = "alpha"
 
