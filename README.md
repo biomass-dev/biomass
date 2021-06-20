@@ -27,7 +27,7 @@ Online documentation is available at https://biomass-core.readthedocs.io/.
 
 ## Installation
 
-The BioMASS library is available on [PyPI](https://pypi.org/project/biomass/).
+The BioMASS library is available at the [Python Package Index (PyPI)](https://pypi.org/project/biomass/).
 
 ```bash
 $ pip install biomass
@@ -58,6 +58,18 @@ run_simulation(model, viz_type="average", stdev=True)
 
 ![simulation_average](https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/simulation_average.png)
 Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid lines denote simulations.
+
+### Sensitivity analysis
+
+```python
+from biomass import run_analysis
+
+run_analysis(model, target="reaction", metric="integral", style="barplot")
+```
+
+![sensitivity_PcFos](https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/sensitivity_PcFos.png)
+
+Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HRG). Numbers above bars indicate the reaction indices, and error bars correspond to simulation standard deviation.
 
 ## Author
 
