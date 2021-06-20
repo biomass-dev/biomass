@@ -225,9 +225,30 @@ class OptimizationResults(ExecModel):
                 obj_val = self.model.problem.objective(None, *optimized)
                 writer.writerow([f"{paramset:d}", f"{obj_val:8.3e}"])
 
-    def trace_obj(self) -> None:
+    def trace_obj(
+        self,
+        *,
+        config: Optional[dict] = None,
+        xlabel: str = "Iteration",
+        ylabel: str = "Objective function value",
+        xticks: Optional[list] = None,
+        yticks: Optional[list] = None,
+    ) -> None:
         """
         Visualize objective function traces for different optimization runs.
+
+        Parameters
+        ----------
+        config : dict, optional
+            A dictionary object for setting `matplotlib.rcParams`.
+        xlabel: str
+            The label for the x-axis.
+        ylabel: str
+            The label for the x-axis.
+        xticks: str
+            The list of xtick locations.
+        yticks: str
+            The list of ytick locations.
 
         Examples
         --------
@@ -246,23 +267,20 @@ class OptimizationResults(ExecModel):
         """
         n_file = self.get_executable()
         # matplotlib
-        plt.figure(figsize=(4, 3))
-        plt.rcParams["font.size"] = 15
-        plt.rcParams["axes.linewidth"] = 1.5
-        plt.rcParams["xtick.major.width"] = 1.5
-        plt.rcParams["ytick.major.width"] = 1.5
-        plt.rcParams["lines.linewidth"] = 1.2
+        if config is None:
+            config = {}
+        config.setdefault("font.size", 15)
+        config.setdefault("axes.linewidth", 1.5)
+        config.setdefault("xtick.major.width", 1.5)
+        config.setdefault("ytick.major.width", 1.5)
+        config.setdefault("lines.linewidth", 1.5)
+        plt.rcParams.update(config)
         plt.gca().spines["right"].set_visible(False)
         plt.gca().spines["top"].set_visible(False)
         # ---
         for paramset in n_file:
             with open(
-                os.path.join(
-                    self.model.path,
-                    "out",
-                    f"{paramset:d}",
-                    "optimization.log",
-                ),
+                os.path.join(self.model.path, "out", f"{paramset:d}", "optimization.log"),
                 mode="r",
             ) as f:
                 traces = f.readlines()
@@ -273,14 +291,12 @@ class OptimizationResults(ExecModel):
                     iters.append(line.lstrip("Generation").split(":")[0])
                     obj_val.append(line.split("=")[-1].strip())
             plt.plot([int(num) - 1 for num in iters], [float(val) for val in obj_val])
-        plt.xlabel("Iteration")
-        plt.ylabel("Objective function value")
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        plt.xticks(xticks)
+        plt.yticks(yticks)
         plt.savefig(
-            os.path.join(
-                self.model.path,
-                "optimization_results",
-                "obj_func_traces.pdf",
-            ),
+            os.path.join(self.model.path, "optimization_results", "obj_func_traces.pdf"),
             bbox_inches="tight",
         )
         plt.close()
