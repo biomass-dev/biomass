@@ -43,7 +43,7 @@ class Model(object):
         Parameters
         ----------
         show_info : bool (default: False)
-            Set to 'True' to print the information related to model size.
+            Set to `True` to print the information related to model size.
 
         Examples
         --------
@@ -127,23 +127,26 @@ def optimize(
     options : dict, optional
         * popsize : int (default: 5)
             A multiplier for setting the total population size.
-            The population has popsize * len(search_param) individuals.
+            The population has `popsize` * len(`search_param`) individuals.
 
         * max_generation : int (default: 10000)
-            Stop optimization if Generation > max_generation.
+            Stop optimization if Generation > `max_generation`.
 
         * initial_threshold : float (default: 1e12)
             Threshold on objective function value used to generate initial population.
             Default value is 1e12 (numerically solvable).
 
         * allowable_error : float (default: 0.0)
-            Stop optimization if Best Fitness <= allowable_error.
+            Stop optimization if Best Fitness <= `allowable_error`.
 
         * local_search_method : str (default: 'mutation')
-            Method used in local search. Should be one of
+            Method used in local search. Should be one of:
+
             * 'mutation' : NDM/MGG
+
             * 'Powell' : Modified Powell method
-            * 'DE' : Differential Evolution (strategy: best2bin)
+
+            * 'DE' : Differential Evolution (strategy: `best2bin`)
 
         * n_children : int (default: 200)
             (method='mutation') The number of children generated in NDM/MGG.
@@ -159,7 +162,7 @@ def optimize(
             parameter sets simultaneously.
 
         * overwrite : bool (default: False)
-            If True, the out/n folder will be overwritten.
+            If `True`, the out/n folder will be overwritten.
 
     Examples
     --------
@@ -225,23 +228,26 @@ def optimize_continue(
     options : dict, optional
         * popsize : int (default: 5)
             A multiplier for setting the total population size.
-            The population has popsize * len(search_param) individuals.
+            The population has `popsize` * len(`search_param`) individuals.
 
         * max_generation : int (default: 15000)
-            Stop optimization if Generation > max_generation.
+            Stop optimization if Generation > `max_generation`.
 
         * initial_threshold : float (default: 1e12)
             Threshold on objective function value used to generate initial population.
             Default value is 1e12 (numerically solvable).
 
         * allowable_error : float (default: 0.0)
-            Stop optimization if Best Fitness <= allowable_error.
+            Stop optimization if Best Fitness <= `allowable_error`.
 
         * local_search_method : str (default: 'mutation')
-            Method used in local search. Should be one of
+            Method used in local search. Should be one of:
+
             * 'mutation' : NDM/MGG
+
             * 'Powell' : Modified Powell method
-            * 'DE' : Differential Evolution (strategy: best2bin)
+
+            * 'DE' : Differential Evolution (strategy: `best2bin`)
 
         * n_children : int (default: 200)
             (method='mutation') The number of children generated in NDM/MGG.
@@ -259,8 +265,9 @@ def optimize_continue(
         * p0_bounds : list of floats (default: [0.1, 10.0])
             Generate initial population using best parameter values in the last
             parameter search.
-                - lower_bound = po_bounds[0] * best_parameter_value
-                - upper_bound = p0_bounds[1] * best_parameter_value
+
+            * `lower_bound` = po_bounds[0] * `best_parameter_value`
+            * `upper_bound` = p0_bounds[1] * `best_parameter_value`
 
     Examples
     --------
