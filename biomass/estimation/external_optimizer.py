@@ -102,10 +102,11 @@ class ExternalOptimizer(object):
         ...\n
         differential_evolution step 100: f(x)= 0.724357\n
 
+        >>> from biomass import run_simulation
         >>> optimizer.import_solution(res.x, x_id=0)
         >>> run_simulation(model, viz_type="0")
         """
-        
+
         if os.path.isdir(os.path.join(self.model.path, "out", f"{x_id:d}")):
             raise ValueError(
                 f"out{os.sep}{x_id:d} already exists in {self.model.path}. "
