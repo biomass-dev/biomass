@@ -87,10 +87,11 @@ class ExternalOptimizer(object):
         >>> res = optimizer.run(
         ...     model.problem.objective,
         ...     model.problem.bounds,
-        ...     strategy="rand1bin",
+        ...     strategy="best2bin",
         ...     maxiter=100,
         ...     tol=1e-4,
         ...     mutation=0.1,
+        ...     recombination=0.5,
         ...     disp=True,
         ...     polish=False,
         ...     workers=-1,
@@ -100,7 +101,7 @@ class ExternalOptimizer(object):
         differential_evolution step 2: f(x)= 5.59166\n
         differential_evolution step 3: f(x)= 2.80301\n
         ...\n
-        differential_evolution step 100: f(x)= 0.724357\n
+        differential_evolution step 100: f(x)= 0.538524\n
 
         >>> from biomass import run_simulation
         >>> optimizer.import_solution(res.x, x_id=0)

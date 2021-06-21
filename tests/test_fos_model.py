@@ -80,11 +80,12 @@ def test_external_optimizer():
     res = optimizer.run(
         model.problem.objective,
         model.problem.bounds,
-        strategy="rand1bin",
+        strategy="best2bin",
         maxiter=5,
         popsize=3,
         tol=1e-4,
         mutation=0.1,
+        recombination=0.5,
         polish=False,
         workers=-1,
     )

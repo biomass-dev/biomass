@@ -131,10 +131,11 @@ Below is an example of using `scipy.optimize.differential_evolution` for paramet
     res = optimizer.run(
         model.problem.objective,
         model.problem.bounds,
-        strategy="rand1bin",
+        strategy="best2bin",
         maxiter=100,
         tol=1e-4,
         mutation=0.1,
+        recombination=0.5,
         disp=True,
         polish=False,
         workers=-1,
