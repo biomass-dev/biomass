@@ -6,4 +6,4 @@ API
    
    core
    result
-   estimation
+   estimation/index
