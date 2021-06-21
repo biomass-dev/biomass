@@ -71,6 +71,13 @@ run_analysis(model, target="reaction", metric="integral", style="barplot")
 
 Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HRG). Numbers above bars indicate the reaction indices, and error bars correspond to simulation standard deviation.
 
+## Citation
+
+When using BioMASS, please cite the following paper:
+
+- Imoto, H., Zhang, S. & Okada, M. A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway. _Cancers_ **12**, 2878 (2020). https://doi.org/10.3390/cancers12102878
+
+
 ## Author
 
 [Hiroaki Imoto](https://github.com/himoto)
