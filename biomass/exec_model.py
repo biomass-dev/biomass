@@ -25,7 +25,7 @@ class ModelObject(object):
         Names of model parameters.
     species : list of strings
         Names of model species.
-    obs : list of strings
+    observables : list of strings
         Names of model observables.
     pval : Callable
         Numerical values of the parameters.
@@ -39,11 +39,7 @@ class ModelObject(object):
         Reaction indices grouped according to biological processes.
     """
 
-    def __init__(
-        self,
-        path: str,
-        biomass_model: Any,
-    ):
+    def __init__(self, path: str, biomass_model: Any):
         self._path = path
         self._parameters = biomass_model.C.NAMES
         self._species = biomass_model.V.NAMES
