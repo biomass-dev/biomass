@@ -78,7 +78,6 @@ class ExternalOptimizer(object):
 
         Examples
         --------
-        >>> import warnings
         >>> from scipy.optimize import differential_evolution
         >>> from biomass import Model
         >>> from biomass.models import Nakakuki_Cell_2010
