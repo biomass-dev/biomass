@@ -241,13 +241,13 @@ class OptimizationResults(ExecModel):
         ----------
         config : dict, optional
             A dictionary object for setting `matplotlib.rcParams`.
-        xlabel: str
+        xlabel: str (default: "Iteration")
             The label for the x-axis.
-        ylabel: str
+        ylabel: str (default: "Objective function value")
             The label for the x-axis.
-        xticks: str
+        xticks: list, optional
             The list of xtick locations.
-        yticks: str
+        yticks: list, optional
             The list of ytick locations.
 
         Examples
