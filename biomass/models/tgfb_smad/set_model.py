@@ -3,6 +3,7 @@ from .name2idx import C, V
 
 class DifferentialEquation(object):
     def __init__(self, perturbation):
+        super(DifferentialEquation, self).__init__()
         self.perturbation = perturbation
 
     def diffeq(self, t, y, *x):

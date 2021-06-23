@@ -5,6 +5,7 @@ class DifferentialEquation(object):
     """Kinetic equations"""
 
     def __init__(self, perturbation):
+        super(DifferentialEquation, self).__init__()
         self.perturbation = perturbation
 
     def diffeq(self, t, y, *x):

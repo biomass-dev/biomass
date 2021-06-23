@@ -35,6 +35,9 @@ Name                    Content
 Parameter estimation
 --------------------
 
+Using `biomass.optimize` function
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Parameters are adjusted to minimize the distance between model simulation and experimental data.
 
 .. code-block:: python
@@ -108,7 +111,48 @@ Progress list: ``out/n/optimization.log``::
         }
     )
 
-* Data Export and Visualization
+Using external optimizers
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can also use external optimization methods to determine model parameters.
+Below is an example of using `scipy.optimize.differential_evolution` for parameter estimation.
+
+.. code-block:: python
+
+    from scipy.optimize import differential_evolution
+
+    from biomass import Model
+    from biomass.models import Nakakuki_Cell_2010
+    from biomass.estimation import ExternalOptimizer
+
+    model = Model(Nakakuki_Cell_2010.__package__).create()
+    optimizer = ExternalOptimizer(model, differential_evolution)
+
+    res = optimizer.run(
+        model.problem.objective,
+        model.problem.bounds,
+        strategy="best2bin",
+        maxiter=100,
+        tol=1e-4,
+        mutation=0.1,
+        recombination=0.5,
+        disp=True,
+        polish=False,
+        workers=-1,
+    )
+
+* Import the solution of the optimization (`res.x`) and visualize the result.
+
+.. code-block:: python
+
+    
+    from biomass import run_simulation
+    
+    optimizer.import_solution(res.x, x_id=0)
+    run_simulation(model, viz_type="0")
+
+Data export and visualization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -121,6 +165,13 @@ Progress list: ``out/n/optimization.log``::
     res.savefig(figsize=(16,5), boxplot_kws={"orient": "v"})
 
 .. image:: https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/estimated_parameter_sets.png
+
+.. code-block:: python
+
+    # Visualize objective function traces for different optimization runs.
+    res.trace_obj()
+
+.. image:: https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/obj_func_trace.png
 
 Visualization of simulation results
 -----------------------------------

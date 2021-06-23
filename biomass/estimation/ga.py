@@ -20,6 +20,10 @@ def _check_unknown_options(unknown_options: dict) -> None:
 
 
 class GeneticAlgorithmInit(ExecModel):
+    """
+    Use genetic algorithm to estimate model parameters from experimental measurements.
+    """
+
     def __init__(
         self,
         model: ModelObject,
@@ -35,7 +39,7 @@ class GeneticAlgorithmInit(ExecModel):
         **unknown_options,
     ) -> None:
         super().__init__(model)
-        self.search_rgn: np.ndarray = self.model.sp.get_region()
+        self.search_rgn: np.ndarray = self.model.problem.get_region()
         self.n_population: int = int(popsize * self.search_rgn.shape[1])
         self.n_gene: int = self.search_rgn.shape[1]
         self.max_generation: int = max_generation
@@ -120,7 +124,9 @@ class GeneticAlgorithmInit(ExecModel):
         for i in range(self.n_population):
             while self.initial_threshold <= population[i, -1] or isnan(population[i, -1]):
                 population[i, : self.n_gene] = np.random.rand(self.n_gene)
-                population[i, -1] = self.model.obj_func(population[i, : self.n_gene])
+                population[i, -1] = self.model.problem.objective(
+                    self.model.problem.gene2val(population[i, : self.n_gene])
+                )
             with open(
                 os.path.join(
                     self.model.path,
@@ -146,23 +152,23 @@ class GeneticAlgorithmInit(ExecModel):
 
         1. Initialization
             As an initial population, create np individuals randomly.
-            ga_v2 also represents individuals as n-dimensional real number
+            `ga_v2` also represents individuals as n-dimensional real number
             vectors, where n is the dimension of the search space. Set
             Generation to 0, and set the iteration number of converging
-            operations Niter to 1.
+            operations `Niter` to 1.
 
         2. Selection for reproduction
-            As parents for the recombination operator, ENDX, select m
-            individuals, p1, p2, . . . ,pm, without replacement from the
+            As parents for the recombination operator, ENDX, select `m`
+            individuals, `p1`, `p2`, . . . , `pm`, without replacement from the
             population.
 
         3. Generation of offsprings
-            Generate Nc children by applying ENDX to the selected parents.
+            Generate `Nc` children by applying ENDX to the selected parents.
             This algorithm assigns the worst objective value to the children.
 
         4. Local Search
             Apply the local search method to the best individual in a family
-            consisting of the two parents, i.e., p1 and p2, and their children.
+            consisting of the two parents, i.e., `p1` and `p2`, and their children.
             Note here that the children are assumed to have the worst objective
             value. Thus, whenever the objective values of the two parents have
             been actually computed in previous generations, the algorithm
@@ -175,45 +181,49 @@ class GeneticAlgorithmInit(ExecModel):
             Select two individuals from the family. The first selected
             individual should be the individual with the best objective value,
             and the second should be selected randomly. Then, replace the two
-            parents (p1 and p2) with the selected individuals. Note that the
+            parents (`p1` and `p2`) with the selected individuals. Note that the
             individual to which the local search has been applied in the
             previous step is always selected as the best.
 
         6. Application of ENDX/MGG
-            To achieve a good search performance, ga_v2 optimizes a function,
+            To achieve a good search performance, `ga_v2` optimizes a function,
             gradually narrowing the search space. For this purpose, the
             converging phase slightly converges the population by repeating the
             following procedure Niter times.
 
-            (i) Select m individuals without replacement from the population.
-                The selected individuals, expressed here as p1, p2, . . . , pm,
+            1.
+                Select m individuals without replacement from the population.
+                The selected individuals, expressed here as `p1`, `p2`, . . . , `pm`,
                 are used as the parents for an extended normal distribution
                 crossover (ENDX) applied in the next step.
 
-            (ii) Generate Nc children by applying ENDX to the parents selected
-                in the previous step. To reduce the computational cost, ga_v2
-                forgoes any computation of the objective values of the Nc
+            2.
+                Generate `Nc` children by applying ENDX to the parents selected
+                in the previous step. To reduce the computational cost, `ga_v2`
+                forgoes any computation of the objective values of the `Nc`
                 individuals generated here. Instead, the algorithm assigns the
                 newly generated children a single objective value, one which is
                 inferior to the objective values of any of the possible
                 candidate solutions.
 
-            (iii) Select two individuals from a family containing the two
-                parents, i.e., p1 and p2, and their children. The first
+            3.
+                Select two individuals from a family containing the two
+                parents, i.e., `p1` and `p2`, and their children. The first
                 selected individual should be the one with the best objective
                 value, and the second should be selected randomly. Then,
                 replace the two parents with the selected individuals.
 
         7. Adaptation of Niter
             If the best individual has not improved during the last np
-            generations, Niter <- 2 * Niter. Otherwise, set Niter to 1.
+            generations, `Niter` <- 2 * `Niter`. Otherwise, set `Niter` to 1.
 
         8. Termination
             Stop if the halting criteria are satisfied.
-            Otherwise, Generation <- Generation + 1, and return to the step 2.
+            Otherwise, `Generation` <- `Generation` + 1, and return to the step 2.
         """
         step = OptimizeStep(
-            self.model.obj_func,
+            self.model.problem.objective,
+            self.model.problem.gene2val,
             self.n_population,
             self.n_gene,
             self.n_children,
@@ -239,7 +249,7 @@ class GeneticAlgorithmInit(ExecModel):
                 "\n----------------------------------------\n\n"
                 + f"Generation1: Best Fitness = {population[0, -1]:e}\n"
             )
-        best_individual = self.model.sp.gene2val(population[0, : self.n_gene])
+        best_individual = self.model.problem.gene2val(population[0, : self.n_gene])
         best_fitness = population[0, -1]
 
         np.save(
@@ -290,7 +300,7 @@ class GeneticAlgorithmInit(ExecModel):
             else:
                 n0[generation % len(n0)] = population[0, -1]
 
-            best_individual = self.model.sp.gene2val(population[0, : self.n_gene])
+            best_individual = self.model.problem.gene2val(population[0, : self.n_gene])
             if population[0, -1] < best_fitness:
                 np.save(
                     os.path.join(
@@ -348,6 +358,10 @@ class GeneticAlgorithmInit(ExecModel):
 
 
 class GeneticAlgorithmContinue(ExecModel):
+    """
+    Continue optimization from where you stopped in the last parameter estimation.
+    """
+
     def __init__(
         self,
         model: ModelObject,
@@ -363,7 +377,7 @@ class GeneticAlgorithmContinue(ExecModel):
         **unknown_options,
     ) -> None:
         super().__init__(model)
-        self.search_rgn: np.ndarray = self.model.sp.get_region()
+        self.search_rgn: np.ndarray = self.model.problem.get_region()
         self.n_population: int = int(popsize * self.search_rgn.shape[1])
         self.n_gene: int = self.search_rgn.shape[1]
         self.max_generation: int = max_generation
@@ -383,7 +397,7 @@ class GeneticAlgorithmContinue(ExecModel):
 
         np.random.seed(time.time_ns() * nth_paramset % 2 ** 32)
         warnings.filterwarnings("ignore")
-        self._my_ga_continue(nth_paramset)
+        self._ga_v2_continue(nth_paramset)
 
     def _set_continue(self, nth_paramset: int) -> np.ndarray:
         best_generation = np.load(
@@ -418,7 +432,9 @@ class GeneticAlgorithmContinue(ExecModel):
             while self.initial_threshold <= population[i, -1]:
                 population[i, : self.n_gene] = self._encode_bestIndivVal2randGene(best_individual)
                 population[i, : self.n_gene] = np.clip(population[i, : self.n_gene], 0.0, 1.0)
-                population[i, -1] = self.model.obj_func(population[i, : self.n_gene])
+                population[i, -1] = self.model.problem.objective(
+                    self.model.problem.gene2val(population[i, : self.n_gene])
+                )
             with open(
                 os.path.join(
                     self.model.path,
@@ -449,9 +465,10 @@ class GeneticAlgorithmContinue(ExecModel):
 
         return rand_gene
 
-    def _my_ga_continue(self, nth_paramset: int) -> None:
+    def _ga_v2_continue(self, nth_paramset: int) -> None:
         step = OptimizeStep(
-            self.model.obj_func,
+            self.model.problem.objective,
+            self.model.problem.gene2val,
             self.n_population,
             self.n_gene,
             self.n_children,
@@ -485,18 +502,17 @@ class GeneticAlgorithmContinue(ExecModel):
                 f"fit_param{int(best_generation):d}.npy",
             )
         )
-        best_individual_gene = self.model.sp.val2gene(best_individual)
-        best_fitness = self.model.obj_func(best_individual_gene)
+        best_fitness = self.model.problem.objective(best_individual)
 
         if self.max_generation <= count_num:
             raise ValueError(f"max_generation should be larger than {int(count_num):d}")
 
         population = self._set_continue(nth_paramset)
         if best_fitness < population[0, -1]:
-            population[0, : self.n_gene] = best_individual_gene
+            population[0, : self.n_gene] = self.model.problem.val2gene(best_individual)
             population[0, -1] = best_fitness
         else:
-            best_individual = self.model.sp.gene2val(population[0, : self.n_gene])
+            best_individual = self.model.problem.gene2val(population[0, : self.n_gene])
             best_fitness = population[0, -1]
             np.save(
                 os.path.join(
@@ -543,7 +559,7 @@ class GeneticAlgorithmContinue(ExecModel):
             else:
                 n0[generation % len(n0)] = population[0, -1]
 
-            best_individual = self.model.sp.gene2val(population[0, : self.n_gene])
+            best_individual = self.model.problem.gene2val(population[0, : self.n_gene])
             if population[0, -1] < best_fitness:
                 np.save(
                     os.path.join(

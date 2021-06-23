@@ -43,7 +43,7 @@ class Model(object):
         Parameters
         ----------
         show_info : bool (default: False)
-            Set to 'True' to print the information related to model size.
+            Set to `True` to print the information related to model size.
 
         Examples
         --------
@@ -52,22 +52,22 @@ class Model(object):
         >>> model = Model(your_model.__package__).create()
         """
         model = ModelObject(self.pkg_name.replace(".", os.sep), self._load_model())
-        if model.sim.normalization:
-            for obs_name in model.obs:
+        if model.problem.normalization:
+            for obs_name in model.observables:
                 if (
-                    isinstance(model.sim.normalization[obs_name]["timepoint"], int)
-                    and not model.sim.t[0]
-                    <= model.sim.normalization[obs_name]["timepoint"]
-                    <= model.sim.t[-1]
+                    isinstance(model.problem.normalization[obs_name]["timepoint"], int)
+                    and not model.problem.t[0]
+                    <= model.problem.normalization[obs_name]["timepoint"]
+                    <= model.problem.t[-1]
                 ):
-                    raise ValueError("Normalization timepoint must lie within sim.t.")
-                if not model.sim.normalization[obs_name]["condition"]:
-                    model.sim.normalization[obs_name]["condition"] = model.sim.conditions
+                    raise ValueError("Normalization timepoint must lie within problem.t.")
+                if not model.problem.normalization[obs_name]["condition"]:
+                    model.problem.normalization[obs_name]["condition"] = model.problem.conditions
                 else:
-                    for c in model.sim.normalization[obs_name]["condition"]:
-                        if c not in model.sim.conditions:
+                    for c in model.problem.normalization[obs_name]["condition"]:
+                        if c not in model.problem.conditions:
                             raise ValueError(
-                                f"Normalization condition '{c}' is not defined in sim.conditions."
+                                f"Normalization condition '{c}' is not defined in problem.conditions."
                             )
         if show_info:
             model_name = Path(model.path).name
@@ -75,7 +75,7 @@ class Model(object):
                 f"{model_name} information\n" + ("-" * len(model_name)) + "------------\n"
                 f"{len(model.species):d} species\n"
                 f"{len(model.parameters):d} parameters, "
-                f"of which {len(model.sp.idx_params):d} to be estimated"
+                f"of which {len(model.problem.idx_params):d} to be estimated"
             )
         return model
 
@@ -127,23 +127,26 @@ def optimize(
     options : dict, optional
         * popsize : int (default: 5)
             A multiplier for setting the total population size.
-            The population has popsize * len(search_param) individuals.
+            The population has `popsize` * len(`search_param`) individuals.
 
         * max_generation : int (default: 10000)
-            Stop optimization if Generation > max_generation.
+            Stop optimization if Generation > `max_generation`.
 
         * initial_threshold : float (default: 1e12)
             Threshold on objective function value used to generate initial population.
             Default value is 1e12 (numerically solvable).
 
         * allowable_error : float (default: 0.0)
-            Stop optimization if Best Fitness <= allowable_error.
+            Stop optimization if Best Fitness <= `allowable_error`.
 
         * local_search_method : str (default: 'mutation')
-            Method used in local search. Should be one of
+            Method used in local search. Should be one of:
+
             * 'mutation' : NDM/MGG
+
             * 'Powell' : Modified Powell method
-            * 'DE' : Differential Evolution (strategy: best2bin)
+
+            * 'DE' : Differential Evolution (strategy: `best2bin`)
 
         * n_children : int (default: 200)
             (method='mutation') The number of children generated in NDM/MGG.
@@ -159,7 +162,7 @@ def optimize(
             parameter sets simultaneously.
 
         * overwrite : bool (default: False)
-            If True, the out/n folder will be overwritten.
+            If `True`, the out/n folder will be overwritten.
 
     Examples
     --------
@@ -225,23 +228,26 @@ def optimize_continue(
     options : dict, optional
         * popsize : int (default: 5)
             A multiplier for setting the total population size.
-            The population has popsize * len(search_param) individuals.
+            The population has `popsize` * len(`search_param`) individuals.
 
         * max_generation : int (default: 15000)
-            Stop optimization if Generation > max_generation.
+            Stop optimization if Generation > `max_generation`.
 
         * initial_threshold : float (default: 1e12)
             Threshold on objective function value used to generate initial population.
             Default value is 1e12 (numerically solvable).
 
         * allowable_error : float (default: 0.0)
-            Stop optimization if Best Fitness <= allowable_error.
+            Stop optimization if Best Fitness <= `allowable_error`.
 
         * local_search_method : str (default: 'mutation')
-            Method used in local search. Should be one of
+            Method used in local search. Should be one of:
+
             * 'mutation' : NDM/MGG
+
             * 'Powell' : Modified Powell method
-            * 'DE' : Differential Evolution (strategy: best2bin)
+
+            * 'DE' : Differential Evolution (strategy: `best2bin`)
 
         * n_children : int (default: 200)
             (method='mutation') The number of children generated in NDM/MGG.
@@ -259,8 +265,9 @@ def optimize_continue(
         * p0_bounds : list of floats (default: [0.1, 10.0])
             Generate initial population using best parameter values in the last
             parameter search.
-                - lower_bound = po_bounds[0] * best_parameter_value
-                - upper_bound = p0_bounds[1] * best_parameter_value
+
+            * `lower_bound` = po_bounds[0] * `best_parameter_value`
+            * `upper_bound` = p0_bounds[1] * `best_parameter_value`
 
     Examples
     --------
@@ -429,7 +436,7 @@ def run_analysis(
         * excluded_initials : list of strings
             (target == 'initial_condition') List of species which are not used for analysis.
 
-        * timepoint : int (default: model.sim.t[-1])
+        * timepoint : int (default: model.problem.t[-1])
             (metric=='timepoint') Which timepoint to use.
 
         * duration : float (default: 0.5)
@@ -464,11 +471,11 @@ def run_analysis(
     options.setdefault("show_indices", True)
     options.setdefault("excluded_params", [])
     options.setdefault("excluded_initials", [])
-    options.setdefault("timepoint", model.sim.t[-1])
+    options.setdefault("timepoint", model.problem.t[-1])
     options.setdefault("duration", 0.5)
 
-    if not model.sim.t[0] <= options["timepoint"] <= model.sim.t[-1]:
-        raise ValueError("options['timepooint'] must lie within sim.t.")
+    if not model.problem.t[0] <= options["timepoint"] <= model.problem.t[-1]:
+        raise ValueError("options['timepooint'] must lie within problem.t.")
     if not 0.0 < options["duration"] < 1.0:
         raise ValueError("options['duration'] must lie within (0, 1).")
 

@@ -28,7 +28,7 @@ for dir in [
 def test_simulate_successful():
     x = model.pval()
     y0 = model.ival()
-    assert model.sim.simulate(x, y0) is None
+    assert model.problem.simulate(x, y0) is None
 
 
 def test_optimize():
@@ -120,7 +120,7 @@ def test_run_simulation():
         simulated_value = np.load(os.path.join(model.path, *npy_file))
         assert np.isfinite(simulated_value).all()
     for viz_type in ["original", "1", "2", "3", "average", "best"]:
-        for obs_name in model.obs:
+        for obs_name in model.observables:
             assert os.path.isfile(
                 os.path.join(model.path, "figure", "simulation", f"{viz_type}", f"{obs_name}.pdf")
             )

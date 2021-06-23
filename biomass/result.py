@@ -48,16 +48,16 @@ class OptimizationResults(ExecModel):
         """
         n_file = self.get_executable()
 
-        if len(self.model.sp.idx_params) + len(self.model.sp.idx_initials) > 0:
+        if len(self.model.problem.idx_params) + len(self.model.problem.idx_initials) > 0:
             optimized_params = np.empty(
                 (
-                    len(self.model.sp.idx_params) + len(self.model.sp.idx_initials) + 2,
+                    len(self.model.problem.idx_params) + len(self.model.problem.idx_initials) + 2,
                     len(n_file) + 1,
                 ),
                 dtype="<U21",
             )
             for j, nth_paramset in enumerate(sorted(n_file), start=1):
-                for i, parameter_index in enumerate(self.model.sp.idx_params):
+                for i, parameter_index in enumerate(self.model.problem.idx_params):
                     best_generation = np.load(
                         os.path.join(
                             self.model.path,
@@ -88,13 +88,13 @@ class OptimizationResults(ExecModel):
                     optimized_params[1, j] = f"{error:8.3e}"
                     optimized_params[i + 2, 0] = self.model.parameters[parameter_index]
                     optimized_params[i + 2, j] = f"{best_individual[i]:8.3e}"
-                for i, species_index in enumerate(self.model.sp.idx_initials):
-                    optimized_params[i + len(self.model.sp.idx_params) + 2, 0] = (
+                for i, species_index in enumerate(self.model.problem.idx_initials):
+                    optimized_params[i + len(self.model.problem.idx_params) + 2, 0] = (
                         "init_" + self.model.species[species_index]
                     )
                     optimized_params[
-                        i + len(self.model.sp.idx_params) + 2, j
-                    ] = f"{best_individual[i+len(self.model.sp.idx_params)]:8.3e}"
+                        i + len(self.model.problem.idx_params) + 2, j
+                    ] = f"{best_individual[i+len(self.model.problem.idx_params)]:8.3e}"
             with open(
                 os.path.join(
                     self.model.path,
@@ -217,17 +217,38 @@ class OptimizationResults(ExecModel):
             if include_original:
                 x = self.model.pval()
                 y0 = self.model.ival()
-                obj_val = self.model.obj_func(None, x, y0)
+                obj_val = self.model.problem.objective(None, x, y0)
                 writer.writerow(["original", f"{obj_val:8.3e}"])
             n_file = self.get_executable()
             for paramset in sorted(n_file):
                 optimized = self.load_param(paramset)
-                obj_val = self.model.obj_func(None, *optimized)
+                obj_val = self.model.problem.objective(None, *optimized)
                 writer.writerow([f"{paramset:d}", f"{obj_val:8.3e}"])
 
-    def trace_obj(self) -> None:
+    def trace_obj(
+        self,
+        *,
+        config: Optional[dict] = None,
+        xlabel: str = "Iteration",
+        ylabel: str = "Objective function value",
+        xticks: Optional[list] = None,
+        yticks: Optional[list] = None,
+    ) -> None:
         """
         Visualize objective function traces for different optimization runs.
+
+        Parameters
+        ----------
+        config : dict, optional
+            A dictionary object for setting `matplotlib.rcParams`.
+        xlabel: str (default: "Iteration")
+            The label for the x-axis.
+        ylabel: str (default: "Objective function value")
+            The label for the x-axis.
+        xticks: list, optional
+            The list of xtick locations.
+        yticks: list, optional
+            The list of ytick locations.
 
         Examples
         --------
@@ -246,23 +267,20 @@ class OptimizationResults(ExecModel):
         """
         n_file = self.get_executable()
         # matplotlib
-        plt.figure(figsize=(4, 3))
-        plt.rcParams["font.size"] = 15
-        plt.rcParams["axes.linewidth"] = 1.5
-        plt.rcParams["xtick.major.width"] = 1.5
-        plt.rcParams["ytick.major.width"] = 1.5
-        plt.rcParams["lines.linewidth"] = 1.2
+        if config is None:
+            config = {}
+        config.setdefault("font.size", 15)
+        config.setdefault("axes.linewidth", 1.5)
+        config.setdefault("xtick.major.width", 1.5)
+        config.setdefault("ytick.major.width", 1.5)
+        config.setdefault("lines.linewidth", 1.5)
+        plt.rcParams.update(config)
         plt.gca().spines["right"].set_visible(False)
         plt.gca().spines["top"].set_visible(False)
         # ---
         for paramset in n_file:
             with open(
-                os.path.join(
-                    self.model.path,
-                    "out",
-                    f"{paramset:d}",
-                    "optimization.log",
-                ),
+                os.path.join(self.model.path, "out", f"{paramset:d}", "optimization.log"),
                 mode="r",
             ) as f:
                 traces = f.readlines()
@@ -273,14 +291,12 @@ class OptimizationResults(ExecModel):
                     iters.append(line.lstrip("Generation").split(":")[0])
                     obj_val.append(line.split("=")[-1].strip())
             plt.plot([int(num) - 1 for num in iters], [float(val) for val in obj_val])
-        plt.xlabel("Iteration")
-        plt.ylabel("Objective function value")
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        plt.xticks(xticks)
+        plt.yticks(yticks)
         plt.savefig(
-            os.path.join(
-                self.model.path,
-                "optimization_results",
-                "obj_func_traces.pdf",
-            ),
+            os.path.join(self.model.path, "optimization_results", "obj_func_traces.pdf"),
             bbox_inches="tight",
         )
         plt.close()

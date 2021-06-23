@@ -1,10 +1,10 @@
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 
-from .observable import observables
+from .observable import Observable
 
 
-class Visualization(object):
+class Visualization(Observable):
     """
     Plotting parameters for customizing figure properties
 
@@ -16,10 +16,11 @@ class Visualization(object):
     timecourse_options : list of dict
         Plotting options for figure/simulation/<viz_type>/<each_observable>.
 
-        Keys
-        ----
         * 'divided_by' : int or float (default: 1)
             Convert time unit. (e.g. sec -> min).
+        
+        * 'figsize' : tuple (default: (4, 3))
+                Width, height in inches.
 
         * 'xlim' : tuple
             Set the x limits of the current axes.
@@ -36,7 +37,7 @@ class Visualization(object):
         * 'yticks' : list (default: None)
             Set the current tick locations of the y-axis.
 
-        * 'ylabel' : str (default: observables[i].replace('__', '\n').replace('_', ' '))
+        * 'ylabel' : str (default: self.obs_names[i].replace('__', '\n').replace('_', ' '))
             Set the label for the y-axis.
 
         * 'exp_data' : bool (default: True)
@@ -64,28 +65,32 @@ class Visualization(object):
     """
 
     def __init__(self):
+        super().__init__()
+
         self.cm = plt.cm.get_cmap("tab10")
 
         self.timecourse_options = [
             {
                 "divided_by": 1,
+                "figsize": (4, 3),
                 "xlim": (),
                 "xticks": None,
                 "xlabel": "Time",
                 "ylim": (),
                 "yticks": None,
-                "ylabel": observables[i].replace("__", "\n").replace("_", " "),
+                "ylabel": self.obs_names[i].replace("__", "\n").replace("_", " "),
                 "exp_data": True,
                 "legend_loc": None,
                 "cmap": [self.cm.colors[j] for j in range(10)],
                 "shape": Line2D.filled_markers,
                 "dont_show": [],
             }
-            for i, _ in enumerate(observables)
+            for i, _ in enumerate(self.obs_names)
         ]
 
         self.multiplot_options = {
-            "fig_name": "multiplot_observables",
+            "fname": "multiplot_observables",
+            "figsize": (4, 3),
             "observables": [],
             "condition": None,
             "xlim": (),
@@ -106,7 +111,7 @@ class Visualization(object):
         }
 
     def get_timecourse_options(self):
-        for i, _ in enumerate(observables):
+        for i, _ in enumerate(self.obs_names):
             self.timecourse_options[i]["divided_by"] = 60
             self.timecourse_options[i]["xlim"] = (0, 150)
             self.timecourse_options[i]["xticks"] = [20 * i for i in range(8)]
@@ -115,15 +120,17 @@ class Visualization(object):
             self.timecourse_options[i]["yticks"] = [50 * i for i in range(7)]
             self.timecourse_options[i]["exp_data"] = False
 
-            self.timecourse_options[observables.index("biphosphorylated_MAPK")][
+            self.timecourse_options[self.obs_names.index("biphosphorylated_MAPK")][
                 "ylabel"
             ] = "ERK-PP"
-            self.timecourse_options[observables.index("unphosphorylated_MAPK")]["ylabel"] = "ERK"
+            self.timecourse_options[self.obs_names.index("unphosphorylated_MAPK")][
+                "ylabel"
+            ] = "ERK"
 
         return self.timecourse_options
 
     def multiplot_observables(self):
-        self.multiplot_options["fig_name"] = "oscillations_in_the_MAPK_concentrations"
+        self.multiplot_options["fname"] = "oscillations_in_the_MAPK_concentrations"
         self.multiplot_options["observables"] = [
             "biphosphorylated_MAPK",
             "unphosphorylated_MAPK",

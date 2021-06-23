@@ -23,8 +23,8 @@ Contents
    installation
    models
    usage
-   modules/index
-   citation
+   api/index
+   references
 
 .. |Actions Status| image:: https://github.com/biomass-dev/biomass/workflows/Tests/badge.svg
    :target: https://github.com/biomass-dev/biomass/actions

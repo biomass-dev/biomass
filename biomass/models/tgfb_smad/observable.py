@@ -5,29 +5,26 @@ from biomass.dynamics.solver import solve_ode
 from .name2idx import C, V
 from .set_model import DifferentialEquation
 
-observables = [
-    "Ski",
-    "Skil",
-    "Dnmt3a",
-    "Sox4",
-    "Jun",
-    "Smad7",
-    "Klf10",
-    "Bmp4",
-    "Cxcl15",
-    "Dusp5",
-    "Tgfa",
-    "Pdk4",
-]
 
+class Observable(DifferentialEquation):
+    """
+    Correlating model simulations and experimental measurements.
 
-class NumericalSimulation(DifferentialEquation):
-    """Simulate a model using scipy.integrate.ode
     Attributes
     ----------
+    obs_names : list of strings
+        Names of model observables.
+
+    t : range
+        Simulation time span.
+
+    conditions : list of strings
+        Expetimental conditions.
+
+    simulations : numpy.ndarray
+        The numpy array to store simulation results.
+
     normalization : nested dict
-        Keys for each observable
-        ------------------------
         * 'timepoint' : Optional[int]
             The time point at which simulated values are normalized.
             If None, the maximum value will be used for normalization.
@@ -36,18 +33,38 @@ class NumericalSimulation(DifferentialEquation):
             The experimental conditions to use for normalization.
             If empty, all conditions defined in sim.conditions will be used.
 
+    experiments : list of dict
+        Time series data.
+
+    error_bars : list of dict
+        Error bars to show in figures.
+
     """
 
     def __init__(self):
-        super().__init__(perturbation={})
-        self.normalization = {}
-
-    t = range(600 + 1)  # min
-
-    # Experimental conditions
-    conditions = ["WT", "Smad2OE", "Smad3OE", "Smad4OE"]
-
-    simulations = np.empty((len(observables), len(t), len(conditions)))
+        super(Observable, self).__init__(perturbation={})
+        self.obs_names: list = [
+            "Ski",
+            "Skil",
+            "Dnmt3a",
+            "Sox4",
+            "Jun",
+            "Smad7",
+            "Klf10",
+            "Bmp4",
+            "Cxcl15",
+            "Dusp5",
+            "Tgfa",
+            "Pdk4",
+        ]
+        self.t: range = range(600 + 1)  # min
+        self.conditions: list = ["WT", "Smad2OE", "Smad3OE", "Smad4OE"]
+        self.simulations: np.ndarray = np.empty(
+            (len(self.obs_names), len(self.t), len(self.conditions))
+        )
+        self.normalization: dict = {}
+        self.experiments: list = [None] * len(self.obs_names)
+        self.error_bars: list = [None] * len(self.obs_names)
 
     @staticmethod
     def _set_gene_param(gene_name, x):
@@ -153,7 +170,7 @@ class NumericalSimulation(DifferentialEquation):
         if _perturbation:
             self.perturbation = _perturbation
 
-        for gene_name in observables:
+        for gene_name in self.obs_names:
             x = self._set_gene_param(gene_name, x)
             for i, condition in enumerate(self.conditions):
                 if condition == "WT":
@@ -178,32 +195,13 @@ class NumericalSimulation(DifferentialEquation):
                 if sol is None:
                     return False
                 else:
-                    self.simulations[observables.index(gene_name), :, i] = np.log2(
+                    self.simulations[self.obs_names.index(gene_name), :, i] = np.log2(
                         sol.y[V.gene, :]
                     )
-
-
-class ExperimentalData(object):
-    """
-    Set experimental data.
-    Attributes
-    ----------
-    experiments : list of dict
-        Time series data.
-
-    error_bars : list of dict
-        Error bars to show in figures.
-
-    """
-
-    def __init__(self):
-        self.experiments = [None] * len(observables)
-        self.error_bars = [None] * len(observables)
 
     def set_data(self):
         pass
 
-    @staticmethod
-    def get_timepoint(obs_name):
-        if obs_name in observables:
+    def get_timepoint(self, obs_name):
+        if obs_name in self.obs_names:
             return []
