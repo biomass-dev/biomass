@@ -166,6 +166,12 @@ Data export and visualization
 
 .. image:: https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/estimated_parameter_sets.png
 
+.. code-block:: python
+
+    # Visualize objective function traces for different optimization runs.
+    res.trace_obj()
+
+.. image:: https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/obj_func_trace.png
 
 Visualization of simulation results
 -----------------------------------
