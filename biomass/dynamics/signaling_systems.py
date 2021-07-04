@@ -190,6 +190,7 @@ class SignalingSystems(TemporalDynamics):
             for i, name in enumerate(self.model.parameters):
                 f.write(f"{indentation}x[C.{name}] = {optimized.params[i]:8.3e}\n")
             f.write(f"\n\ndef initial_values():\n{indentation}y0 = [0] * V.NUM\n")
-            for i, name in enumerate(self.model.species):
-                if optimized.initials[i] != 0:
-                    f.write(f"{indentation}y0[V.{name}] = {optimized.initials[i]:8.3e}\n")
+            if all([isinstance(_s, str) for _s in self.model.species]):
+                for i, name in enumerate(self.model.species):
+                    if optimized.initials[i] != 0:
+                        f.write(f"{indentation}y0[V.{name}] = {optimized.initials[i]:8.3e}\n")

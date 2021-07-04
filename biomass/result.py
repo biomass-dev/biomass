@@ -88,13 +88,14 @@ class OptimizationResults(ExecModel):
                     optimized_params[1, j] = f"{error:8.3e}"
                     optimized_params[i + 2, 0] = self.model.parameters[parameter_index]
                     optimized_params[i + 2, j] = f"{best_individual[i]:8.3e}"
-                for i, species_index in enumerate(self.model.problem.idx_initials):
-                    optimized_params[i + len(self.model.problem.idx_params) + 2, 0] = (
-                        "init_" + self.model.species[species_index]
-                    )
-                    optimized_params[
-                        i + len(self.model.problem.idx_params) + 2, j
-                    ] = f"{best_individual[i+len(self.model.problem.idx_params)]:8.3e}"
+                if all([isinstance(_s, str) for _s in self.model.species]):
+                    for i, species_index in enumerate(self.model.problem.idx_initials):
+                        optimized_params[i + len(self.model.problem.idx_params) + 2, 0] = (
+                            "init_" + self.model.species[species_index]
+                        )
+                        optimized_params[
+                            i + len(self.model.problem.idx_params) + 2, j
+                        ] = f"{best_individual[i+len(self.model.problem.idx_params)]:8.3e}"
             with open(
                 os.path.join(
                     self.model.path,
