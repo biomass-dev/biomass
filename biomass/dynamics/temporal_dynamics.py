@@ -211,7 +211,9 @@ class TemporalDynamics(ExecModel):
                                 self.model.problem.normalization[obs_name]["timepoint"],
                                 [
                                     self.model.problem.conditions.index(c)
-                                    for c in self.model.problem.normalization[obs_name]["condition"]
+                                    for c in self.model.problem.normalization[obs_name][
+                                        "condition"
+                                    ]
                                 ],
                             ]
                         )
@@ -223,7 +225,9 @@ class TemporalDynamics(ExecModel):
                                 :,
                                 [
                                     self.model.problem.conditions.index(c)
-                                    for c in self.model.problem.normalization[obs_name]["condition"]
+                                    for c in self.model.problem.normalization[obs_name][
+                                        "condition"
+                                    ]
                                 ],
                             ]
                         )
@@ -239,7 +243,10 @@ class TemporalDynamics(ExecModel):
             mean_vec.append(
                 np.nanmean(
                     normalized[
-                        self.model.observables.index(obs_name), :, :, self.model.problem.conditions.index(c)
+                        self.model.observables.index(obs_name),
+                        :,
+                        :,
+                        self.model.problem.conditions.index(c),
                     ],
                     axis=0,
                 )
@@ -335,7 +342,9 @@ class TemporalDynamics(ExecModel):
                                 self.model.problem.normalization[obs_name]["timepoint"],
                                 [
                                     self.model.problem.conditions.index(c)
-                                    for c in self.model.problem.normalization[obs_name]["condition"]
+                                    for c in self.model.problem.normalization[obs_name][
+                                        "condition"
+                                    ]
                                 ],
                             ]
                         )
@@ -346,7 +355,9 @@ class TemporalDynamics(ExecModel):
                                 :,
                                 [
                                     self.model.problem.conditions.index(c)
-                                    for c in self.model.problem.normalization[obs_name]["condition"]
+                                    for c in self.model.problem.normalization[obs_name][
+                                        "condition"
+                                    ]
                                 ],
                             ]
                         )
@@ -464,22 +475,16 @@ class TemporalDynamics(ExecModel):
         if singleplot[i]["yticks"] is not None:
             plt.yticks(singleplot[i]["yticks"])
         plt.ylabel(singleplot[i]["ylabel"])
-        if singleplot[i]["legend_loc"] is not None:
-            plt.legend(
-                loc=singleplot[i]["legend_loc"],
-                frameon=False,
-                fontsize=12,
-            )
+        if singleplot[i]["legend_kws"] is not None:
+            plt.legend(**singleplot[i]["legend_kws"])
         plt.savefig(
             os.path.join(
                 self.model.path,
                 "figure",
                 "simulation",
                 f"{viz_type}",
-                f"{obs_name}." + save_format,
+                f"{obs_name}",
             ),
-            dpi=600 if save_format == "png" else None,
-            bbox_inches="tight",
         )
         plt.close()
 
@@ -502,23 +507,14 @@ class TemporalDynamics(ExecModel):
         if multiplot["yticks"] is not None:
             plt.yticks(multiplot["yticks"])
         plt.ylabel(multiplot["ylabel"])
-        plt.legend(
-            bbox_to_anchor=(1.05, 1),
-            loc="upper left",
-            borderaxespad=0,
-            labelspacing=1.25,
-            frameon=False,
-            fontsize=12,
-        )
+        plt.legend(**multiplot["legend_kws"])
         plt.savefig(
             os.path.join(
                 self.model.path,
                 "figure",
                 "simulation",
                 f"{viz_type}",
-                f"{multiplot['fname']}." + save_format,
+                f"{multiplot['fname']}",
             ),
-            dpi=600 if save_format == "png" else None,
-            bbox_inches="tight",
         )
         plt.close()
