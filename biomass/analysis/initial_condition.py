@@ -1,21 +1,27 @@
 import os
 import sys
 from dataclasses import dataclass
-from typing import List
+from typing import Callable, Dict, List, Optional, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
 from ..exec_model import ExecModel, ModelObject
-from .util import dlnyi_dlnxj, get_signaling_metric
+from .util import SignalingMetric, dlnyi_dlnxj
 
 
 @dataclass
-class InitialConditionSensitivity(ExecModel):
+class InitialConditionSensitivity(ExecModel, SignalingMetric):
     """Sensitivity for species with nonzero initial conditions"""
 
     model: ModelObject
+    create_metrics: Optional[Dict[str, Callable[[np.ndarray], Union[int, float]]]]
+
+    def __post_init__(self) -> None:
+        if self.create_metrics is not None:
+            for name, function in self.create_metrics.items():
+                self.quantification[name] = function
 
     def _get_nonzero_indices(self, excluded_initials: List[str]) -> List[int]:
         nonzero_indices = []
@@ -32,7 +38,6 @@ class InitialConditionSensitivity(ExecModel):
         self,
         metric: str,
         nonzero_indices: List[int],
-        options: dict,
     ) -> np.ndarray:
         """Calculating Sensitivity Coefficients
 
@@ -70,8 +75,8 @@ class InitialConditionSensitivity(ExecModel):
                 if self.model.problem.simulate(optimized.params, y0) is None:
                     for k, _ in enumerate(self.model.observables):
                         for l, _ in enumerate(self.model.problem.conditions):
-                            signaling_metric[i, j, k, l] = get_signaling_metric(
-                                metric, self.model.problem.simulations[k, :, l], options
+                            signaling_metric[i, j, k, l] = self.quantification[metric](
+                                self.model.problem.simulations[k, :, l]
                             )
                 sys.stdout.write(
                     "\r{:d} / {:d}".format(
@@ -84,8 +89,8 @@ class InitialConditionSensitivity(ExecModel):
             if self.model.problem.simulate(optimized.params, y0) is None:
                 for k, _ in enumerate(self.model.observables):
                     for l, _ in enumerate(self.model.problem.conditions):
-                        signaling_metric[i, -1, k, l] = get_signaling_metric(
-                            metric, self.model.problem.simulations[k, :, l], options
+                        signaling_metric[i, -1, k, l] = self.quantification[metric](
+                            self.model.problem.simulations[k, :, l]
                         )
         sensitivity_coefficients = dlnyi_dlnxj(
             signaling_metric,
@@ -102,7 +107,6 @@ class InitialConditionSensitivity(ExecModel):
         self,
         metric: str,
         nonzero_indices: List[int],
-        options: dict,
     ) -> np.ndarray:
         """
         Load (or calculate) sensitivity coefficients.
@@ -123,11 +127,7 @@ class InitialConditionSensitivity(ExecModel):
                 ),
                 exist_ok=True,
             )
-            sensitivity_coefficients = self._calc_sensitivity_coefficients(
-                metric,
-                nonzero_indices,
-                options,
-            )
+            sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, nonzero_indices)
             np.save(
                 os.path.join(
                     self.model.path,
@@ -149,9 +149,7 @@ class InitialConditionSensitivity(ExecModel):
             if len(nonzero_indices) != sensitivity_coefficients.shape[1]:
                 # User changed options['excluded_initials'] after the last trial
                 sensitivity_coefficients = self._calc_sensitivity_coefficients(
-                    metric,
-                    nonzero_indices,
-                    options,
+                    metric, nonzero_indices
                 )
                 np.save(
                     os.path.join(
@@ -236,7 +234,7 @@ class InitialConditionSensitivity(ExecModel):
                 "Control coefficients on\n" + metric + " (" + obs_name.replace("_", " ") + ")"
             )
             plt.xlim(-options["width"], len(nonzero_indices))
-            plt.legend(loc=options["legend_loc"], frameon=False)
+            plt.legend(**options["legend_kws"])
             plt.savefig(
                 os.path.join(
                     self.model.path,
@@ -245,10 +243,8 @@ class InitialConditionSensitivity(ExecModel):
                     "initial_condition",
                     f"{metric}",
                     "barplot",
-                    f"{obs_name}.{save_format}",
+                    f"{obs_name}",
                 ),
-                dpi=600 if save_format == "png" else None,
-                bbox_inches="tight",
             )
             plt.close()
 
@@ -332,7 +328,6 @@ class InitialConditionSensitivity(ExecModel):
                             "heatmap",
                             f"{condition}_{obs_name}.{save_format}",
                         ),
-                        dpi=600 if save_format == "png" else None,
                         bbox_inches="tight",
                     )
                     plt.close()
@@ -342,7 +337,7 @@ class InitialConditionSensitivity(ExecModel):
         Perform sensitivity analysis.
         """
         nonzero_indices = self._get_nonzero_indices(options["excluded_initials"])
-        sensitivity_coefficients = self._load_sc(metric, nonzero_indices, options)
+        sensitivity_coefficients = self._load_sc(metric, nonzero_indices)
         if style == "barplot":
             self._barplot_sensitivity(
                 metric,

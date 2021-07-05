@@ -4,7 +4,9 @@ import os
 from dataclasses import dataclass
 from importlib import import_module
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Callable, Dict, Optional, Union
+
+import numpy as np
 
 from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
 from .dynamics import SignalingSystems
@@ -387,6 +389,7 @@ def run_analysis(
     *,
     target: str,
     metric: str = "integral",
+    create_metrics: Optional[Dict[str, Callable[[np.ndarray], Union[int, float]]]] = None,
     style: str = "barplot",
     save_format: str = "pdf",
     options: Optional[dict] = None,
@@ -410,25 +413,21 @@ def run_analysis(
         * 'parameter'
 
     metric : str (default: 'integral')
-        * 'maximum' : The maximum value.
-        * 'minimum' : The minimum value.
-        * 'argmax' : The time to reach the maximum value.
-        * 'argmin' : The time to reach the minimum value.
-        * 'timepoint' : The simulated value at the time point set via options['timepoint'].
-        * 'duration' :  The time it takes to decline below the threshold set via options['duration'].
-        * 'integral' : The integral of concentration over the observation time.
+        A word to specify the signaling metric.
+
+    create_metrics : Dict[str, Callable[[np.ndarray], Union[int, float]]], optional
+        Create user-defined signaling metrics.
 
     style : str (default: 'barplot')
         * 'barplot'
         * 'heatmap'
 
     save_format : str (default: "pdf")
-        Either "png" or "pdf", indicating whether to save figures
-        as png or pdf format.
+        Either "png" or "pdf", indicating whether to save figures as png or pdf format.
 
     options : dict, optional
         * show_indices : bool (default: True)
-            (target == 'reaction') Set to True to put reaction index on each bar.
+            (target == 'reaction') Set to `True` to put reaction index on each bar.
 
         * excluded_params : list of strings
             (target == 'parameter') List of parameters which are not used for analysis.
@@ -436,18 +435,14 @@ def run_analysis(
         * excluded_initials : list of strings
             (target == 'initial_condition') List of species which are not used for analysis.
 
-        * timepoint : int (default: model.problem.t[-1])
-            (metric=='timepoint') Which timepoint to use.
-
-        * duration : float (default: 0.5)
-            (metric=='duration') 0.1 for 10% of its maximum.
-
     Examples
     --------
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import Model, run_analysis
     >>> model = Model(Nakakuki_Cell_2010.__package__).create()
-    >>> # Parameters
+
+    Parameters
+
     >>> run_analysis(
     ...     model,
     ...     target='parameter',
@@ -457,9 +452,13 @@ def run_analysis(
     ...         ]
     ...     }
     ... )
-    >>> # Initial condition
+
+    Initial condition
+
     >>> run_analysis(model, target='initial_condition')
-    >>> # Reaction
+
+    Reaction
+
     >>> run_analysis(model, target='reaction')
 
     """
@@ -471,30 +470,23 @@ def run_analysis(
     options.setdefault("show_indices", True)
     options.setdefault("excluded_params", [])
     options.setdefault("excluded_initials", [])
-    options.setdefault("timepoint", model.problem.t[-1])
-    options.setdefault("duration", 0.5)
-
-    if not model.problem.t[0] <= options["timepoint"] <= model.problem.t[-1]:
-        raise ValueError("options['timepooint'] must lie within problem.t.")
-    if not 0.0 < options["duration"] < 1.0:
-        raise ValueError("options['duration'] must lie within (0, 1).")
 
     if target == "reaction":
-        ReactionSensitivity(model).analyze(
+        ReactionSensitivity(model, create_metrics).analyze(
             metric=metric,
             style=style,
             save_format=save_format,
             options=options,
         )
     elif target == "parameter":
-        ParameterSensitivity(model).analyze(
+        ParameterSensitivity(model, create_metrics).analyze(
             metric=metric,
             style=style,
             save_format=save_format,
             options=options,
         )
     elif target == "initial_condition":
-        InitialConditionSensitivity(model).analyze(
+        InitialConditionSensitivity(model, create_metrics).analyze(
             metric=metric,
             style=style,
             save_format=save_format,
