@@ -162,7 +162,7 @@ class Visualization(Observable):
         plt.rcParams["lines.linewidth"] = 1.8
         plt.rcParams["lines.markersize"] = 12
         plt.rcParams["savefig.bbox"] = "tight"
-        plt.rcParams["savefig.format"] = "pdf"
+        # plt.rcParams["savefig.format"] = "pdf"
         # plt.rcParams['font.family'] = 'Arial'
         # plt.rcParams['mathtext.fontset'] = 'custom'
         # plt.rcParams['mathtext.it'] = 'Arial:italic'
