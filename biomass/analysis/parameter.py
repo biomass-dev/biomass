@@ -167,7 +167,6 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         param_indices: List[int],
-        save_format: str,
     ) -> None:
         """
         Visualize sensitivity coefficients using barplot.
@@ -270,7 +269,6 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         param_indices: List[int],
-        save_format: str,
     ) -> None:
         """
         Visualize sensitivity coefficients using heatmap.
@@ -325,7 +323,7 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
                     )
                     plt.close()
 
-    def analyze(self, *, metric: str, style: str, save_format: str, options: dict) -> None:
+    def analyze(self, *, metric: str, style: str, options: dict) -> None:
         """
         Perform sensitivity analysis.
         """
@@ -336,7 +334,6 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
                 metric,
                 sensitivity_coefficients,
                 param_indices,
-                save_format,
             )
         elif style == "heatmap":
             if len(param_indices) < 2:
@@ -346,7 +343,6 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
                     metric,
                     sensitivity_coefficients,
                     param_indices,
-                    save_format,
                 )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")

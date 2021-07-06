@@ -22,7 +22,6 @@ class TemporalDynamics(ExecModel):
         viz_type: str,
         show_all: bool,
         stdev: bool,
-        save_format: str,
         simulations_all: np.ndarray,
     ) -> None:
         """
@@ -42,10 +41,6 @@ class TemporalDynamics(ExecModel):
         stdev : bool
             If True, the standard deviation of simulated values will be shown
             (only available for 'average' visualization type).
-
-        save_format : str (default: "pdf")
-            Either "png" or "pdf", indicating whether to save figures
-            as png or pdf format.
 
         simulations_all : numpy array
             Array containing all simulated values.
@@ -118,9 +113,9 @@ class TemporalDynamics(ExecModel):
                             viz_type, exp_t, obs_name, mode, singleplot, multiplot
                         )
                 if mode == 0:
-                    self._save_mode_0(obs_name, singleplot, viz_type, save_format)
+                    self._save_mode_0(obs_name, singleplot, viz_type)
             if mode == 1 and multiplot["observables"]:
-                self._save_mode_1(multiplot, viz_type, save_format)
+                self._save_mode_1(multiplot, viz_type)
 
     def _plot_show_all(
         self,
@@ -459,7 +454,6 @@ class TemporalDynamics(ExecModel):
         obs_name: str,
         singleplot: List[dict],
         viz_type: str,
-        save_format: str,
     ) -> None:
         """
         Plot time course of each observable.
@@ -492,7 +486,6 @@ class TemporalDynamics(ExecModel):
         self,
         multiplot: dict,
         viz_type: str,
-        save_format: str,
     ) -> None:
         """
         Plot time course of multiple observables in one figure.

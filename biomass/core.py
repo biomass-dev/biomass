@@ -318,7 +318,6 @@ def run_simulation(
     viz_type: str = "original",
     show_all: bool = False,
     stdev: bool = False,
-    save_format: str = "pdf",
 ) -> None:
     """
     Simulate ODE model with estimated parameter values.
@@ -350,10 +349,6 @@ def run_simulation(
         If True, the standard deviation of simulated values will be shown
         (only available for 'average' visualization type).
 
-    save_format : str (default: "pdf")
-        Either "png" or "pdf", indicating whether to save figures
-        as png or pdf format.
-
     Examples
     --------
     >>> from biomass.models import Nakakuki_Cell_2010
@@ -364,7 +359,6 @@ def run_simulation(
     ...     viz_type='average',
     ...     show_all=False,
     ...     stdev=True,
-    ...     save_format="png",
     ... )
 
     """
@@ -373,14 +367,10 @@ def run_simulation(
             "Available viz_type are: 'best','average','original','experiment','n(=1, 2, ...)'"
         )
 
-    if save_format not in ["pdf", "png"]:
-        raise ValueError("save_format must be either 'pdf' or 'png'.")
-
     SignalingSystems(model).simulate_all(
         viz_type=viz_type,
         show_all=show_all,
         stdev=stdev,
-        save_format=save_format,
     )
 
 
@@ -391,7 +381,6 @@ def run_analysis(
     metric: str = "integral",
     create_metrics: Optional[Dict[str, Callable[[np.ndarray], Union[int, float]]]] = None,
     style: str = "barplot",
-    save_format: str = "pdf",
     options: Optional[dict] = None,
 ) -> None:
     """
@@ -421,9 +410,6 @@ def run_analysis(
     style : str (default: 'barplot')
         * 'barplot'
         * 'heatmap'
-
-    save_format : str (default: "pdf")
-        Either "png" or "pdf", indicating whether to save figures as png or pdf format.
 
     options : dict, optional
         * show_indices : bool (default: True)
@@ -462,8 +448,6 @@ def run_analysis(
     >>> run_analysis(model, target='reaction')
 
     """
-    if save_format not in ["pdf", "png"]:
-        raise ValueError("save_format must be either 'pdf' or 'png'.")
 
     if options is None:
         options = {}
@@ -475,21 +459,18 @@ def run_analysis(
         ReactionSensitivity(model, create_metrics).analyze(
             metric=metric,
             style=style,
-            save_format=save_format,
             options=options,
         )
     elif target == "parameter":
         ParameterSensitivity(model, create_metrics).analyze(
             metric=metric,
             style=style,
-            save_format=save_format,
             options=options,
         )
     elif target == "initial_condition":
         InitialConditionSensitivity(model, create_metrics).analyze(
             metric=metric,
             style=style,
-            save_format=save_format,
             options=options,
         )
     else:

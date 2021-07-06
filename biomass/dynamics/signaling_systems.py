@@ -20,7 +20,6 @@ class SignalingSystems(TemporalDynamics):
         viz_type: str,
         show_all: bool,
         stdev: bool,
-        save_format: str,
     ) -> None:
         """
         Run simulation and save figures.
@@ -77,7 +76,7 @@ class SignalingSystems(TemporalDynamics):
                 # Simulated values with original parameter values.
                 self._save_simulations(viz_type, self.model.problem.simulations)
 
-        self.plot_timecourse(n_file, viz_type, show_all, stdev, save_format, simulations_all)
+        self.plot_timecourse(n_file, viz_type, show_all, stdev, simulations_all)
 
     def _preprocessing(self, simulated_values: np.ndarray) -> np.ndarray:
         """

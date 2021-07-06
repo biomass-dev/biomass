@@ -168,7 +168,6 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         nonzero_indices: List[int],
-        save_format: str,
     ) -> None:
         """
         Visualize sensitivity coefficients using barplot.
@@ -273,7 +272,6 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         nonzero_indices: List[int],
-        save_format: str,
     ) -> None:
         """
         Visualize sensitivity coefficients using heatmap.
@@ -326,13 +324,13 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
                             "initial_condition",
                             f"{metric}",
                             "heatmap",
-                            f"{condition}_{obs_name}.{save_format}",
+                            f"{condition}_{obs_name}",
                         ),
                         bbox_inches="tight",
                     )
                     plt.close()
 
-    def analyze(self, *, metric: str, style: str, save_format: str, options: dict) -> None:
+    def analyze(self, *, metric: str, style: str, options: dict) -> None:
         """
         Perform sensitivity analysis.
         """
@@ -343,7 +341,6 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
                 metric,
                 sensitivity_coefficients,
                 nonzero_indices,
-                save_format,
             )
         elif style == "heatmap":
             if len(nonzero_indices) < 2:
@@ -353,7 +350,6 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
                     metric,
                     sensitivity_coefficients,
                     nonzero_indices,
-                    save_format,
                 )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")

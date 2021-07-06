@@ -203,7 +203,6 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
         sensitivity_coefficients: np.ndarray,
         biological_processes: List[List[int]],
         reaction_indices: List[int],
-        save_format: str,
         show_indices: bool,
     ) -> None:
         """
@@ -309,7 +308,6 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         reaction_indices: List[int],
-        save_format: str,
     ) -> None:
         """
         Visualize sensitivity coefficients using heatmap.
@@ -363,7 +361,7 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
                     )
                     plt.close()
 
-    def analyze(self, *, metric: str, style: str, save_format: str, options: dict) -> None:
+    def analyze(self, *, metric: str, style: str, options: dict) -> None:
         """
         Perform sensitivity analysis.
         """
@@ -379,7 +377,6 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
                 sensitivity_coefficients,
                 biological_processes,
                 reaction_indices,
-                save_format,
                 options["show_indices"],
             )
         elif style == "heatmap":
@@ -387,7 +384,6 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
                 metric,
                 sensitivity_coefficients,
                 reaction_indices,
-                save_format,
             )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")
