@@ -4,7 +4,7 @@ import os
 from dataclasses import dataclass
 from importlib import import_module
 from pathlib import Path
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any, Callable, Dict, Iterable, Optional, Union
 
 import numpy as np
 
@@ -83,7 +83,7 @@ class Model(object):
 
 
 def _check_optional_arguments(
-    end: Optional[int],
+    x_id: Union[int, Iterable[int]],
     options: Optional[dict],
 ) -> None:
     if options is None:
@@ -95,7 +95,7 @@ def _check_optional_arguments(
                 "Invalid local_search_method. Should be one of ['mutation', 'Powell', 'DE']"
             )
         elif (
-            isinstance(end, int)
+            not isinstance(x_id, int)
             and options["local_search_method"].lower() == "de"
             and options["workers"] != 1
         ):
@@ -108,8 +108,7 @@ def _check_optional_arguments(
 
 def optimize(
     model: ModelObject,
-    start: int,
-    end: Optional[int] = None,
+    x_id: Union[int, Iterable[int]],
     options: Optional[dict] = None,
 ) -> None:
     """
@@ -120,11 +119,8 @@ def optimize(
     model : ModelObject
         Model for parameter estimation.
 
-    start : int
-        Index of parameter set to estimate.
-
-    end : int, optional
-        When `end` is specified, parameter sets from `start` to `end` will be estimated.
+    x_id : int or Iterable[int]
+        Index (indices) of parameter set to estimate.
 
     options : dict, optional
         * popsize : int (default: 5)
@@ -157,7 +153,7 @@ def optimize(
             (method='Powell' or 'DE') The maximum number of iterations
             over which the entire population is evolved.
 
-        * workers : int (default: -1 if `end` is None else 1)
+        * workers : int (default: -1 if `x_id` is `Iterable` else 1)
             (method='DE') The population is subdivided into workers sections and
             evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
             all available CPU cores. Set workers to 1 when searching multiple
@@ -172,7 +168,7 @@ def optimize(
     >>> from biomass import Model, optimize
     >>> model = Model(Nakakuki_Cell_2010.__package__).create()
     >>> optimize(
-    ...     model=model, start=1, end=10,
+    ...     model, x_id=range(1, 11),
     ...     options={
     ...         'max_generation': 10000,
     ...         'allowable_error': 0.5
@@ -189,28 +185,24 @@ def optimize(
     options.setdefault("local_search_method", "mutation")
     options.setdefault("n_children", 200)
     options.setdefault("maxiter", 10)
-    options.setdefault("workers", -1 if end is None else 1)
+    options.setdefault("workers", -1 if not isinstance(x_id, int) else 1)
     options.setdefault("overwrite", False)
 
-    _check_optional_arguments(end, options)
+    _check_optional_arguments(x_id, options)
 
     ga_init = GeneticAlgorithmInit(model, **options)
-    if end is None:
-        ga_init.run(int(start))
+    if isinstance(x_id, int):
+        ga_init.run(x_id)
     else:
         n_proc = max(1, multiprocessing.cpu_count() - 1)
         with multiprocessing.Pool(processes=n_proc) as p:
-            for _ in p.imap_unordered(
-                ga_init.run,
-                range(int(start), int(end) + 1),
-            ):
+            for _ in p.imap_unordered(ga_init.run, x_id):
                 pass
 
 
 def optimize_continue(
     model: ModelObject,
-    start: int,
-    end: Optional[int] = None,
+    x_id: Union[int, Iterable[int]],
     options: Optional[dict] = None,
 ) -> None:
     """
@@ -221,11 +213,8 @@ def optimize_continue(
     model : ModelObject
         Model for parameter estimation.
 
-    start : int
-        Index of parameter set to estimate.
-
-    end : int, optional
-        When `end` is specified, parameter sets from `start` to `end` will be estimated.
+    x_id : int or Iterable[int]
+        Index (indices) of parameter set to estimate.
 
     options : dict, optional
         * popsize : int (default: 5)
@@ -258,7 +247,7 @@ def optimize_continue(
             (method='Powell' or 'DE') The maximum number of iterations
             over which the entire population is evolved.
 
-        * workers : int (default: -1 if `end` is None else 1)
+        * workers : int (default: -1 if `x_id` is `Iterable` else 1)
             (method='DE') The population is subdivided into workers sections and
             evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
             all available CPU cores. Set workers to 1 when searching multiple
@@ -277,7 +266,7 @@ def optimize_continue(
     >>> from biomass import Model, optimize_continue
     >>> model = Model(Nakakuki_Cell_2010.__package__).create()
     >>> optimize_continue(
-    ...     model=model, start=1, end=10,
+    ...     model, x_id=range(1, 11),
     ...     options={
     ...         'max_generation': 20000,
     ...         'allowable_error': 0.5
@@ -294,21 +283,18 @@ def optimize_continue(
     options.setdefault("local_search_method", "mutation")
     options.setdefault("n_children", 200)
     options.setdefault("maxiter", 10)
-    options.setdefault("workers", -1 if end is None else 1)
+    options.setdefault("workers", -1 if not isinstance(x_id, int) else 1)
     options.setdefault("p0_bounds", [0.1, 10.0])
 
-    _check_optional_arguments(end, options)
+    _check_optional_arguments(x_id, options)
 
     ga_continue = GeneticAlgorithmContinue(model, **options)
-    if end is None:
-        ga_continue.run(int(start))
+    if isinstance(x_id, int):
+        ga_continue.run(x_id)
     else:
         n_proc = max(1, multiprocessing.cpu_count() - 1)
         with multiprocessing.Pool(processes=n_proc) as p:
-            for _ in p.imap_unordered(
-                ga_continue.run,
-                range(int(start), int(end) + 1),
-            ):
+            for _ in p.imap_unordered(ga_continue.run, x_id):
                 pass
 
 

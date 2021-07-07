@@ -34,8 +34,7 @@ def test_simulate_successful():
 def test_optimize():
     optimize(
         model=model,
-        start=1,
-        end=3,
+        x_id=range(1, 4),
         options={
             "popsize": 3,
             "max_generation": 3,
@@ -58,8 +57,7 @@ def test_optimize():
 
     optimize_continue(
         model=model,
-        start=1,
-        end=3,
+        x_id=range(1, 4),
         options={
             "popsize": 3,
             "max_generation": 6,
@@ -80,8 +78,7 @@ def test_optimize():
 
     optimize_continue(
         model=model,
-        start=1,
-        end=3,
+        x_id=range(1, 4),
         options={
             "popsize": 3,
             "max_generation": 9,

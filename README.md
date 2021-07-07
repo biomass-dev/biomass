@@ -45,7 +45,7 @@ from biomass.models import Nakakuki_Cell_2010
 
 model = Model(Nakakuki_Cell_2010.__package__).create()
 
-optimize(model, start=1, end=10)
+optimize(model, x_id=range(1, 11))
 ```
 
 ![estimated_parameter_sets](https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/estimated_parameter_sets.png)

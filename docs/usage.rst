@@ -45,7 +45,7 @@ Parameters are adjusted to minimize the distance between model simulation and ex
     from biomass import optimize
 
     optimize(
-        model=model, start=1, options={
+        model, x_id=1, options={
             "popsize": 3,
             "max_generation": 100,
             "allowable_error": 0.5,
@@ -86,7 +86,7 @@ Progress list: ``out/n/optimization.log``::
     from biomass import optimize_continue
 
     optimize_continue(
-        model=model, start=1, options={
+        model, x_id=1, options={
             "popsize": 3,
             "max_generation": 200,
             "allowable_error": 0.5,
@@ -102,7 +102,7 @@ Progress list: ``out/n/optimization.log``::
     from biomass import optimize
 
     optimize(
-        model=model, start=1, end=10, options={
+        model, x_id=range(1, 11), options={
             "popsize": 5,
             "max_generation": 100,
             "allowable_error": 0.5,
