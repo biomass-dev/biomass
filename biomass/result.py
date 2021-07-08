@@ -111,6 +111,7 @@ class OptimizationResults(ExecModel):
         self,
         *,
         figsize: Optional[Tuple[float, float]] = None,
+        config: Optional[dict] = None,
         boxplot_kws: Optional[dict] = None,
     ) -> None:
         """
@@ -120,6 +121,8 @@ class OptimizationResults(ExecModel):
         ----------
         figsize : Tuple[float, float], optional
             Width, height in inches.
+        config : dict, optional
+            A dictionary object for setting `matplotlib.rcParams`.
         boxplot_kws : dict, optional
             Keyword arguments to pass to `seaborn.boxplot`.
 
@@ -159,8 +162,13 @@ class OptimizationResults(ExecModel):
         )
         df.drop("*Error*", inplace=True)
 
+        if config is None:
+            config = {}
         if isinstance(figsize, tuple) and len(figsize) == 2:
-            plt.figure(figsize=figsize)
+            config["figure.figsize"] = figsize
+        config.setdefault("savefig.bbox", "tight")
+        config.setdefault("savefig.format", "pdf")
+        plt.rcParams.update(config)
         ax = sns.boxplot(data=df.T, **boxplot_kws)
         if boxplot_kws["orient"] == "h":
             ax.set_xscale("log")
@@ -176,9 +184,8 @@ class OptimizationResults(ExecModel):
             os.path.join(
                 self.model.path,
                 "optimization_results",
-                "estimated_parameter_sets.pdf",
+                "estimated_parameter_sets",
             ),
-            bbox_inches="tight",
         )
 
     def dynamic_assessment(self, include_original: bool = False) -> None:
@@ -275,6 +282,8 @@ class OptimizationResults(ExecModel):
         config.setdefault("xtick.major.width", 1.5)
         config.setdefault("ytick.major.width", 1.5)
         config.setdefault("lines.linewidth", 1.5)
+        config.setdefault("savefig.bbox", "tight")
+        config.setdefault("savefig.format", "pdf")
         plt.rcParams.update(config)
         plt.gca().spines["right"].set_visible(False)
         plt.gca().spines["top"].set_visible(False)
@@ -296,8 +305,5 @@ class OptimizationResults(ExecModel):
         plt.ylabel(ylabel)
         plt.xticks(xticks)
         plt.yticks(yticks)
-        plt.savefig(
-            os.path.join(self.model.path, "optimization_results", "obj_func_traces.pdf"),
-            bbox_inches="tight",
-        )
+        plt.savefig(os.path.join(self.model.path, "optimization_results", "obj_func_traces"))
         plt.close()
