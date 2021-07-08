@@ -164,7 +164,7 @@ class OptimizationResults(ExecModel):
 
         if config is None:
             config = {}
-        if isinstance(figsize, tuple) and len(figsize) == 2:
+        if isinstance(figsize, tuple):
             config["figure.figsize"] = figsize
         config.setdefault("savefig.bbox", "tight")
         config.setdefault("savefig.format", "pdf")
