@@ -146,7 +146,7 @@ def optimize(
 
             * 'DE' : Differential Evolution (strategy: `best2bin`)
 
-        * n_children : int (default: 200)
+        * n_children : int (default: 1000)
             (method='mutation') The number of children generated in NDM/MGG.
 
         * maxiter : int (default: 10)
@@ -183,7 +183,7 @@ def optimize(
     options.setdefault("initial_threshold", 1e12)
     options.setdefault("allowable_error", 0.0)
     options.setdefault("local_search_method", "mutation")
-    options.setdefault("n_children", 200)
+    options.setdefault("n_children", 1000)
     options.setdefault("maxiter", 10)
     options.setdefault("workers", -1 if not isinstance(x_id, int) else 1)
     options.setdefault("overwrite", False)
@@ -240,7 +240,7 @@ def optimize_continue(
 
             * 'DE' : Differential Evolution (strategy: `best2bin`)
 
-        * n_children : int (default: 200)
+        * n_children : int (default: 1000)
             (method='mutation') The number of children generated in NDM/MGG.
 
         * maxiter : int (default: 10)
@@ -281,7 +281,7 @@ def optimize_continue(
     options.setdefault("initial_threshold", 1e12)
     options.setdefault("allowable_error", 0.0)
     options.setdefault("local_search_method", "mutation")
-    options.setdefault("n_children", 200)
+    options.setdefault("n_children", 1000)
     options.setdefault("maxiter", 10)
     options.setdefault("workers", -1 if not isinstance(x_id, int) else 1)
     options.setdefault("p0_bounds", [0.1, 10.0])
