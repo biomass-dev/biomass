@@ -187,6 +187,7 @@ class OptimizationResults(ExecModel):
                 "estimated_parameter_sets",
             ),
         )
+        plt.close()
 
     def dynamic_assessment(self, include_original: bool = False) -> None:
         """
