@@ -175,7 +175,7 @@ class Visualization(Observable):
         plt.rcParams["xtick.major.width"] = 1.2
         plt.rcParams["ytick.major.width"] = 1.2
         plt.rcParams["savefig.bbox"] = "tight"
-        plt.rcParams["savefig.format"] = "pdf"
+        # plt.rcParams["savefig.format"] = "pdf"
         # plt.rcParams['font.family'] = 'Arial'
 
     @staticmethod
