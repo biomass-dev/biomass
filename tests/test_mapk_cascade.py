@@ -107,14 +107,14 @@ def test_run_simulation():
     run_simulation(model, viz_type="average", stdev=True)
     run_simulation(model, viz_type="best", show_all=True)
     for npy_file in [
-        ["simulation_data", "simulations_original.npy"],
-        ["simulation_data", "simulations_1.npy"],
-        ["simulation_data", "simulations_2.npy"],
-        ["simulation_data", "simulations_3.npy"],
-        ["simulation_data", "simulations_all.npy"],
-        ["simulation_data", "simulations_best.npy"],
+        "simulations_original.npy",
+        "simulations_1.npy",
+        "simulations_2.npy",
+        "simulations_3.npy",
+        "simulations_all.npy",
+        "simulations_best.npy",
     ]:
-        simulated_value = np.load(os.path.join(model.path, *npy_file))
+        simulated_value = np.load(os.path.join(model.path, "simulation_data", npy_file))
         assert np.isfinite(simulated_value).all()
     for viz_type in ["original", "1", "2", "3", "average", "best"]:
         for obs_name in model.observables:
