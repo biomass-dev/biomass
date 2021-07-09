@@ -164,7 +164,7 @@ class OptimizationResults(ExecModel):
 
         if config is None:
             config = {}
-        if isinstance(figsize, tuple):
+        if figsize is not None:
             config["figure.figsize"] = figsize
         config.setdefault("savefig.bbox", "tight")
         config.setdefault("savefig.format", "pdf")
@@ -304,7 +304,9 @@ class OptimizationResults(ExecModel):
             plt.plot([int(num) - 1 for num in iters], [float(val) for val in obj_val])
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
-        plt.xticks(xticks)
-        plt.yticks(yticks)
+        if xticks is not None:
+            plt.xticks(xticks)
+        if yticks is not None:
+            plt.yticks(yticks)
         plt.savefig(os.path.join(self.model.path, "optimization_results", "obj_func_traces"))
         plt.close()
