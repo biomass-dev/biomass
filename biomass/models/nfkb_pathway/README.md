@@ -17,7 +17,7 @@ from biomass import Model, run_simulation
 
 model = Model(nfkb_pathway.__package__).create()
 
-run_simulation(model, viz_type="original", save_format="png")
+run_simulation(model)
 
 for observable in model.obs:
     with open(
