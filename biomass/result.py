@@ -187,7 +187,7 @@ class OptimizationResults(ExecModel):
                 "estimated_parameter_sets",
             ),
         )
-        plt.rcParams.update(dict(plt.rcParamsDefault))
+        plt.rcdefaults()
         plt.close()
 
     def dynamic_assessment(self, include_original: bool = False) -> None:
