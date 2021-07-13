@@ -193,11 +193,13 @@ def optimize(
     ga_init = GeneticAlgorithmInit(model, **options)
     if isinstance(x_id, int):
         ga_init.run(x_id)
-    else:
+    elif all([isinstance(i, int) for i in x_id]):
         n_proc = max(1, multiprocessing.cpu_count() - 1)
         with multiprocessing.Pool(processes=n_proc) as p:
             for _ in p.imap_unordered(ga_init.run, x_id):
                 pass
+    else:
+        raise TypeError("`x_id` type must be either int or Iterable[int].")
 
 
 def optimize_continue(
@@ -291,11 +293,13 @@ def optimize_continue(
     ga_continue = GeneticAlgorithmContinue(model, **options)
     if isinstance(x_id, int):
         ga_continue.run(x_id)
-    else:
+    elif all([isinstance(i, int) for i in x_id]):
         n_proc = max(1, multiprocessing.cpu_count() - 1)
         with multiprocessing.Pool(processes=n_proc) as p:
             for _ in p.imap_unordered(ga_continue.run, x_id):
                 pass
+    else:
+        raise TypeError("`x_id` type must be either int or Iterable[int].")
 
 
 def run_simulation(
