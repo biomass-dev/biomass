@@ -1,27 +1,32 @@
 import os
 import sys
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import Callable, Dict, List, Optional, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
 from ..exec_model import ExecModel, ModelObject
-from .util import dlnyi_dlnxj, get_signaling_metric
+from .util import SignalingMetric, dlnyi_dlnxj
 
 
 @dataclass
-class ReactionSensitivity(ExecModel):
+class ReactionSensitivity(ExecModel, SignalingMetric):
     """Sensitivity for rate equations"""
 
     model: ModelObject
+    create_metrics: Optional[Dict[str, Callable[[np.ndarray], Union[int, float]]]]
+
+    def __post_init__(self) -> None:
+        if self.create_metrics is not None:
+            for name, function in self.create_metrics.items():
+                self.quantification[name] = function
 
     def _calc_sensitivity_coefficients(
         self,
         metric: str,
         reaction_indices: List[int],
-        options: dict,
     ) -> np.ndarray:
         """Calculating Sensitivity Coefficients
 
@@ -62,8 +67,8 @@ class ReactionSensitivity(ExecModel):
                 ):
                     for k, _ in enumerate(self.model.observables):
                         for l, _ in enumerate(self.model.problem.conditions):
-                            signaling_metric[i, j, k, l] = get_signaling_metric(
-                                metric, self.model.problem.simulations[k, :, l], options
+                            signaling_metric[i, j, k, l] = self.quantification[metric](
+                                self.model.problem.simulations[k, :, l]
                             )
                 sys.stdout.write(
                     "\r{:d} / {:d}".format(
@@ -74,8 +79,8 @@ class ReactionSensitivity(ExecModel):
             if self.model.problem.simulate(optimized.params, optimized.initials) is None:
                 for k, _ in enumerate(self.model.observables):
                     for l, _ in enumerate(self.model.problem.conditions):
-                        signaling_metric[i, -1, k, l] = get_signaling_metric(
-                            metric, self.model.problem.simulations[k, :, l], options
+                        signaling_metric[i, -1, k, l] = self.quantification[metric](
+                            self.model.problem.simulations[k, :, l]
                         )
         sensitivity_coefficients = dlnyi_dlnxj(
             signaling_metric,
@@ -92,7 +97,6 @@ class ReactionSensitivity(ExecModel):
         self,
         metric: str,
         reaction_indices: List[int],
-        options: dict,
     ) -> np.ndarray:
         """
         Load (or calculate) sensitivity coefficients.
@@ -114,9 +118,7 @@ class ReactionSensitivity(ExecModel):
                 exist_ok=True,
             )
             sensitivity_coefficients = self._calc_sensitivity_coefficients(
-                metric,
-                reaction_indices,
-                options,
+                metric, reaction_indices
             )
             np.save(
                 os.path.join(
@@ -201,7 +203,6 @@ class ReactionSensitivity(ExecModel):
         sensitivity_coefficients: np.ndarray,
         biological_processes: List[List[int]],
         reaction_indices: List[int],
-        save_format: str,
         show_indices: bool,
     ) -> None:
         """
@@ -268,7 +269,7 @@ class ReactionSensitivity(ExecModel):
                     "Control coefficients on\n" + metric + " (" + obs_name.replace("_", " ") + ")"
                 )
                 plt.xlim(-options["width"], len(reaction_indices))
-                plt.legend(loc=options["legend_loc"], frameon=False)
+                plt.legend(**options["legend_kws"])
                 plt.savefig(
                     os.path.join(
                         self.model.path,
@@ -277,10 +278,8 @@ class ReactionSensitivity(ExecModel):
                         "reaction",
                         f"{metric}",
                         "barplot",
-                        f"{obs_name}.{save_format}",
+                        f"{obs_name}",
                     ),
-                    dpi=600 if save_format == "png" else None,
-                    bbox_inches="tight",
                 )
                 plt.close()
 
@@ -309,7 +308,6 @@ class ReactionSensitivity(ExecModel):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         reaction_indices: List[int],
-        save_format: str,
     ) -> None:
         """
         Visualize sensitivity coefficients using heatmap.
@@ -358,14 +356,12 @@ class ReactionSensitivity(ExecModel):
                             "reaction",
                             f"{metric}",
                             "heatmap",
-                            f"{condition}_{obs_name}.{save_format}",
+                            f"{condition}_{obs_name}",
                         ),
-                        dpi=600 if save_format == "png" else None,
-                        bbox_inches="tight",
                     )
                     plt.close()
 
-    def analyze(self, *, metric: str, style: str, save_format: str, options: dict) -> None:
+    def analyze(self, *, metric: str, style: str, options: dict) -> None:
         """
         Perform sensitivity analysis.
         """
@@ -373,7 +369,7 @@ class ReactionSensitivity(ExecModel):
             raise ValueError("Define reaction indices (reactions) in reaction_network.py")
         biological_processes = self.model.rxn.group()
         reaction_indices = np.sum(biological_processes, axis=0)
-        sensitivity_coefficients = self._load_sc(metric, reaction_indices, options)
+        sensitivity_coefficients = self._load_sc(metric, reaction_indices)
 
         if style == "barplot":
             self._barplot_sensitivity(
@@ -381,7 +377,6 @@ class ReactionSensitivity(ExecModel):
                 sensitivity_coefficients,
                 biological_processes,
                 reaction_indices,
-                save_format,
                 options["show_indices"],
             )
         elif style == "heatmap":
@@ -389,7 +384,6 @@ class ReactionSensitivity(ExecModel):
                 metric,
                 sensitivity_coefficients,
                 reaction_indices,
-                save_format,
             )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")

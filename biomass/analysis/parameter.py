@@ -1,21 +1,27 @@
 import os
 import sys
 from dataclasses import dataclass
-from typing import List
+from typing import Callable, Dict, List, Optional, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
 from ..exec_model import ExecModel, ModelObject
-from .util import dlnyi_dlnxj, get_signaling_metric
+from .util import SignalingMetric, dlnyi_dlnxj
 
 
 @dataclass
-class ParameterSensitivity(ExecModel):
+class ParameterSensitivity(ExecModel, SignalingMetric):
     """Sensitivity for parameters"""
 
     model: ModelObject
+    create_metrics: Optional[Dict[str, Callable[[np.ndarray], Union[int, float]]]]
+
+    def __post_init__(self) -> None:
+        if self.create_metrics is not None:
+            for name, function in self.create_metrics.items():
+                self.quantification[name] = function
 
     def _get_param_indices(self, excluded_params: List[str]) -> List[int]:
         param_indices = []
@@ -32,7 +38,6 @@ class ParameterSensitivity(ExecModel):
         self,
         metric: str,
         param_indices: List[int],
-        options,
     ) -> np.ndarray:
         """Calculating Sensitivity Coefficients
 
@@ -70,8 +75,8 @@ class ParameterSensitivity(ExecModel):
                 if self.model.problem.simulate(x, optimized.initials) is None:
                     for k, _ in enumerate(self.model.observables):
                         for l, _ in enumerate(self.model.problem.conditions):
-                            signaling_metric[i, j, k, l] = get_signaling_metric(
-                                metric, self.model.problem.simulations[k, :, l], options
+                            signaling_metric[i, j, k, l] = self.quantification[metric](
+                                self.model.problem.simulations[k, :, l]
                             )
                 sys.stdout.write(
                     "\r{:d} / {:d}".format(
@@ -83,8 +88,8 @@ class ParameterSensitivity(ExecModel):
             if self.model.problem.simulate(x, optimized.initials) is None:
                 for k, _ in enumerate(self.model.observables):
                     for l, _ in enumerate(self.model.problem.conditions):
-                        signaling_metric[i, -1, k, l] = get_signaling_metric(
-                            metric, self.model.problem.simulations[k, :, l], options
+                        signaling_metric[i, -1, k, l] = self.quantification[metric](
+                            self.model.problem.simulations[k, :, l]
                         )
         sensitivity_coefficients = dlnyi_dlnxj(
             signaling_metric,
@@ -101,7 +106,6 @@ class ParameterSensitivity(ExecModel):
         self,
         metric: str,
         param_indices: List[int],
-        options: dict,
     ) -> np.ndarray:
         """
         Load (or calculate) sensitivity coefficients.
@@ -122,11 +126,7 @@ class ParameterSensitivity(ExecModel):
                 ),
                 exist_ok=True,
             )
-            sensitivity_coefficients = self._calc_sensitivity_coefficients(
-                metric,
-                param_indices,
-                options,
-            )
+            sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, param_indices)
             np.save(
                 os.path.join(
                     self.model.path,
@@ -148,9 +148,7 @@ class ParameterSensitivity(ExecModel):
             if len(param_indices) != sensitivity_coefficients.shape[1]:
                 # User changed options['excluded_params'] after the last trial
                 sensitivity_coefficients = self._calc_sensitivity_coefficients(
-                    metric,
-                    param_indices,
-                    options,
+                    metric, param_indices
                 )
                 np.save(
                     os.path.join(
@@ -169,7 +167,6 @@ class ParameterSensitivity(ExecModel):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         param_indices: List[int],
-        save_format: str,
     ) -> None:
         """
         Visualize sensitivity coefficients using barplot.
@@ -233,7 +230,7 @@ class ParameterSensitivity(ExecModel):
                 "Control coefficients on\n" + metric + " (" + obs_name.replace("_", " ") + ")"
             )
             plt.xlim(-options["width"], len(param_indices))
-            plt.legend(loc=options["legend_loc"], frameon=False)
+            plt.legend(**options["legend_kws"])
             plt.savefig(
                 os.path.join(
                     self.model.path,
@@ -242,10 +239,8 @@ class ParameterSensitivity(ExecModel):
                     "parameter",
                     f"{metric}",
                     "barplot",
-                    f"{obs_name}.{save_format}",
+                    f"{obs_name}",
                 ),
-                dpi=600 if save_format == "png" else None,
-                bbox_inches="tight",
             )
             plt.close()
 
@@ -274,7 +269,6 @@ class ParameterSensitivity(ExecModel):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         param_indices: List[int],
-        save_format: str,
     ) -> None:
         """
         Visualize sensitivity coefficients using heatmap.
@@ -324,25 +318,22 @@ class ParameterSensitivity(ExecModel):
                             "parameter",
                             f"{metric}",
                             "heatmap",
-                            f"{condition}_{obs_name}.{save_format}",
+                            f"{condition}_{obs_name}",
                         ),
-                        dpi=600 if save_format == "png" else None,
-                        bbox_inches="tight",
                     )
                     plt.close()
 
-    def analyze(self, *, metric: str, style: str, save_format: str, options: dict) -> None:
+    def analyze(self, *, metric: str, style: str, options: dict) -> None:
         """
         Perform sensitivity analysis.
         """
         param_indices = self._get_param_indices(options["excluded_params"])
-        sensitivity_coefficients = self._load_sc(metric, param_indices, options)
+        sensitivity_coefficients = self._load_sc(metric, param_indices)
         if style == "barplot":
             self._barplot_sensitivity(
                 metric,
                 sensitivity_coefficients,
                 param_indices,
-                save_format,
             )
         elif style == "heatmap":
             if len(param_indices) < 2:
@@ -352,7 +343,6 @@ class ParameterSensitivity(ExecModel):
                     metric,
                     sensitivity_coefficients,
                     param_indices,
-                    save_format,
                 )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")

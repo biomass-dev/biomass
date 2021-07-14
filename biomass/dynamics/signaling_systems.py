@@ -20,7 +20,6 @@ class SignalingSystems(TemporalDynamics):
         viz_type: str,
         show_all: bool,
         stdev: bool,
-        save_format: str,
     ) -> None:
         """
         Run simulation and save figures.
@@ -77,7 +76,7 @@ class SignalingSystems(TemporalDynamics):
                 # Simulated values with original parameter values.
                 self._save_simulations(viz_type, self.model.problem.simulations)
 
-        self.plot_timecourse(n_file, viz_type, show_all, stdev, save_format, simulations_all)
+        self.plot_timecourse(n_file, viz_type, show_all, stdev, simulations_all)
 
     def _preprocessing(self, simulated_values: np.ndarray) -> np.ndarray:
         """
@@ -190,6 +189,7 @@ class SignalingSystems(TemporalDynamics):
             for i, name in enumerate(self.model.parameters):
                 f.write(f"{indentation}x[C.{name}] = {optimized.params[i]:8.3e}\n")
             f.write(f"\n\ndef initial_values():\n{indentation}y0 = [0] * V.NUM\n")
-            for i, name in enumerate(self.model.species):
-                if optimized.initials[i] != 0:
-                    f.write(f"{indentation}y0[V.{name}] = {optimized.initials[i]:8.3e}\n")
+            if all([isinstance(_s, str) for _s in self.model.species]):
+                for i, name in enumerate(self.model.species):
+                    if optimized.initials[i] != 0:
+                        f.write(f"{indentation}y0[V.{name}] = {optimized.initials[i]:8.3e}\n")

@@ -18,7 +18,7 @@ class Visualization(Observable):
 
             * 'divided_by' : int or float (default: 1)
                 Convert time unit. (e.g. sec -> min).
-            
+
             * 'figsize' : tuple (default: (4, 3))
                 Width, height in inches.
 
@@ -43,9 +43,8 @@ class Visualization(Observable):
             * 'exp_data' : bool (default: True)
                 if False, experimental data will not be shown.
 
-            * 'legend_loc' : Location String (default: None)
-                Set the location of the legend. If 'legend_loc' is None,
-                pyplot.legend will not be shown.
+            * 'legend_kws' : dict, optional
+                Keyword arguments to pass to matplotlib.pyplot.legend().
 
             * 'cmap' : list or tuple
                 Set colormap.
@@ -80,7 +79,7 @@ class Visualization(Observable):
                 "yticks": None,
                 "ylabel": self.obs_names[i].replace("__", "\n").replace("_", " "),
                 "exp_data": True,
-                "legend_loc": "best",
+                "legend_kws": {"loc": "best"},
                 "cmap": [self.cm.colors[j] for j in range(10)],
                 "shape": Line2D.filled_markers,
                 "dont_show": [],
@@ -99,6 +98,14 @@ class Visualization(Observable):
             "ylim": (),
             "yticks": None,
             "ylabel": "",
+            "legend_kws": dict(
+                bbox_to_anchor=(1.05, 1),
+                loc="upper left",
+                borderaxespad=0,
+                labelspacing=1.25,
+                frameon=False,
+                fontsize=12,
+            ),
             "cmap": [self.cm.colors[j] for j in range(10)],
             "shape": Line2D.filled_markers,
         }
@@ -106,7 +113,7 @@ class Visualization(Observable):
         self.sensitivity_options = {
             "figsize": (12, 5),
             "width": 0.3,
-            "legend_loc": "upper left",
+            "legend_kws": dict(loc="upper left", frameon=False),
             "cmap": [self.cm.colors[j] for j in range(10)],
         }
 
@@ -131,18 +138,11 @@ class Visualization(Observable):
         plt.rcParams["ytick.major.width"] = 1.5
         plt.rcParams["lines.linewidth"] = 1.8
         plt.rcParams["lines.markersize"] = 12
+        plt.rcParams["savefig.bbox"] = "tight"
+        # plt.rcParams["savefig.format"] = "pdf"
         # plt.rcParams['font.family'] = 'Arial'
         # plt.rcParams['mathtext.fontset'] = 'custom'
         # plt.rcParams['mathtext.it'] = 'Arial:italic'
-
-    @staticmethod
-    def set_param_range_rcParams():
-        """figure/param_range"""
-        plt.rcParams["font.size"] = 12
-        plt.rcParams["axes.linewidth"] = 1.2
-        plt.rcParams["xtick.major.width"] = 1.2
-        plt.rcParams["ytick.major.width"] = 1.2
-        # plt.rcParams['font.family'] = 'Arial'
 
     @staticmethod
     def set_sensitivity_rcParams():
@@ -151,6 +151,8 @@ class Visualization(Observable):
         plt.rcParams["axes.linewidth"] = 1.2
         plt.rcParams["xtick.major.width"] = 1.2
         plt.rcParams["ytick.major.width"] = 1.2
+        plt.rcParams["savefig.bbox"] = "tight"
+        # plt.rcParams["savefig.format"] = "pdf"
         # plt.rcParams['font.family'] = 'Arial'
 
     @staticmethod

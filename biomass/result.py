@@ -88,13 +88,14 @@ class OptimizationResults(ExecModel):
                     optimized_params[1, j] = f"{error:8.3e}"
                     optimized_params[i + 2, 0] = self.model.parameters[parameter_index]
                     optimized_params[i + 2, j] = f"{best_individual[i]:8.3e}"
-                for i, species_index in enumerate(self.model.problem.idx_initials):
-                    optimized_params[i + len(self.model.problem.idx_params) + 2, 0] = (
-                        "init_" + self.model.species[species_index]
-                    )
-                    optimized_params[
-                        i + len(self.model.problem.idx_params) + 2, j
-                    ] = f"{best_individual[i+len(self.model.problem.idx_params)]:8.3e}"
+                if all([isinstance(_s, str) for _s in self.model.species]):
+                    for i, species_index in enumerate(self.model.problem.idx_initials):
+                        optimized_params[i + len(self.model.problem.idx_params) + 2, 0] = (
+                            "init_" + self.model.species[species_index]
+                        )
+                        optimized_params[
+                            i + len(self.model.problem.idx_params) + 2, j
+                        ] = f"{best_individual[i+len(self.model.problem.idx_params)]:8.3e}"
             with open(
                 os.path.join(
                     self.model.path,
@@ -110,6 +111,7 @@ class OptimizationResults(ExecModel):
         self,
         *,
         figsize: Optional[Tuple[float, float]] = None,
+        config: Optional[dict] = None,
         boxplot_kws: Optional[dict] = None,
     ) -> None:
         """
@@ -119,6 +121,8 @@ class OptimizationResults(ExecModel):
         ----------
         figsize : Tuple[float, float], optional
             Width, height in inches.
+        config : dict, optional
+            A dictionary object for setting `matplotlib.rcParams`.
         boxplot_kws : dict, optional
             Keyword arguments to pass to `seaborn.boxplot`.
 
@@ -158,8 +162,13 @@ class OptimizationResults(ExecModel):
         )
         df.drop("*Error*", inplace=True)
 
-        if isinstance(figsize, tuple) and len(figsize) == 2:
-            plt.figure(figsize=figsize)
+        if config is None:
+            config = {}
+        if figsize is not None:
+            config["figure.figsize"] = figsize
+        config.setdefault("savefig.bbox", "tight")
+        config.setdefault("savefig.format", "pdf")
+        plt.rcParams.update(config)
         ax = sns.boxplot(data=df.T, **boxplot_kws)
         if boxplot_kws["orient"] == "h":
             ax.set_xscale("log")
@@ -175,10 +184,11 @@ class OptimizationResults(ExecModel):
             os.path.join(
                 self.model.path,
                 "optimization_results",
-                "estimated_parameter_sets.pdf",
+                "estimated_parameter_sets",
             ),
-            bbox_inches="tight",
         )
+        plt.rcdefaults()
+        plt.close()
 
     def dynamic_assessment(self, include_original: bool = False) -> None:
         """
@@ -274,6 +284,8 @@ class OptimizationResults(ExecModel):
         config.setdefault("xtick.major.width", 1.5)
         config.setdefault("ytick.major.width", 1.5)
         config.setdefault("lines.linewidth", 1.5)
+        config.setdefault("savefig.bbox", "tight")
+        config.setdefault("savefig.format", "pdf")
         plt.rcParams.update(config)
         plt.gca().spines["right"].set_visible(False)
         plt.gca().spines["top"].set_visible(False)
@@ -293,10 +305,9 @@ class OptimizationResults(ExecModel):
             plt.plot([int(num) - 1 for num in iters], [float(val) for val in obj_val])
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
-        plt.xticks(xticks)
-        plt.yticks(yticks)
-        plt.savefig(
-            os.path.join(self.model.path, "optimization_results", "obj_func_traces.pdf"),
-            bbox_inches="tight",
-        )
+        if xticks is not None:
+            plt.xticks(xticks)
+        if yticks is not None:
+            plt.yticks(yticks)
+        plt.savefig(os.path.join(self.model.path, "optimization_results", "obj_func_traces"))
         plt.close()

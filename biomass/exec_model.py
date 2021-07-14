@@ -58,7 +58,7 @@ class ModelObject(object):
         return self._parameters
 
     @property
-    def species(self) -> List[str]:
+    def species(self) -> list:
         return self._species
 
     @property

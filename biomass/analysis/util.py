@@ -1,91 +1,31 @@
 import sys
+from dataclasses import dataclass, field
 from math import fabs, isnan, log
-from typing import List, Optional, Union
+from typing import Callable, Dict, List, Union
 
 import numpy as np
 from scipy.integrate import simps
 
 
-def _get_duration(
-    timecourse: np.ndarray,
-    below_threshold: float,
-) -> int:
+@dataclass
+class SignalingMetric(object):
     """
-    Calculation of the duration as the time it takes to decline below the threshold.
+    Signaling metric used for sensitivity analysis.
 
-    Parameters
+    Attributes
     ----------
-    timecourse : array
-        Simulated time course data.
-
-    below_threshold : float (from 0.0 to 1.0)
-        0.1 for 10% of its maximum.
-
-    Returns
-    -------
-    duration : int
-
+    quantification : Dict[str, Callable[[np.ndarray], Union[int, float]]]
+        Functions to quantify signaling metrics.
     """
-    if not 0.0 < below_threshold < 1.0:
-        raise ValueError("below_threshold must lie within (0.0, 1.0).")
-    maximum_value = np.max(timecourse)
-    t_max = np.argmax(timecourse)
-    timecourse = timecourse - below_threshold * maximum_value
-    timecourse[timecourse > 0.0] = -np.inf
-    duration = np.argmax(timecourse[t_max:]) + t_max
 
-    return duration
-
-
-def get_signaling_metric(
-    metric: str,
-    timecourse: np.ndarray,
-    options: dict,
-) -> Optional[Union[int, float]]:
-    """Quantification of cellular response.
-
-    Parameters
-    ----------
-    metric : str
-        Should be one of available_metrics.
-
-    timecourse : array
-        Simulated time course data.
-
-    options: dict
-        Options for detailed setting of signaling metric.
-
-    Returns
-    -------
-    M* : int or float
-        signaling_metric[i, j, k, l]
-
-    """
-    available_metrics = [
-        "maximum",
-        "minimum",
-        "argmax",
-        "argmin",
-        "timepoint",
-        "duration",
-        "integral",
-    ]
-    if metric == "maximum":
-        return np.max(timecourse)
-    elif metric == "minimum":
-        return np.min(timecourse)
-    elif metric == "argmax":
-        return np.argmax(timecourse)
-    elif metric == "argmin":
-        return np.argmin(timecourse)
-    elif metric == "timepoint":
-        return timecourse[options["timepoint"]]
-    elif metric == "duration":
-        return _get_duration(timecourse, options["duration"])
-    elif metric == "integral":
-        return simps(timecourse)
-    else:
-        raise ValueError(f"Available metrics are: {', '.join(available_metrics)}")
+    quantification: Dict[str, Callable[[np.ndarray], Union[int, float]]] = field(
+        default_factory=lambda: dict(
+            maximum=np.max,
+            minimum=np.min,
+            integral=simps,
+        ),
+        init=False,
+    )
 
 
 def dlnyi_dlnxj(

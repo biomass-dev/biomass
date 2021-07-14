@@ -4,7 +4,9 @@ import os
 from dataclasses import dataclass
 from importlib import import_module
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Callable, Dict, Iterable, Optional, Union
+
+import numpy as np
 
 from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
 from .dynamics import SignalingSystems
@@ -81,7 +83,7 @@ class Model(object):
 
 
 def _check_optional_arguments(
-    end: Optional[int],
+    x_id: Union[int, Iterable[int]],
     options: Optional[dict],
 ) -> None:
     if options is None:
@@ -93,7 +95,7 @@ def _check_optional_arguments(
                 "Invalid local_search_method. Should be one of ['mutation', 'Powell', 'DE']"
             )
         elif (
-            isinstance(end, int)
+            not isinstance(x_id, int)
             and options["local_search_method"].lower() == "de"
             and options["workers"] != 1
         ):
@@ -106,8 +108,7 @@ def _check_optional_arguments(
 
 def optimize(
     model: ModelObject,
-    start: int,
-    end: Optional[int] = None,
+    x_id: Union[int, Iterable[int]],
     options: Optional[dict] = None,
 ) -> None:
     """
@@ -118,11 +119,8 @@ def optimize(
     model : ModelObject
         Model for parameter estimation.
 
-    start : int
-        Index of parameter set to estimate.
-
-    end : int, optional
-        When `end` is specified, parameter sets from `start` to `end` will be estimated.
+    x_id : int or Iterable[int]
+        Index (indices) of parameter set to estimate.
 
     options : dict, optional
         * popsize : int (default: 5)
@@ -148,14 +146,14 @@ def optimize(
 
             * 'DE' : Differential Evolution (strategy: `best2bin`)
 
-        * n_children : int (default: 200)
+        * n_children : int (default: 1000)
             (method='mutation') The number of children generated in NDM/MGG.
 
         * maxiter : int (default: 10)
             (method='Powell' or 'DE') The maximum number of iterations
             over which the entire population is evolved.
 
-        * workers : int (default: -1 if `end` is None else 1)
+        * workers : int (default: -1 if `x_id` is `Iterable` else 1)
             (method='DE') The population is subdivided into workers sections and
             evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
             all available CPU cores. Set workers to 1 when searching multiple
@@ -170,7 +168,7 @@ def optimize(
     >>> from biomass import Model, optimize
     >>> model = Model(Nakakuki_Cell_2010.__package__).create()
     >>> optimize(
-    ...     model=model, start=1, end=10,
+    ...     model, x_id=range(1, 11),
     ...     options={
     ...         'max_generation': 10000,
     ...         'allowable_error': 0.5
@@ -185,30 +183,28 @@ def optimize(
     options.setdefault("initial_threshold", 1e12)
     options.setdefault("allowable_error", 0.0)
     options.setdefault("local_search_method", "mutation")
-    options.setdefault("n_children", 200)
+    options.setdefault("n_children", 1000)
     options.setdefault("maxiter", 10)
-    options.setdefault("workers", -1 if end is None else 1)
+    options.setdefault("workers", -1 if not isinstance(x_id, int) else 1)
     options.setdefault("overwrite", False)
 
-    _check_optional_arguments(end, options)
+    _check_optional_arguments(x_id, options)
 
     ga_init = GeneticAlgorithmInit(model, **options)
-    if end is None:
-        ga_init.run(int(start))
-    else:
+    if isinstance(x_id, int):
+        ga_init.run(x_id)
+    elif all([isinstance(i, int) for i in x_id]):
         n_proc = max(1, multiprocessing.cpu_count() - 1)
         with multiprocessing.Pool(processes=n_proc) as p:
-            for _ in p.imap_unordered(
-                ga_init.run,
-                range(int(start), int(end) + 1),
-            ):
+            for _ in p.imap_unordered(ga_init.run, x_id):
                 pass
+    else:
+        raise TypeError("`x_id` type must be either int or Iterable[int].")
 
 
 def optimize_continue(
     model: ModelObject,
-    start: int,
-    end: Optional[int] = None,
+    x_id: Union[int, Iterable[int]],
     options: Optional[dict] = None,
 ) -> None:
     """
@@ -219,11 +215,8 @@ def optimize_continue(
     model : ModelObject
         Model for parameter estimation.
 
-    start : int
-        Index of parameter set to estimate.
-
-    end : int, optional
-        When `end` is specified, parameter sets from `start` to `end` will be estimated.
+    x_id : int or Iterable[int]
+        Index (indices) of parameter set to estimate.
 
     options : dict, optional
         * popsize : int (default: 5)
@@ -249,14 +242,14 @@ def optimize_continue(
 
             * 'DE' : Differential Evolution (strategy: `best2bin`)
 
-        * n_children : int (default: 200)
+        * n_children : int (default: 1000)
             (method='mutation') The number of children generated in NDM/MGG.
 
         * maxiter : int (default: 10)
             (method='Powell' or 'DE') The maximum number of iterations
             over which the entire population is evolved.
 
-        * workers : int (default: -1 if `end` is None else 1)
+        * workers : int (default: -1 if `x_id` is `Iterable` else 1)
             (method='DE') The population is subdivided into workers sections and
             evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
             all available CPU cores. Set workers to 1 when searching multiple
@@ -275,7 +268,7 @@ def optimize_continue(
     >>> from biomass import Model, optimize_continue
     >>> model = Model(Nakakuki_Cell_2010.__package__).create()
     >>> optimize_continue(
-    ...     model=model, start=1, end=10,
+    ...     model, x_id=range(1, 11),
     ...     options={
     ...         'max_generation': 20000,
     ...         'allowable_error': 0.5
@@ -290,24 +283,23 @@ def optimize_continue(
     options.setdefault("initial_threshold", 1e12)
     options.setdefault("allowable_error", 0.0)
     options.setdefault("local_search_method", "mutation")
-    options.setdefault("n_children", 200)
+    options.setdefault("n_children", 1000)
     options.setdefault("maxiter", 10)
-    options.setdefault("workers", -1 if end is None else 1)
+    options.setdefault("workers", -1 if not isinstance(x_id, int) else 1)
     options.setdefault("p0_bounds", [0.1, 10.0])
 
-    _check_optional_arguments(end, options)
+    _check_optional_arguments(x_id, options)
 
     ga_continue = GeneticAlgorithmContinue(model, **options)
-    if end is None:
-        ga_continue.run(int(start))
-    else:
+    if isinstance(x_id, int):
+        ga_continue.run(x_id)
+    elif all([isinstance(i, int) for i in x_id]):
         n_proc = max(1, multiprocessing.cpu_count() - 1)
         with multiprocessing.Pool(processes=n_proc) as p:
-            for _ in p.imap_unordered(
-                ga_continue.run,
-                range(int(start), int(end) + 1),
-            ):
+            for _ in p.imap_unordered(ga_continue.run, x_id):
                 pass
+    else:
+        raise TypeError("`x_id` type must be either int or Iterable[int].")
 
 
 def run_simulation(
@@ -316,7 +308,6 @@ def run_simulation(
     viz_type: str = "original",
     show_all: bool = False,
     stdev: bool = False,
-    save_format: str = "pdf",
 ) -> None:
     """
     Simulate ODE model with estimated parameter values.
@@ -348,10 +339,6 @@ def run_simulation(
         If True, the standard deviation of simulated values will be shown
         (only available for 'average' visualization type).
 
-    save_format : str (default: "pdf")
-        Either "png" or "pdf", indicating whether to save figures
-        as png or pdf format.
-
     Examples
     --------
     >>> from biomass.models import Nakakuki_Cell_2010
@@ -362,7 +349,6 @@ def run_simulation(
     ...     viz_type='average',
     ...     show_all=False,
     ...     stdev=True,
-    ...     save_format="png",
     ... )
 
     """
@@ -371,14 +357,10 @@ def run_simulation(
             "Available viz_type are: 'best','average','original','experiment','n(=1, 2, ...)'"
         )
 
-    if save_format not in ["pdf", "png"]:
-        raise ValueError("save_format must be either 'pdf' or 'png'.")
-
     SignalingSystems(model).simulate_all(
         viz_type=viz_type,
         show_all=show_all,
         stdev=stdev,
-        save_format=save_format,
     )
 
 
@@ -387,8 +369,8 @@ def run_analysis(
     *,
     target: str,
     metric: str = "integral",
+    create_metrics: Optional[Dict[str, Callable[[np.ndarray], Union[int, float]]]] = None,
     style: str = "barplot",
-    save_format: str = "pdf",
     options: Optional[dict] = None,
 ) -> None:
     """
@@ -410,25 +392,18 @@ def run_analysis(
         * 'parameter'
 
     metric : str (default: 'integral')
-        * 'maximum' : The maximum value.
-        * 'minimum' : The minimum value.
-        * 'argmax' : The time to reach the maximum value.
-        * 'argmin' : The time to reach the minimum value.
-        * 'timepoint' : The simulated value at the time point set via options['timepoint'].
-        * 'duration' :  The time it takes to decline below the threshold set via options['duration'].
-        * 'integral' : The integral of concentration over the observation time.
+        A word to specify the signaling metric.
+
+    create_metrics : Dict[str, Callable[[np.ndarray], Union[int, float]]], optional
+        Create user-defined signaling metrics.
 
     style : str (default: 'barplot')
         * 'barplot'
         * 'heatmap'
 
-    save_format : str (default: "pdf")
-        Either "png" or "pdf", indicating whether to save figures
-        as png or pdf format.
-
     options : dict, optional
         * show_indices : bool (default: True)
-            (target == 'reaction') Set to True to put reaction index on each bar.
+            (target == 'reaction') Set to `True` to put reaction index on each bar.
 
         * excluded_params : list of strings
             (target == 'parameter') List of parameters which are not used for analysis.
@@ -436,18 +411,14 @@ def run_analysis(
         * excluded_initials : list of strings
             (target == 'initial_condition') List of species which are not used for analysis.
 
-        * timepoint : int (default: model.problem.t[-1])
-            (metric=='timepoint') Which timepoint to use.
-
-        * duration : float (default: 0.5)
-            (metric=='duration') 0.1 for 10% of its maximum.
-
     Examples
     --------
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import Model, run_analysis
     >>> model = Model(Nakakuki_Cell_2010.__package__).create()
-    >>> # Parameters
+
+    Parameters
+
     >>> run_analysis(
     ...     model,
     ...     target='parameter',
@@ -457,47 +428,39 @@ def run_analysis(
     ...         ]
     ...     }
     ... )
-    >>> # Initial condition
+
+    Initial condition
+
     >>> run_analysis(model, target='initial_condition')
-    >>> # Reaction
+
+    Reaction
+
     >>> run_analysis(model, target='reaction')
 
     """
-    if save_format not in ["pdf", "png"]:
-        raise ValueError("save_format must be either 'pdf' or 'png'.")
 
     if options is None:
         options = {}
     options.setdefault("show_indices", True)
     options.setdefault("excluded_params", [])
     options.setdefault("excluded_initials", [])
-    options.setdefault("timepoint", model.problem.t[-1])
-    options.setdefault("duration", 0.5)
-
-    if not model.problem.t[0] <= options["timepoint"] <= model.problem.t[-1]:
-        raise ValueError("options['timepooint'] must lie within problem.t.")
-    if not 0.0 < options["duration"] < 1.0:
-        raise ValueError("options['duration'] must lie within (0, 1).")
 
     if target == "reaction":
-        ReactionSensitivity(model).analyze(
+        ReactionSensitivity(model, create_metrics).analyze(
             metric=metric,
             style=style,
-            save_format=save_format,
             options=options,
         )
     elif target == "parameter":
-        ParameterSensitivity(model).analyze(
+        ParameterSensitivity(model, create_metrics).analyze(
             metric=metric,
             style=style,
-            save_format=save_format,
             options=options,
         )
     elif target == "initial_condition":
-        InitialConditionSensitivity(model).analyze(
+        InitialConditionSensitivity(model, create_metrics).analyze(
             metric=metric,
             style=style,
-            save_format=save_format,
             options=options,
         )
     else:
