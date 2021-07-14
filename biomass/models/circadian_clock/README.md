@@ -23,7 +23,7 @@ model = Model(circadian_clock.__package__).create()
 
 run_simulation(model)
 
-for observable in model.obs:
+for observable in model.observables:
     with open(
         os.path.join(
             model.path,
