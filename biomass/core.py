@@ -153,7 +153,7 @@ def optimize(
             (method='Powell' or 'DE') The maximum number of iterations
             over which the entire population is evolved.
 
-        * workers : int (default: -1 if `x_id` is `Iterable` else 1)
+        * workers : int (default: -1 if isinstance(x_id, `int`) else 1)
             (method='DE') The population is subdivided into workers sections and
             evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
             all available CPU cores. Set workers to 1 when searching multiple
@@ -185,7 +185,7 @@ def optimize(
     options.setdefault("local_search_method", "mutation")
     options.setdefault("n_children", 1000)
     options.setdefault("maxiter", 10)
-    options.setdefault("workers", -1 if not isinstance(x_id, int) else 1)
+    options.setdefault("workers", -1 if isinstance(x_id, int) else 1)
     options.setdefault("overwrite", False)
 
     _check_optional_arguments(x_id, options)
@@ -249,7 +249,7 @@ def optimize_continue(
             (method='Powell' or 'DE') The maximum number of iterations
             over which the entire population is evolved.
 
-        * workers : int (default: -1 if `x_id` is `Iterable` else 1)
+        * workers : int (default: -1 if isinstance(x_id, `int`) else 1)
             (method='DE') The population is subdivided into workers sections and
             evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
             all available CPU cores. Set workers to 1 when searching multiple
@@ -285,7 +285,7 @@ def optimize_continue(
     options.setdefault("local_search_method", "mutation")
     options.setdefault("n_children", 1000)
     options.setdefault("maxiter", 10)
-    options.setdefault("workers", -1 if not isinstance(x_id, int) else 1)
+    options.setdefault("workers", -1 if isinstance(x_id, int) else 1)
     options.setdefault("p0_bounds", [0.1, 10.0])
 
     _check_optional_arguments(x_id, options)

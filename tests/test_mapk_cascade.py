@@ -83,7 +83,6 @@ def test_optimize():
             "popsize": 3,
             "max_generation": 9,
             "local_search_method": "DE",
-            "workers": 1,
         },
     )
     for paramset in range(1, 4):
