@@ -19,6 +19,19 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
     create_metrics: Optional[Dict[str, Callable[[np.ndarray], Union[int, float]]]]
 
     def __post_init__(self) -> None:
+        self.coefficients: Callable[[str], str] = lambda metric: os.path.join(
+            self.model.path,
+            "sensitivity_coefficients",
+            "initial_condition",
+            f"{metric}.npy",
+        )
+        self.path_to_figs: Callable[[str], str] = lambda metric: os.path.join(
+            self.model.path,
+            "figure",
+            "sensitivity",
+            "initial_condition",
+            f"{metric}",
+        )
         if self.create_metrics is not None:
             for name, function in self.create_metrics.items():
                 self.quantification[name] = function
@@ -111,55 +124,27 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
         """
         Load (or calculate) sensitivity coefficients.
         """
-        if not os.path.isfile(
-            os.path.join(
-                self.model.path,
-                "sensitivity_coefficients",
-                "initial_condition",
-                f"{metric}.npy",
-            )
-        ):
+        if not os.path.isfile(self.coefficients(metric)):
             os.makedirs(
                 os.path.join(
                     self.model.path,
                     "sensitivity_coefficients",
                     "initial_condition",
                 ),
-                exist_ok=True,
-            )
+                exist_ok=True
+                )
             sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, nonzero_indices)
             np.save(
-                os.path.join(
-                    self.model.path,
-                    "sensitivity_coefficients",
-                    "initial_condition",
-                    f"{metric}",
-                ),
-                sensitivity_coefficients,
+                self.coefficients(metric), sensitivity_coefficients
             )
         else:
-            sensitivity_coefficients = np.load(
-                os.path.join(
-                    self.model.path,
-                    "sensitivity_coefficients",
-                    "initial_condition",
-                    f"{metric}.npy",
-                )
-            )
+            sensitivity_coefficients = np.load(self.coefficients(metric))
             if len(nonzero_indices) != sensitivity_coefficients.shape[1]:
                 # User changed options['excluded_initials'] after the last trial
                 sensitivity_coefficients = self._calc_sensitivity_coefficients(
                     metric, nonzero_indices
                 )
-                np.save(
-                    os.path.join(
-                        self.model.path,
-                        "sensitivity_coefficients",
-                        "initial_condition",
-                        f"{metric}",
-                    ),
-                    sensitivity_coefficients,
-                )
+                np.save(self.coefficients(metric), sensitivity_coefficients)
 
         return sensitivity_coefficients
 
@@ -173,15 +158,7 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
         Visualize sensitivity coefficients using barplot.
         """
         os.makedirs(
-            os.path.join(
-                self.model.path,
-                "figure",
-                "sensitivity",
-                "initial_condition",
-                f"{metric}",
-                "barplot",
-            ),
-            exist_ok=True,
+            os.path.join(self.path_to_figs(metric), "barplot"), exist_ok=True
         )
         options = self.model.viz.sensitivity_options
 
@@ -235,15 +212,7 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
             plt.xlim(-options["width"], len(nonzero_indices))
             plt.legend(**options["legend_kws"])
             plt.savefig(
-                os.path.join(
-                    self.model.path,
-                    "figure",
-                    "sensitivity",
-                    "initial_condition",
-                    f"{metric}",
-                    "barplot",
-                    f"{obs_name}",
-                ),
+                os.path.join(self.path_to_figs(metric), "barplot", f"{obs_name}")
             )
             plt.close()
 
@@ -277,15 +246,7 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
         Visualize sensitivity coefficients using heatmap.
         """
         os.makedirs(
-            os.path.join(
-                self.model.path,
-                "figure",
-                "sensitivity",
-                "initial_condition",
-                f"{metric}",
-                "heatmap",
-            ),
-            exist_ok=True,
+            os.path.join(self.path_to_figs(metric), "heatmap"), exist_ok=True
         )
         options = self.model.viz.sensitivity_options
         # rcParams
@@ -318,11 +279,7 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
                     plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90)
                     plt.savefig(
                         os.path.join(
-                            self.model.path,
-                            "figure",
-                            "sensitivity",
-                            "initial_condition",
-                            f"{metric}",
+                            self.path_to_figs(metric),
                             "heatmap",
                             f"{condition}_{obs_name}",
                         ),
@@ -334,6 +291,8 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
         """
         Perform sensitivity analysis.
         """
+        if options["overwrite"] and os.path.isfile(self.coefficients(metric)):
+            os.remove(self.coefficients(metric))
         nonzero_indices = self._get_nonzero_indices(options["excluded_initials"])
         sensitivity_coefficients = self._load_sc(metric, nonzero_indices)
         if style == "barplot":

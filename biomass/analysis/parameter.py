@@ -19,6 +19,19 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
     create_metrics: Optional[Dict[str, Callable[[np.ndarray], Union[int, float]]]]
 
     def __post_init__(self) -> None:
+        self.coefficients: Callable[[str], str] = lambda metric: os.path.join(
+            self.model.path,
+            "sensitivity_coefficients",
+            "parameter",
+            f"{metric}.npy",
+        )
+        self.path_to_figs: Callable[[str], str] = lambda metric: os.path.join(
+            self.model.path,
+            "figure",
+            "sensitivity",
+            "parameter",
+            f"{metric}",
+        )
         if self.create_metrics is not None:
             for name, function in self.create_metrics.items():
                 self.quantification[name] = function
@@ -110,14 +123,7 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
         """
         Load (or calculate) sensitivity coefficients.
         """
-        if not os.path.isfile(
-            os.path.join(
-                self.model.path,
-                "sensitivity_coefficients",
-                "parameter",
-                f"{metric}.npy",
-            )
-        ):
+        if not os.path.isfile(self.coefficients(metric)):
             os.makedirs(
                 os.path.join(
                     self.model.path,
@@ -127,38 +133,15 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
                 exist_ok=True,
             )
             sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, param_indices)
-            np.save(
-                os.path.join(
-                    self.model.path,
-                    "sensitivity_coefficients",
-                    "parameter",
-                    f"{metric}",
-                ),
-                sensitivity_coefficients,
-            )
+            np.save(self.coefficients(metric), sensitivity_coefficients)
         else:
-            sensitivity_coefficients = np.load(
-                os.path.join(
-                    self.model.path,
-                    "sensitivity_coefficients",
-                    "parameter",
-                    f"{metric}.npy",
-                )
-            )
+            sensitivity_coefficients = np.load(self.coefficients(metric))
             if len(param_indices) != sensitivity_coefficients.shape[1]:
                 # User changed options['excluded_params'] after the last trial
                 sensitivity_coefficients = self._calc_sensitivity_coefficients(
                     metric, param_indices
                 )
-                np.save(
-                    os.path.join(
-                        self.model.path,
-                        "sensitivity_coefficients",
-                        "parameter",
-                        f"{metric}",
-                    ),
-                    sensitivity_coefficients,
-                )
+                np.save(self.coefficients(metric), sensitivity_coefficients)
 
         return sensitivity_coefficients
 
@@ -171,17 +154,7 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
         """
         Visualize sensitivity coefficients using barplot.
         """
-        os.makedirs(
-            os.path.join(
-                self.model.path,
-                "figure",
-                "sensitivity",
-                "parameter",
-                f"{metric}",
-                "barplot",
-            ),
-            exist_ok=True,
-        )
+        os.makedirs(os.path.join(self.path_to_figs(metric), "barplot"), exist_ok=True)
         options = self.model.viz.sensitivity_options
 
         # rcParams
@@ -233,11 +206,7 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
             plt.legend(**options["legend_kws"])
             plt.savefig(
                 os.path.join(
-                    self.model.path,
-                    "figure",
-                    "sensitivity",
-                    "parameter",
-                    f"{metric}",
+                    self.path_to_figs(metric),
                     "barplot",
                     f"{obs_name}",
                 ),
@@ -273,17 +242,7 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
         """
         Visualize sensitivity coefficients using heatmap.
         """
-        os.makedirs(
-            os.path.join(
-                self.model.path,
-                "figure",
-                "sensitivity",
-                "parameter",
-                f"{metric}",
-                "heatmap",
-            ),
-            exist_ok=True,
-        )
+        os.makedirs(os.path.join(self.path_to_figs(metric), "heatmap"), exist_ok=True)
         options = self.model.viz.sensitivity_options
         # rcParams
         self.model.viz.set_sensitivity_rcParams()
@@ -312,11 +271,7 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
                     plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90)
                     plt.savefig(
                         os.path.join(
-                            self.model.path,
-                            "figure",
-                            "sensitivity",
-                            "parameter",
-                            f"{metric}",
+                            self.path_to_figs(metric),
                             "heatmap",
                             f"{condition}_{obs_name}",
                         ),
@@ -327,6 +282,8 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
         """
         Perform sensitivity analysis.
         """
+        if options["overwrite"] and os.path.isfile(self.coefficients(metric)):
+            os.remove(self.coefficients(metric))
         param_indices = self._get_param_indices(options["excluded_params"])
         sensitivity_coefficients = self._load_sc(metric, param_indices)
         if style == "barplot":
