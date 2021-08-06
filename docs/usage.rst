@@ -200,10 +200,9 @@ The single parameter sensitivity of each reaction is defined by
 
 .. math:: C^{M}_{i} = d \ln{M} / d \ln{v_{i}}
 
-where v\ :sub:`i`\ is the i\ :sup:`th`\ reaction rate, v is reaction vector v = (v\ :sub:`1`\, v\ :sub:`2`\, ...) and M is a signaling metric, e.g., time-integrated response, duration.
+where v\ :sub:`i`\  is the i\ :sup:`th`\  reaction rate, v is reaction vector v = (v\ :sub:`1`\, v\ :sub:`2`\, ...) and M is a signaling metric, e.g., time-integrated response, duration.
 Sensitivity coefficients were calculated using finite difference approximations with 1% changes in the reaction rates.
 
 .. image:: https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/sensitivity_PcFos.png
 
 Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HRG). Numbers above bars indicate the reaction indices, and error bars correspond to simulation standard deviation.
-
