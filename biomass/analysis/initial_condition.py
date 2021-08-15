@@ -8,6 +8,7 @@ import numpy as np
 import seaborn as sns
 
 from ..exec_model import ExecModel, ModelObject
+from ..plotting import SensitivityOptions
 from .util import SignalingMetric, dlnyi_dlnxj
 
 
@@ -19,13 +20,14 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
     create_metrics: Optional[Dict[str, Callable[[np.ndarray], Union[int, float]]]]
 
     def __post_init__(self) -> None:
-        self.coefficients: Callable[[str], str] = lambda metric: os.path.join(
+        self._plotting: SensitivityOptions = self.model.viz.get_sensitivity_options()
+        self._coefficients: Callable[[str], str] = lambda metric: os.path.join(
             self.model.path,
             "sensitivity_coefficients",
             "initial_condition",
             f"{metric}.npy",
         )
-        self.path_to_figs: Callable[[str], str] = lambda metric: os.path.join(
+        self._path_to_figs: Callable[[str], str] = lambda metric: os.path.join(
             self.model.path,
             "figure",
             "sensitivity",
@@ -124,7 +126,7 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
         """
         Load (or calculate) sensitivity coefficients.
         """
-        if not os.path.isfile(self.coefficients(metric)):
+        if not os.path.isfile(self._coefficients(metric)):
             os.makedirs(
                 os.path.join(
                     self.model.path,
@@ -135,16 +137,16 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
                 )
             sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, nonzero_indices)
             np.save(
-                self.coefficients(metric), sensitivity_coefficients
+                self._coefficients(metric), sensitivity_coefficients
             )
         else:
-            sensitivity_coefficients = np.load(self.coefficients(metric))
+            sensitivity_coefficients = np.load(self._coefficients(metric))
             if len(nonzero_indices) != sensitivity_coefficients.shape[1]:
                 # User changed options['excluded_initials'] after the last trial
                 sensitivity_coefficients = self._calc_sensitivity_coefficients(
                     metric, nonzero_indices
                 )
-                np.save(self.coefficients(metric), sensitivity_coefficients)
+                np.save(self._coefficients(metric), sensitivity_coefficients)
 
         return sensitivity_coefficients
 
@@ -158,21 +160,19 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
         Visualize sensitivity coefficients using barplot.
         """
         os.makedirs(
-            os.path.join(self.path_to_figs(metric), "barplot"), exist_ok=True
+            os.path.join(self._path_to_figs(metric), "barplot"), exist_ok=True
         )
-        options = self.model.viz.sensitivity_options
-
         # rcParams
         self.model.viz.set_sensitivity_rcParams()
 
-        if len(options["cmap"]) < len(self.model.problem.conditions):
+        if len(self._plotting.cmap) < len(self.model.problem.conditions):
             raise ValueError(
                 "len(sensitivity_options['cmap']) must be equal to "
                 "or greater than len(problem.conditions)."
             )
         for k, obs_name in enumerate(self.model.observables):
-            plt.figure(figsize=options["figsize"])
-            plt.hlines([0], -options["width"], len(nonzero_indices), "k", lw=1)
+            plt.figure(figsize=self._plotting.figsize)
+            plt.hlines([0], -self._plotting.width, len(nonzero_indices), "k", lw=1)
             for l, condition in enumerate(self.model.problem.conditions):
                 sensitivity_matrix = sensitivity_coefficients[:, :, k, l]
                 nan_idx = []
@@ -187,19 +187,19 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
                     else:
                         stdev = np.std(sensitivity_matrix, axis=0, ddof=1)
                     plt.bar(
-                        np.arange(len(nonzero_indices)) + l * options["width"],
+                        np.arange(len(nonzero_indices)) + l * self._plotting.width,
                         average,
                         yerr=stdev,
-                        ecolor=options["cmap"][l],
+                        ecolor=self._plotting.cmap[l],
                         capsize=2,
-                        width=options["width"],
-                        color=options["cmap"][l],
+                        width=self._plotting.width,
+                        color=self._plotting.cmap[l],
                         align="center",
                         label=condition,
                     )
             plt.xticks(
                 np.arange(len(nonzero_indices))
-                + options["width"] * 0.5 * (len(self.model.problem.conditions) - 1),
+                + self._plotting.width * 0.5 * (len(self.model.problem.conditions) - 1),
                 [
                     self.model.viz.convert_species_name(self.model.species[i])
                     for i in nonzero_indices
@@ -209,10 +209,11 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
             plt.ylabel(
                 "Control coefficients on\n" + metric + " (" + obs_name.replace("_", " ") + ")"
             )
-            plt.xlim(-options["width"], len(nonzero_indices))
-            plt.legend(**options["legend_kws"])
+            plt.xlim(-self._plotting.width, len(nonzero_indices))
+            if self._plotting.legend_kws is not None:
+                plt.legend(**self._plotting.legend_kws)
             plt.savefig(
-                os.path.join(self.path_to_figs(metric), "barplot", f"{obs_name}")
+                os.path.join(self._path_to_figs(metric), "barplot", f"{obs_name}")
             )
             plt.close()
 
@@ -246,7 +247,7 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
         Visualize sensitivity coefficients using heatmap.
         """
         os.makedirs(
-            os.path.join(self.path_to_figs(metric), "heatmap"), exist_ok=True
+            os.path.join(self._path_to_figs(metric), "heatmap"), exist_ok=True
         )
         options = self.model.viz.sensitivity_options
         # rcParams
@@ -266,7 +267,7 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
                         cmap="RdBu_r",
                         linewidth=0.5,
                         col_cluster=False,
-                        figsize=options["figsize"],
+                        figsize=self._plotting.figsize,
                         xticklabels=[
                             self.model.viz.convert_species_name(self.model.species[i])
                             for i in nonzero_indices
@@ -279,7 +280,7 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
                     plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90)
                     plt.savefig(
                         os.path.join(
-                            self.path_to_figs(metric),
+                            self._path_to_figs(metric),
                             "heatmap",
                             f"{condition}_{obs_name}",
                         ),
@@ -291,8 +292,8 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
         """
         Perform sensitivity analysis.
         """
-        if options["overwrite"] and os.path.isfile(self.coefficients(metric)):
-            os.remove(self.coefficients(metric))
+        if options["overwrite"] and os.path.isfile(self._coefficients(metric)):
+            os.remove(self._coefficients(metric))
         nonzero_indices = self._get_nonzero_indices(options["excluded_initials"])
         sensitivity_coefficients = self._load_sc(metric, nonzero_indices)
         if style == "barplot":
