@@ -7,3 +7,4 @@ API
    core
    result
    estimation/index
+   visualization
