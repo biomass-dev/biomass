@@ -140,7 +140,11 @@ class OptimizeStep(object):
                 method="Powell",
                 bounds=tuple(zip(lower, upper)),
                 callback=lambda xk: True
-                if self.objective(xk) < self.objective(self.gene2val(population[ip[0], : self.n_gene]))
+                if self.objective(
+                    self.gene2val(xk)
+                ) < self.objective(
+                    self.gene2val(population[ip[0], : self.n_gene])
+                )
                 else False,
                 options={
                     "xtol": 1.0,
