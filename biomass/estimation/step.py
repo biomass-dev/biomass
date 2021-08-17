@@ -22,8 +22,7 @@ from scipy.optimize import differential_evolution, minimize
 
 @dataclass(frozen=True)
 class OptimizeStep(object):
-    objective: Callable[[np.ndarray], float]
-    gene2val: Callable[[np.ndarray], np.ndarray]
+    obj_func: Callable[[np.ndarray], float]
     n_population: int
     n_gene: int
     n_children: int
@@ -78,9 +77,7 @@ class OptimizeStep(object):
         population[ip[1], :] = family[random_child_idx, :]
 
         if 1e12 <= population[ip[1], -1] or isnan(population[ip[1], -1]):
-            population[ip[1], -1] = self.objective(
-                self.gene2val(population[ip[1], : self.n_gene])
-            )
+            population[ip[1], -1] = self.obj_func(population[ip[1], : self.n_gene])
 
         population = population[np.argsort(population[:, -1]), :]
 
@@ -102,7 +99,7 @@ class OptimizeStep(object):
         )
         child[: self.n_gene] = parents[0, : self.n_gene] + t2
         child[: self.n_gene] = np.clip(child[: self.n_gene], 0.0, 1.0)
-        child[-1] = self.objective(self.gene2val(child[: self.n_gene]))
+        child[-1] = self.obj_func(child[: self.n_gene])
 
         return child
 
@@ -135,16 +132,12 @@ class OptimizeStep(object):
             upper = np.max(population[:, : self.n_gene], axis=0)
             direc = np.identity(self.n_gene) * 0.3 * (upper - lower)
             res = minimize(
-                self.objective,
+                self.obj_func,
                 population[ip[0], : self.n_gene],
                 method="Powell",
                 bounds=tuple(zip(lower, upper)),
                 callback=lambda xk: True
-                if self.objective(
-                    self.gene2val(xk)
-                ) < self.objective(
-                    self.gene2val(population[ip[0], : self.n_gene])
-                )
+                if self.obj_func(xk) < self.obj_func(population[ip[0], : self.n_gene])
                 else False,
                 options={
                     "xtol": 1.0,
@@ -154,15 +147,14 @@ class OptimizeStep(object):
                     "direc": direc,
                 },
             )
-            obj_val = self.objective(self.gene2val(res.x))
-            if obj_val < self.objective(self.gene2val(population[ip[0], : self.n_gene])):
+            if res.fun < self.obj_func(population[ip[0], : self.n_gene]):
                 population[ip[0], : self.n_gene] = res.x
-                population[ip[0], -1] = obj_val
+                population[ip[0], -1] = res.fun
         elif method == "de":
             lower = np.min(population[:, : self.n_gene], axis=0)
             upper = np.max(population[:, : self.n_gene], axis=0)
             res = differential_evolution(
-                self.objective,
+                self.obj_func,
                 tuple(zip(lower, upper)),
                 strategy="best2bin",
                 mutation=(0.0, 0.3),
@@ -174,10 +166,9 @@ class OptimizeStep(object):
                 updating="immediate" if self.workers == 1 else "deferred",
                 workers=self.workers,
             )
-            obj_val = self.objective(self.gene2val(res.x))
-            if obj_val < self.objective(self.gene2val(population[ip[0], : self.n_gene])):
+            if res.fun < self.obj_func(population[ip[0], : self.n_gene]):
                 population[ip[0], : self.n_gene] = res.x
-                population[ip[0], -1] = obj_val
+                population[ip[0], -1] = res.fun
 
         population = population[np.argsort(population[:, -1]), :]
 

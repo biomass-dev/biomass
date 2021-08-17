@@ -2,6 +2,7 @@ import os
 import time
 import warnings
 from math import isnan
+from typing import Callable
 
 import numpy as np
 
@@ -50,12 +51,15 @@ class GeneticAlgorithmInit(ExecModel):
         self.maxiter: int = maxiter
         self.workers: int = workers
         self.overwrite: bool = overwrite
-
+        
         _check_unknown_options(unknown_options)
         if self.n_population < self.n_gene + 2:
             raise ValueError(f"n_population must be larger than {self.n_gene + 2:d}")
 
     def run(self, nth_paramset: int) -> None:
+        """
+        Run GA.
+        """
         os.makedirs(
             os.path.join(
                 self.model.path,
@@ -110,6 +114,9 @@ class GeneticAlgorithmInit(ExecModel):
         self._ga_v2(nth_paramset)
 
     def _set_initial(self, nth_paramset: int) -> np.ndarray:
+        """
+        Generate initial populations.
+        """
         population = np.full((self.n_population, self.n_gene + 1), np.inf)
         with open(
             os.path.join(
@@ -124,9 +131,7 @@ class GeneticAlgorithmInit(ExecModel):
         for i in range(self.n_population):
             while self.initial_threshold <= population[i, -1] or isnan(population[i, -1]):
                 population[i, : self.n_gene] = np.random.rand(self.n_gene)
-                population[i, -1] = self.model.problem.objective(
-                    self.model.problem.gene2val(population[i, : self.n_gene])
-                )
+                population[i, -1] = self.get_obj_val(population[i, : self.n_gene])
             with open(
                 os.path.join(
                     self.model.path,
@@ -222,8 +227,7 @@ class GeneticAlgorithmInit(ExecModel):
             Otherwise, `Generation` <- `Generation` + 1, and return to the step 2.
         """
         step = OptimizeStep(
-            self.model.problem.objective,
-            self.model.problem.gene2val,
+            self.get_obj_val,
             self.n_population,
             self.n_gene,
             self.n_children,
@@ -394,12 +398,17 @@ class GeneticAlgorithmContinue(ExecModel):
             raise ValueError(f"n_population must be larger than {self.n_gene + 2:d}")
 
     def run(self, nth_paramset: int) -> None:
-
+        """
+        Run GA.
+        """
         np.random.seed(time.time_ns() * nth_paramset % 2 ** 32)
         warnings.filterwarnings("ignore")
         self._ga_v2_continue(nth_paramset)
 
     def _set_continue(self, nth_paramset: int) -> np.ndarray:
+        """
+        Generate initial populations.
+        """
         best_generation = np.load(
             os.path.join(
                 self.model.path,
@@ -432,9 +441,7 @@ class GeneticAlgorithmContinue(ExecModel):
             while self.initial_threshold <= population[i, -1]:
                 population[i, : self.n_gene] = self._encode_bestIndivVal2randGene(best_individual)
                 population[i, : self.n_gene] = np.clip(population[i, : self.n_gene], 0.0, 1.0)
-                population[i, -1] = self.model.problem.objective(
-                    self.model.problem.gene2val(population[i, : self.n_gene])
-                )
+                population[i, -1] = self.get_obj_val(population[i, : self.n_gene])
             with open(
                 os.path.join(
                     self.model.path,
@@ -467,8 +474,7 @@ class GeneticAlgorithmContinue(ExecModel):
 
     def _ga_v2_continue(self, nth_paramset: int) -> None:
         step = OptimizeStep(
-            self.model.problem.objective,
-            self.model.problem.gene2val,
+            self.get_obj_val,
             self.n_population,
             self.n_gene,
             self.n_children,
