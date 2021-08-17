@@ -82,6 +82,19 @@ class ExecModel(object):
     model: ModelObject
 
     def get_individual(self, paramset: int) -> np.ndarray:
+        """
+        Get estimated parameter values from optimization results.
+
+        Parameters
+        ----------
+        paramset : int
+            Index of parameter set.
+        
+        Returns
+        -------
+        best_individual : numpy.ndarray
+            Estimated parameter values.
+        """
         best_generation = np.load(
             os.path.join(
                 self.model.path,
@@ -101,11 +114,28 @@ class ExecModel(object):
         return best_individual
 
     def load_param(self, paramset: int) -> OptimizedValues:
+        """
+        Load a parameter set from optimization results.
+
+        Parameters
+        ----------
+        paramset : int
+            Index of parameter set.
+        
+        Returns
+        -------
+        optimized_values : OptimizedValues
+            Optimized parameter/initial values.
+        """
         best_individual = self.get_individual(paramset)
         (x, y0) = self.model.problem.update(best_individual)
-        return OptimizedValues(x, y0)
+        optimized_values = OptimizedValues(x, y0)
+        return optimized_values
 
     def get_executable(self) -> List[int]:
+        """
+        Get executable parameter sets from optimization results.
+        """
         n_file = []
         try:
             fitparam_files = os.listdir(
@@ -133,3 +163,20 @@ class ExecModel(object):
         except FileNotFoundError as e:
             print(e)
         return n_file
+    
+    def get_obj_val(self, indiv_gene: np.ndarray) -> float:
+        """
+        An objective function to minimize in GA.
+
+        Parameters
+        ----------
+        indiv_gene : numpy.ndarray
+            Genes, not parameter values.
+        
+        Returns
+        -------
+        obj_val : float
+            Objective function value.
+        """
+        obj_val = self.model.problem.objective(self.model.problem.gene2val(indiv_gene))
+        return obj_val
