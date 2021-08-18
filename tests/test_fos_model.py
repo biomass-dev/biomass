@@ -5,7 +5,7 @@ from distutils.dir_util import copy_tree
 import pytest
 from scipy.optimize import OptimizeResult, differential_evolution
 
-from biomass import Model, OptimizationResults, run_simulation
+from biomass import Model, OptimizationResults, optimize, run_simulation
 from biomass.estimation import ExternalOptimizer
 from biomass.models import Nakakuki_Cell_2010
 
@@ -57,6 +57,24 @@ def test_save_resuts():
             "estimated_parameter_sets.pdf",
         )
     )
+
+
+def test_param_estim():
+    optimize(
+        model, x_id=11, options={
+            "popsize": 3,
+            "max_generation": 5,
+            "allowable_error": 0.0,
+            "local_search_method": "DE",
+            "maxiter": 3,
+            "workers": -1,
+        }
+    )
+    with open(
+        os.path.join(model.path, "out", "11", "optimization.log")
+    ) as f:
+        logs = f.readlines()
+    assert logs[-1][:13] == "Generation5: "
 
 
 def test_external_optimizer():
