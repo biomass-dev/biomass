@@ -249,7 +249,6 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
         os.makedirs(
             os.path.join(self._path_to_figs(metric), "heatmap"), exist_ok=True
         )
-        options = self.model.viz.sensitivity_options
         # rcParams
         self.model.viz.set_sensitivity_rcParams()
 
