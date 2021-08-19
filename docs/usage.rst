@@ -108,7 +108,6 @@ Progress list: ``out/n/optimization.log``::
             "allowable_error": 0.5,
             "local_search_method": "DE",
             "maxiter": 50,
-            "workers": 1,
         }
     )
 
