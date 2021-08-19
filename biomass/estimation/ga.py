@@ -2,7 +2,6 @@ import os
 import time
 import warnings
 from math import isnan
-from typing import Callable
 
 import numpy as np
 
