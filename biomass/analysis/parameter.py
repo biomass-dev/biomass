@@ -8,6 +8,7 @@ import numpy as np
 import seaborn as sns
 
 from ..exec_model import ExecModel, ModelObject
+from ..plotting import SensitivityOptions
 from .util import SignalingMetric, dlnyi_dlnxj
 
 
@@ -19,6 +20,20 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
     create_metrics: Optional[Dict[str, Callable[[np.ndarray], Union[int, float]]]]
 
     def __post_init__(self) -> None:
+        self._plotting: SensitivityOptions = self.model.viz.get_sensitivity_options()
+        self._coefficients: Callable[[str], str] = lambda metric: os.path.join(
+            self.model.path,
+            "sensitivity_coefficients",
+            "parameter",
+            f"{metric}.npy",
+        )
+        self._path_to_figs: Callable[[str], str] = lambda metric: os.path.join(
+            self.model.path,
+            "figure",
+            "sensitivity",
+            "parameter",
+            f"{metric}",
+        )
         if self.create_metrics is not None:
             for name, function in self.create_metrics.items():
                 self.quantification[name] = function
@@ -110,14 +125,7 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
         """
         Load (or calculate) sensitivity coefficients.
         """
-        if not os.path.isfile(
-            os.path.join(
-                self.model.path,
-                "sensitivity_coefficients",
-                "parameter",
-                f"{metric}.npy",
-            )
-        ):
+        if not os.path.isfile(self._coefficients(metric)):
             os.makedirs(
                 os.path.join(
                     self.model.path,
@@ -127,38 +135,15 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
                 exist_ok=True,
             )
             sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, param_indices)
-            np.save(
-                os.path.join(
-                    self.model.path,
-                    "sensitivity_coefficients",
-                    "parameter",
-                    f"{metric}",
-                ),
-                sensitivity_coefficients,
-            )
+            np.save(self._coefficients(metric), sensitivity_coefficients)
         else:
-            sensitivity_coefficients = np.load(
-                os.path.join(
-                    self.model.path,
-                    "sensitivity_coefficients",
-                    "parameter",
-                    f"{metric}.npy",
-                )
-            )
+            sensitivity_coefficients = np.load(self._coefficients(metric))
             if len(param_indices) != sensitivity_coefficients.shape[1]:
                 # User changed options['excluded_params'] after the last trial
                 sensitivity_coefficients = self._calc_sensitivity_coefficients(
                     metric, param_indices
                 )
-                np.save(
-                    os.path.join(
-                        self.model.path,
-                        "sensitivity_coefficients",
-                        "parameter",
-                        f"{metric}",
-                    ),
-                    sensitivity_coefficients,
-                )
+                np.save(self._coefficients(metric), sensitivity_coefficients)
 
         return sensitivity_coefficients
 
@@ -171,30 +156,18 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
         """
         Visualize sensitivity coefficients using barplot.
         """
-        os.makedirs(
-            os.path.join(
-                self.model.path,
-                "figure",
-                "sensitivity",
-                "parameter",
-                f"{metric}",
-                "barplot",
-            ),
-            exist_ok=True,
-        )
-        options = self.model.viz.sensitivity_options
-
+        os.makedirs(os.path.join(self._path_to_figs(metric), "barplot"), exist_ok=True)
         # rcParams
         self.model.viz.set_sensitivity_rcParams()
 
-        if len(options["cmap"]) < len(self.model.problem.conditions):
+        if len(self._plotting.cmap) < len(self.model.problem.conditions):
             raise ValueError(
                 "len(sensitivity_options['cmap']) must be equal to "
                 "or greater than len(problem.conditions)."
             )
         for k, obs_name in enumerate(self.model.observables):
-            plt.figure(figsize=options["figsize"])
-            plt.hlines([0], -options["width"], len(param_indices), "k", lw=1)
+            plt.figure(figsize=self._plotting.figsize)
+            plt.hlines([0], -self._plotting.width, len(param_indices), "k", lw=1)
             for l, condition in enumerate(self.model.problem.conditions):
                 sensitivity_matrix = sensitivity_coefficients[:, :, k, l]
                 nan_idx = []
@@ -209,19 +182,19 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
                     else:
                         stdev = np.std(sensitivity_matrix, axis=0, ddof=1)
                     plt.bar(
-                        np.arange(len(param_indices)) + l * options["width"],
+                        np.arange(len(param_indices)) + l * self._plotting.width,
                         average,
                         yerr=stdev,
-                        ecolor=options["cmap"][l],
+                        ecolor=self._plotting.cmap[l],
                         capsize=2,
-                        width=options["width"],
-                        color=options["cmap"][l],
+                        width=self._plotting.width,
+                        color=self._plotting.cmap[l],
                         align="center",
                         label=condition,
                     )
             plt.xticks(
                 np.arange(len(param_indices))
-                + options["width"] * 0.5 * (len(self.model.problem.conditions) - 1),
+                + self._plotting.width * 0.5 * (len(self.model.problem.conditions) - 1),
                 [self.model.parameters[i] for i in param_indices],
                 fontsize=6,
                 rotation=90,
@@ -229,15 +202,12 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
             plt.ylabel(
                 "Control coefficients on\n" + metric + " (" + obs_name.replace("_", " ") + ")"
             )
-            plt.xlim(-options["width"], len(param_indices))
-            plt.legend(**options["legend_kws"])
+            plt.xlim(-self._plotting.width, len(param_indices))
+            if self._plotting.legend_kws is not None:
+                plt.legend(**self._plotting.legend_kws)
             plt.savefig(
                 os.path.join(
-                    self.model.path,
-                    "figure",
-                    "sensitivity",
-                    "parameter",
-                    f"{metric}",
+                    self._path_to_figs(metric),
                     "barplot",
                     f"{obs_name}",
                 ),
@@ -273,18 +243,7 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
         """
         Visualize sensitivity coefficients using heatmap.
         """
-        os.makedirs(
-            os.path.join(
-                self.model.path,
-                "figure",
-                "sensitivity",
-                "parameter",
-                f"{metric}",
-                "heatmap",
-            ),
-            exist_ok=True,
-        )
-        options = self.model.viz.sensitivity_options
+        os.makedirs(os.path.join(self._path_to_figs(metric), "heatmap"), exist_ok=True)
         # rcParams
         self.model.viz.set_sensitivity_rcParams()
 
@@ -302,7 +261,7 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
                         cmap="RdBu_r",
                         linewidth=0.5,
                         col_cluster=False,
-                        figsize=options["figsize"],
+                        figsize=self._plotting.figsize,
                         xticklabels=[self.model.parameters[i] for i in param_indices],
                         yticklabels=[],
                         # cbar_kws={"ticks": [-1, 0, 1]}
@@ -312,11 +271,7 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
                     plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90)
                     plt.savefig(
                         os.path.join(
-                            self.model.path,
-                            "figure",
-                            "sensitivity",
-                            "parameter",
-                            f"{metric}",
+                            self._path_to_figs(metric),
                             "heatmap",
                             f"{condition}_{obs_name}",
                         ),
@@ -327,6 +282,8 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
         """
         Perform sensitivity analysis.
         """
+        if options["overwrite"] and os.path.isfile(self._coefficients(metric)):
+            os.remove(self._coefficients(metric))
         param_indices = self._get_param_indices(options["excluded_params"])
         sensitivity_coefficients = self._load_sc(metric, param_indices)
         if style == "barplot":

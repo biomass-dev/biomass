@@ -8,6 +8,7 @@ import numpy as np
 import seaborn as sns
 
 from ..exec_model import ExecModel, ModelObject
+from ..plotting import SensitivityOptions
 from .util import SignalingMetric, dlnyi_dlnxj
 
 
@@ -19,6 +20,20 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
     create_metrics: Optional[Dict[str, Callable[[np.ndarray], Union[int, float]]]]
 
     def __post_init__(self) -> None:
+        self._plotting: SensitivityOptions = self.model.viz.get_sensitivity_options()
+        self._coefficients: Callable[[str], str] = lambda metric: os.path.join(
+            self.model.path,
+            "sensitivity_coefficients",
+            "reaction",
+            f"{metric}.npy",
+        )
+        self._path_to_figs: Callable[[str], str] = lambda metric: os.path.join(
+            self.model.path,
+            "figure",
+            "sensitivity",
+            "reaction",
+            f"{metric}",
+        )
         if self.create_metrics is not None:
             for name, function in self.create_metrics.items():
                 self.quantification[name] = function
@@ -101,14 +116,7 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
         """
         Load (or calculate) sensitivity coefficients.
         """
-        if not os.path.isfile(
-            os.path.join(
-                self.model.path,
-                "sensitivity_coefficients",
-                "reaction",
-                f"{metric}.npy",
-            )
-        ):
+        if not os.path.isfile(self._coefficients(metric)):
             os.makedirs(
                 os.path.join(
                     self.model.path,
@@ -120,24 +128,9 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
             sensitivity_coefficients = self._calc_sensitivity_coefficients(
                 metric, reaction_indices
             )
-            np.save(
-                os.path.join(
-                    self.model.path,
-                    "sensitivity_coefficients",
-                    "reaction",
-                    f"{metric}",
-                ),
-                sensitivity_coefficients,
-            )
+            np.save(self._coefficients(metric), sensitivity_coefficients)
         else:
-            sensitivity_coefficients = np.load(
-                os.path.join(
-                    self.model.path,
-                    "sensitivity_coefficients",
-                    "reaction",
-                    f"{metric}.npy",
-                )
-            )
+            sensitivity_coefficients = np.load(self._coefficients(metric))
 
         return sensitivity_coefficients
 
@@ -208,30 +201,18 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
         """
         Visualize sensitivity coefficients using barplot.
         """
-        os.makedirs(
-            os.path.join(
-                self.model.path,
-                "figure",
-                "sensitivity",
-                "reaction",
-                f"{metric}",
-                "barplot",
-            ),
-            exist_ok=True,
-        )
-        options = self.model.viz.sensitivity_options
-
+        os.makedirs(os.path.join(self._path_to_figs(metric), "barplot"), exist_ok=True)
         # rcParams
         self.model.viz.set_sensitivity_rcParams()
 
-        if len(options["cmap"]) < len(self.model.problem.conditions):
+        if len(self._plotting.cmap) < len(self.model.problem.conditions):
             raise ValueError(
                 "len(sensitivity_options['cmap']) must be equal to "
                 "or greater than len(problem.conditions)."
             )
         for k, obs_name in enumerate(self.model.observables):
-            plt.figure(figsize=options["figsize"])
-            self._draw_vertical_span(biological_processes, options["width"])
+            plt.figure(figsize=self._plotting.figsize)
+            self._draw_vertical_span(biological_processes, self._plotting.width)
 
             sensitivity_array = sensitivity_coefficients[:, :, k, :]
             # Remove NaN
@@ -249,34 +230,31 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
                     stdev = np.std(sensitivity_array, axis=0, ddof=1)
                 for l, condition in enumerate(self.model.problem.conditions):
                     plt.bar(
-                        np.arange(len(reaction_indices)) + l * options["width"],
+                        np.arange(len(reaction_indices)) + l * self._plotting.width,
                         average[:, l],
                         yerr=stdev[:, l],
-                        ecolor=options["cmap"][l],
+                        ecolor=self._plotting.cmap[l],
                         capsize=2,
-                        width=options["width"],
-                        color=options["cmap"][l],
+                        width=self._plotting.width,
+                        color=self._plotting.cmap[l],
                         align="center",
                         label=condition,
                     )
                 if show_indices:
                     self._write_reaction_indices(
-                        reaction_indices, average, stdev, options["width"]
+                        reaction_indices, average, stdev, self._plotting.width
                     )
-                plt.hlines([0], -options["width"], len(reaction_indices), "k", lw=1)
+                plt.hlines([0], -self._plotting.width, len(reaction_indices), "k", lw=1)
                 plt.xticks([])
                 plt.ylabel(
                     "Control coefficients on\n" + metric + " (" + obs_name.replace("_", " ") + ")"
                 )
-                plt.xlim(-options["width"], len(reaction_indices))
-                plt.legend(**options["legend_kws"])
+                plt.xlim(-self._plotting.width, len(reaction_indices))
+                if self._plotting.legend_kws is not None:
+                    plt.legend(**self._plotting.legend_kws)
                 plt.savefig(
                     os.path.join(
-                        self.model.path,
-                        "figure",
-                        "sensitivity",
-                        "reaction",
-                        f"{metric}",
+                        self._path_to_figs(metric),
                         "barplot",
                         f"{obs_name}",
                     ),
@@ -312,18 +290,7 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
         """
         Visualize sensitivity coefficients using heatmap.
         """
-        os.makedirs(
-            os.path.join(
-                self.model.path,
-                "figure",
-                "sensitivity",
-                "reaction",
-                f"{metric}",
-                "heatmap",
-            ),
-            exist_ok=True,
-        )
-        options = self.model.viz.sensitivity_options
+        os.makedirs(os.path.join(self._path_to_figs(metric), "heatmap"), exist_ok=True)
         # rcParams
         self.model.viz.set_sensitivity_rcParams()
 
@@ -341,7 +308,7 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
                         cmap="RdBu_r",
                         linewidth=0.5,
                         col_cluster=False,
-                        figsize=options["figsize"],
+                        figsize=self._plotting.figsize,
                         xticklabels=[str(j) for j in reaction_indices],
                         yticklabels=[],
                         # cbar_kws={"ticks": [-1, 0, 1]}
@@ -350,11 +317,7 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
                     cbar.ax.tick_params(labelsize=8)
                     plt.savefig(
                         os.path.join(
-                            self.model.path,
-                            "figure",
-                            "sensitivity",
-                            "reaction",
-                            f"{metric}",
+                            self._path_to_figs(metric),
                             "heatmap",
                             f"{condition}_{obs_name}",
                         ),
@@ -365,6 +328,8 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
         """
         Perform sensitivity analysis.
         """
+        if options["overwrite"] and os.path.isfile(self._coefficients(metric)):
+            os.remove(self._coefficients(metric))
         if not self.model.rxn.reactions:
             raise ValueError("Define reaction indices (reactions) in reaction_network.py")
         biological_processes = self.model.rxn.group()

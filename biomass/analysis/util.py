@@ -4,7 +4,7 @@ from math import fabs, isnan, log
 from typing import Callable, Dict, List, Union
 
 import numpy as np
-from scipy.integrate import simps
+from scipy.integrate import simpson
 
 
 @dataclass
@@ -22,7 +22,7 @@ class SignalingMetric(object):
         default_factory=lambda: dict(
             maximum=np.max,
             minimum=np.min,
-            integral=simps,
+            integral=simpson,
         ),
         init=False,
     )

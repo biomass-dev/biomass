@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 from matplotlib.axes._axes import _log as matplotlib_axes_logger
 
 from ..exec_model import ExecModel, ModelObject
+from ..plotting import MultipleObservables, SingleObservable
 
 matplotlib_axes_logger.setLevel("ERROR")
 
@@ -57,65 +58,65 @@ class TemporalDynamics(ExecModel):
         )
         self.model.problem.set_data()
         self.model.viz.set_timecourse_rcParams()
-        singleplot = self.model.viz.get_timecourse_options()
-        multiplot = self.model.viz.multiplot_observables()
+        singleplotting = self.model.viz.get_single_observable_options()
+        multiplotting = self.model.viz.get_multiple_observables_options()
 
         for mode in range(2):
             # mode 0 : timecourse_for_each_observable
-            # mode 1 : multiplot_observables
+            # mode 1 : multiple_observables
             set_fig = False
             for i, obs_name in enumerate(self.model.observables):
-                if len(singleplot[i]["cmap"]) < len(self.model.problem.conditions) or len(
-                    singleplot[i]["shape"]
+                if len(singleplotting[i].cmap) < len(self.model.problem.conditions) or len(
+                    singleplotting[i].shape
                 ) < len(self.model.problem.conditions):
                     raise ValueError(
                         "len(cmap), len(shape) must be equal to"
                         " or greater than len(self.model.problem.conditions)."
                     )
-                if mode == 1 and obs_name not in multiplot["observables"]:
+                if mode == 1 and obs_name not in multiplotting.observables:
                     continue
                 if mode == 0:
-                    plt.figure(figsize=singleplot[i]["figsize"])
+                    plt.figure(figsize=singleplotting[i].figsize)
                 elif mode == 1 and not set_fig:
-                    plt.figure(figsize=multiplot["figsize"])
+                    plt.figure(figsize=multiplotting.figsize)
                     set_fig = True
                 plt.gca().spines["right"].set_visible(False)
                 plt.gca().spines["top"].set_visible(False)
                 if viz_type != "experiment":
                     if show_all:
                         self._plot_show_all(
-                            n_file, simulations_all, obs_name, mode, singleplot, multiplot
+                            n_file, simulations_all, obs_name, mode, singleplotting, multiplotting
                         )
                     if viz_type == "average":
                         normalized = self._normalize_array(
-                            n_file, simulations_all, obs_name, mode, singleplot, multiplot
+                            n_file, simulations_all, obs_name, mode, singleplotting, multiplotting
                         )
                         if (
                             self.model.problem.normalization
                             and self.model.problem.normalization[obs_name]["timepoint"] is None
                         ):
                             normalized = self._divide_by_maximum(normalized, obs_name)
-                        self._plot_average(normalized, obs_name, mode, singleplot, multiplot)
+                        self._plot_average(normalized, obs_name, mode, singleplotting, multiplotting)
                         if stdev:
-                            self._show_sd(normalized, obs_name, mode, singleplot, multiplot)
+                            self._show_sd(normalized, obs_name, mode, singleplotting, multiplotting)
                     else:
-                        self._plot_simulations(obs_name, mode, singleplot, multiplot)
+                        self._plot_simulations(obs_name, mode, singleplotting, multiplotting)
                 if (
-                    viz_type == "experiment" or singleplot[i]["exp_data"]
+                    viz_type == "experiment" or singleplotting[i].exp_data
                 ) and self.model.problem.experiments[i] is not None:
                     exp_t = self.model.problem.get_timepoint(obs_name)
                     if self.model.problem.error_bars[i] is not None:
                         self._plot_experimental_data_with_error_bars(
-                            viz_type, exp_t, obs_name, mode, singleplot, multiplot
+                            viz_type, exp_t, obs_name, mode, singleplotting, multiplotting
                         )
                     else:
                         self._plot_experimental_data_without_error_bars(
-                            viz_type, exp_t, obs_name, mode, singleplot, multiplot
+                            viz_type, exp_t, obs_name, mode, singleplotting, multiplotting
                         )
                 if mode == 0:
-                    self._save_mode_0(obs_name, singleplot, viz_type)
-            if mode == 1 and multiplot["observables"]:
-                self._save_mode_1(multiplot, viz_type)
+                    self._save_mode_0(obs_name, singleplotting, viz_type)
+            if mode == 1 and multiplotting.observables:
+                self._save_mode_1(multiplotting, viz_type)
 
     def _plot_show_all(
         self,
@@ -123,8 +124,8 @@ class TemporalDynamics(ExecModel):
         simulations_all: np.ndarray,
         obs_name: str,
         mode: int,
-        singleplot: List[dict],
-        multiplot: dict,
+        singleplotting: List[SingleObservable],
+        multiplotting: MultipleObservables,
     ) -> None:
         """
         Plot time course simulated values (show_all == True).
@@ -132,11 +133,11 @@ class TemporalDynamics(ExecModel):
         i = self.model.observables.index(obs_name)
         for j, _ in enumerate(n_file):
             for l, condition in enumerate(self.model.problem.conditions):
-                if (mode == 0 and condition not in singleplot[i]["dont_show"]) or (
-                    mode == 1 and condition == multiplot["condition"]
+                if (mode == 0 and condition not in singleplotting[i].dont_show) or (
+                    mode == 1 and condition == multiplotting.condition
                 ):
                     plt.plot(
-                        np.array(self.model.problem.t) / singleplot[i]["divided_by"],
+                        np.array(self.model.problem.t) / singleplotting[i].divided_by,
                         simulations_all[i, j, :, l]
                         / (
                             1
@@ -170,9 +171,9 @@ class TemporalDynamics(ExecModel):
                                 ]
                             )
                         ),
-                        color=singleplot[i]["cmap"][l]
+                        color=singleplotting[i].cmap[l]
                         if mode == 0
-                        else multiplot["cmap"][multiplot["observables"].index(obs_name)],
+                        else multiplotting.cmap[multiplotting.observables.index(obs_name)],
                         alpha=0.05,
                     )
 
@@ -182,8 +183,8 @@ class TemporalDynamics(ExecModel):
         simulations_all: np.ndarray,
         obs_name: str,
         mode: int,
-        singleplot: List[dict],
-        multiplot: dict,
+        singleplotting: List[SingleObservable],
+        multiplotting: MultipleObservables,
     ) -> np.ndarray:
         """
         Normalize the array simulations_all using problem.normalization set in observable.py.
@@ -192,8 +193,8 @@ class TemporalDynamics(ExecModel):
         i = self.model.observables.index(obs_name)
         for j, _ in enumerate(n_file):
             for l, condition in enumerate(self.model.problem.conditions):
-                if (mode == 0 and condition not in singleplot[i]["dont_show"]) or (
-                    mode == 1 and condition == multiplot["condition"]
+                if (mode == 0 and condition not in singleplotting[i].dont_show) or (
+                    mode == 1 and condition == multiplotting.condition
                 ):
                     normalized[i, j, :, l] = simulations_all[i, j, :, l] / (
                         1
@@ -257,24 +258,24 @@ class TemporalDynamics(ExecModel):
         normalized: np.ndarray,
         obs_name: str,
         mode: int,
-        singleplot: List[dict],
-        multiplot: dict,
+        singleplotting: List[SingleObservable],
+        multiplotting: MultipleObservables,
     ) -> None:
         """
         Plot time course simulated values (viz_type == 'average').
         """
         i = self.model.observables.index(obs_name)
         for l, condition in enumerate(self.model.problem.conditions):
-            if (mode == 0 and condition not in singleplot[i]["dont_show"]) or (
-                mode == 1 and condition == multiplot["condition"]
+            if (mode == 0 and condition not in singleplotting[i].dont_show) or (
+                mode == 1 and condition == multiplotting.condition
             ):
                 plt.plot(
-                    np.array(self.model.problem.t) / singleplot[i]["divided_by"],
+                    np.array(self.model.problem.t) / singleplotting[i].divided_by,
                     np.nanmean(normalized[i, :, :, l], axis=0),
-                    color=singleplot[i]["cmap"][l]
+                    color=singleplotting[i].cmap[l]
                     if mode == 0
-                    else multiplot["cmap"][multiplot["observables"].index(obs_name)],
-                    label=condition if mode == 0 else singleplot[i]["ylabel"],
+                    else multiplotting.cmap[multiplotting.observables.index(obs_name)],
+                    label=condition if mode == 0 else singleplotting[i].ylabel,
                 )
 
     def _show_sd(
@@ -282,16 +283,16 @@ class TemporalDynamics(ExecModel):
         normalized: np.ndarray,
         obs_name: str,
         mode: int,
-        singleplot: List[dict],
-        multiplot: dict,
+        singleplotting: List[SingleObservable],
+        multiplotting: MultipleObservables,
     ) -> None:
         """
         Plot standard deviation (SD) as shaded area when stdev == True.
         """
         i = self.model.observables.index(obs_name)
         for l, condition in enumerate(self.model.problem.conditions):
-            if (mode == 0 and condition not in singleplot[i]["dont_show"]) or (
-                mode == 1 and condition == multiplot["condition"]
+            if (mode == 0 and condition not in singleplotting[i].dont_show) or (
+                mode == 1 and condition == multiplotting.condition
             ):
                 y_mean = np.nanmean(normalized[i, :, :, l], axis=0)
                 y_std = [
@@ -299,13 +300,13 @@ class TemporalDynamics(ExecModel):
                     for k, _ in enumerate(self.model.problem.t)
                 ]
                 plt.fill_between(
-                    np.array(self.model.problem.t) / singleplot[i]["divided_by"],
+                    np.array(self.model.problem.t) / singleplotting[i].divided_by,
                     y_mean - y_std,
                     y_mean + y_std,
                     lw=0,
-                    color=singleplot[i]["cmap"][l]
+                    color=singleplotting[i].cmap[l]
                     if mode == 0
-                    else multiplot["cmap"][multiplot["observables"].index(obs_name)],
+                    else multiplotting.cmap[multiplotting.observables.index(obs_name)],
                     alpha=0.1,
                 )
 
@@ -313,19 +314,19 @@ class TemporalDynamics(ExecModel):
         self,
         obs_name: str,
         mode: int,
-        singleplot: List[dict],
-        multiplot: dict,
+        singleplotting: List[SingleObservable],
+        multiplotting: MultipleObservables,
     ) -> None:
         """
         Plot time course simulated values (viz_type not in ['average', 'experiment']).
         """
         i = self.model.observables.index(obs_name)
         for l, condition in enumerate(self.model.problem.conditions):
-            if (mode == 0 and condition not in singleplot[i]["dont_show"]) or (
-                mode == 1 and condition == multiplot["condition"]
+            if (mode == 0 and condition not in singleplotting[i].dont_show) or (
+                mode == 1 and condition == multiplotting.condition
             ):
                 plt.plot(
-                    np.array(self.model.problem.t) / singleplot[i]["divided_by"],
+                    np.array(self.model.problem.t) / singleplotting[i].divided_by,
                     self.model.problem.simulations[i, :, l]
                     / (
                         1
@@ -357,10 +358,10 @@ class TemporalDynamics(ExecModel):
                             ]
                         )
                     ),
-                    color=singleplot[i]["cmap"][l]
+                    color=singleplotting[i].cmap[l]
                     if mode == 0
-                    else multiplot["cmap"][multiplot["observables"].index(obs_name)],
-                    label=condition if mode == 0 else singleplot[i]["ylabel"],
+                    else multiplotting.cmap[multiplotting.observables.index(obs_name)],
+                    label=condition if mode == 0 else singleplotting[i].ylabel,
                 )
 
     def _plot_experimental_data_with_error_bars(
@@ -369,8 +370,8 @@ class TemporalDynamics(ExecModel):
         exp_t: Optional[List[int]],
         obs_name: str,
         mode: int,
-        singleplot: List[dict],
-        multiplot: dict,
+        singleplotting: List[SingleObservable],
+        multiplotting: MultipleObservables,
     ) -> None:
         """
         Plot experimental measurements with error bars.
@@ -379,30 +380,30 @@ class TemporalDynamics(ExecModel):
         for l, condition in enumerate(self.model.problem.conditions):
             if (
                 condition in self.model.problem.experiments[i]
-                and (mode == 0 and condition not in singleplot[i]["dont_show"])
-                or (mode == 1 and condition == multiplot["condition"])
+                and (mode == 0 and condition not in singleplotting[i].dont_show)
+                or (mode == 1 and condition == multiplotting.condition)
             ):
                 exp_data = plt.errorbar(
-                    np.array(exp_t) / singleplot[i]["divided_by"],
+                    np.array(exp_t) / singleplotting[i].divided_by,
                     self.model.problem.experiments[i][condition],
                     yerr=self.model.problem.error_bars[i][condition],
-                    color=singleplot[i]["cmap"][l]
+                    color=singleplotting[i].cmap[l]
                     if mode == 0
-                    else multiplot["cmap"][multiplot["observables"].index(obs_name)],
-                    ecolor=singleplot[i]["cmap"][l]
+                    else multiplotting.cmap[multiplotting.observables.index(obs_name)],
+                    ecolor=singleplotting[i].cmap[l]
                     if mode == 0
-                    else multiplot["cmap"][multiplot["observables"].index(obs_name)],
+                    else multiplotting.cmap[multiplotting.observables.index(obs_name)],
                     elinewidth=1,
                     capsize=8,
                     markerfacecolor="None",
-                    markeredgecolor=singleplot[i]["cmap"][l]
+                    markeredgecolor=singleplotting[i].cmap[l]
                     if mode == 0
-                    else multiplot["cmap"][multiplot["observables"].index(obs_name)],
-                    fmt=singleplot[i]["shape"][l]
+                    else multiplotting.cmap[multiplotting.observables.index(obs_name)],
+                    fmt=singleplotting[i].shape[l]
                     if mode == 0
-                    else multiplot["shape"][multiplot["observables"].index(obs_name)],
+                    else multiplotting.shape[multiplotting.observables.index(obs_name)],
                     clip_on=False,
-                    label=singleplot[i]["ylabel"]
+                    label=singleplotting[i].ylabel
                     if mode == 1 and viz_type == "experiment"
                     else None,
                 )
@@ -417,8 +418,8 @@ class TemporalDynamics(ExecModel):
         exp_t: Optional[List[int]],
         obs_name: str,
         mode: int,
-        singleplot: List[dict],
-        multiplot: dict,
+        singleplotting: List[SingleObservable],
+        multiplotting: MultipleObservables,
     ) -> None:
         """
         Plot experimental measurements when model.problem.error_bars[i] is None.
@@ -427,24 +428,24 @@ class TemporalDynamics(ExecModel):
         for l, condition in enumerate(self.model.problem.conditions):
             if (
                 condition in self.model.problem.experiments[i]
-                and (mode == 0 and condition not in singleplot[i]["dont_show"])
-                or (mode == 1 and condition == multiplot["condition"])
+                and (mode == 0 and condition not in singleplotting[i].dont_show)
+                or (mode == 1 and condition == multiplotting.condition)
             ):
                 plt.plot(
-                    np.array(exp_t) / singleplot[i]["divided_by"],
+                    np.array(exp_t) / singleplotting[i].divided_by,
                     self.model.problem.experiments[i][condition],
-                    singleplot[i]["shape"][l]
+                    singleplotting[i].shape[l]
                     if mode == 0
-                    else multiplot["shape"][multiplot["observables"].index(obs_name)],
+                    else multiplotting.shape[multiplotting.observables.index(obs_name)],
                     markerfacecolor="None",
-                    markeredgecolor=singleplot[i]["cmap"][l]
+                    markeredgecolor=singleplotting[i].cmap[l]
                     if mode == 0
-                    else multiplot["cmap"][multiplot["observables"].index(obs_name)],
-                    color=singleplot[i]["cmap"][l]
+                    else multiplotting.cmap[multiplotting.observables.index(obs_name)],
+                    color=singleplotting[i].cmap[l]
                     if mode == 0
-                    else multiplot["cmap"][multiplot["observables"].index(obs_name)],
+                    else multiplotting.cmap[multiplotting.observables.index(obs_name)],
                     clip_on=False,
-                    label=singleplot[i]["ylabel"]
+                    label=singleplotting[i].ylabel
                     if mode == 1 and viz_type == "experiment"
                     else None,
                 )
@@ -452,25 +453,25 @@ class TemporalDynamics(ExecModel):
     def _save_mode_0(
         self,
         obs_name: str,
-        singleplot: List[dict],
+        singleplotting: List[SingleObservable],
         viz_type: str,
     ) -> None:
         """
         Plot time course of each observable.
         """
         i = self.model.observables.index(obs_name)
-        if singleplot[i]["xlim"]:
-            plt.xlim(singleplot[i]["xlim"])
-        if singleplot[i]["xticks"] is not None:
-            plt.xticks(singleplot[i]["xticks"])
-        plt.xlabel(singleplot[i]["xlabel"])
-        if singleplot[i]["ylim"]:
-            plt.ylim(singleplot[i]["ylim"])
-        if singleplot[i]["yticks"] is not None:
-            plt.yticks(singleplot[i]["yticks"])
-        plt.ylabel(singleplot[i]["ylabel"])
-        if singleplot[i]["legend_kws"] is not None:
-            plt.legend(**singleplot[i]["legend_kws"])
+        if singleplotting[i].xlim:
+            plt.xlim(singleplotting[i].xlim)
+        if singleplotting[i].xticks is not None:
+            plt.xticks(singleplotting[i].xticks)
+        plt.xlabel(singleplotting[i].xlabel)
+        if singleplotting[i].ylim:
+            plt.ylim(singleplotting[i].ylim)
+        if singleplotting[i].yticks is not None:
+            plt.yticks(singleplotting[i].yticks)
+        plt.ylabel(singleplotting[i].ylabel)
+        if singleplotting[i].legend_kws is not None:
+            plt.legend(**singleplotting[i].legend_kws)
         plt.savefig(
             os.path.join(
                 self.model.path,
@@ -484,30 +485,30 @@ class TemporalDynamics(ExecModel):
 
     def _save_mode_1(
         self,
-        multiplot: dict,
+        multiplotting: MultipleObservables,
         viz_type: str,
     ) -> None:
         """
         Plot time course of multiple observables in one figure.
         """
-        if multiplot["xlim"]:
-            plt.xlim(multiplot["xlim"])
-        if multiplot["xticks"] is not None:
-            plt.xticks(multiplot["xticks"])
-        plt.xlabel(multiplot["xlabel"])
-        if multiplot["ylim"]:
-            plt.ylim(multiplot["ylim"])
-        if multiplot["yticks"] is not None:
-            plt.yticks(multiplot["yticks"])
-        plt.ylabel(multiplot["ylabel"])
-        plt.legend(**multiplot["legend_kws"])
+        if multiplotting.xlim:
+            plt.xlim(multiplotting.xlim)
+        if multiplotting.xticks is not None:
+            plt.xticks(multiplotting.xticks)
+        plt.xlabel(multiplotting.xlabel)
+        if multiplotting.ylim:
+            plt.ylim(multiplotting.ylim)
+        if multiplotting.yticks is not None:
+            plt.yticks(multiplotting.yticks)
+        plt.ylabel(multiplotting.ylabel)
+        plt.legend(**multiplotting.legend_kws)
         plt.savefig(
             os.path.join(
                 self.model.path,
                 "figure",
                 "simulation",
                 f"{viz_type}",
-                f"{multiplot['fname']}",
+                f"{multiplotting.fname}",
             ),
         )
         plt.close()
