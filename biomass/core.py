@@ -6,6 +6,11 @@ from importlib import import_module
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, Optional, Union
 
+try:  # python 3.8+
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
+
 import numpy as np
 
 from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
@@ -367,10 +372,10 @@ def run_simulation(
 def run_analysis(
     model: ModelObject,
     *,
-    target: str,
+    target: Literal["reaction", "parameter", "initial_condition"],
     metric: str = "integral",
     create_metrics: Optional[Dict[str, Callable[[np.ndarray], Union[int, float]]]] = None,
-    style: str = "barplot",
+    style: Literal["barplot", "heatmap"] = "barplot",
     options: Optional[dict] = None,
 ) -> None:
     """
@@ -386,7 +391,7 @@ def run_analysis(
     model : ModelObject
         Model for sensitivity analysis.
 
-    target : str
+    target : Literal["reaction", "parameter", "initial_condition"]
         * 'reaction'
         * 'initial_condition'
         * 'parameter'
@@ -397,7 +402,7 @@ def run_analysis(
     create_metrics : Dict[str, Callable[[np.ndarray], Union[int, float]]], optional
         Create user-defined signaling metrics.
 
-    style : str (default: 'barplot')
+    style :  Literal["barplot", "heatmap"] (default: 'barplot')
         * 'barplot'
         * 'heatmap'
 
