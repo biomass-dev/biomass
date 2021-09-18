@@ -11,8 +11,8 @@ class Visualization(Observable):
 
     Attributes
     ----------
-    cm : matplotlib.colors.ListedColormap (default: `plt.cm.get_cmap('tab10')`)
-        Choosing colormaps for `cmap`.
+    cm : matplotlib.colors.ListedColormap (default: ``plt.cm.get_cmap('tab10')``)
+        Choosing colormaps for ``cmap``.
     single_observable_options : list of SingleObservable
         Visualization options for time-course simulation (single-observable).
     multiple_observables_options : MultipleObservables
