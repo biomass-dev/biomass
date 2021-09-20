@@ -2,10 +2,10 @@
 
 [![Actions Status](https://github.com/biomass-dev/biomass/workflows/Tests/badge.svg)](https://github.com/biomass-dev/biomass/actions)
 [![Documentation Status](https://img.shields.io/readthedocs/biomass-core/latest.svg?logo=read%20the%20docs&logoColor=white&&label=Docs&version=latest)](https://biomass-core.readthedocs.io/en/latest/?badge=latest)
-[![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&logoColor=white)](https://pypi.python.org/pypi/biomass/)
+[![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&logoColor=white)](https://pypi.python.org/pypi/biomass)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg?logo=apache)](https://opensource.org/licenses/Apache-2.0)
 [![Downloads](https://pepy.tech/badge/biomass)](https://pepy.tech/project/biomass)
-[![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg?logo=Python&logoColor=white)](https://pypi.python.org/pypi/biomass/)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg?logo=Python&logoColor=white)](https://pypi.python.org/pypi/biomass)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/biomass-dev/biomass.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/biomass-dev/biomass/context:python)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
@@ -27,7 +27,7 @@ Online documentation is available at https://biomass-core.readthedocs.io/.
 
 ## Installation
 
-The BioMASS library is available at the [Python Package Index (PyPI)](https://pypi.org/project/biomass/).
+The BioMASS library is available at the [Python Package Index (PyPI)](https://pypi.org/project/biomass).
 
 ```bash
 $ pip install biomass
@@ -76,7 +76,6 @@ Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HR
 When using BioMASS, please cite the following paper:
 
 - Imoto, H., Zhang, S. & Okada, M. A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway. _Cancers_ **12**, 2878 (2020). https://doi.org/10.3390/cancers12102878
-
 
 ## Author
 
