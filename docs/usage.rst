@@ -117,7 +117,7 @@ Using external optimizers
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can also use external optimization methods to determine model parameters.
-Below is an example of using `scipy.optimize.differential_evolution` for parameter estimation.
+Below is an example of using ``scipy.optimize.differential_evolution`` for parameter estimation.
 
 .. code-block:: python
 
