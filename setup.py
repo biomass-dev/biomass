@@ -44,10 +44,11 @@ def setup_package():
         author="Hiroaki Imoto",
         author_email="himoto@protein.osaka-u.ac.jp",
         url="https://github.com/biomass-dev/biomass",
-        download_url="https://pypi.org/project/biomass/",
+        download_url="https://github.com/biomass-dev/biomass/releases",
         project_urls={
             "Documentation": "https://biomass-core.readthedocs.io/en/latest/",
             "Source Code": "https://github.com/biomass-dev/biomass",
+            "Bug Tracker": "https://github.com/biomass-dev/biomass/issues",
         },
         packages=find_packages(exclude=["tests", "docs"]),
         install_requires=get_install_requires(),

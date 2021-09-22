@@ -19,7 +19,7 @@ class Observable(DifferentialEquation):
         Simulation time span.
 
     conditions : list of strings
-        Expetimental conditions.
+        Experimental conditions.
 
     simulations : numpy.ndarray
         The numpy array to store simulation results.
@@ -27,11 +27,11 @@ class Observable(DifferentialEquation):
     normalization : nested dict
         * 'timepoint' : Optional[int]
             The time point at which simulated values are normalized.
-            If None, the maximum value will be used for normalization.
+            If :obj:`None`, the maximum value will be used for normalization.
 
         * 'condition' : list of strings
             The experimental conditions to use for normalization.
-            If empty, all conditions defined in sim.conditions will be used.
+            If empty, all conditions defined in ``sim.conditions`` will be used.
 
     experiments : list of dict
         Time series data.

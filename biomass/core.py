@@ -6,6 +6,11 @@ from importlib import import_module
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, Optional, Union
 
+try:  # python 3.8+
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
+
 import numpy as np
 
 from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
@@ -25,7 +30,7 @@ class Model(object):
     ----------
     pkg_name: str
         Path (dot-sepalated) to a biomass model directory.
-        Use '__package__'.
+        Use ``__package__``.
     """
 
     pkg_name: str
@@ -44,8 +49,8 @@ class Model(object):
 
         Parameters
         ----------
-        show_info : bool (default: False)
-            Set to `True` to print the information related to model size.
+        show_info : bool (default: :obj:`False`)
+            Set to :obj:`True` to print the information related to model size.
 
         Examples
         --------
@@ -125,17 +130,17 @@ def optimize(
     options : dict, optional
         * popsize : int (default: 5)
             A multiplier for setting the total population size.
-            The population has `popsize` * len(`search_param`) individuals.
+            The population has ``popsize`` * len(`search_param`) individuals.
 
         * max_generation : int (default: 10000)
-            Stop optimization if Generation > `max_generation`.
+            Stop optimization if Generation > ``max_generation``.
 
         * initial_threshold : float (default: 1e12)
             Threshold on objective function value used to generate initial population.
             Default value is 1e12 (numerically solvable).
 
         * allowable_error : float (default: 0.0)
-            Stop optimization if Best Fitness <= `allowable_error`.
+            Stop optimization if Best Fitness <= ``allowable_error``.
 
         * local_search_method : str (default: 'mutation')
             Method used in local search. Should be one of:
@@ -147,20 +152,20 @@ def optimize(
             * 'DE' : Differential Evolution (strategy: `best2bin`)
 
         * n_children : int (default: 1000)
-            (method='mutation') The number of children generated in NDM/MGG.
+            (``local_search_method`` == 'mutation') The number of children generated in NDM/MGG.
 
         * maxiter : int (default: 10)
-            (method='Powell' or 'DE') The maximum number of iterations
+            (``local_search_method`` in ['Powell', 'DE']) The maximum number of iterations
             over which the entire population is evolved.
 
         * workers : int (default: -1 if isinstance(x_id, `int`) else 1)
-            (method='DE') The population is subdivided into workers sections and
+            (``local_search_method`` == 'DE') The population is subdivided into workers sections and
             evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
             all available CPU cores. Set workers to 1 when searching multiple
             parameter sets simultaneously.
 
-        * overwrite : bool (default: False)
-            If `True`, the out/n folder will be overwritten.
+        * overwrite : bool (default: :obj:`False`)
+            If :obj:`True`, the out/n folder will be overwritten.
 
     Examples
     --------
@@ -221,17 +226,17 @@ def optimize_continue(
     options : dict, optional
         * popsize : int (default: 5)
             A multiplier for setting the total population size.
-            The population has `popsize` * len(`search_param`) individuals.
+            The population has ``popsize`` * len(`search_param`) individuals.
 
         * max_generation : int (default: 15000)
-            Stop optimization if Generation > `max_generation`.
+            Stop optimization if Generation > ``max_generation``.
 
         * initial_threshold : float (default: 1e12)
             Threshold on objective function value used to generate initial population.
             Default value is 1e12 (numerically solvable).
 
         * allowable_error : float (default: 0.0)
-            Stop optimization if Best Fitness <= `allowable_error`.
+            Stop optimization if Best Fitness <= ``allowable_error``.
 
         * local_search_method : str (default: 'mutation')
             Method used in local search. Should be one of:
@@ -243,21 +248,20 @@ def optimize_continue(
             * 'DE' : Differential Evolution (strategy: `best2bin`)
 
         * n_children : int (default: 1000)
-            (method='mutation') The number of children generated in NDM/MGG.
+            (``local_search_method`` == 'mutation') The number of children generated in NDM/MGG.
 
         * maxiter : int (default: 10)
-            (method='Powell' or 'DE') The maximum number of iterations
+            (``local_search_method`` in ['Powell', 'DE']) The maximum number of iterations
             over which the entire population is evolved.
 
         * workers : int (default: -1 if isinstance(x_id, `int`) else 1)
-            (method='DE') The population is subdivided into workers sections and
-            evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
+            (``local_search_method`` == 'DE') The population is subdivided into workers sections 
+            and evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
             all available CPU cores. Set workers to 1 when searching multiple
             parameter sets simultaneously.
 
         * p0_bounds : list of floats (default: [0.1, 10.0])
-            Generate initial population using best parameter values in the last
-            parameter search.
+            Generate initial population using best parameter values in the last parameter search.
 
             * `lower_bound` = po_bounds[0] * `best_parameter_value`
             * `upper_bound` = p0_bounds[1] * `best_parameter_value`
@@ -319,24 +323,21 @@ def run_simulation(
 
     viz_type : str
         * 'average':
-            The average of simulation results with parameter sets in "out/".
+            The average of simulation results with parameter sets in ``out/``.
         * 'best':
-            The best simulation result in "out/", simulation with
-            "best_fit_param".
+            The best simulation result in ``out/``, simulation with `best_fit_param`.
         * 'original':
-            Simulation with the default parameters and initial values
-            defined in "set_model.py".
+            Simulation with the default parameters and initial values defined in ``set_model.py``.
         * 'n(=1,2,...)':
-            Use the parameter set in "out/n/".
+            Use the parameter set in ``out/n/``.
         * 'experiment'
-            Draw the experimental data written in observable.py without
-            simulation results.
+            Draw the experimental data written in ``observable.py`` without simulation results.
 
     show_all : bool
         Whether to show all simulation results.
 
     stdev : bool
-        If True, the standard deviation of simulated values will be shown
+        If :obj:`True`, the standard deviation of simulated values will be shown
         (only available for 'average' visualization type).
 
     Examples
@@ -367,10 +368,10 @@ def run_simulation(
 def run_analysis(
     model: ModelObject,
     *,
-    target: str,
+    target: Literal["reaction", "parameter", "initial_condition"],
     metric: str = "integral",
     create_metrics: Optional[Dict[str, Callable[[np.ndarray], Union[int, float]]]] = None,
-    style: str = "barplot",
+    style: Literal["barplot", "heatmap"] = "barplot",
     options: Optional[dict] = None,
 ) -> None:
     """
@@ -386,7 +387,7 @@ def run_analysis(
     model : ModelObject
         Model for sensitivity analysis.
 
-    target : str
+    target : Literal["reaction", "parameter", "initial_condition"]
         * 'reaction'
         * 'initial_condition'
         * 'parameter'
@@ -397,22 +398,22 @@ def run_analysis(
     create_metrics : Dict[str, Callable[[np.ndarray], Union[int, float]]], optional
         Create user-defined signaling metrics.
 
-    style : str (default: 'barplot')
+    style :  Literal["barplot", "heatmap"] (default: 'barplot')
         * 'barplot'
         * 'heatmap'
 
     options : dict, optional
-        * show_indices : bool (default: True)
-            (target == 'reaction') Set to `True` to put reaction index on each bar.
+        * show_indices : bool (default: :obj:`True`)
+            (``target`` == 'reaction') Set to :obj:`True` to put reaction index on each bar.
 
         * excluded_params : list of strings
-            (target == 'parameter') List of parameters which are not used for analysis.
+            (``target`` == 'parameter') List of parameters which are not used for analysis.
 
         * excluded_initials : list of strings
-            (target == 'initial_condition') List of species which are not used for analysis.
+            (``target`` == 'initial_condition') List of species which are not used for analysis.
         
         * overwrite : bool (default: False)
-            If `True`, the sensitivity_coefficients/{target}/{metric}.npy file will be overwritten.
+            If :obj:`True`, the sensitivity_coefficients/{target}/{metric}.npy file will be overwritten.
 
     Examples
     --------

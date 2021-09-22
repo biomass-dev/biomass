@@ -30,13 +30,15 @@ Name                    Content
     36 species
     115 parameters, of which 75 to be estimated
 
-
+.. note::
+    `pasmopy.Text2Model <https://pasmopy.readthedocs.io/en/latest/model_development.html>`_ allows you to build a BioMASS model from text.
+    You simply describe biochemical reactions and the molecular mechanisms extracted from text are converted into an executable model.
 
 Parameter estimation
 --------------------
 
-Using `biomass.optimize` function
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Using ``biomass.optimize`` function
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Parameters are adjusted to minimize the distance between model simulation and experimental data.
 
@@ -115,7 +117,7 @@ Using external optimizers
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can also use external optimization methods to determine model parameters.
-Below is an example of using `scipy.optimize.differential_evolution` for parameter estimation.
+Below is an example of using ``scipy.optimize.differential_evolution`` for parameter estimation.
 
 .. code-block:: python
 
@@ -189,6 +191,8 @@ Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid li
 Sensitivity analysis
 --------------------
 
+Sensitivity analysis examines how perturbations to the processes in the model affect the quantity of interest, e.g., the integral of the pc-Fos concentration.
+
 .. code-block:: python
 
     from biomass import run_analysis
@@ -200,7 +204,7 @@ The single parameter sensitivity of each reaction is defined by
 .. math:: C^{M}_{i} = d \ln{M} / d \ln{v_{i}}
 
 where v\ :sub:`i`\  is the i\ :sup:`th`\  reaction rate, v is reaction vector v = (v\ :sub:`1`\, v\ :sub:`2`\, ...) and M is a signaling metric, e.g., time-integrated response, duration.
-Sensitivity coefficients were calculated using finite difference approximations with 1% changes in the reaction rates.
+Sensitivity coefficients are calculated using finite difference approximations with 1% changes in the reaction rates :cite:p:`kholodenko1997quantification`.
 
 .. image:: https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/sensitivity_PcFos.png
 

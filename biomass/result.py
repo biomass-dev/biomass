@@ -122,9 +122,9 @@ class OptimizationResults(ExecModel):
         figsize : Tuple[float, float], optional
             Width, height in inches.
         config : dict, optional
-            A dictionary object for setting `matplotlib.rcParams`.
+            A dictionary object for setting ``matplotlib.rcParams``.
         boxplot_kws : dict, optional
-            Keyword arguments to pass to `seaborn.boxplot`.
+            Keyword arguments to pass to ``seaborn.boxplot``.
 
         Examples
         --------
@@ -196,8 +196,8 @@ class OptimizationResults(ExecModel):
 
         Parameters
         ----------
-        include_original : bool (default: False)
-            If True, an objective value simulated with original parameters
+        include_original : bool (default: :obj:`False`)
+            If :obj:`True`, an objective value simulated with original parameters
             will also be shown.
 
         Examples

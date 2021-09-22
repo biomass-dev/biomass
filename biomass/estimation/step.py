@@ -1,20 +1,11 @@
-"""
-References
-----------
-- DIDC:
-    Kimura, S. & Konagaya, A. A Genetic Algorithm with Distance
-    Independent Diversity Control for High Dimensional Function
-    Optimization. J. Japanese Soc. Artif. Intell. 18, 193–202 (2003).
-
-- AGLSDC:
-    Kimura S, Nakakuki T, Kirita S, Okada M. AGLSDC: A Genetic Local Search
-    Suitable for Parallel Computation. SICE J Control Meas Syst Integr 2012;
-    4: 105–113.
-"""
-
 from dataclasses import dataclass, field
 from math import isnan
 from typing import Callable
+
+try:  # python 3.8+
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 import numpy as np
 from scipy.optimize import differential_evolution, minimize
@@ -107,7 +98,7 @@ class OptimizeStep(object):
         self,
         ip: np.ndarray,
         population: np.ndarray,
-        method: str,
+        method: Literal["mutation", "powell", "de"],
     ) -> np.ndarray:
         """
         Apply the local search method to the best individual in a family
