@@ -33,6 +33,19 @@ The BioMASS library is available at the [Python Package Index (PyPI)](https://py
 $ pip install biomass
 ```
 
+BioMASS is also available through docker.
+
+```bash
+$ docker pull jnicolaus/biomass:latest
+```
+
+or through singularity
+
+```bash
+$ singularity pull docker://jnicolaus/biomass:latest
+
+```
+
 BioMASS supports Python 3.7 or newer.
 
 ## Example
