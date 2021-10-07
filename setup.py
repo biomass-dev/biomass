@@ -4,6 +4,12 @@ from typing import List
 
 from setuptools import find_packages, setup
 
+try:
+    from biomass import __author__, __email__, __maintainer__
+except ImportError:
+    __author__ = __maintainer__ = "Hiroaki Imoto"
+    __email__ = "himoto@protein.osaka-u.ac.jp"
+
 
 def get_version() -> str:
 
@@ -41,8 +47,10 @@ def setup_package():
         long_description=get_long_description(),
         long_description_content_type="text/markdown",
         license="Apache 2.0",
-        author="Hiroaki Imoto",
-        author_email="himoto@protein.osaka-u.ac.jp",
+        author=__author__,
+        author_email=__email__,
+        maintainer=__maintainer__,
+        maintainer_email=__email__,
         url="https://github.com/biomass-dev/biomass",
         download_url="https://github.com/biomass-dev/biomass/releases",
         project_urls={
