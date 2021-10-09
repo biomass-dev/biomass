@@ -1,8 +1,15 @@
-|Actions Status| |Documentation Status| |PyPI version| |License| |Downloads| |Python versions| |Code quality| |Code style|
+===========================================================================
+BioMASS – A Python Framework for Modeling and Analysis of Signaling Systems
+===========================================================================
 
-=====================
-BioMASS documentation
-=====================
+.. raw:: html
+
+   <p align="center">
+      <img src="https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/logo_horizontal.png"
+         width="400px" alt="BioMASS logo">
+   </p>
+
+|Actions Status| |Documentation Status| |PyPI version| |License| |Downloads| |Python versions| |Code quality| |Code style|
 
 Mathematical modeling is a powerful method for the analysis of complex biological systems.
 Although there are many researches devoted on producing models to describe dynamical cellular signaling systems, most of these models are limited and do not cover multiple pathways.
