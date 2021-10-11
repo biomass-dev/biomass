@@ -1,3 +1,5 @@
+from typing import List
+
 import numpy as np
 
 from biomass.dynamics.solver import get_steady_state, solve_ode
@@ -201,7 +203,7 @@ class Observable(DifferentialEquation):
         }
 
     @staticmethod
-    def get_timepoint(obs_name):
+    def get_timepoint(obs_name) -> List[int]:
         if obs_name in [
             "Phosphorylated_MEKc",
             "Phosphorylated_ERKc",
@@ -209,12 +211,10 @@ class Observable(DifferentialEquation):
             "Phosphorylated_cFos",
         ]:
             return [0, 300, 600, 900, 1800, 2700, 3600, 5400]  # (Unit: sec.)
-
         elif obs_name == "Phosphorylated_CREBw":
             return [0, 600, 1800, 3600, 5400]
-
         elif obs_name == "cfos_mRNA":
             return [0, 600, 1200, 1800, 2700, 3600, 5400]
-
         elif obs_name in ["cFos_Protein", "dusp_mRNA"]:
             return [0, 900, 1800, 2700, 3600, 5400]
+        assert False
