@@ -6,6 +6,50 @@ class DifferentialEquation(object):
         super(DifferentialEquation, self).__init__()
         self.perturbation = perturbation
 
+    @staticmethod
+    def _timecourse_ppMEK_EGF10nM(t) -> float:
+        if t < 300.0:
+            slope = 0.00258
+        elif t < 600.0:
+            slope = -0.00111
+        elif t < 900.0:
+            slope = -0.000625
+        elif t < 1200.0:
+            slope = -0.000135
+        elif t < 1800.0:
+            slope = -0.000135
+        elif t < 2700.0:
+            slope = -0.0000480
+        elif t < 3600.0:
+            slope = -0.00000852
+        elif t <= 5400.0:
+            slope = -0.00000728
+        else:
+            assert False
+        return slope
+    
+    @staticmethod
+    def _timecourse_ppMEK_HRG10nM(t) -> float:
+        if t < 300.0:
+            slope = 0.00288
+        elif t < 600.0:
+            slope = 0.000451
+        elif t < 900.0:
+            slope = -0.000545
+        elif t < 1200.0:
+            slope = 0.0000522
+        elif t < 1800.0:
+            slope = 0.0000522
+        elif t < 2700.0:
+            slope = 0.0000399
+        elif t < 3600.0:
+            slope = -0.0000500
+        elif t <= 5400.0:
+            slope = -0.0000478
+        else:
+            assert False
+        return slope
+        
     # Refined Model
     def diffeq(self, t, y, *x):
         v = {}
@@ -105,41 +149,9 @@ class DifferentialEquation(object):
         dydt = [0] * V.NUM
 
         if x[C.Ligand] == x[C.EGF]:  # EGF=10nM
-            if t < 300.0:
-                dydt[V.ppMEKc] = 0.00258
-            elif t < 600.0:
-                dydt[V.ppMEKc] = -0.00111
-            elif t < 900.0:
-                dydt[V.ppMEKc] = -0.000625
-            elif t < 1200.0:
-                dydt[V.ppMEKc] = -0.000135
-            elif t < 1800.0:
-                dydt[V.ppMEKc] = -0.000135
-            elif t < 2700.0:
-                dydt[V.ppMEKc] = -0.0000480
-            elif t < 3600.0:
-                dydt[V.ppMEKc] = -0.00000852
-            elif t <= 5400.0:
-                dydt[V.ppMEKc] = -0.00000728
-
+            dydt[V.ppMEKc] = self._timecourse_ppMEK_EGF10nM(t)
         elif x[C.Ligand] == x[C.HRG]:  # HRG=10nM
-            if t < 300.0:
-                dydt[V.ppMEKc] = 0.00288
-            elif t < 600.0:
-                dydt[V.ppMEKc] = 0.000451
-            elif t < 900.0:
-                dydt[V.ppMEKc] = -0.000545
-            elif t < 1200.0:
-                dydt[V.ppMEKc] = 0.0000522
-            elif t < 1800.0:
-                dydt[V.ppMEKc] = 0.0000522
-            elif t < 2700.0:
-                dydt[V.ppMEKc] = 0.0000399
-            elif t < 3600.0:
-                dydt[V.ppMEKc] = -0.0000500
-            elif t <= 5400.0:
-                dydt[V.ppMEKc] = -0.0000478
-
+            dydt[V.ppMEKc] = self._timecourse_ppMEK_HRG10nM(t)
         else:  # Default: No ligand input
             dydt[V.ppMEKc] = 0.0
 
