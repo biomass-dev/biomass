@@ -27,7 +27,7 @@ class DifferentialEquation(object):
         else:
             assert False
         return slope
-    
+
     @staticmethod
     def _timecourse_ppMEK_HRG10nM(t) -> float:
         if t < 300.0:
@@ -49,7 +49,7 @@ class DifferentialEquation(object):
         else:
             assert False
         return slope
-        
+
     # Refined Model
     def diffeq(self, t, y, *x):
         v = {}
