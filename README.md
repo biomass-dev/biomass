@@ -35,6 +35,8 @@ $ pip install biomass
 
 BioMASS supports Python 3.7 or newer.
 
+Also, we provide BioMASS docker images on [DockerHub](https://hub.docker.com/r/jnicolaus/biomass).
+
 ## Example
 
 ### Parameter estimation
