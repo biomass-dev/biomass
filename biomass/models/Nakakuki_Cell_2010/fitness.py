@@ -104,81 +104,81 @@ class OptimizationProblem(Observable, SearchParam):
 
             norm_max = np.max(self.simulations[self.obs_names.index('Phosphorylated_MEKc')])
             error[0] = self._compute_objval_rss(
-                self.simulations[self.obs_names.index('Phosphorylated_MEKc'), self.t2, self.conditions.index('EGF')]/norm_max, 
+                self.simulations[self.obs_names.index('Phosphorylated_MEKc'), self.t2, self.conditions.index('EGF')]/norm_max,
                 self.experiments[self.obs_names.index('Phosphorylated_MEKc')]['EGF']
             )
             error[1] = self._compute_objval_rss(
-                self.simulations[self.obs_names.index('Phosphorylated_MEKc'), self.t2, self.conditions.index('HRG')]/norm_max, 
+                self.simulations[self.obs_names.index('Phosphorylated_MEKc'), self.t2, self.conditions.index('HRG')]/norm_max,
                 self.experiments[self.obs_names.index('Phosphorylated_MEKc')]['HRG']
             )
 
             norm_max = np.max(self.simulations[self.obs_names.index('Phosphorylated_ERKc')])
             error[2] = self._compute_objval_rss(
-                self.simulations[self.obs_names.index('Phosphorylated_ERKc'), self.t2, self.conditions.index('EGF')]/norm_max, 
+                self.simulations[self.obs_names.index('Phosphorylated_ERKc'), self.t2, self.conditions.index('EGF')]/norm_max,
                 self.experiments[self.obs_names.index('Phosphorylated_ERKc')]['EGF']
             )
             error[3] = self._compute_objval_rss(
-                self.simulations[self.obs_names.index('Phosphorylated_ERKc'), self.t2, self.conditions.index('HRG')]/norm_max, 
+                self.simulations[self.obs_names.index('Phosphorylated_ERKc'), self.t2, self.conditions.index('HRG')]/norm_max,
                 self.experiments[self.obs_names.index('Phosphorylated_ERKc')]['HRG']
             )
 
             norm_max = np.max(self.simulations[self.obs_names.index('Phosphorylated_RSKw')])
             error[4] = self._compute_objval_rss(
-                self.simulations[self.obs_names.index('Phosphorylated_RSKw'), self.t2, self.conditions.index('EGF')]/norm_max, 
+                self.simulations[self.obs_names.index('Phosphorylated_RSKw'), self.t2, self.conditions.index('EGF')]/norm_max,
                 self.experiments[self.obs_names.index('Phosphorylated_RSKw')]['EGF']
             )
             error[5] = self._compute_objval_rss(
-                self.simulations[self.obs_names.index('Phosphorylated_RSKw'), self.t2, self.conditions.index('HRG')]/norm_max, 
+                self.simulations[self.obs_names.index('Phosphorylated_RSKw'), self.t2, self.conditions.index('HRG')]/norm_max,
                 self.experiments[self.obs_names.index('Phosphorylated_RSKw')]['HRG']
             )
 
             norm_max = np.max(self.simulations[self.obs_names.index('Phosphorylated_CREBw')])
             error[6] = self._compute_objval_rss(
-                self.simulations[self.obs_names.index('Phosphorylated_CREBw'), self.t3, self.conditions.index('EGF')]/norm_max, 
+                self.simulations[self.obs_names.index('Phosphorylated_CREBw'), self.t3, self.conditions.index('EGF')]/norm_max,
                 self.experiments[self.obs_names.index('Phosphorylated_CREBw')]['EGF']
             )
             error[7] = self._compute_objval_rss(
-                self.simulations[self.obs_names.index('Phosphorylated_CREBw'), self.t3, self.conditions.index('HRG')]/norm_max, 
+                self.simulations[self.obs_names.index('Phosphorylated_CREBw'), self.t3, self.conditions.index('HRG')]/norm_max,
                 self.experiments[self.obs_names.index('Phosphorylated_CREBw')]['HRG']
             )
 
             norm_max = np.max(self.simulations[self.obs_names.index('dusp_mRNA')])
             error[8] = self._compute_objval_rss(
-                self.simulations[self.obs_names.index('dusp_mRNA'), self.t5, self.conditions.index('EGF')]/norm_max, 
+                self.simulations[self.obs_names.index('dusp_mRNA'), self.t5, self.conditions.index('EGF')]/norm_max,
                 self.experiments[self.obs_names.index('dusp_mRNA')]['EGF']
             )
             error[9] = self._compute_objval_rss(
-                self.simulations[self.obs_names.index('dusp_mRNA'), self.t5, self.conditions.index('HRG')]/norm_max, 
+                self.simulations[self.obs_names.index('dusp_mRNA'), self.t5, self.conditions.index('HRG')]/norm_max,
                 self.experiments[self.obs_names.index('dusp_mRNA')]['HRG']
             )
 
             norm_max = np.max(self.simulations[self.obs_names.index('cfos_mRNA')])
             error[10] = self._compute_objval_rss(
-                self.simulations[self.obs_names.index('cfos_mRNA'), self.t4, self.conditions.index('EGF')]/norm_max, 
+                self.simulations[self.obs_names.index('cfos_mRNA'), self.t4, self.conditions.index('EGF')]/norm_max,
                 self.experiments[self.obs_names.index('cfos_mRNA')]['EGF']
             )
             error[11] = self._compute_objval_rss(
-                self.simulations[self.obs_names.index('cfos_mRNA'), self.t4, self.conditions.index('HRG')]/norm_max, 
+                self.simulations[self.obs_names.index('cfos_mRNA'), self.t4, self.conditions.index('HRG')]/norm_max,
                 self.experiments[self.obs_names.index('cfos_mRNA')]['HRG']
             )
 
             norm_max = np.max(self.simulations[self.obs_names.index('cFos_Protein')])
             error[12] = self._compute_objval_rss(
-                self.simulations[self.obs_names.index('cFos_Protein'), self.t5, self.conditions.index('EGF')]/norm_max, 
+                self.simulations[self.obs_names.index('cFos_Protein'), self.t5, self.conditions.index('EGF')]/norm_max,
                 self.experiments[self.obs_names.index('cFos_Protein')]['EGF']
             )
             error[13] = self._compute_objval_rss(
-                self.simulations[self.obs_names.index('cFos_Protein'), self.t5, self.conditions.index('HRG')]/norm_max, 
+                self.simulations[self.obs_names.index('cFos_Protein'), self.t5, self.conditions.index('HRG')]/norm_max,
                 self.experiments[self.obs_names.index('cFos_Protein')]['HRG']
             )
 
             norm_max = np.max(self.simulations[self.obs_names.index('Phosphorylated_cFos')])
             error[14] = self._compute_objval_rss(
-                self.simulations[self.obs_names.index('Phosphorylated_cFos'), self.t2, self.conditions.index('EGF')]/norm_max, 
+                self.simulations[self.obs_names.index('Phosphorylated_cFos'), self.t2, self.conditions.index('EGF')]/norm_max,
                 self.experiments[self.obs_names.index('Phosphorylated_cFos')]['EGF']
             )
             error[15] = self._compute_objval_rss(
-                self.simulations[self.obs_names.index('Phosphorylated_cFos'), self.t2, self.conditions.index('HRG')]/norm_max, 
+                self.simulations[self.obs_names.index('Phosphorylated_cFos'), self.t2, self.conditions.index('HRG')]/norm_max,
                 self.experiments[self.obs_names.index('Phosphorylated_cFos')]['HRG']
             )
             """
