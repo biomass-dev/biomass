@@ -32,50 +32,50 @@ class Visualization(Observable):
         self.sensitivity_options = SensitivityOptions(self.cm)
 
     def get_single_observable_options(self):
-        
+
         for i, _ in enumerate(self.obs_names):
             self.single_observable_options[i].divided_by = 60  # sec. -> min.
             self.single_observable_options[i].xlim = (-5, 95)
             self.single_observable_options[i].xticks = [0, 30, 60, 90]
-            self.single_observable_options[i].xlabel = 'Time (min)'
+            self.single_observable_options[i].xlabel = "Time (min)"
             self.single_observable_options[i].ylim = (-0.1, 1.3)
             self.single_observable_options[i].yticks = [0.0, 0.3, 0.6, 0.9, 1.2]
-            self.single_observable_options[i].cmap = ['mediumblue', 'red']
-            self.single_observable_options[i].shape = ['D', 's']
+            self.single_observable_options[i].cmap = ["mediumblue", "red"]
+            self.single_observable_options[i].shape = ["D", "s"]
             self.single_observable_options[i].dont_show = []
 
         self.single_observable_options[
-            self.obs_names.index('Phosphorylated_MEKc')
-        ].ylabel = 'Phosphorylated MEK\n(cytoplasm)'
+            self.obs_names.index("Phosphorylated_MEKc")
+        ].ylabel = "Phosphorylated MEK\n(cytoplasm)"
 
         self.single_observable_options[
-            self.obs_names.index('Phosphorylated_ERKc')
-        ].ylabel = 'Phosphorylated ERK\n(cytoplasm)'
+            self.obs_names.index("Phosphorylated_ERKc")
+        ].ylabel = "Phosphorylated ERK\n(cytoplasm)"
 
         self.single_observable_options[
-            self.obs_names.index('Phosphorylated_RSKw')
-        ].ylabel = 'Phosphorylated RSK\n(whole cell)'
+            self.obs_names.index("Phosphorylated_RSKw")
+        ].ylabel = "Phosphorylated RSK\n(whole cell)"
 
         self.single_observable_options[
-            self.obs_names.index('Phosphorylated_CREBw')
-        ].ylabel = 'Phosphorylated CREB\n(whole cell)'
+            self.obs_names.index("Phosphorylated_CREBw")
+        ].ylabel = "Phosphorylated CREB\n(whole cell)"
+
+        self.single_observable_options[self.obs_names.index("dusp_mRNA")].ylabel = (
+            r"$\it{dusp}$" + " mRNA\nexpression"
+        )
+
+        self.single_observable_options[self.obs_names.index("cfos_mRNA")].ylabel = (
+            r"$\it{c}$" + "-" + r"$\it{fos}$" + " mRNA\nexpression"
+        )
 
         self.single_observable_options[
-            self.obs_names.index('dusp_mRNA')
-        ].ylabel = r'$\it{dusp}$'+' mRNA\nexpression'
+            self.obs_names.index("cFos_Protein")
+        ].ylabel = "c-Fos Protein\nexpression"
 
         self.single_observable_options[
-            self.obs_names.index('cfos_mRNA')
-        ].ylabel = r'$\it{c}$'+'-'+r'$\it{fos}$'+' mRNA\nexpression'
+            self.obs_names.index("Phosphorylated_cFos")
+        ].ylabel = "Phosphorylated c-Fos\nProtein expression"
 
-        self.single_observable_options[
-            self.obs_names.index('cFos_Protein')
-        ].ylabel = 'c-Fos Protein\nexpression'
-
-        self.single_observable_options[
-            self.obs_names.index('Phosphorylated_cFos')
-        ].ylabel = 'Phosphorylated c-Fos\nProtein expression'
-        
         return self.single_observable_options
 
     def get_multiple_observables_options(self):
@@ -99,7 +99,7 @@ class Visualization(Observable):
     def get_sensitivity_options(self):
 
         return self.sensitivity_options
-        
+
     @staticmethod
     def set_timecourse_rcParams():
         """figure/simulation"""

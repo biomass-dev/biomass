@@ -133,12 +133,10 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
                     "sensitivity_coefficients",
                     "initial_condition",
                 ),
-                exist_ok=True
-                )
-            sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, nonzero_indices)
-            np.save(
-                self._coefficients(metric), sensitivity_coefficients
+                exist_ok=True,
             )
+            sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, nonzero_indices)
+            np.save(self._coefficients(metric), sensitivity_coefficients)
         else:
             sensitivity_coefficients = np.load(self._coefficients(metric))
             if len(nonzero_indices) != sensitivity_coefficients.shape[1]:
@@ -159,9 +157,7 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
         """
         Visualize sensitivity coefficients using barplot.
         """
-        os.makedirs(
-            os.path.join(self._path_to_figs(metric), "barplot"), exist_ok=True
-        )
+        os.makedirs(os.path.join(self._path_to_figs(metric), "barplot"), exist_ok=True)
         # rcParams
         self.model.viz.set_sensitivity_rcParams()
 
@@ -212,9 +208,7 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
             plt.xlim(-self._plotting.width, len(nonzero_indices))
             if self._plotting.legend_kws is not None:
                 plt.legend(**self._plotting.legend_kws)
-            plt.savefig(
-                os.path.join(self._path_to_figs(metric), "barplot", f"{obs_name}")
-            )
+            plt.savefig(os.path.join(self._path_to_figs(metric), "barplot", f"{obs_name}"))
             plt.close()
 
     @staticmethod
@@ -246,9 +240,7 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
         """
         Visualize sensitivity coefficients using heatmap.
         """
-        os.makedirs(
-            os.path.join(self._path_to_figs(metric), "heatmap"), exist_ok=True
-        )
+        os.makedirs(os.path.join(self._path_to_figs(metric), "heatmap"), exist_ok=True)
         # rcParams
         self.model.viz.set_sensitivity_rcParams()
 

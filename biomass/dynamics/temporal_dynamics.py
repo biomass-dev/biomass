@@ -96,9 +96,13 @@ class TemporalDynamics(ExecModel):
                             and self.model.problem.normalization[obs_name]["timepoint"] is None
                         ):
                             normalized = self._divide_by_maximum(normalized, obs_name)
-                        self._plot_average(normalized, obs_name, mode, singleplotting, multiplotting)
+                        self._plot_average(
+                            normalized, obs_name, mode, singleplotting, multiplotting
+                        )
                         if stdev:
-                            self._show_sd(normalized, obs_name, mode, singleplotting, multiplotting)
+                            self._show_sd(
+                                normalized, obs_name, mode, singleplotting, multiplotting
+                            )
                     else:
                         self._plot_simulations(obs_name, mode, singleplotting, multiplotting)
                 if (

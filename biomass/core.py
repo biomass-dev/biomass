@@ -255,7 +255,7 @@ def optimize_continue(
             over which the entire population is evolved.
 
         * workers : int (default: -1 if isinstance(x_id, `int`) else 1)
-            (``local_search_method`` == 'DE') The population is subdivided into workers sections 
+            (``local_search_method`` == 'DE') The population is subdivided into workers sections
             and evaluated in parallel (uses multiprocessing.Pool). Supply -1 to use
             all available CPU cores. Set workers to 1 when searching multiple
             parameter sets simultaneously.
@@ -411,7 +411,7 @@ def run_analysis(
 
         * excluded_initials : list of strings
             (``target`` == 'initial_condition') List of species which are not used for analysis.
-        
+
         * overwrite : bool (default: False)
             If :obj:`True`, the sensitivity_coefficients/{target}/{metric}.npy file will be overwritten.
 

@@ -50,7 +50,7 @@ class GeneticAlgorithmInit(ExecModel):
         self.maxiter: int = maxiter
         self.workers: int = workers
         self.overwrite: bool = overwrite
-        
+
         _check_unknown_options(unknown_options)
         if self.n_population < self.n_gene + 2:
             raise ValueError(f"n_population must be larger than {self.n_gene + 2:d}")
