@@ -61,18 +61,18 @@ def test_save_resuts():
 
 def test_param_estim():
     optimize(
-        model, x_id=11, options={
+        model,
+        x_id=11,
+        options={
             "popsize": 3,
             "max_generation": 5,
             "allowable_error": 0.0,
             "local_search_method": "DE",
             "maxiter": 3,
             "workers": -1,
-        }
+        },
     )
-    with open(
-        os.path.join(model.path, "out", "11", "optimization.log")
-    ) as f:
+    with open(os.path.join(model.path, "out", "11", "optimization.log")) as f:
         logs = f.readlines()
     assert logs[-1][:13] == "Generation5: "
 

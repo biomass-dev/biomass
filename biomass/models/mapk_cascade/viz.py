@@ -40,8 +40,12 @@ class Visualization(Observable):
             self.single_observable_options[i].ylim = (0, 310)
             self.single_observable_options[i].yticks = [50 * i for i in range(7)]
             self.single_observable_options[i].exp_data = False
-            self.single_observable_options[self.obs_names.index("biphosphorylated_MAPK")].ylabel = "ERK-PP"
-            self.single_observable_options[self.obs_names.index("unphosphorylated_MAPK")].ylabel = "ERK"
+            self.single_observable_options[
+                self.obs_names.index("biphosphorylated_MAPK")
+            ].ylabel = "ERK-PP"
+            self.single_observable_options[
+                self.obs_names.index("unphosphorylated_MAPK")
+            ].ylabel = "ERK"
 
         return self.single_observable_options
 
@@ -60,7 +64,7 @@ class Visualization(Observable):
         self.multiple_observables_options.ylabel = "MAPK concentrations (nM)"
 
         return self.multiple_observables_options
-    
+
     def get_sensitivity_options(self):
 
         return self.sensitivity_options

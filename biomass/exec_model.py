@@ -89,7 +89,7 @@ class ExecModel(object):
         ----------
         paramset : int
             Index of parameter set.
-        
+
         Returns
         -------
         best_individual : numpy.ndarray
@@ -121,7 +121,7 @@ class ExecModel(object):
         ----------
         paramset : int
             Index of parameter set.
-        
+
         Returns
         -------
         optimized_values : OptimizedValues
@@ -163,7 +163,7 @@ class ExecModel(object):
         except FileNotFoundError as e:
             print(e)
         return n_file
-    
+
     def get_obj_val(self, indiv_gene: np.ndarray) -> float:
         """
         An objective function to minimize in GA.
@@ -172,7 +172,7 @@ class ExecModel(object):
         ----------
         indiv_gene : numpy.ndarray
             Genes, not parameter values.
-        
+
         Returns
         -------
         obj_val : float
