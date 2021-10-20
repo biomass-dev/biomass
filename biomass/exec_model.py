@@ -37,6 +37,20 @@ class ModelObject(object):
         Plotting parameters for customizing figure properties.
     rxn : ReactionNetwork
         Reaction indices grouped according to biological processes.
+    
+    Examples
+    --------
+    >>> from biomass import Model
+    >>> from biomass.models import mapk_cascade
+    >>> model = Model(mapk_cascade.__package__).create()
+    >>> type(model)
+    <class 'biomass.exec_model.ModelObject'>
+    >>> print('Parameters:', len(model.parameters))
+    Parameters: 22
+    >>> print('Species:', len(model.species))
+    Species: 8
+    >>> print('Observables:', len(model.observables))
+    Observables: 2
     """
 
     def __init__(self, path: str, biomass_model: Any):
