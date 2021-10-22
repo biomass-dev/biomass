@@ -37,7 +37,7 @@ class ModelObject(object):
         Plotting parameters for customizing figure properties.
     rxn : ReactionNetwork
         Reaction indices grouped according to biological processes.
-    
+
     Examples
     --------
     >>> from biomass import Model
