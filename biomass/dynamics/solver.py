@@ -20,7 +20,7 @@ def solve_ode(
     options: Optional[dict] = None,
 ) -> Optional[OdeResult]:
     """
-    Solve a system of ordinary differential equations.
+    Solve a system of ordinary differential equations using ``scipy.integrate.solve_ivp()``.
 
     Parameters
     ----------
@@ -69,11 +69,11 @@ def get_steady_state(
     dt: float = 1,
     atol: float = 1e-8,
     rtol: float = 1e-8,
-    eps: float = 1e-6,
+    allclose_kws: Optional[dict] = None,
     maximum_wait_time: Union[int, float] = 60.0,
 ) -> List[float]:
     """
-    Use an ODE solver to find the steady state for the untreated condition.
+    Simulate a model from given initial conditions until it reaches steady state.
 
     Parameters
     ----------
@@ -89,9 +89,8 @@ def get_steady_state(
         Absolute tolerance for solution.
     rtol : float (default: 1e-8)
         Relative tolerance for solution.
-    eps : float (default: 1e-6)
-        Run until a time t for which the maximal absolute value of the
-        regularized relative derivative was smaller than eps.
+    allclose_kws : dict, optional
+        Keyword arguments to pass to ``numpy.allclose()``.
     maximum_wait_time : int or float (default: 60.0 = 1 min.)
         The longest time a user can wait for the system to reach the steady state.
 
@@ -101,7 +100,9 @@ def get_steady_state(
         Steady state concentrations of all species.
         Return an empty list if simulation failed.
     """
-
+    if allclose_kws is None:
+        allclose_kws = {}
+    allclose_kws.setdefault("rtol", 1e-3)
     sol = ode(lambda t, y, f_args: diffeq(t, y, *f_args))
     sol.set_integrator(
         "zvode",
@@ -112,25 +113,16 @@ def get_steady_state(
     )
     sol.set_initial_value(y0, 0)
     sol.set_f_params(f_params)
-
     ys = [y0]
     start = time.time()
     while sol.successful():
         sol.integrate(sol.t + dt)
         if (
-            np.iscomplex(np.real_if_close(sol.y, tol=1)).any()
+            np.iscomplex(np.real_if_close(sol.y)).any()
             or (time.time() - start) > maximum_wait_time
         ):
             return []
-        elif (
-            np.max(
-                np.abs(
-                    np.real(list(map(operator.sub, sol.y, ys[-1])))
-                    / np.real([(yi + eps) for yi in sol.y])
-                )
-            )
-            < eps
-        ):
+        elif np.allclose(sol.y, ys[-1], **allclose_kws):
             break
         else:
             ys.append(sol.y)
