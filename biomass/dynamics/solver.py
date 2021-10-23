@@ -1,5 +1,4 @@
 import math
-import operator
 import sys
 import time
 from typing import Callable, List, Optional, Tuple, Union
