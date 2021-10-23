@@ -21,6 +21,13 @@ from .exec_model import ModelObject
 __all__ = ["Model", "optimize", "optimize_continue", "run_simulation", "run_analysis"]
 
 
+class BiomassIndexError(Exception):
+    """
+    Error in specifying model paramters or species.
+    """
+    pass
+
+
 @dataclass
 class Model(object):
     """
@@ -42,23 +49,23 @@ class Model(object):
         except ImportError:
             p = Path(self.pkg_name.replace(".", os.sep))
             print(f"cannot import '{p.name}' from '{p.parent}'.")
+    
+    @staticmethod
+    def _check_indices(model: ModelObject) -> None:
+        files = ["set_model.py", "set_search_param.py", "observable.py"]
+        for file in files:
+            with open(os.path.join(model.path, file)) as f:
+                lines = f.readlines()
+            for i, line in enumerate(lines, start=1):
+                loc = f"line {i:d} in {file}"
+                msg = ", Use '{}' for the index of a {}."
+                if "x[V." in line:
+                    raise BiomassIndexError(loc + msg.format("C", "parameter"))
+                elif any(map(line.__contains__,("y[C.", "y0[C.", "dydt[C."))):
+                    raise BiomassIndexError(loc + msg.format("V", "species"))
 
-    def create(self, show_info: bool = False) -> ModelObject:
-        """
-        Build a biomass model.
-
-        Parameters
-        ----------
-        show_info : bool (default: :obj:`False`)
-            Set to :obj:`True` to print the information related to model size.
-
-        Examples
-        --------
-        >>> from biomass import Model
-        >>> import your_model
-        >>> model = Model(your_model.__package__).create()
-        """
-        model = ModelObject(self.pkg_name.replace(".", os.sep), self._load_model())
+    @staticmethod
+    def _check_normalization(model: ModelObject) -> None:
         if model.problem.normalization:
             for obs_name in model.observables:
                 if (
@@ -76,11 +83,32 @@ class Model(object):
                             raise ValueError(
                                 f"Normalization condition '{c}' is not defined in problem.conditions."
                             )
+
+    def create(self, show_info: bool = False) -> ModelObject:
+        """
+        Build a biomass model.
+
+        Parameters
+        ----------
+        show_info : bool (default: :obj:`False`)
+            Set to :obj:`True` to print the information related to model size.
+
+        Examples
+        --------
+        >>> from biomass import Model
+        >>> import your_model
+        >>> model = Model(your_model.__package__).create()
+        """
+        model = ModelObject(self.pkg_name.replace(".", os.sep), self._load_model())
+        self._check_indices(model)
+        self._check_normalization(model)
         if show_info:
             model_name = Path(model.path).name
             print(
-                f"{model_name} information\n" + ("-" * len(model_name)) + "------------\n"
-                f"{len(model.species):d} species\n"
+                f"{model_name} information\n" + ("-" * len(model_name)) + "------------"
+            )
+            print(f"{len(model.species):d} species")
+            print(
                 f"{len(model.parameters):d} parameters, "
                 f"of which {len(model.problem.idx_params):d} to be estimated"
             )
