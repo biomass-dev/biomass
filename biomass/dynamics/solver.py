@@ -15,7 +15,9 @@ def solve_ode(
     y0: Union[list, np.ndarray],
     t: Union[range, List[int]],
     f_params: Tuple[float, ...],
+    *,
     method: str = "BDF",
+    vectorized: bool = False,
     options: Optional[dict] = None,
 ) -> Optional[OdeResult]:
     """
@@ -33,6 +35,8 @@ def solve_ode(
         Model parameters.
     method : str (default: "BDF")
         Integration method to use.
+    vectorized : bool (default: :obj:`False`)
+        Whether `diffeq` is implemented in a vectorized fashion.
     options : dict, optional
         Options passed to a chosen solver.
 
@@ -52,6 +56,7 @@ def solve_ode(
             y0,
             method=method,
             t_eval=t,
+            vectorized=vectorized,
             args=f_params,
             **options,
         )
