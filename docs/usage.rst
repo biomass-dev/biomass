@@ -39,8 +39,8 @@ Name                    Content
 Parameter estimation
 --------------------
 
-Using ``biomass.optimize`` function
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Using :func:`~biomass.core.optimize` function
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Parameters are adjusted to minimize the distance between model simulation and experimental data.
 

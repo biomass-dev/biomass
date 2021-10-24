@@ -1,30 +1,21 @@
-===========================================================================
-BioMASS – A Python Framework for Modeling and Analysis of Signaling Systems
+BioMASS - A Python Framework for Modeling and Analysis of Signaling Systems
 ===========================================================================
 
 .. raw:: html
 
    <p align="center">
-      <img src="https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/logo_horizontal.png"
+      <img src="_static/img/logo_horizontal.png"
          width="400px" alt="BioMASS logo">
    </p>
 
-|Actions Status| |Documentation Status| |PyPI version| |License| |Downloads| |Python versions| |Code quality| |Code style|
+|PyPI version| |Actions Status| |Documentation Status| |License| |Downloads| |Python versions| |Code quality| |Pre commit| |Code style| |Imports|
 
-Mathematical modeling is a powerful method for the analysis of complex biological systems.
-Although there are many researches devoted on producing models to describe dynamical cellular signaling systems, most of these models are limited and do not cover multiple pathways.
-Therefore, there is a challenge to combine these models to enable understanding at a larger scale.
-Nevertheless, larger network means that it gets more difficult to estimate parameters to reproduce dynamic experimental data needed for deeper understanding of a system.
-
-To overcome this problem, we developed *BioMASS*, a Python framework for Modeling and Analysis of Signaling Systems.
-The BioMASS framework allows efficient optimization of multiple parameter sets simultaneously and generates the multiple parameter candidates that explain the signaling dynamics of interest.
-These parameter candidates can be further evaluated by their distribution and sensitivity analysis as a part of alternative information about the hidden regulatory mechanism of the system.
-
-Contents
-========
+*BioMASS* is a computational framework for modeling and analysis of biological signaling systems.
+It is a Python package that provides useful tools for numerical simulation, parameter estimation, network analysis, visualization, and more.
 
 .. toctree::
    :maxdepth: 2
+   :caption: Contents:
 
    about
    installation
@@ -33,6 +24,10 @@ Contents
    api/index
    references
 
+.. |PyPI version| image:: https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&logoColor=white
+   :target: https://pypi.python.org/pypi/biomass/
+   :alt: PyPI version
+
 .. |Actions Status| image:: https://github.com/biomass-dev/biomass/workflows/Tests/badge.svg
    :target: https://github.com/biomass-dev/biomass/actions
    :alt: Actions Status
@@ -40,10 +35,6 @@ Contents
 .. |Documentation Status| image:: https://img.shields.io/readthedocs/biomass-core/latest.svg?logo=read%20the%20docs&logoColor=white&&label=Docs&version=latest
    :target: https://biomass-core.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
-
-.. |PyPI version| image:: https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&logoColor=white
-   :target: https://pypi.python.org/pypi/biomass/
-   :alt: PyPI version
 
 .. |License| image:: https://img.shields.io/badge/License-Apache%202.0-green.svg
    :target: https://opensource.org/licenses/Apache-2.0
@@ -61,6 +52,14 @@ Contents
    :target: https://lgtm.com/projects/g/biomass-dev/biomass/context:python
    :alt: Code quality: Python
 
+.. |Pre commit| image:: https://results.pre-commit.ci/badge/github/biomass-dev/biomass/master.svg
+   :target: https://results.pre-commit.ci/latest/github/biomass-dev/biomass/master
+   :alt: pre-commit.ci status
+
 .. |Code style| image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
    :alt: Code style: black
+
+.. |Imports| image:: https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336
+   :target: https://pycqa.github.io/isort/
+   :alt: Imports: isort

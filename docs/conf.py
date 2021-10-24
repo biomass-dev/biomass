@@ -10,10 +10,7 @@ from datetime import datetime
 
 from sphinx.application import Sphinx
 
-try:
-    from biomass import __author__
-except ImportError:
-    __author__ = "Hiroaki Imoto"
+import biomass
 
 # -- Path setup --------------------------------------------------------------
 
@@ -27,8 +24,13 @@ sys.path.insert(0, os.path.abspath("../"))
 # -- Project information -----------------------------------------------------
 
 project = "BioMASS"
-author = __author__
+author = biomass.__author__
 copyright = f"{datetime.now():%Y}, {author}"
+
+# The short X.Y version
+version = biomass.__version__
+# The full version, including alpha/beta/rc tags
+release = version
 
 
 # -- General configuration ---------------------------------------------------
