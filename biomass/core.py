@@ -361,10 +361,10 @@ def run_simulation(
         * 'experiment'
             Draw the experimental data written in ``observable.py`` without simulation results.
 
-    show_all : bool
+    show_all : bool (default: :obj:`False`)
         Whether to show all simulation results.
 
-    stdev : bool
+    stdev : bool (default: :obj:`False`)
         If :obj:`True`, the standard deviation of simulated values will be shown
         (only available for 'average' visualization type).
 
@@ -416,9 +416,7 @@ def run_analysis(
         Model for sensitivity analysis.
 
     target : Literal["reaction", "parameter", "initial_condition"]
-        * 'reaction'
-        * 'initial_condition'
-        * 'parameter'
+        Where to add a small perturbation to calculate sensitivity coefficients.
 
     metric : str (default: 'integral')
         A word to specify the signaling metric.
