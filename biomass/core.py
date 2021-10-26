@@ -25,6 +25,7 @@ class BiomassIndexError(Exception):
     """
     Error in specifying model paramters or species.
     """
+
     pass
 
 
@@ -49,7 +50,7 @@ class Model(object):
         except ImportError:
             p = Path(self.pkg_name.replace(".", os.sep))
             print(f"cannot import '{p.name}' from '{p.parent}'.")
-    
+
     @staticmethod
     def _check_indices(model: ModelObject) -> None:
         files = ["set_model.py", "set_search_param.py", "observable.py"]
@@ -61,7 +62,7 @@ class Model(object):
                 msg = ", Use '{}' for the index of a {}."
                 if "x[V." in line:
                     raise BiomassIndexError(loc + msg.format("C", "parameter"))
-                elif any(map(line.__contains__,("y[C.", "y0[C.", "dydt[C."))):
+                elif any(map(line.__contains__, ("y[C.", "y0[C.", "dydt[C."))):
                     raise BiomassIndexError(loc + msg.format("V", "species"))
 
     @staticmethod
@@ -104,9 +105,7 @@ class Model(object):
         self._check_normalization(model)
         if show_info:
             model_name = Path(model.path).name
-            print(
-                f"{model_name} information\n" + ("-" * len(model_name)) + "------------"
-            )
+            print(f"{model_name} information\n" + ("-" * len(model_name)) + "------------")
             print(f"{len(model.species):d} species")
             print(
                 f"{len(model.parameters):d} parameters, "
