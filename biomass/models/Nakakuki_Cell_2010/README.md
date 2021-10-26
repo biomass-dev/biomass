@@ -53,6 +53,8 @@ Nakakuki, T. _et al._ Ligand-specific c-Fos expression emerges from the spatiote
    run_simulation(model, viz_type="average", show_all=False, stdev=True)
    ```
 
+   ![simulation_average](https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/simulation_average.png)
+
 1. Sensitivity analysis
 
    ```python
@@ -60,3 +62,5 @@ Nakakuki, T. _et al._ Ligand-specific c-Fos expression emerges from the spatiote
 
    run_analysis(model, target="reaction", metric='integral', style='barplot')
    ```
+
+   ![sensitivity_PcFos](https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/sensitivity_PcFos.png)

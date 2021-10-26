@@ -7,7 +7,7 @@ Circadian clock
 .. raw:: html
 
     <p align="left">
-        <img src="_static/img/models/circadian_clock.png"
+        <img src="https://raw.githubusercontent.com/biomass-dev/biomass/master/biomass/models/circadian_clock/circadian_clock.png"
             width="400px" alt="Circadian clock">
     </p>
 
@@ -20,7 +20,7 @@ Immediate-early gene response
 .. raw:: html
 
     <p align="left">
-        <img src="_static/img/models/Nakakuki_Cell_2010.png"
+        <img src="_static/img/simulation_average.png"
             width="400px" alt="Immediate-early gene response">
     </p>
 
@@ -33,7 +33,7 @@ Insulin signaling
 .. raw:: html
 
     <p align="left">
-        <img src="_static/img/models/insulin_signaling.png"
+        <img src="https://raw.githubusercontent.com/biomass-dev/biomass/master/biomass/models/insulin_signaling/insulin_signaling.png"
             width="400px" alt="Insulin signaling">
     </p>
 
@@ -46,7 +46,7 @@ MAPK cascade
 .. raw:: html
 
     <p align="left">
-        <img src="_static/img/models/mapk_cascade.png"
+        <img src="https://raw.githubusercontent.com/biomass-dev/biomass/master/biomass/models/mapk_cascade/mapk_cascade.png"
             width="400px" alt="MAPK cascade">
     </p>
 
@@ -59,7 +59,7 @@ NF-κB pathway
 .. raw:: html
 
     <p align="left">
-        <img src="_static/img/models/nfkb_pathway.png"
+        <img src="https://raw.githubusercontent.com/biomass-dev/biomass/master/biomass/models/nfkb_pathway/nfkb_pathway.png"
             width="400px" alt="NF-κB pathway">
     </p>
 
@@ -72,7 +72,7 @@ TGF-β/SMAD pathway
 .. raw:: html
 
     <p align="left">
-        <img src="_static/img/models/tgfb_smad.png"
+        <img src="https://raw.githubusercontent.com/biomass-dev/biomass/master/biomass/models/tgfb_smad/tgfb_smad.png"
             width="400px" alt="TGF-β/SMAD pathway">
     </p>
 
