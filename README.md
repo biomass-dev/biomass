@@ -1,13 +1,15 @@
 # BioMASS
 
+[![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&logoColor=white)](https://pypi.python.org/pypi/biomass)
 [![Actions Status](https://github.com/biomass-dev/biomass/workflows/Tests/badge.svg)](https://github.com/biomass-dev/biomass/actions)
 [![Documentation Status](https://img.shields.io/readthedocs/biomass-core/latest.svg?logo=read%20the%20docs&logoColor=white&&label=Docs&version=latest)](https://biomass-core.readthedocs.io/en/latest/?badge=latest)
-[![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&logoColor=white)](https://pypi.python.org/pypi/biomass)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg?logo=apache)](https://opensource.org/licenses/Apache-2.0)
 [![Downloads](https://pepy.tech/badge/biomass)](https://pepy.tech/project/biomass)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg?logo=Python&logoColor=white)](https://pypi.python.org/pypi/biomass)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/biomass-dev/biomass.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/biomass-dev/biomass/context:python)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/biomass-dev/biomass/master.svg)](https://results.pre-commit.ci/latest/github/biomass-dev/biomass/master)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
 <img align="left" src="https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/logo.png" width="300">
 
@@ -23,13 +25,13 @@ To overcome this problem, we developed _BioMASS_, a Python framework for **M**od
 
 ## Documentation
 
-Online documentation is available at https://biomass-core.readthedocs.io/.
+Online documentation is available at https://biomass-core.readthedocs.io.
 
 ## Installation
 
 The BioMASS library is available at the [Python Package Index (PyPI)](https://pypi.org/project/biomass).
 
-```bash
+```
 $ pip install biomass
 ```
 

@@ -8,31 +8,44 @@ Leloup, J.-C. & Goldbeter, A. Toward a detailed computational model for the mamm
 
 - [Leloup2003_CircClock_DD](https://www.ebi.ac.uk/biomodels/BIOMD0000000073)
 
-## Simulation using BioMASS
-
-Run this with Jupyter Notebook
+## Run simulation using BioMASS
 
 ```python
 import os
-from IPython.display import Image, display_png
 
+import numpy as np
+import matplotlib.pyplot as plt
 from biomass.models import circadian_clock
 from biomass import Model, run_simulation
 
 model = Model(circadian_clock.__package__).create()
 
-run_simulation(model)
+def save_result(model):
 
-for observable in model.observables:
-    with open(
-        os.path.join(
-            model.path,
-            "figure",
-            "simulation",
-            "original",
-            f"{observable}.png",
-        ),
-        mode="rb",
-    ) as f:
-        display_png(Image(f.read()))
+    run_simulation(model, viz_type="original")
+    res = np.load(os.path.join(model.path, "simulation_data", "simulations_original.npy"))
+
+    plt.rcParams['font.size'] = 16
+    fig, ax1 = plt.subplots(figsize=(6, 4))
+    ax2 = ax1.twinx()
+
+    ax1.plot(model.problem.t, res[model.observables.index('Cry_mRNA'), :], 'c')
+    ax1.plot(model.problem.t, res[model.observables.index('Per_mRNA'), :], 'm')
+    ax1.set_xlim([0, 72])
+    ax1.set_xticks([0, 12, 24, 36, 48, 60, 72])
+    ax1.set_xlabel('Time (h)')
+    ax1.set_ylim([0, 5])
+    ax1.set_ylabel(
+        r'$\it{Per}$'+' '+r'$\sf{(M_P)}$'+' and '+
+        r'$\it{Cry}$'+' '+r'$\sf{(M_C)}$'+'\nmRNAs, nM'
+    )
+    ax2.plot(model.problem.t, res[model.observables.index('Bmal1_mRNA'), :], 'y')
+    ax2.set_ylim([7, 10])
+    ax2.set_yticks([7, 8, 9, 10])
+    ax2.set_ylabel(r'$\it{Bmal1}$'+' mRNA '+r'$\sf{(M_B)}$'+', nM')
+    plt.savefig(f"{os.path.basename(model.path)}", bbox_inches="tight")
+
+save_result(model)
 ```
+
+<img align="left" src="./circadian_clock.png" width="400px">

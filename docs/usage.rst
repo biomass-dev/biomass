@@ -18,13 +18,15 @@ Name                    Content
 ``reaction_network.py`` Reaction indices grouped according to biological processes
 ======================= ========================================================================================================
 
+.. code-block:: shell
+
+    $ python
+
 .. code-block:: python
 
     >>> from biomass import Model
     >>> from biomass.models import Nakakuki_Cell_2010
-
     >>> model = Model(Nakakuki_Cell_2010.__package__).create(show_info=True)
-
     Nakakuki_Cell_2010 information
     ------------------------------
     36 species
@@ -37,8 +39,8 @@ Name                    Content
 Parameter estimation
 --------------------
 
-Using ``biomass.optimize`` function
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Using :func:`~biomass.core.optimize` function
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Parameters are adjusted to minimize the distance between model simulation and experimental data.
 
