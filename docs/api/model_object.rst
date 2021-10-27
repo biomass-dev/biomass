@@ -1,4 +1,4 @@
-BioMass model object (:py:mod:`biomass.exec_model`)
+BioMASS model object (:py:mod:`biomass.exec_model`)
 ===================================================
 
 .. autoclass:: biomass.exec_model.ModelObject
