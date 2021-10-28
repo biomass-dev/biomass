@@ -10,76 +10,23 @@
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/biomass-dev/biomass/master.svg)](https://results.pre-commit.ci/latest/github/biomass-dev/biomass/master)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+[![Cancers Paper](https://img.shields.io/badge/DOI-10.3390%2Fcancers12102878-blue)](https://doi.org/10.3390/cancers12102878)
 
-<img align="left" src="https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/logo.png" width="300">
+_BioMASS_ is a computational framework for modeling and analysis of biological signaling systems in Python.
 
-Mathematical modeling is a powerful method for the analysis of complex biological systems. Although there are many researches devoted on producing models to describe dynamical cellular signaling systems, most of these models are limited and do not cover multiple pathways. Therefore, there is a challenge to combine these models to enable understanding at a larger scale. Nevertheless, larger network means that it gets more difficult to estimate parameters to reproduce dynamic experimental data needed for deeper understanding of a system.
+- **Documentation:** https://biomass-core.readthedocs.io
+- **Source code:** https://github.com/biomass-dev/biomass
+- **Bug reports:** https://github.com/biomass-dev/biomass/issues
 
-To overcome this problem, we developed _BioMASS_, a Python framework for **M**odeling and **A**nalysis of **S**ignaling **S**ystems. The BioMASS framework allows efficient optimization of multiple parameter sets simultaneously and generates the multiple parameter candidates that explain the signaling dynamics of interest. These parameter candidates can be further evaluated by their distribution and sensitivity analysis as a part of alternative information about the hidden regulatory mechanism of the system.
-
-## Features
-
-- Parameter estimation of ODE models
-- Local sensitivity analysis
-- Effective visualization of simulation results
-
-## Documentation
-
-Online documentation is available at https://biomass-core.readthedocs.io.
+It provides useful tools for numerical simulation, parameter estimation, network analysis, visualization, and more.
 
 ## Installation
 
-The BioMASS library is available at the [Python Package Index (PyPI)](https://pypi.org/project/biomass).
+For installation instructions and requirements, see the [install](https://biomass-core.readthedocs.io/en/latest/installation.html) documentation.
 
-```
-$ pip install biomass
-```
+## Reference
 
-BioMASS supports Python 3.7 or newer.
-
-Also, we provide BioMASS docker images on [DockerHub](https://hub.docker.com/r/jnicolaus/biomass).
-
-## Example
-
-### Parameter estimation
-
-```python
-from biomass import Model, optimize
-from biomass.models import Nakakuki_Cell_2010
-
-model = Model(Nakakuki_Cell_2010.__package__).create()
-
-optimize(model, x_id=range(1, 11))
-```
-
-![estimated_parameter_sets](https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/estimated_parameter_sets.png)
-
-```python
-from biomass import run_simulation
-
-run_simulation(model, viz_type="average", stdev=True)
-```
-
-![simulation_average](https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/simulation_average.png)
-Points (blue diamonds, EGF; red squares, HRG) denote experimental data, solid lines denote simulations.
-
-### Sensitivity analysis
-
-```python
-from biomass import run_analysis
-
-run_analysis(model, target="reaction", metric="integral", style="barplot")
-```
-
-![sensitivity_PcFos](https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/sensitivity_PcFos.png)
-
-Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HRG). Numbers above bars indicate the reaction indices, and error bars correspond to simulation standard deviation.
-
-## Citation
-
-When using BioMASS, please cite the following paper:
-
-- Imoto, H., Zhang, S. & Okada, M. A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway. _Cancers_ **12**, 2878 (2020). https://doi.org/10.3390/cancers12102878
+Imoto, H., Zhang, S. & Okada, M. A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway. _Cancers_ **12**, 2878 (2020). https://doi.org/10.3390/cancers12102878
 
 ## Author
 
