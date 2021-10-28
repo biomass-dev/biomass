@@ -4,14 +4,15 @@ BioMASS - A Python Framework for Modeling and Analysis of Signaling Systems
 .. raw:: html
 
    <p align="center">
-      <img src="_static/img/logo_horizontal.png"
-         width="400px" alt="BioMASS logo">
+      <img src="_static/img/logo_horizontal.png" width="400px" alt="BioMASS logo">
    </p>
 
-|PyPI version| |Actions Status| |Documentation Status| |License| |Downloads| |Python versions| |Code quality| |Pre commit| |Code style| |Imports|
+|PyPI version| |Actions Status| |Documentation Status| |License| |Downloads| |Python versions| |Code quality| |Pre commit| |Code style| |Imports| |Cancers Paper|
 
-*BioMASS* is a computational framework for modeling and analysis of biological signaling systems.
-It is a Python package that provides useful tools for numerical simulation, parameter estimation, network analysis, visualization, and more.
+*BioMASS* is a computational framework for modeling and analysis of biological signaling systems in Python.
+It provides useful tools for numerical simulation, parameter estimation, network analysis, visualization, and more.
+
+:Source code: https://github.com/biomass-dev/biomass
 
 .. toctree::
    :maxdepth: 2
@@ -19,8 +20,8 @@ It is a Python package that provides useful tools for numerical simulation, para
 
    about
    installation
-   models
    usage
+   models
    api/index
    references
 
@@ -63,3 +64,7 @@ It is a Python package that provides useful tools for numerical simulation, para
 .. |Imports| image:: https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336
    :target: https://pycqa.github.io/isort/
    :alt: Imports: isort
+
+.. |Cancers Paper| image:: https://img.shields.io/badge/DOI-10.3390%2Fcancers12102878-blue
+   :target: https://doi.org/10.3390/cancers12102878
+   :alt: DOI
