@@ -18,7 +18,7 @@ _BioMASS_ is a computational framework for modeling and analysis of biological s
 - **Source code:** https://github.com/biomass-dev/biomass
 - **Bug reports:** https://github.com/biomass-dev/biomass/issues
 
-It provides useful tools for numerical simulation, parameter estimation, network analysis, visualization, and more.
+It provides useful tools for numerical simulation, parameter estimation, network analysis, and visualization.
 
 ## Installation
 
