@@ -53,6 +53,10 @@ class Model(object):
 
     @staticmethod
     def _check_indices(model: ModelObject) -> None:
+        """
+        Check indices used in a BioMASS model.
+        'C' and 'V' must be used for parameters and species, respectively.
+        """
         files = ["set_model.py", "set_search_param.py", "observable.py"]
         for file in files:
             with open(os.path.join(model.path, file)) as f:
@@ -67,6 +71,9 @@ class Model(object):
 
     @staticmethod
     def _check_normalization(model: ModelObject) -> None:
+        """
+        Check normalization options in ``observable.py``.
+        """
         if model.problem.normalization:
             for obs_name in model.observables:
                 if (
@@ -84,6 +91,37 @@ class Model(object):
                             raise ValueError(
                                 f"Normalization condition '{c}' is not defined in problem.conditions."
                             )
+    
+    @staticmethod
+    def _check_visualization_options(model: ModelObject) -> None:
+        """
+        Check visualization options in ``viz.py``.
+        """
+        err_msg = (
+            "self.single_observable_options for {} in viz.py, len({}) must be "
+            "equal to or greater than len(self.model.problem.conditions) (={})."
+        )
+        singleplotting = model.viz.get_single_observable_options()
+        for i, obs_name in enumerate(model.observables):
+            if len(singleplotting[i].cmap) < len(model.problem.conditions):
+                raise ValueError(
+                    err_msg.format(
+                        obs_name,
+                        "self.single_observable_options[i].cmap",
+                        len(model.problem.conditions),
+                    )
+                )
+            elif (
+                model.problem.experiments[i] is not None
+                and len(singleplotting[i].shape) < len(model.problem.conditions)
+            ):
+                raise ValueError(
+                    err_msg.format(
+                        obs_name,
+                        "self.single_observable_options[i].shape",
+                        len(model.problem.conditions),
+                    )
+                )
 
     def create(self, show_info: bool = False) -> ModelObject:
         """
@@ -103,6 +141,7 @@ class Model(object):
         model = ModelObject(self.pkg_name.replace(".", os.sep), self._load_model())
         self._check_indices(model)
         self._check_normalization(model)
+        self._check_visualization_options(model)
         if show_info:
             model_name = Path(model.path).name
             print(f"{model_name} information\n" + ("-" * len(model_name)) + "------------")

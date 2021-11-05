@@ -48,31 +48,18 @@ class TemporalDynamics(ExecModel):
 
         """
         os.makedirs(
-            os.path.join(
-                self.model.path,
-                "figure",
-                "simulation",
-                f"{viz_type}",
-            ),
+            os.path.join(self.model.path, "figure", "simulation", f"{viz_type}"),
             exist_ok=True,
         )
         self.model.problem.set_data()
         self.model.viz.set_timecourse_rcParams()
         singleplotting = self.model.viz.get_single_observable_options()
         multiplotting = self.model.viz.get_multiple_observables_options()
-
         for mode in range(2):
             # mode 0 : timecourse_for_each_observable
             # mode 1 : multiple_observables
             set_fig = False
             for i, obs_name in enumerate(self.model.observables):
-                if len(singleplotting[i].cmap) < len(self.model.problem.conditions) or len(
-                    singleplotting[i].shape
-                ) < len(self.model.problem.conditions):
-                    raise ValueError(
-                        "len(cmap), len(shape) must be equal to"
-                        " or greater than len(self.model.problem.conditions)."
-                    )
                 if mode == 1 and obs_name not in multiplotting.observables:
                     continue
                 if mode == 0:
