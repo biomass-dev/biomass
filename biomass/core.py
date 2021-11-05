@@ -91,7 +91,7 @@ class Model(object):
                             raise ValueError(
                                 f"Normalization condition '{c}' is not defined in problem.conditions."
                             )
-    
+
     @staticmethod
     def _check_visualization_options(model: ModelObject) -> None:
         """
@@ -111,9 +111,8 @@ class Model(object):
                         len(model.problem.conditions),
                     )
                 )
-            elif (
-                model.problem.experiments[i] is not None
-                and len(singleplotting[i].shape) < len(model.problem.conditions)
+            elif model.problem.experiments[i] is not None and len(singleplotting[i].shape) < len(
+                model.problem.conditions
             ):
                 raise ValueError(
                     err_msg.format(
