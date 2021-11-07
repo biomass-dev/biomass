@@ -31,7 +31,7 @@ class _Logger(object):
 @dataclass
 class ExternalOptimizer(object):
     """
-    Use external optimization method for parameterization of a mechanistic model.
+    Use an external optimization method for parameterization of a mechanistic model.
 
     Attributes
     ----------
@@ -40,7 +40,7 @@ class ExternalOptimizer(object):
         The BioMASS model object.
 
     optimize : Callable
-        The external optimizer, e.g., `scipy.optimize.differential_evolution`.
+        The external optimizer, e.g., ``scipy.optimize.differential_evolution``.
     """
 
     model: ModelObject
@@ -67,7 +67,7 @@ class ExternalOptimizer(object):
         """
         Import the solution of the optimization to the model.
         The solution vector `x` will be saved to `path_to_model`/out/`x_id`/.
-        Use `biomass.run_simulation` to visualize the optimization result.
+        Use ``biomass.run_simulation`` to visualize the optimization result.
 
         Parameters
         ----------

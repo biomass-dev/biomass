@@ -115,7 +115,7 @@ class OptimizationResults(ExecModel):
         boxplot_kws: Optional[dict] = None,
     ) -> None:
         """
-        Visualize estimated parameter sets using `seaborn.boxplot`.
+        Visualize estimated parameter sets using ``seaborn.boxplot``.
 
         Parameters
         ----------

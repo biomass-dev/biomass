@@ -29,7 +29,7 @@ class SingleObservable(object):
     xlim : tuple
         Set the x limits of the current axes.
 
-    xticks : list (default: None)
+    xticks : list (default: :obj:`None`)
         Set the current tick locations of the x-axis.
 
     xlabel : str (default: 'Time')
@@ -38,7 +38,7 @@ class SingleObservable(object):
     ylim : tuple
         Set the y limits of the current axes.
 
-    yticks : list (default: None)
+    yticks : list (default: :obj:`None`)
         Set the current tick locations of the y-axis.
 
     ylabel : str (default: obs_name.replace('_', ' '))
@@ -53,7 +53,7 @@ class SingleObservable(object):
     cmap : list or tuple
         Set colormap.
 
-    shape : list or tuple of strings (default: `Line2D.filled_markers`)
+    shape : list or tuple of strings (default: ``matplotlib.lines.Line2D.filled_markers``)
         Set markers.
 
     dont_show : list of strings
@@ -97,7 +97,7 @@ class MultipleObservables(object):
     xlim : tuple
         Set the x limits of the current axes.
 
-    xticks : list (default: None)
+    xticks : list (default: :obj:`None`)
         Set the current tick locations of the x-axis.
 
     xlabel : str (default: 'Time')
@@ -106,7 +106,7 @@ class MultipleObservables(object):
     ylim : tuple
         Set the y limits of the current axes.
 
-    yticks : list (default: None)
+    yticks : list (default: :obj:`None`)
         Set the current tick locations of the y-axis.
 
     ylabel : str (default: '')
@@ -118,7 +118,7 @@ class MultipleObservables(object):
     cmap : list or tuple
         Set colormap.
 
-    shape : list or tuple of strings (default: `Line2D.filled_markers`)
+    shape : list or tuple of strings (default: ``matplotlib.lines.Line2D.filled_markers``)
         Set markers.
     """
 
