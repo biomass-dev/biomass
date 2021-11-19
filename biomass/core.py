@@ -98,17 +98,19 @@ class Model(object):
         Check visualization options in ``viz.py``.
         """
         err_msg = (
-            "self.single_observable_options for {} in viz.py, len({}) must be "
-            "equal to or greater than len(self.model.problem.conditions) (={})."
+            "{} in viz.py, len({}) must be equal to or greater than "
+            f"len(self.model.problem.conditions) (={len(model.problem.conditions)})."
         )
         singleplotting = model.viz.get_single_observable_options()
+        multiplotting = model.viz.get_multiple_observables_options()
+        sensitivity_options = model.viz.get_sensitivity_options()
+        # Visualization options for time-course simulation (single-observable)
         for i, obs_name in enumerate(model.observables):
             if len(singleplotting[i].cmap) < len(model.problem.conditions):
                 raise ValueError(
                     err_msg.format(
-                        obs_name,
-                        "self.single_observable_options[i].cmap",
-                        len(model.problem.conditions),
+                        f"self.single_observable_options for {obs_name}",
+                        f"self.single_observable_options[{i}].cmap",
                     )
                 )
             elif model.problem.experiments[i] is not None and len(singleplotting[i].shape) < len(
@@ -116,11 +118,37 @@ class Model(object):
             ):
                 raise ValueError(
                     err_msg.format(
-                        obs_name,
-                        "self.single_observable_options[i].shape",
-                        len(model.problem.conditions),
+                        f"self.single_observable_options for {obs_name}",
+                        f"self.single_observable_options[{i}].shape",
                     )
                 )
+        # Visualization options for time-course simulation (multi-observables)
+        if len(multiplotting.cmap) < len(model.problem.conditions):
+            raise ValueError(
+                err_msg.format(
+                    "self.multiple_observables_options",
+                    "self.multiple_observables_options.cmap",
+                )
+            )
+        for i, _ in enumerate(multiplotting.observables):
+            if model.problem.experiments[i] is not None and len(multiplotting.shape) < len(
+                model.problem.conditions
+            ):
+                raise ValueError(
+                    err_msg.format(
+                        "self.multiple_observables_options",
+                        "self.multiple_observables_options.shape",
+                    )
+                )
+        # Visualization options for sensitivity analysis results
+        if len(sensitivity_options.cmap) < len(model.problem.conditions):
+            raise ValueError(
+                    err_msg.format(
+                        "self.sensitivity_options",
+                        "self.sensitivity_options.cmap",
+                    )
+                )
+
 
     def create(self, show_info: bool = False) -> ModelObject:
         """
