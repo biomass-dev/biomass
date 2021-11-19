@@ -130,9 +130,10 @@ class Model(object):
                     "self.multiple_observables_options.cmap",
                 )
             )
-        for i, _ in enumerate(multiplotting.observables):
-            if model.problem.experiments[i] is not None and len(multiplotting.shape) < len(
-                model.problem.conditions
+        for obs_name in multiplotting.observables:
+            if (
+                model.problem.experiments[model.observables.index(obs_name)] is not None
+                and len(multiplotting.shape) < len(model.problem.conditions)
             ):
                 raise ValueError(
                     err_msg.format(
