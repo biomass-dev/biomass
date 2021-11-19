@@ -131,10 +131,9 @@ class Model(object):
                 )
             )
         for obs_name in multiplotting.observables:
-            if (
-                model.problem.experiments[model.observables.index(obs_name)] is not None
-                and len(multiplotting.shape) < len(model.problem.conditions)
-            ):
+            if model.problem.experiments[model.observables.index(obs_name)] is not None and len(
+                multiplotting.shape
+            ) < len(model.problem.conditions):
                 raise ValueError(
                     err_msg.format(
                         "self.multiple_observables_options",
@@ -144,12 +143,11 @@ class Model(object):
         # Visualization options for sensitivity analysis results
         if len(sensitivity_options.cmap) < len(model.problem.conditions):
             raise ValueError(
-                    err_msg.format(
-                        "self.sensitivity_options",
-                        "self.sensitivity_options.cmap",
-                    )
+                err_msg.format(
+                    "self.sensitivity_options",
+                    "self.sensitivity_options.cmap",
                 )
-
+            )
 
     def create(self, show_info: bool = False) -> ModelObject:
         """
