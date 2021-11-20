@@ -205,11 +205,6 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
         # rcParams
         self.model.viz.set_sensitivity_rcParams()
 
-        if len(self._plotting.cmap) < len(self.model.problem.conditions):
-            raise ValueError(
-                "len(sensitivity_options['cmap']) must be equal to "
-                "or greater than len(problem.conditions)."
-            )
         for k, obs_name in enumerate(self.model.observables):
             plt.figure(figsize=self._plotting.figsize)
             self._draw_vertical_span(biological_processes, self._plotting.width)
@@ -319,7 +314,7 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
                         os.path.join(
                             self._path_to_figs(metric),
                             "heatmap",
-                            f"{condition}_{obs_name}",
+                            f"{condition.replace('.', '')}_{obs_name}",
                         ),
                     )
                     plt.close()

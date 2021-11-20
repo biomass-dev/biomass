@@ -161,11 +161,6 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
         # rcParams
         self.model.viz.set_sensitivity_rcParams()
 
-        if len(self._plotting.cmap) < len(self.model.problem.conditions):
-            raise ValueError(
-                "len(sensitivity_options['cmap']) must be equal to "
-                "or greater than len(problem.conditions)."
-            )
         for k, obs_name in enumerate(self.model.observables):
             plt.figure(figsize=self._plotting.figsize)
             plt.hlines([0], -self._plotting.width, len(nonzero_indices), "k", lw=1)
@@ -273,7 +268,7 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
                         os.path.join(
                             self._path_to_figs(metric),
                             "heatmap",
-                            f"{condition}_{obs_name}",
+                            f"{condition.replace('.', '')}_{obs_name}",
                         ),
                         bbox_inches="tight",
                     )
