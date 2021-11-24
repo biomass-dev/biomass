@@ -75,7 +75,7 @@ def test_run_analysis():
         for j in range(res.shape[1]):
             for k, obs_name in enumerate(model.observables):
                 if obs_name != "Phosphorylated_MEKc":
-                    assert np.allclose(res[i, j, k], expected[i, j, k], rtol=1e-3)
+                    assert (np.abs(res[i, j, k] - expected[i, j, k]) < 0.1).all()
 
 
 def test_param_estim():
