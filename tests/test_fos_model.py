@@ -2,10 +2,11 @@ import os
 import shutil
 from distutils.dir_util import copy_tree
 
+import numpy as np
 import pytest
 from scipy.optimize import OptimizeResult, differential_evolution
 
-from biomass import Model, OptimizationResults, optimize, run_simulation
+from biomass import Model, OptimizationResults, optimize, run_analysis, run_simulation
 from biomass.estimation import ExternalOptimizer
 from biomass.models import Nakakuki_Cell_2010
 
@@ -58,6 +59,18 @@ def test_save_resuts():
         )
     )
 
+
+def test_run_analysis():
+    target="reaction"
+    metric="integral"
+    run_analysis(model, target=target, metric=metric, options={"overwrite": True})
+    layer = os.path.join("sensitivity_coefficients", f"{target}", f"{metric}.npy")
+    loc_res = os.path.join(model.path, layer)
+    assert os.path.isfile(loc_res)
+    loc_expected = os.path.join(os.path.dirname(__file__), layer)
+    res = np.load(loc_res)
+    expected = np.load(loc_expected)
+    assert np.allclose(res, expected, rtol=1e-3)
 
 def test_param_estim():
     optimize(

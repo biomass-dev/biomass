@@ -53,6 +53,7 @@ out/
 
 # sensitivity array
 sensitivity_coefficients/
+!/tests/sensitivity_coefficients/
 
 # simulation data
 simulation_data/
