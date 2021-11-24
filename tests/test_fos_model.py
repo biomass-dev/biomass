@@ -61,8 +61,8 @@ def test_save_resuts():
 
 
 def test_run_analysis():
-    target="reaction"
-    metric="integral"
+    target = "reaction"
+    metric = "integral"
     run_analysis(model, target=target, metric=metric, options={"overwrite": True})
     layer = os.path.join("sensitivity_coefficients", f"{target}", f"{metric}.npy")
     loc_res = os.path.join(model.path, layer)
@@ -71,11 +71,12 @@ def test_run_analysis():
     res = np.load(loc_res)
     expected = np.load(loc_expected)
     assert np.shape(res) == np.shape(expected)
-    for i in res.shape[0]:
-        for j in res.shape[1]:
+    for i in range(res.shape[0]):
+        for j in range(res.shape[1]):
             for k, obs_name in enumerate(model.observables):
                 if obs_name != "Phosphorylated_MEKc":
                     assert np.allclose(res[i, j, k], expected[i, j, k], rtol=1e-3)
+
 
 def test_param_estim():
     optimize(
