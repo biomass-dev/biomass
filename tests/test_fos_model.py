@@ -79,7 +79,7 @@ def test_run_analysis():
                     np.allclose(
                         np.exp(actual[i, j, k] * d_ln_vi),
                         np.exp(desired[i, j, k] * d_ln_vi),
-                        rtol=1e-3
+                        rtol=1e-3,
                     )
 
 
