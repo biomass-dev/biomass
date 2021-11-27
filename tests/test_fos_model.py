@@ -2,10 +2,11 @@ import os
 import shutil
 from distutils.dir_util import copy_tree
 
+import numpy as np
 import pytest
 from scipy.optimize import OptimizeResult, differential_evolution
 
-from biomass import Model, OptimizationResults, optimize, run_simulation
+from biomass import Model, OptimizationResults, optimize, run_analysis, run_simulation
 from biomass.estimation import ExternalOptimizer
 from biomass.models import Nakakuki_Cell_2010
 
@@ -57,6 +58,29 @@ def test_save_resuts():
             "estimated_parameter_sets.pdf",
         )
     )
+
+
+def test_run_analysis():
+    target = "reaction"
+    metric = "integral"
+    d_ln_vi = 0.009950330853168092
+    run_analysis(model, target=target, metric=metric, options={"overwrite": True})
+    layer = os.path.join("sensitivity_coefficients", f"{target}", f"{metric}.npy")
+    loc_actual = os.path.join(model.path, layer)
+    assert os.path.isfile(loc_actual)
+    loc_desired = os.path.join(os.path.dirname(__file__), layer)
+    actual = np.load(loc_actual)
+    desired = np.load(loc_desired)
+    assert np.shape(actual) == np.shape(desired)
+    for i in range(actual.shape[0]):
+        for j in range(actual.shape[1]):
+            for k, obs_name in enumerate(model.observables):
+                if obs_name != "Phosphorylated_MEKc":
+                    np.allclose(
+                        np.exp(actual[i, j, k] * d_ln_vi),
+                        np.exp(desired[i, j, k] * d_ln_vi),
+                        rtol=1e-3,
+                    )
 
 
 def test_param_estim():
