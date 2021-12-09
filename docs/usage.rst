@@ -201,7 +201,7 @@ Sensitivity analysis examines how perturbations to the processes in the model af
 
     from biomass import run_analysis
 
-    run_analysis(model, target='reaction', metric='integral', style='barplot')
+    run_analysis(model, target='reaction', metric='integral', style='barplot', options={'overwrite': True})
 
 The single parameter sensitivity of each reaction is defined by
 
@@ -213,3 +213,7 @@ Sensitivity coefficients are calculated using finite difference approximations w
 .. image:: https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/sensitivity_PcFos.png
 
 Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HRG). Numbers above bars indicate the reaction indices, and error bars correspond to simulation standard deviation.
+
+
+.. note::
+    If you want to reuse a result from the previous computation and don't want to calculate sensitivity coefficients again, set ``options['overwrite']`` to ``False``. 
