@@ -351,7 +351,7 @@ class GeneticAlgorithmInit(ExecModel):
                 ),
                 mode="a",
             ) as f:
-                f.write(f"Generation{generation + 1:d}: " f"Best Fitness = {best_fitness:e}\n")
+                f.write(f"Generation{generation + 1:d}: Best Fitness = {best_fitness:e}\n")
             if population[0, -1] <= self.allowable_error:
                 break
 
@@ -612,7 +612,7 @@ class GeneticAlgorithmContinue(ExecModel):
                 ),
                 mode="a",
             ) as f:
-                f.write(f"Generation{generation + 1:d}: " f"Best Fitness = {best_fitness:e}\n")
+                f.write(f"Generation{generation + 1:d}: Best Fitness = {best_fitness:e}\n")
             if population[0, -1] <= self.allowable_error:
                 break
 
