@@ -1,6 +1,8 @@
 Usage
 =====
 
+.. image:: https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/overview.png
+
 Model preparation
 -----------------
 

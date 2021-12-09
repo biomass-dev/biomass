@@ -1,18 +1,18 @@
 BioMASS - A Python Framework for Modeling and Analysis of Signaling Systems
 ===========================================================================
 
-.. raw:: html
-
-   <p align="center">
-      <img src="_static/img/logo_horizontal.png" width="400px" alt="BioMASS logo">
-   </p>
-
 |PyPI version| |Actions Status| |Documentation Status| |License| |Downloads| |Python versions| |Code quality| |Pre commit| |Code style| |Imports| |Cancers Paper|
 
 *BioMASS* is a computational framework for modeling and analysis of biological signaling systems in Python.
-It provides useful tools for numerical simulation, parameter estimation, network analysis, and visualization.
+It provides useful tools for numerical simulation, parameter estimation, network analysis, and result visualization.
 
-:Source code: https://github.com/biomass-dev/biomass
+.. raw:: html
+
+   <p align="center">
+      <img src="_static/img/logo_horizontal.png" width="600px" alt="BioMASS logo">
+   </p>
+
+**Source code:** https://github.com/biomass-dev/biomass
 
 .. toctree::
    :maxdepth: 2
