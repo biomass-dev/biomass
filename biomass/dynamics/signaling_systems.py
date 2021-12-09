@@ -85,7 +85,7 @@ class SignalingSystems(TemporalDynamics):
 
         Parameters
         ----------
-        simulated_values : matrix (len(t) × len(self.model.problem.t))
+        simulated_values : matrix (len(t) × len(self.model.problem.conditions))
         """
         if simulated_values.ndim == 2:
             for k, time_course in enumerate(simulated_values.T):
