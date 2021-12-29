@@ -18,11 +18,17 @@ _BioMASS_ is a computational framework for modeling and analysis of biological s
 - **Source code:** https://github.com/biomass-dev/biomass
 - **Bug reports:** https://github.com/biomass-dev/biomass/issues
 
-It provides useful tools for numerical simulation, parameter estimation, network analysis, and visualization.
+It provides useful tools for numerical simulation, parameter estimation, network analysis, and result visualization.
 
 ## Installation
 
-For installation instructions and requirements, see the [install](https://biomass-core.readthedocs.io/en/latest/installation.html) documentation.
+The BioMASS library is available at the [Python Package Index (PyPI)](https://pypi.org/project/biomass).
+
+```shell
+$ pip install biomass
+```
+
+BioMASS supports Python 3.7 or newer.
 
 ## Reference
 
