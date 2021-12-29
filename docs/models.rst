@@ -11,8 +11,8 @@ Circadian clock
             width="400px" alt="Circadian clock">
     </p>
 
-* **Source code:** `circadian_clock`_
-* **Reference:** :cite:p:`Leloup7051`
+* **Code:** `circadian_clock`_
+* **Paper:** :cite:p:`Leloup7051`
 
 Immediate-early gene response
 -----------------------------
@@ -24,8 +24,8 @@ Immediate-early gene response
             width="400px" alt="Immediate-early gene response">
     </p>
 
-* **Source code:** `Nakakuki_Cell_2010`_
-* **Reference:** :cite:p:`NAKAKUKI2010884`
+* **Code:** `Nakakuki_Cell_2010`_
+* **Paper:** :cite:p:`NAKAKUKI2010884`
 
 Insulin signaling
 -----------------
@@ -37,8 +37,8 @@ Insulin signaling
             width="400px" alt="Insulin signaling">
     </p>
 
-* **Source code:** `insulin_signaling`_
-* **Reference:** :cite:p:`KUBOTA2012820`
+* **Code:** `insulin_signaling`_
+* **Paper:** :cite:p:`KUBOTA2012820`
 
 MAPK cascade
 ------------
@@ -50,8 +50,8 @@ MAPK cascade
             width="400px" alt="MAPK cascade">
     </p>
 
-* **Source code:** `mapk_cascade`_
-* **Reference:** :cite:p:`https://doi.org/10.1046/j.1432-1327.2000.01197.x`
+* **Code:** `mapk_cascade`_
+* **Paper:** :cite:p:`https://doi.org/10.1046/j.1432-1327.2000.01197.x`
 
 NF-κB pathway
 --------------
@@ -63,8 +63,8 @@ NF-κB pathway
             width="400px" alt="NF-κB pathway">
     </p>
 
-* **Source code:** `nfkb_pathway`_
-* **Reference:** :cite:p:`oppelt2018model`
+* **Code:** `nfkb_pathway`_
+* **Paper:** :cite:p:`oppelt2018model`
 
 TGF-β/SMAD pathway
 -------------------
@@ -76,8 +76,8 @@ TGF-β/SMAD pathway
             width="400px" alt="TGF-β/SMAD pathway">
     </p>
 
-* **Source code:** `tgfb_smad`_
-* **Reference:** :cite:p:`LUCARELLI201875`
+* **Code:** `tgfb_smad`_
+* **Paper:** :cite:p:`LUCARELLI201875`
 
 .. _circadian_clock: https://github.com/biomass-dev/biomass/tree/master/biomass/models/circadian_clock
 .. _Nakakuki_Cell_2010: https://github.com/biomass-dev/biomass/tree/master/biomass/models/Nakakuki_Cell_2010

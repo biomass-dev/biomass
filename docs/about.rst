@@ -27,7 +27,7 @@ Author
 Contact
 -------
 
-Please contact us with any questions or comments via `Issues`_ |  `Discussions`_ on GitHub.
+Please contact me with any questions or comments via `Issues`_ |  `Discussions`_ on GitHub.
 You can also always send me an `email <mailto:himoto@protein.osaka-u.ac.jp>`_.
 
 .. _Issues: https://github.com/biomass-dev/biomass/issues

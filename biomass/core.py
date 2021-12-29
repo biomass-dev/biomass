@@ -502,7 +502,7 @@ def run_analysis(
         * excluded_initials : list of strings
             (``target`` == 'initial_condition') List of species which are not used for analysis.
 
-        * overwrite : bool (default: False)
+        * overwrite : bool (default: :obj:`True`)
             If :obj:`True`, the sensitivity_coefficients/{target}/{metric}.npy file will be overwritten.
 
     Examples
@@ -538,7 +538,7 @@ def run_analysis(
     options.setdefault("show_indices", True)
     options.setdefault("excluded_params", [])
     options.setdefault("excluded_initials", [])
-    options.setdefault("overwrite", False)
+    options.setdefault("overwrite", True)
 
     if target == "reaction":
         ReactionSensitivity(model, create_metrics).analyze(
