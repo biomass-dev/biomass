@@ -6,7 +6,6 @@ from .name2idx import C, V
 
 
 class ReactionNetwork(object):
-
     def __init__(self) -> None:
         super(ReactionNetwork, self).__init__()
         self.reactions: Dict[str, List[int]] = {
@@ -23,7 +22,7 @@ class ReactionNetwork(object):
 
         if not is_duplicate(self.reactions, biological_processes):
             return biological_processes
-    
+
     @staticmethod
     def flux(t, y, x) -> dict:
 

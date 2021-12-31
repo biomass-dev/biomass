@@ -6,7 +6,6 @@ from .name2idx import C, V
 
 
 class ReactionNetwork(object):
-
     def __init__(self) -> None:
         """
         Reaction indices grouped according to biological processes.
@@ -45,7 +44,7 @@ class ReactionNetwork(object):
 
         if not is_duplicate(self.reactions, biological_processes):
             return biological_processes
-    
+
     @staticmethod
     def flux(t, y, x) -> dict:
         """
@@ -59,7 +58,7 @@ class ReactionNetwork(object):
             Concentration vector.
         x : tuple
             Parameter values.
-        
+
         Returns
         -------
         v : dict

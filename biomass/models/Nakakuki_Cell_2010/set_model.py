@@ -3,7 +3,6 @@ from .reaction_network import ReactionNetwork
 
 
 class DifferentialEquation(ReactionNetwork):
-
     def __init__(self, perturbation):
         super(DifferentialEquation, self).__init__()
         self.perturbation = perturbation
