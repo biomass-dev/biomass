@@ -58,7 +58,7 @@ class Observable(DifferentialEquation):
         self.t: range = range(5401)
         self.conditions: list = ["EGF", "HRG"]
         self.simulations: np.ndarray = np.empty(
-            (len(self.obs_names), len(self.t), len(self.conditions))
+            (len(self.obs_names), len(self.conditions), len(self.t))
         )
         self.normalization: dict = {}
         for observable in self.obs_names:
@@ -86,27 +86,27 @@ class Observable(DifferentialEquation):
             if sol is None:
                 return False
             else:
-                self.simulations[self.obs_names.index("Phosphorylated_MEKc"), :, i] = sol.y[
-                    V.ppMEKc, :
+                self.simulations[self.obs_names.index("Phosphorylated_MEKc"), i] = sol.y[
+                    V.ppMEKc
                 ]
-                self.simulations[self.obs_names.index("Phosphorylated_ERKc"), :, i] = (
-                    sol.y[V.pERKc, :] + sol.y[V.ppERKc, :]
+                self.simulations[self.obs_names.index("Phosphorylated_ERKc"), i] = (
+                    sol.y[V.pERKc] + sol.y[V.ppERKc]
                 )
-                self.simulations[self.obs_names.index("Phosphorylated_RSKw"), :, i] = sol.y[
+                self.simulations[self.obs_names.index("Phosphorylated_RSKw"), i] = sol.y[
                     V.pRSKc, :
-                ] + sol.y[V.pRSKn, :] * (x[C.Vn] / x[C.Vc])
-                self.simulations[self.obs_names.index("Phosphorylated_CREBw"), :, i] = sol.y[
-                    V.pCREBn, :
+                ] + sol.y[V.pRSKn] * (x[C.Vn] / x[C.Vc])
+                self.simulations[self.obs_names.index("Phosphorylated_CREBw"), i] = sol.y[
+                    V.pCREBn
                 ] * (x[C.Vn] / x[C.Vc])
-                self.simulations[self.obs_names.index("dusp_mRNA"), :, i] = sol.y[V.duspmRNAc, :]
-                self.simulations[self.obs_names.index("cfos_mRNA"), :, i] = sol.y[V.cfosmRNAc, :]
-                self.simulations[self.obs_names.index("cFos_Protein"), :, i] = (
-                    (sol.y[V.pcFOSn, :] + sol.y[V.cFOSn, :]) * (x[C.Vn] / x[C.Vc])
-                    + sol.y[V.cFOSc, :]
-                    + sol.y[V.pcFOSc, :]
+                self.simulations[self.obs_names.index("dusp_mRNA"), i] = sol.y[V.duspmRNAc]
+                self.simulations[self.obs_names.index("cfos_mRNA"), i] = sol.y[V.cfosmRNAc]
+                self.simulations[self.obs_names.index("cFos_Protein"), i] = (
+                    (sol.y[V.pcFOSn] + sol.y[V.cFOSn]) * (x[C.Vn] / x[C.Vc])
+                    + sol.y[V.cFOSc]
+                    + sol.y[V.pcFOSc]
                 )
-                self.simulations[self.obs_names.index("Phosphorylated_cFos"), :, i] = (
-                    sol.y[V.pcFOSn, :] * (x[C.Vn] / x[C.Vc]) + sol.y[V.pcFOSc, :]
+                self.simulations[self.obs_names.index("Phosphorylated_cFos"), i] = (
+                    sol.y[V.pcFOSn] * (x[C.Vn] / x[C.Vc]) + sol.y[V.pcFOSc]
                 )
 
     def set_data(self):

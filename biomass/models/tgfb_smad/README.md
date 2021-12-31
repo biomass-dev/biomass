@@ -52,7 +52,7 @@ def save_result(model):
         plt.gca().spines['right'].set_visible(False)
         plt.gca().spines['top'].set_visible(False)
         for j, color in enumerate(['brown', 'royalblue', 'darkgreen', 'k']):
-            plt.plot(model.problem.t, res[i, :, j], color=color, linewidth=1.5)
+            plt.plot(model.problem.t, res[i, j], color=color, linewidth=1.5)
             plt.title(fr'$\it{gene_name}$')
             plt.yticks(yticks[gene_name])
         if i >= 9:

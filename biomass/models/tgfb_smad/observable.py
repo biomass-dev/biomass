@@ -60,7 +60,7 @@ class Observable(DifferentialEquation):
         self.t: range = range(600 + 1)  # min
         self.conditions: list = ["WT", "Smad2OE", "Smad3OE", "Smad4OE"]
         self.simulations: np.ndarray = np.empty(
-            (len(self.obs_names), len(self.t), len(self.conditions))
+            (len(self.obs_names), len(self.conditions), len(self.t))
         )
         self.normalization: dict = {}
         self.experiments: list = [None] * len(self.obs_names)
@@ -195,8 +195,8 @@ class Observable(DifferentialEquation):
                 if sol is None:
                     return False
                 else:
-                    self.simulations[self.obs_names.index(gene_name), :, i] = np.log2(
-                        sol.y[V.gene, :]
+                    self.simulations[self.obs_names.index(gene_name), i] = np.log2(
+                        sol.y[V.gene]
                     )
 
     def set_data(self):
