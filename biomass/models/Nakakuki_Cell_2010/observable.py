@@ -86,9 +86,7 @@ class Observable(DifferentialEquation):
             if sol is None:
                 return False
             else:
-                self.simulations[self.obs_names.index("Phosphorylated_MEKc"), i] = sol.y[
-                    V.ppMEKc
-                ]
+                self.simulations[self.obs_names.index("Phosphorylated_MEKc"), i] = sol.y[V.ppMEKc]
                 self.simulations[self.obs_names.index("Phosphorylated_ERKc"), i] = (
                     sol.y[V.pERKc] + sol.y[V.ppERKc]
                 )

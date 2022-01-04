@@ -195,9 +195,7 @@ class Observable(DifferentialEquation):
                 if sol is None:
                     return False
                 else:
-                    self.simulations[self.obs_names.index(gene_name), i] = np.log2(
-                        sol.y[V.gene]
-                    )
+                    self.simulations[self.obs_names.index(gene_name), i] = np.log2(sol.y[V.gene])
 
     def set_data(self):
         pass

@@ -88,9 +88,7 @@ class Observable(DifferentialEquation):
                 self.simulations[self.obs_names.index("biphosphorylated_MAPK"), i] = sol.y[
                     V.MAPK_PP
                 ]
-                self.simulations[self.obs_names.index("unphosphorylated_MAPK"), i] = sol.y[
-                    V.MAPK
-                ]
+                self.simulations[self.obs_names.index("unphosphorylated_MAPK"), i] = sol.y[V.MAPK]
 
     def set_data(self):
         # Test data
