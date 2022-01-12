@@ -32,7 +32,7 @@ class BiomassIndexError(Exception):
 @dataclass
 class Model(object):
     """
-    The BioMASS model object.
+    Class for BioMASS model construction.
 
     Attributes
     ----------
@@ -157,6 +157,11 @@ class Model(object):
         ----------
         show_info : bool (default: :obj:`False`)
             Set to :obj:`True` to print the information related to model size.
+        
+        Returns
+        -------
+        model : :class:`biomass.exec_model.ModelObject`
+            The BioMASS model object.
 
         Examples
         --------
