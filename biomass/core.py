@@ -157,7 +157,7 @@ class Model(object):
         ----------
         show_info : bool (default: :obj:`False`)
             Set to :obj:`True` to print the information related to model size.
-        
+
         Returns
         -------
         model : :class:`biomass.exec_model.ModelObject`
