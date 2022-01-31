@@ -23,7 +23,7 @@ class OptimizeStep(object):
 
     def _xover(self, parents: np.ndarray) -> np.ndarray:
         """Extended Normal Distribution Xover"""
-        ALPHA = (1.0 - 2 * 0.35 ** 2) ** 0.5 / 2.0
+        ALPHA = (1.0 - 2 * 0.35**2) ** 0.5 / 2.0
         BETA = 0.35 / (self.n_gene - 1) ** 0.5
 
         child = np.empty(self.n_gene + 1)
@@ -76,7 +76,7 @@ class OptimizeStep(object):
 
     def _mutation(self, parents: np.ndarray) -> np.ndarray:
         """Normal Distribution Mutation"""
-        GAMMA = 0.35 / self.n_gene ** 0.5
+        GAMMA = 0.35 / self.n_gene**0.5
 
         child = np.empty(self.n_gene + 1)
 
