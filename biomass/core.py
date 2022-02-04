@@ -76,6 +76,11 @@ class Model(object):
         """
         if model.problem.normalization:
             for obs_name in model.observables:
+                for key in model.problem.normalization[obs_name]:
+                    if key not in ["timepoint", "condition"]:
+                        raise KeyError(
+                            f"'{key}': invalid key. Should be either 'timepoint' or 'condition'."
+                        )
                 if (
                     isinstance(model.problem.normalization[obs_name]["timepoint"], int)
                     and not model.problem.t[0]
