@@ -67,4 +67,4 @@ def save_result(model):
 save_result(model)
 ```
 
-<img align="left" src="./pan_rtk.png" width="400px">
+<img align="left" src="./pan_rtk.png" width="800px">
