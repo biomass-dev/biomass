@@ -50,7 +50,7 @@ class Observable(DifferentialEquation):
         self.t: range = range(200 + 1)
         self.conditions: list = ["TNFa", "TNFa_DCF"]
         self.simulations: np.ndarray = np.empty(
-            (len(self.obs_names), len(self.t), len(self.conditions))
+            (len(self.obs_names), len(self.conditions), len(self.t))
         )
         self.normalization = {}
         self.experiments: list = [None] * len(self.obs_names)
@@ -99,11 +99,11 @@ class Observable(DifferentialEquation):
             if sol is None:
                 return False
             else:
-                self.simulations[self.obs_names.index("nuclear_IkBa"), :, i] = x[C.Vnuc] * (
-                    sol.y[V.nNfkIkb, :] + sol.y[V.nIkb, :]
+                self.simulations[self.obs_names.index("nuclear_IkBa"), i] = x[C.Vnuc] * (
+                    sol.y[V.nNfkIkb] + sol.y[V.nIkb]
                 )
-                self.simulations[self.obs_names.index("nuclear_NFkB"), :, i] = x[C.Vnuc] * (
-                    sol.y[V.pnNfk, :] + sol.y[V.nNfk, :] + sol.y[V.nNfkIkb, :]
+                self.simulations[self.obs_names.index("nuclear_NFkB"), i] = x[C.Vnuc] * (
+                    sol.y[V.pnNfk] + sol.y[V.nNfk] + sol.y[V.nNfkIkb]
                 )
 
     def set_data(self):
