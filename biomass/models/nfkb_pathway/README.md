@@ -18,7 +18,7 @@ model = Model(nfkb_pathway.__package__).create()
 
 def save_result(model):
 
-    run_simulation(model, viz_type="original")
+    run_simulation(model)
     res = np.load(os.path.join(model.path, "simulation_data", "simulations_original.npy"))
 
     fig=plt.figure(figsize=(9, 9))
