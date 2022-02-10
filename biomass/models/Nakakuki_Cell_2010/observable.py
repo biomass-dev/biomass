@@ -71,7 +71,7 @@ class Observable(DifferentialEquation):
             self.perturbation = _perturbation
         # get steady state
         x[C.Ligand] = x[C.no_ligand]  # No ligand
-        y0 = get_steady_state(self.diffeq, y0, tuple(x))
+        y0 = get_steady_state(self.diffeq, y0, tuple(x), integrator="zvode")
         if not y0:
             return False
         # add ligand
