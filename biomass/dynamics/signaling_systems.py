@@ -29,8 +29,8 @@ class SignalingSystems(TemporalDynamics):
             (
                 len(self.model.observables),
                 len(n_file),
-                len(self.model.problem.conditions),
                 len(self.model.problem.t),
+                len(self.model.problem.conditions),
             ),
             np.nan,
         )
@@ -48,7 +48,7 @@ class SignalingSystems(TemporalDynamics):
                 for j, nth_paramset in enumerate(n_file):
                     if self._validate(nth_paramset):
                         for i, _ in enumerate(self.model.observables):
-                            simulations_all[i, j] = self.model.problem.simulations[i]
+                            simulations_all[i, j, :, :] = self.model.problem.simulations[i, :, :]
                 # simulations_all : numpy array
                 # All simulated values with estimated parameter sets.
                 self._save_simulations(viz_type, simulations_all)
@@ -85,12 +85,12 @@ class SignalingSystems(TemporalDynamics):
 
         Parameters
         ----------
-        simulated_values : matrix (len(self.model.problem.conditions) x len(t))
+        simulated_values : matrix (len(t) × len(self.model.problem.conditions))
         """
         if simulated_values.ndim == 2:
-            for k, time_course in enumerate(simulated_values):
+            for k, time_course in enumerate(simulated_values.T):
                 if np.all(np.abs(time_course) < sys.float_info.epsilon):
-                    simulated_values[k, :] = np.zeros(len(self.model.problem.t))
+                    simulated_values[:, k] = np.zeros(len(self.model.problem.t))
         elif simulated_values.ndim == 3:
             for i, _ in enumerate(self.model.observables):
                 simulated_values[i] = self._preprocessing(simulated_values[i])

@@ -123,28 +123,28 @@ class TemporalDynamics(ExecModel):
         """
         i = self.model.observables.index(obs_name)
         for j, _ in enumerate(n_file):
-            for k, condition in enumerate(self.model.problem.conditions):
+            for l, condition in enumerate(self.model.problem.conditions):
                 if (mode == 0 and condition not in singleplotting[i].dont_show) or (
                     mode == 1 and condition == multiplotting.condition
                 ):
                     plt.plot(
                         np.array(self.model.problem.t) / singleplotting[i].divided_by,
-                        simulations_all[i, j, k]
+                        simulations_all[i, j, :, l]
                         / (
                             1
                             if not self.model.problem.normalization
-                            or np.max(simulations_all[i, j, k]) == 0.0
+                            or np.max(simulations_all[i, j, :, l]) == 0.0
                             else np.max(
                                 simulations_all[
                                     i,
                                     j,
+                                    self.model.problem.normalization[obs_name]["timepoint"],
                                     [
                                         self.model.problem.conditions.index(c)
                                         for c in self.model.problem.normalization[obs_name][
                                             "condition"
                                         ]
                                     ],
-                                    self.model.problem.normalization[obs_name]["timepoint"],
                                 ]
                             )
                             if self.model.problem.normalization[obs_name]["timepoint"] is not None
@@ -152,6 +152,7 @@ class TemporalDynamics(ExecModel):
                                 simulations_all[
                                     i,
                                     j,
+                                    :,
                                     [
                                         self.model.problem.conditions.index(c)
                                         for c in self.model.problem.normalization[obs_name][
@@ -161,7 +162,7 @@ class TemporalDynamics(ExecModel):
                                 ]
                             )
                         ),
-                        color=singleplotting[i].cmap[k]
+                        color=singleplotting[i].cmap[l]
                         if mode == 0
                         else multiplotting.cmap[multiplotting.observables.index(obs_name)],
                         alpha=0.05,
@@ -182,25 +183,25 @@ class TemporalDynamics(ExecModel):
         normalized: np.ndarray = np.empty_like(simulations_all)
         i = self.model.observables.index(obs_name)
         for j, _ in enumerate(n_file):
-            for k, condition in enumerate(self.model.problem.conditions):
+            for l, condition in enumerate(self.model.problem.conditions):
                 if (mode == 0 and condition not in singleplotting[i].dont_show) or (
                     mode == 1 and condition == multiplotting.condition
                 ):
-                    normalized[i, j, k] = simulations_all[i, j, k] / (
+                    normalized[i, j, :, l] = simulations_all[i, j, :, l] / (
                         1
                         if not self.model.problem.normalization
-                        or np.max(simulations_all[i, j, k]) == 0.0
+                        or np.max(simulations_all[i, j, :, l]) == 0.0
                         else np.max(
                             simulations_all[
                                 i,
                                 j,
+                                self.model.problem.normalization[obs_name]["timepoint"],
                                 [
                                     self.model.problem.conditions.index(c)
                                     for c in self.model.problem.normalization[obs_name][
                                         "condition"
                                     ]
                                 ],
-                                self.model.problem.normalization[obs_name]["timepoint"],
                             ]
                         )
                         if self.model.problem.normalization[obs_name]["timepoint"] is not None
@@ -208,6 +209,7 @@ class TemporalDynamics(ExecModel):
                             simulations_all[
                                 i,
                                 j,
+                                :,
                                 [
                                     self.model.problem.conditions.index(c)
                                     for c in self.model.problem.normalization[obs_name][
@@ -230,6 +232,7 @@ class TemporalDynamics(ExecModel):
                     normalized[
                         self.model.observables.index(obs_name),
                         :,
+                        :,
                         self.model.problem.conditions.index(c),
                     ],
                     axis=0,
@@ -237,7 +240,7 @@ class TemporalDynamics(ExecModel):
             )
         norm_max = np.max(mean_vec)
         if not isnan(norm_max) and norm_max != 0.0:
-            normalized[self.model.observables.index(obs_name)] /= norm_max
+            normalized[self.model.observables.index(obs_name), :, :, :] /= norm_max
 
         return normalized
 
@@ -253,14 +256,14 @@ class TemporalDynamics(ExecModel):
         Plot time course simulated values (viz_type == 'average').
         """
         i = self.model.observables.index(obs_name)
-        for k, condition in enumerate(self.model.problem.conditions):
+        for l, condition in enumerate(self.model.problem.conditions):
             if (mode == 0 and condition not in singleplotting[i].dont_show) or (
                 mode == 1 and condition == multiplotting.condition
             ):
                 plt.plot(
                     np.array(self.model.problem.t) / singleplotting[i].divided_by,
-                    np.nanmean(normalized[i, :, k, :], axis=0),
-                    color=singleplotting[i].cmap[k]
+                    np.nanmean(normalized[i, :, :, l], axis=0),
+                    color=singleplotting[i].cmap[l]
                     if mode == 0
                     else multiplotting.cmap[multiplotting.observables.index(obs_name)],
                     label=condition if mode == 0 else singleplotting[i].ylabel,
@@ -278,21 +281,21 @@ class TemporalDynamics(ExecModel):
         Plot standard deviation (SD) as shaded area when stdev == True.
         """
         i = self.model.observables.index(obs_name)
-        for k, condition in enumerate(self.model.problem.conditions):
+        for l, condition in enumerate(self.model.problem.conditions):
             if (mode == 0 and condition not in singleplotting[i].dont_show) or (
                 mode == 1 and condition == multiplotting.condition
             ):
-                y_mean = np.nanmean(normalized[i, :, k], axis=0)
+                y_mean = np.nanmean(normalized[i, :, :, l], axis=0)
                 y_std = [
                     np.nanstd(normalized[i, :, k, l], ddof=1)
-                    for l, _ in enumerate(self.model.problem.t)
+                    for k, _ in enumerate(self.model.problem.t)
                 ]
                 plt.fill_between(
                     np.array(self.model.problem.t) / singleplotting[i].divided_by,
                     y_mean - y_std,
                     y_mean + y_std,
                     lw=0,
-                    color=singleplotting[i].cmap[k]
+                    color=singleplotting[i].cmap[l]
                     if mode == 0
                     else multiplotting.cmap[multiplotting.observables.index(obs_name)],
                     alpha=0.1,
@@ -309,33 +312,34 @@ class TemporalDynamics(ExecModel):
         Plot time course simulated values (viz_type not in ['average', 'experiment']).
         """
         i = self.model.observables.index(obs_name)
-        for k, condition in enumerate(self.model.problem.conditions):
+        for l, condition in enumerate(self.model.problem.conditions):
             if (mode == 0 and condition not in singleplotting[i].dont_show) or (
                 mode == 1 and condition == multiplotting.condition
             ):
                 plt.plot(
                     np.array(self.model.problem.t) / singleplotting[i].divided_by,
-                    self.model.problem.simulations[i, k, :]
+                    self.model.problem.simulations[i, :, l]
                     / (
                         1
                         if not self.model.problem.normalization
-                        or np.max(self.model.problem.simulations[i, k, :]) == 0.0
+                        or np.max(self.model.problem.simulations[i, :, l]) == 0.0
                         else np.max(
                             self.model.problem.simulations[
                                 i,
+                                self.model.problem.normalization[obs_name]["timepoint"],
                                 [
                                     self.model.problem.conditions.index(c)
                                     for c in self.model.problem.normalization[obs_name][
                                         "condition"
                                     ]
                                 ],
-                                self.model.problem.normalization[obs_name]["timepoint"],
                             ]
                         )
                         if self.model.problem.normalization[obs_name]["timepoint"] is not None
                         else np.max(
                             self.model.problem.simulations[
                                 i,
+                                :,
                                 [
                                     self.model.problem.conditions.index(c)
                                     for c in self.model.problem.normalization[obs_name][
@@ -345,7 +349,7 @@ class TemporalDynamics(ExecModel):
                             ]
                         )
                     ),
-                    color=singleplotting[i].cmap[k]
+                    color=singleplotting[i].cmap[l]
                     if mode == 0
                     else multiplotting.cmap[multiplotting.observables.index(obs_name)],
                     label=condition if mode == 0 else singleplotting[i].ylabel,
@@ -364,7 +368,7 @@ class TemporalDynamics(ExecModel):
         Plot experimental measurements with error bars.
         """
         i = self.model.observables.index(obs_name)
-        for k, condition in enumerate(self.model.problem.conditions):
+        for l, condition in enumerate(self.model.problem.conditions):
             if (
                 condition in self.model.problem.experiments[i]
                 and (mode == 0 and condition not in singleplotting[i].dont_show)
@@ -374,19 +378,19 @@ class TemporalDynamics(ExecModel):
                     np.array(exp_t) / singleplotting[i].divided_by,
                     self.model.problem.experiments[i][condition],
                     yerr=self.model.problem.error_bars[i][condition],
-                    color=singleplotting[i].cmap[k]
+                    color=singleplotting[i].cmap[l]
                     if mode == 0
                     else multiplotting.cmap[multiplotting.observables.index(obs_name)],
-                    ecolor=singleplotting[i].cmap[k]
+                    ecolor=singleplotting[i].cmap[l]
                     if mode == 0
                     else multiplotting.cmap[multiplotting.observables.index(obs_name)],
                     elinewidth=1,
                     capsize=8,
                     markerfacecolor="None",
-                    markeredgecolor=singleplotting[i].cmap[k]
+                    markeredgecolor=singleplotting[i].cmap[l]
                     if mode == 0
                     else multiplotting.cmap[multiplotting.observables.index(obs_name)],
-                    fmt=singleplotting[i].shape[k]
+                    fmt=singleplotting[i].shape[l]
                     if mode == 0
                     else multiplotting.shape[multiplotting.observables.index(obs_name)],
                     clip_on=False,
@@ -412,7 +416,7 @@ class TemporalDynamics(ExecModel):
         Plot experimental measurements when model.problem.error_bars[i] is None.
         """
         i = self.model.observables.index(obs_name)
-        for k, condition in enumerate(self.model.problem.conditions):
+        for l, condition in enumerate(self.model.problem.conditions):
             if (
                 condition in self.model.problem.experiments[i]
                 and (mode == 0 and condition not in singleplotting[i].dont_show)
@@ -421,14 +425,14 @@ class TemporalDynamics(ExecModel):
                 plt.plot(
                     np.array(exp_t) / singleplotting[i].divided_by,
                     self.model.problem.experiments[i][condition],
-                    singleplotting[i].shape[k]
+                    singleplotting[i].shape[l]
                     if mode == 0
                     else multiplotting.shape[multiplotting.observables.index(obs_name)],
                     markerfacecolor="None",
-                    markeredgecolor=singleplotting[i].cmap[k]
+                    markeredgecolor=singleplotting[i].cmap[l]
                     if mode == 0
                     else multiplotting.cmap[multiplotting.observables.index(obs_name)],
-                    color=singleplotting[i].cmap[k]
+                    color=singleplotting[i].cmap[l]
                     if mode == 0
                     else multiplotting.cmap[multiplotting.observables.index(obs_name)],
                     clip_on=False,

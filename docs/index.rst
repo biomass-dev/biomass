@@ -1,13 +1,12 @@
-|PyPI version| |Actions Status| |Documentation Status| |License| |Downloads| |Python versions| |Code quality| |Pre commit| |Code style| |Imports| |Cancers Paper|
+BioMASS - A Python Framework for Modeling and Analysis of Signaling Systems
+===========================================================================
 
-=====================
-BioMASS documentation
-=====================
+|PyPI version| |Actions Status| |Documentation Status| |License| |Downloads| |Python versions| |Code quality| |Pre commit| |Code style| |Imports| |Cancers Paper|
 
 .. raw:: html
 
    <p align="center">
-      <img src="_static/img/biomass-abst.png" width="700px" alt="BioMASS">
+      <img src="_static/img/logo_horizontal.png" width="600px" alt="BioMASS logo">
    </p>
 
 *BioMASS* is a computational framework for modeling and analysis of biological signaling systems in Python.
@@ -15,38 +14,12 @@ It provides useful tools for numerical simulation, parameter estimation, network
 
 **Source code:** https://github.com/biomass-dev/biomass
 
-License
--------
-
-The software is released under the `Apache License 2.0 <https://opensource.org/licenses/Apache-2.0>`_.
-For details, see the `LICENSE <https://github.com/biomass-dev/biomass/blob/master/LICENSE>`_ file in the biomass repository.
-
-Author
-------
-
-`Hiroaki Imoto <https://github.com/himoto>`_
-
-Citation
---------
-
-When using BioMASS, please cite the following paper:
-
-* Imoto, H., Zhang, S. & Okada, M. A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway. *Cancers* **12**, 2878 (2020). :cite:p:`cancers12102878`
-
-Contact
--------
-
-Please contact me with any questions or comments via `Issues`_ |  `Discussions`_ on GitHub.
-You can also always send me an `email <mailto:himoto@protein.osaka-u.ac.jp>`_.
-
-.. _Issues: https://github.com/biomass-dev/biomass/issues
-.. _Discussions: https://github.com/biomass-dev/biomass/discussions
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
    :hidden:
 
+   about
    installation
    usage
    models

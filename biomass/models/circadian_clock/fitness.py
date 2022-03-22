@@ -36,7 +36,7 @@ class OptimizationProblem(Observable, SearchParam):
 
         for idx, condition in enumerate(conditions):
             if condition in exp_dict.keys():
-                sim_val.extend(sim_matrix[idx, list(map(int, exp_timepoint))])
+                sim_val.extend(sim_matrix[list(map(int, exp_timepoint)), idx])
                 exp_val.extend(exp_dict[condition])
 
         return np.array(sim_val) / sim_norm_max, np.array(exp_val)
@@ -70,6 +70,7 @@ class OptimizationProblem(Observable, SearchParam):
                                 np.max(
                                     self.simulations[
                                         self.obs_names.index(obs_name),
+                                        self.normalization[obs_name]["timepoint"],
                                         [
                                             self.conditions.index(c)
                                             for c in (
@@ -78,13 +79,13 @@ class OptimizationProblem(Observable, SearchParam):
                                                 else self.conditions
                                             )
                                         ],
-                                        self.normalization[obs_name]["timepoint"],
                                     ]
                                 )
                                 if self.normalization[obs_name]["timepoint"] is not None
                                 else np.max(
                                     self.simulations[
                                         self.obs_names.index(obs_name),
+                                        :,
                                         [
                                             self.conditions.index(c)
                                             for c in (

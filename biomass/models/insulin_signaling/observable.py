@@ -58,7 +58,7 @@ class Observable(DifferentialEquation):
             "Insulin 1.0",
         ]
         self.simulations: np.ndarray = np.empty(
-            (len(self.obs_names), len(self.conditions), len(self.t))
+            (len(self.obs_names), len(self.t), len(self.conditions))
         )
         self.normalization: dict = {}
         self.experiments: list = [None] * len(self.obs_names)
@@ -92,15 +92,15 @@ class Observable(DifferentialEquation):
             if sol is None:
                 return False
             else:
-                self.simulations[self.obs_names.index("pAKT"), i] = sol.y[V.pAKT]
-                self.simulations[self.obs_names.index("pS6K"), i] = (
-                    sol.y[V.pS6K] * 83.8672192461257
+                self.simulations[self.obs_names.index("pAKT"), :, i] = sol.y[V.pAKT, :]
+                self.simulations[self.obs_names.index("pS6K"), :, i] = (
+                    sol.y[V.pS6K, :] * 83.8672192461257
                 )
-                self.simulations[self.obs_names.index("pGSK3B"), i] = (
-                    sol.y[V.pGSK3B] * 0.111097316860158
+                self.simulations[self.obs_names.index("pGSK3B"), :, i] = (
+                    sol.y[V.pGSK3B, :] * 0.111097316860158
                 )
-                self.simulations[self.obs_names.index("G6Pase"), i] = (
-                    sol.y[V.G6Pase] * 0.0363622452066626
+                self.simulations[self.obs_names.index("G6Pase"), :, i] = (
+                    sol.y[V.G6Pase, :] * 0.0363622452066626
                 )
 
     def set_data(self):

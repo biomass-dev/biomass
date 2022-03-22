@@ -66,19 +66,6 @@ NF-κB pathway
 * **Code:** `nfkb_pathway`_
 * **Paper:** :cite:p:`oppelt2018model`
 
-pan-RTK
--------
-
-.. raw:: html
-
-    <p align="left">
-        <img src="https://raw.githubusercontent.com/biomass-dev/biomass/master/biomass/models/pan_rtk/pan_rtk.png"
-            width="400px" alt="pan-RTK">
-    </p>
-
-* **Code:** `pan_rtk`_
-* **Paper:** :cite:p:`hass2017predicting`
-
 TGF-β/SMAD pathway
 -------------------
 
@@ -97,6 +84,5 @@ TGF-β/SMAD pathway
 .. _insulin_signaling: https://github.com/biomass-dev/biomass/tree/master/biomass/models/insulin_signaling
 .. _mapk_cascade: https://github.com/biomass-dev/biomass/tree/master/biomass/models/mapk_cascade
 .. _nfkb_pathway: https://github.com/biomass-dev/biomass/tree/master/biomass/models/nfkb_pathway
-.. _pan_rtk: https://github.com/biomass-dev/biomass/tree/master/biomass/models/pan_rtk
 .. _tgfb_smad: https://github.com/biomass-dev/biomass/tree/master/biomass/models/tgfb_smad
 
