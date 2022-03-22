@@ -3,11 +3,6 @@ import sys
 import time
 from typing import Callable, List, Optional, Tuple, Union
 
-try:  # python 3.8+
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
-
 import numpy as np
 from scipy.integrate import ode, solve_ivp
 from scipy.integrate._ivp.ivp import OdeResult
@@ -75,9 +70,9 @@ def get_steady_state(
     y0: list,
     f_params: tuple,
     *,
-    integrator: Literal["vode", "zvode"] = "vode",
-    integrator_options: Optional[dict] = None,
     dt: float = 1,
+    atol: float = 1e-8,
+    rtol: float = 1e-8,
     allclose_kws: Optional[dict] = None,
     maximum_wait_time: Union[int, float] = 60.0,
 ) -> List[float]:
@@ -92,12 +87,12 @@ def get_steady_state(
         Initial condition on y (can be a vector).
     f_params : tuple
         Model parameters.
-    integrator : str (default: 'vode')
-        Name of ODE integrator to use ('vode' or 'zvode').
-    integrator_options : dict, optional
-        A dictionary of keyword arguments to supply to the integrator.
     dt : float (default: 1.0)
         The step size used to calculate the steady state.
+    atol : float (default: 1e-8)
+        Absolute tolerance for solution.
+    rtol : float (default: 1e-8)
+        Relative tolerance for solution.
     allclose_kws : dict, optional
         Keyword arguments to pass to ``numpy.allclose()``.
     maximum_wait_time : int or float (default: 60.0 = 1 min.)
@@ -109,21 +104,17 @@ def get_steady_state(
         Steady state concentrations of all species.
         Return an empty list if simulation failed.
     """
-    if integrator not in ["vode", "zvode"]:
-        raise ValueError("integrator must be either 'vode' or 'zvode'.")
-    if integrator_options is None:
-        integrator_options = {}
-    integrator_options.setdefault("method", "bdf")
-    integrator_options.setdefault("with_jacobian", True)
-    integrator_options.setdefault("atol", 1e-8)
-    integrator_options.setdefault("rtol", 1e-8)
-
     if allclose_kws is None:
         allclose_kws = {}
     allclose_kws.setdefault("rtol", 1e-3)
-
     sol = ode(lambda t, y, f_args: diffeq(t, y, *f_args))
-    sol.set_integrator(integrator, **integrator_options)
+    sol.set_integrator(
+        "zvode",
+        method="bdf",
+        with_jacobian=True,
+        atol=atol,
+        rtol=rtol,
+    )
     sol.set_initial_value(y0, 0)
     sol.set_f_params(f_params)
     ys = [y0]

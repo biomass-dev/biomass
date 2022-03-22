@@ -39,7 +39,7 @@ def test_example_plot():
         for j, color in enumerate(
             ["darkblue", "cornflowerblue", "yellowgreen", "goldenrod", "brown"]
         ):
-            plt.plot(model.problem.t, res[i, j], color=color)
+            plt.plot(model.problem.t, res[i, :, j], color=color)
         plt.xlim(0, 480)
         plt.xticks([0, 120, 240, 360, 480], fontweight="bold")
         plt.ylim(0, 1)
