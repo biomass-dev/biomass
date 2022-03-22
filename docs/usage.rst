@@ -35,7 +35,7 @@ Name                    Content
     115 parameters, of which 75 to be estimated
 
 .. note::
-    `pasmopy.Text2Model <https://pasmopy.readthedocs.io/en/latest/model_development.html>`_ allows you to build a BioMASS model from text.
+    `pasmopy.Text2Model <https://pasmopy.readthedocs.io/en/latest/model_development.html>`_ allows you to build a BioMASS model from text :cite:p:`imoto2022text`.
     You simply describe biochemical reactions and the molecular mechanisms extracted from text are converted into an executable model.
 
 Parameter estimation
