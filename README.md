@@ -34,7 +34,7 @@ BioMASS supports Python 3.7 or newer.
 
 - Imoto, H., Zhang, S. & Okada, M. A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway. _Cancers_ **12**, 2878 (2020). https://doi.org/10.3390/cancers12102878
 
-- Imoto, H., Yamashiro, S. & Okada, M. A Text-Based Computational Framework for Patient-Specific Modeling for Classification of Cancers. Available at SSRN: https://ssrn.com/abstract=3965951 or http://dx.doi.org/10.2139/ssrn.3965951
+- Imoto, H., Yamashiro, S. & Okada, M. A text-based computational framework for patient -specific modeling for classification of cancers. _iScience_ **25**, 103944 (2022). https://doi.org/10.1016/j.isci.2022.103944
 
 ## Author
 
