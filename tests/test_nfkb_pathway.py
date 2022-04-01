@@ -36,7 +36,7 @@ def test_example_plot():
     for i, obs_name in enumerate(model.observables):
         plt.subplot(2, 1, i + 1)
         for j, (color, label) in enumerate(zip(["k", "r"], ["TNFα", "TNFα + DCF"])):
-            plt.plot(model.problem.t, res[i, :, j], color=color, label=label)
+            plt.plot(model.problem.t, res[i, j], color=color, label=label)
         plt.title(f"{obs_name}".replace("_", " "))
         plt.xticks([0, 50, 100, 150, 200])
         if i == 0:
