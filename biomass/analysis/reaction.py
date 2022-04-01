@@ -83,7 +83,7 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
                     for k, _ in enumerate(self.model.observables):
                         for l, _ in enumerate(self.model.problem.conditions):
                             signaling_metric[i, j, k, l] = self.quantification[metric](
-                                self.model.problem.simulations[k, :, l]
+                                self.model.problem.simulations[k, l]
                             )
                 sys.stdout.write(
                     "\r{:d} / {:d}".format(
@@ -95,7 +95,7 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
                 for k, _ in enumerate(self.model.observables):
                     for l, _ in enumerate(self.model.problem.conditions):
                         signaling_metric[i, -1, k, l] = self.quantification[metric](
-                            self.model.problem.simulations[k, :, l]
+                            self.model.problem.simulations[k, l]
                         )
         sensitivity_coefficients = dlnyi_dlnxj(
             signaling_metric,
