@@ -108,7 +108,7 @@ class GeneticAlgorithmInit(ExecModel):
                         f"{nth_paramset:d}",
                     )
                 )
-        np.random.seed(time.time_ns() * nth_paramset % 2 ** 32)
+        np.random.seed(time.time_ns() * nth_paramset % 2**32)
         warnings.filterwarnings("ignore")
         self._ga_v2(nth_paramset)
 
@@ -400,7 +400,7 @@ class GeneticAlgorithmContinue(ExecModel):
         """
         Run GA.
         """
-        np.random.seed(time.time_ns() * nth_paramset % 2 ** 32)
+        np.random.seed(time.time_ns() * nth_paramset % 2**32)
         warnings.filterwarnings("ignore")
         self._ga_v2_continue(nth_paramset)
 
