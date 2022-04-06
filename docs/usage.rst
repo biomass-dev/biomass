@@ -22,6 +22,8 @@ Name                    Content
 
 .. code-block:: shell
 
+    $ git clone https://github.com/biomass-dev/biomass
+    $ cd biomass
     $ python
 
 .. code-block:: python
