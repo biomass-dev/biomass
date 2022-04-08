@@ -3,39 +3,39 @@ from typing import Dict, List
 
 NAMES: List[str] = [
     ## CYCE SYNTHESISDEGRADATION AND P27 BINDING/DISSOCIATION:
-    'kscyce',
-    'kdcyce',
-    'kdcycee',
-    'kdcycea',
-    'kasse',
-    'kdise',
+    "kscyce",
+    "kdcyce",
+    "kdcycee",
+    "kdcycea",
+    "kasse",
+    "kdise",
     ## CYCA SYNTHESISDEGRADATION AND P27 BINDING/DISSOCIATION:
-    'kscyca',
-    'kdcyca',
-    'kdcycac1',
-    'kassa',
-    'kdisa',
+    "kscyca",
+    "kdcyca",
+    "kdcycac1",
+    "kassa",
+    "kdisa",
     ## P27 SYNTHESIS AND DEGRADATION:
-    'ks27',
-    'kd27',
-    'kd27e',
-    'kd27a',
+    "ks27",
+    "kd27",
+    "kd27e",
+    "kd27a",
     ## EMI1 SYNTHESIS AND DEGRADATION:
-    'ksemi1',
-    'kdemi1',
+    "ksemi1",
+    "kdemi1",
     ## CDH1 REGULATION:
-    'Cdh1T',
-    'kacdh1',
-    'kicdh1e',
-    'kicdh1a',
-    'kasec',
-    'kdiec',
+    "Cdh1T",
+    "kacdh1",
+    "kicdh1e",
+    "kicdh1a",
+    "kasec",
+    "kdiec",
     ## SKP2 SYNTHESIS AND DEGRADATION:
-    'ksskp2',
-    'kdskp2',
-    'kdskp2c1',
+    "ksskp2",
+    "kdskp2",
+    "kdskp2c1",
     ## CDK INHIBITOR
-    'Inhibitor',
+    "Inhibitor",
 ]
 
 NUM: int = len(NAMES)

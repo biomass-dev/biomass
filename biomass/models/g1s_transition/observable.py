@@ -43,13 +43,7 @@ class Observable(DifferentialEquation):
 
     def __init__(self):
         super(Observable, self).__init__(perturbation={})
-        self.obs_names = [
-            "CycA",
-            "CycA_tot",
-            "CycE",
-            "CycE_tot",
-            "p27_tot"
-        ]
+        self.obs_names = ["CycA", "CycA_tot", "CycE", "CycE_tot", "p27_tot"]
         self.t: range = range(901)
         self.conditions: list = ["control"]
         self.simulations: np.ndarray = np.empty(
@@ -73,9 +67,13 @@ class Observable(DifferentialEquation):
                 return False
             else:
                 self.simulations[self.obs_names.index("CycA_tot"), i] = sol.y[V.CycAT]
-                self.simulations[self.obs_names.index("CycA"), i] = sol.y[V.CycAT] - sol.y[V.CycAp27]
+                self.simulations[self.obs_names.index("CycA"), i] = (
+                    sol.y[V.CycAT] - sol.y[V.CycAp27]
+                )
                 self.simulations[self.obs_names.index("CycE_tot"), i] = sol.y[V.CycET]
-                self.simulations[self.obs_names.index("CycE"), i] = sol.y[V.CycET] - sol.y[V.CycEp27]
+                self.simulations[self.obs_names.index("CycE"), i] = (
+                    sol.y[V.CycET] - sol.y[V.CycEp27]
+                )
                 self.simulations[self.obs_names.index("p27_tot"), i] = sol.y[V.p27T]
 
     def set_data(self):

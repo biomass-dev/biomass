@@ -2,16 +2,16 @@ from dataclasses import make_dataclass
 from typing import Dict, List
 
 NAMES: List[str] = [
-    'CycET',
-    'CycAT',
-    'p27T',
-    'CycEp27',
-    'CycAp27',
-    'Cdh1dp',
-    'Emi1T',
-    'EmiC',
-    'Cdh1',
-    'Skp2',
+    "CycET",
+    "CycAT",
+    "p27T",
+    "CycEp27",
+    "CycAp27",
+    "Cdh1dp",
+    "Emi1T",
+    "EmiC",
+    "Cdh1",
+    "Skp2",
 ]
 
 NUM: int = len(NAMES)
