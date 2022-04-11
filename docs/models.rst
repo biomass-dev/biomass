@@ -14,6 +14,19 @@ Circadian clock
 * **Code:** `circadian_clock`_
 * **Paper:** :cite:p:`Leloup7051`
 
+G1/S transition
+---------------
+
+.. raw:: html
+
+    <p align="left">
+        <img src="https://raw.githubusercontent.com/biomass-dev/biomass/master/biomass/models/g1s_transition/g1s_transition.png"
+            width="400px" alt="G1/S transition">
+    </p>
+
+* **Code:** `g1s_transition`_
+* **Paper:** :cite:p:`barr2016dynamical`
+
 Immediate-early gene response
 -----------------------------
 
@@ -93,6 +106,7 @@ TGF-β/SMAD pathway
 * **Paper:** :cite:p:`LUCARELLI201875`
 
 .. _circadian_clock: https://github.com/biomass-dev/biomass/tree/master/biomass/models/circadian_clock
+.. _g1s_transition: https://github.com/biomass-dev/biomass/tree/master/biomass/models/g1s_transition
 .. _Nakakuki_Cell_2010: https://github.com/biomass-dev/biomass/tree/master/biomass/models/Nakakuki_Cell_2010
 .. _insulin_signaling: https://github.com/biomass-dev/biomass/tree/master/biomass/models/insulin_signaling
 .. _mapk_cascade: https://github.com/biomass-dev/biomass/tree/master/biomass/models/mapk_cascade
