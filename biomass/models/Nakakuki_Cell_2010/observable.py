@@ -90,9 +90,9 @@ class Observable(DifferentialEquation):
                 self.simulations[self.obs_names.index("Phosphorylated_ERKc"), i] = (
                     sol.y[V.pERKc] + sol.y[V.ppERKc]
                 )
-                self.simulations[self.obs_names.index("Phosphorylated_RSKw"), i] = (
-                    sol.y[V.pRSKc] + sol.y[V.pRSKn] * (x[C.Vn] / x[C.Vc])
-                )
+                self.simulations[self.obs_names.index("Phosphorylated_RSKw"), i] = sol.y[
+                    V.pRSKc
+                ] + sol.y[V.pRSKn] * (x[C.Vn] / x[C.Vc])
                 self.simulations[self.obs_names.index("Phosphorylated_CREBw"), i] = sol.y[
                     V.pCREBn
                 ] * (x[C.Vn] / x[C.Vc])
