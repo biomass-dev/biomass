@@ -21,7 +21,7 @@ def solve_ode(
     t: Union[range, List[int]],
     f_params: Tuple[float, ...],
     *,
-    method: str = "BDF",
+    method: str = "LSODA",
     vectorized: bool = False,
     options: Optional[dict] = None,
 ) -> Optional[OdeResult]:
@@ -38,7 +38,7 @@ def solve_ode(
         A sequence of time points for which to solve for y.
     f_params : tuple
         Model parameters.
-    method : str (default: "BDF")
+    method : str (default: "LSODA")
         Integration method to use.
     vectorized : bool (default: :obj:`False`)
         Whether `diffeq` is implemented in a vectorized fashion.
@@ -75,7 +75,7 @@ def get_steady_state(
     y0: list,
     f_params: tuple,
     *,
-    integrator: Literal["vode", "zvode"] = "vode",
+    integrator: Literal["vode", "zvode", "lsoda"] = "lsoda",
     integrator_options: Optional[dict] = None,
     dt: float = 1,
     allclose_kws: Optional[dict] = None,
@@ -92,8 +92,8 @@ def get_steady_state(
         Initial condition on y (can be a vector).
     f_params : tuple
         Model parameters.
-    integrator : str (default: 'vode')
-        Name of ODE integrator to use ('vode' or 'zvode').
+    integrator : str (default: 'lsoda')
+        Name of ODE integrator to use ('vode', 'zvode', or 'lsoda').
     integrator_options : dict, optional
         A dictionary of keyword arguments to supply to the integrator.
     dt : float (default: 1.0)
@@ -109,12 +109,14 @@ def get_steady_state(
         Steady state concentrations of all species.
         Return an empty list if simulation failed.
     """
-    if integrator not in ["vode", "zvode"]:
-        raise ValueError("integrator must be either 'vode' or 'zvode'.")
+    availabe_integrators = ["vode", "zvode", "lsoda"]
+    if integrator not in availabe_integrators:
+        raise ValueError(f"integrator must be one of {availabe_integrators}.")
     if integrator_options is None:
         integrator_options = {}
-    integrator_options.setdefault("method", "bdf")
-    integrator_options.setdefault("with_jacobian", True)
+    if integrator in ["vode", "zvode"]:
+        integrator_options.setdefault("method", "bdf")
+        integrator_options.setdefault("with_jacobian", True)
     integrator_options.setdefault("atol", 1e-8)
     integrator_options.setdefault("rtol", 1e-8)
 
