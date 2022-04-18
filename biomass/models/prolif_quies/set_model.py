@@ -37,7 +37,7 @@ class DifferentialEquation(ReactionNetwork):
         E1 = y[V.tE1] - y[V.E1C1]
         pC1 = tC1 - y[V.C1] - y[V.E1C1]
         P21 = y[V.tP21] - y[V.CeP21] - y[V.CaP21] - y[V.iPcna] - y[V.iRc]
-        tPcna = y[V.aPcna] + y[V.iPcna] + y[V.aRc] + y[V.iRc]
+        # tPcna = y[V.aPcna] + y[V.iPcna] + y[V.aRc] + y[V.iRc]
 
         ### REACTION RATES
         rSyE2f = x[C.kSyE2f] + x[C.kSyE2fE2f] * y[V.E2f] / (x[C.jSyE2f] + y[V.E2f])
