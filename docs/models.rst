@@ -92,6 +92,20 @@ pan-RTK
 * **Code:** `pan_rtk`_
 * **Paper:** :cite:p:`hass2017predicting`
 
+Proliferation-quiescence decision
+---------------------------------
+
+.. raw:: html
+
+    <p align="left">
+        <img src="https://raw.githubusercontent.com/biomass-dev/biomass/master/biomass/models/prolif_quies/prolif_quies.png"
+            width="400px" alt="Proliferation-quiescence decision">
+    </p>
+
+* **Code:** `prolif_quies`_
+* **Paper:** :cite:p:`heldt2018comprehensive`
+
+
 TGF-β/SMAD pathway
 -------------------
 
@@ -112,5 +126,6 @@ TGF-β/SMAD pathway
 .. _mapk_cascade: https://github.com/biomass-dev/biomass/tree/master/biomass/models/mapk_cascade
 .. _nfkb_pathway: https://github.com/biomass-dev/biomass/tree/master/biomass/models/nfkb_pathway
 .. _pan_rtk: https://github.com/biomass-dev/biomass/tree/master/biomass/models/pan_rtk
+.. _prolif_quies: https://github.com/biomass-dev/biomass/tree/master/biomass/models/prolif_quies
 .. _tgfb_smad: https://github.com/biomass-dev/biomass/tree/master/biomass/models/tgfb_smad
 
