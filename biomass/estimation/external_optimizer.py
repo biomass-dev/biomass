@@ -54,6 +54,7 @@ class ExternalOptimizer(ExecModel):
         """
         Execute the external optimizer.
         """
+        os.makedirs(os.path.join(self.model.path, "out", "_external"), exist_ok=True)
         try:
             sys.stdout = _Logger(self.model.path)
             with warnings.catch_warnings():
