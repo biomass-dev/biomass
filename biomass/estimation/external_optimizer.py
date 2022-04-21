@@ -91,7 +91,7 @@ class ExternalOptimizer(ExecModel):
         >>> res = optimizer.run(
         ...     obj_fun,
         ...     [(0, 1) for _ in range(len(model.problem.bounds))],
-        ...     strategy="best2bin",
+        ...     strategy="best1bin",
         ...     maxiter=50,
         ...     tol=1e-4,
         ...     mutation=0.1,
