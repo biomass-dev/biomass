@@ -107,6 +107,7 @@ def _obj_fun(x) -> float:
     obj_val = optimizer.get_obj_val(x)
     return obj_val
 
+
 def test_external_optimizer():
     res = optimizer.run(
         _obj_fun,
