@@ -130,17 +130,21 @@ Below is an example of using ``scipy.optimize.differential_evolution`` for param
     from scipy.optimize import differential_evolution
 
     from biomass import Model
-    from biomass.models import Nakakuki_Cell_2010
     from biomass.estimation import ExternalOptimizer
+    from biomass.models import Nakakuki_Cell_2010
 
     model = Model(Nakakuki_Cell_2010.__package__).create()
     optimizer = ExternalOptimizer(model, differential_evolution)
 
+    def obj_fun(x):
+        """Objective function to be minimized."""
+        return optimizer.get_obj_val(x)
+
     res = optimizer.run(
-        model.problem.objective,
-        model.problem.bounds,
-        strategy="best2bin",
-        maxiter=100,
+        obj_fun,
+        [(0, 1) for _ in range(len(model.problem.bounds))],
+        strategy="best1bin",
+        maxiter=50,
         tol=1e-4,
         mutation=0.1,
         recombination=0.5,
@@ -153,10 +157,11 @@ Below is an example of using ``scipy.optimize.differential_evolution`` for param
 
 .. code-block:: python
 
-    
+
     from biomass import run_simulation
-    
-    optimizer.import_solution(res.x, x_id=0)
+
+    param_values = model.problem.gene2val(res.x)
+    optimizer.import_solution(param_values, x_id=0)
     run_simulation(model, viz_type="0")
 
 Data export and visualization

@@ -13,6 +13,7 @@ from biomass.models import Nakakuki_Cell_2010
 # from biomass import run_analysis
 
 model = Model(Nakakuki_Cell_2010.__package__).create()
+optimizer = ExternalOptimizer(model, differential_evolution)
 
 
 def test_initialization():
@@ -101,11 +102,16 @@ def test_param_estim():
     assert logs[-1][:13] == "Generation5: "
 
 
+def _obj_fun(x) -> float:
+    """Ojjective function to be minimized in ExternalOptimizer"""
+    obj_val = optimizer.get_obj_val(x)
+    return obj_val
+
+
 def test_external_optimizer():
-    optimizer = ExternalOptimizer(model, differential_evolution)
     res = optimizer.run(
-        model.problem.objective,
-        model.problem.bounds,
+        _obj_fun,
+        [(0, 1) for _ in range(len(model.problem.bounds))],
         strategy="best2bin",
         maxiter=5,
         popsize=3,
@@ -116,7 +122,8 @@ def test_external_optimizer():
         workers=-1,
     )
     assert isinstance(res, OptimizeResult)
-    optimizer.import_solution(res.x, x_id=0)
+    param_values = model.problem.gene2val(res.x)
+    optimizer.import_solution(param_values, x_id=0)
     n_iter: int = 0
     with open(
         os.path.join(model.path, "out", "0", "optimization.log"),

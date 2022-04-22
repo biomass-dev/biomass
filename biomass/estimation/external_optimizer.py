@@ -7,7 +7,7 @@ from typing import Callable, List, Union
 
 import numpy as np
 
-from ..exec_model import ModelObject
+from ..exec_model import ExecModel, ModelObject
 
 
 class _Logger(object):
@@ -29,7 +29,7 @@ class _Logger(object):
 
 
 @dataclass
-class ExternalOptimizer(object):
+class ExternalOptimizer(ExecModel):
     """
     Use an external optimization method for parameterization of a mechanistic model.
 
@@ -54,6 +54,7 @@ class ExternalOptimizer(object):
         """
         Execute the external optimizer.
         """
+        os.makedirs(os.path.join(self.model.path, "out", "_external"), exist_ok=True)
         try:
             sys.stdout = _Logger(self.model.path)
             with warnings.catch_warnings():
@@ -80,14 +81,18 @@ class ExternalOptimizer(object):
         --------
         >>> from scipy.optimize import differential_evolution
         >>> from biomass import Model
+        >>> from biomass.estimation import ExternalOptimizer
         >>> from biomass.models import Nakakuki_Cell_2010
         >>> model = Model(Nakakuki_Cell_2010.__package__).create()
         >>> optimizer = ExternalOptimizer(model, differential_evolution)
+        >>> def obj_fun(x):
+        ...    '''Objective function to be minimized.'''
+        ...    return optimizer.get_obj_val(x)
         >>> res = optimizer.run(
-        ...     model.problem.objective,
-        ...     model.problem.bounds,
-        ...     strategy="best2bin",
-        ...     maxiter=100,
+        ...     obj_fun,
+        ...     [(0, 1) for _ in range(len(model.problem.bounds))],
+        ...     strategy="best1bin",
+        ...     maxiter=50,
         ...     tol=1e-4,
         ...     mutation=0.1,
         ...     recombination=0.5,
@@ -96,14 +101,15 @@ class ExternalOptimizer(object):
         ...     workers=-1,
         ... )
 
-        differential_evolution step 1: f(x)= 7.05589\n
-        differential_evolution step 2: f(x)= 5.59166\n
-        differential_evolution step 3: f(x)= 2.80301\n
+        differential_evolution step 1: f(x)= 5.19392\n
+        differential_evolution step 2: f(x)= 2.32477\n
+        differential_evolution step 3: f(x)= 1.93583\n
         ...\n
-        differential_evolution step 100: f(x)= 0.538524\n
+        differential_evolution step 50: f(x)= 0.519774\n
 
         >>> from biomass import run_simulation
-        >>> optimizer.import_solution(res.x, x_id=0)
+        >>> param_values = model.problem.gene2val(res.x)
+        >>> optimizer.import_solution(param_values, x_id=0)
         >>> run_simulation(model, viz_type="0")
         """
 
