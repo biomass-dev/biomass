@@ -302,10 +302,11 @@ class OptimizationResults(ExecModel):
                 if line.startswith("Generation"):
                     # biomass.optimize()
                     iters.append(line.lstrip("Generation").split(":")[0])
+                    obj_val.append(line.split("=")[-1].strip())
                 elif line.startswith("differential_evolution step"):
                     # pasmopy.ScipyDifferentialEvolution
                     iters.append(line.lstrip("differential_evolution step").split(":")[0])
-                obj_val.append(line.split("=")[-1].strip())
+                    obj_val.append(line.split("=")[-1].strip())
             plt.plot([int(num) - 1 for num in iters], [float(val) for val in obj_val])
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
