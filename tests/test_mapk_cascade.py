@@ -32,7 +32,7 @@ def test_simulate_successful():
 
 def test_optimize():
     for x_id in range(1, 4):
-        optimize(model, x_id=x_id, optimizer_options={"workers": -1})
+        optimize(model, x_id=x_id, optimizer_options={"workers": 1})
     for paramset in range(1, 4):
         with open(
             os.path.join(
