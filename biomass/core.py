@@ -11,10 +11,11 @@ except ImportError:
     from typing_extensions import Literal
 
 import numpy as np
+from scipy.optimize import differential_evolution
 
 from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
 from .dynamics import SignalingSystems
-from .estimation import ScipyDifferentialEvolution
+from .estimation import ExternalOptimizer
 from .exec_model import ModelObject
 
 __all__ = ["Model", "optimize", "run_simulation", "run_analysis"]
@@ -246,9 +247,25 @@ def optimize(
             "If you don't want to see the evaluated objective function at every iteration, "
             "set the keyword argument `disp_here` to False."
         )
+    if optimizer_options["workers"] != 1:
+        raise ValueError(
+            "Currently `optimize` does not accept multiprocessing. "
+            "To set workers > 1, please refer to the example code in ExternalOptimizer."
+        )
 
-    optimizer = ScipyDifferentialEvolution(model, x_id)
-    optimizer.minimize(optimizer_options, disp_here)
+    optimizer = ExternalOptimizer(
+        model,
+        differential_evolution,
+        disp_here,
+    )
+
+    res = optimizer.minimize(
+        optimizer.get_obj_val,
+        [(0, 1) for _ in range(len(model.problem.bounds))],
+        **optimizer_options,
+    )
+    param_values = model.problem.gene2val(res.x)
+    optimizer.import_solution(param_values, x_id)
 
 
 def run_simulation(
