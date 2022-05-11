@@ -85,21 +85,10 @@ def test_run_analysis():
 
 
 def test_param_estim():
-    optimize(
-        model,
-        x_id=11,
-        options={
-            "popsize": 3,
-            "max_generation": 5,
-            "allowable_error": 0.0,
-            "local_search_method": "DE",
-            "maxiter": 3,
-            "workers": -1,
-        },
-    )
+    optimize(model, x_id=11, optimizer_options={"workers": -1})
     with open(os.path.join(model.path, "out", "11", "optimization.log")) as f:
         logs = f.readlines()
-    assert logs[-1][:13] == "Generation5: "
+    assert logs[-1].startswith("differential_evolution step 5: ")
 
 
 def _obj_fun(x) -> float:

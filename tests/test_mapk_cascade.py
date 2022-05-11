@@ -7,7 +7,6 @@ from biomass import (
     Model,
     OptimizationResults,
     optimize,
-    optimize_continue,
     run_analysis,
     run_simulation,
 )
@@ -32,17 +31,8 @@ def test_simulate_successful():
 
 
 def test_optimize():
-    optimize(
-        model=model,
-        x_id=range(1, 4),
-        options={
-            "popsize": 3,
-            "max_generation": 3,
-            "local_search_method": "mutation",
-            "n_children": 15,
-            "overwrite": True,
-        },
-    )
+    for x_id in range(1, 4):
+        optimize(model, x_id=x_id,options={"workers": -1})
     for paramset in range(1, 4):
         with open(
             os.path.join(
@@ -53,49 +43,7 @@ def test_optimize():
             )
         ) as f:
             logs = f.readlines()
-        assert logs[-1][:13] == "Generation3: "
-
-    optimize_continue(
-        model=model,
-        x_id=range(1, 4),
-        options={
-            "popsize": 3,
-            "max_generation": 6,
-            "local_search_method": "Powell",
-        },
-    )
-    for paramset in range(1, 4):
-        with open(
-            os.path.join(
-                model.path,
-                "out",
-                f"{paramset:d}",
-                "optimization.log",
-            )
-        ) as f:
-            logs = f.readlines()
-        assert logs[-1][:13] == "Generation6: "
-
-    optimize_continue(
-        model=model,
-        x_id=range(1, 4),
-        options={
-            "popsize": 3,
-            "max_generation": 9,
-            "local_search_method": "DE",
-        },
-    )
-    for paramset in range(1, 4):
-        with open(
-            os.path.join(
-                model.path,
-                "out",
-                f"{paramset:d}",
-                "optimization.log",
-            )
-        ) as f:
-            logs = f.readlines()
-        assert logs[-1][:13] == "Generation9: "
+        assert logs[-1].startswith("differential_evolution step 3: ")
 
 
 def test_run_simulation():

@@ -6,7 +6,7 @@ from math import isnan
 import numpy as np
 
 from ..exec_model import ExecModel, ModelObject
-from .step import OptimizeStep
+from ._step import OptimizeStep
 
 
 class OptimizeWarning(UserWarning):
