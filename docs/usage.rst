@@ -48,23 +48,19 @@ Using :func:`~biomass.core.optimize` function
 
 Parameters are adjusted to minimize the distance between model simulation and experimental data.
 
+* Set simulation conditions and the corresponding experimental data in ``observable.py``
+* Define an objective function to be minimized (:func:`objective`) in ``fitness.py``
+* Set lower/upper bounds of parameters to be estimated in ``set_search_param.py``
+
 .. code-block:: python
 
     from biomass import optimize
+    
+    optimize(model, x_id=1)
 
-    optimize(
-        model, x_id=1, options={
-            "popsize": 3,
-            "max_generation": 100,
-            "allowable_error": 0.5,
-            "local_search_method": "DE",
-            "maxiter": 50,
-        }
-    )
+The temporary result will be saved in ``out/_tmp/`` after each iteration.
 
-The temporary result will be saved in ``out/n/`` after each iteration.
-
-Progress list: ``out/n/optimization.log``::
+Progress list: ``out/_tmp/optimization.log``::
 
     Generation1: Best Fitness = 5.864228e+00
     Generation2: Best Fitness = 5.864228e+00
@@ -87,37 +83,9 @@ Progress list: ``out/n/optimization.log``::
     Generation19: Best Fitness = 6.862063e-01
     Generation20: Best Fitness = 6.862063e-01
 
-* If you want to continue from where you stopped in the last parameter search,
+.. warning::
 
-.. code-block:: python
-
-    from biomass import optimize_continue
-
-    optimize_continue(
-        model, x_id=1, options={
-            "popsize": 3,
-            "max_generation": 200,
-            "allowable_error": 0.5,
-            "local_search_method": "DE",
-            "maxiter": 50,
-        }
-    )
-
-* If you want to search multiple parameter sets (e.g., from 1 to 10) simultaneously,
-
-.. code-block:: python
-
-    from biomass import optimize
-
-    optimize(
-        model, x_id=range(1, 11), options={
-            "popsize": 5,
-            "max_generation": 100,
-            "allowable_error": 0.5,
-            "local_search_method": "DE",
-            "maxiter": 50,
-        }
-    )
+    To set optimizer_options["workers"] greater than 1, use :class:`~biomass.estimation.ExternalOptimizer` (see example below).
 
 Using external optimizers
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -140,7 +108,7 @@ Below is an example of using ``scipy.optimize.differential_evolution`` for param
         """Objective function to be minimized."""
         return optimizer.get_obj_val(x)
 
-    res = optimizer.run(
+    res = optimizer.minimize(
         obj_fun,
         [(0, 1) for _ in range(len(model.problem.bounds))],
         strategy="best1bin",
