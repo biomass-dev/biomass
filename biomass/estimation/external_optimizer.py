@@ -17,11 +17,11 @@ class _Logger(object):
     Duplicate stdout to _tmp/optimization.log.
     """
 
-    def __init__(self, model_path: str, disp_here: bool):
+    def __init__(self, model_path: str, x_id: int, disp_here: bool):
         self.disp_here = disp_here
         self.terminal = sys.stdout
         self.log = open(
-            os.path.join(model_path, "out", DIRNAME, "optimization.log"),
+            os.path.join(model_path, "out", DIRNAME + str(x_id), "optimization.log"),
             mode="w",
             encoding="utf-8",
         )
@@ -117,7 +117,7 @@ class ExternalOptimizer(ExecModel):
         """
         os.makedirs(os.path.join(self.model.path, "out", DIRNAME + str(self.x_id)), exist_ok=True)
         try:
-            sys.stdout = _Logger(self.model.path, self.disp_here)
+            sys.stdout = _Logger(self.model.path, self.x_id, self.disp_here)
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 res = self.optimize(*args, **kwargs)
