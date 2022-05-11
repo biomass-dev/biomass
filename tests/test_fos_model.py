@@ -98,7 +98,7 @@ def _obj_fun(x) -> float:
 
 
 def test_external_optimizer():
-    res = optimizer.run(
+    res = optimizer.minimize(
         _obj_fun,
         [(0, 1) for _ in range(len(model.problem.bounds))],
         strategy="best2bin",
