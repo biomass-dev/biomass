@@ -2,7 +2,6 @@ import os
 import shutil
 import sys
 import warnings
-from dataclasses import dataclass
 from typing import Callable, List, Union
 
 import numpy as np
@@ -33,7 +32,6 @@ class _Logger(object):
         self.log.write(message)
 
 
-@dataclass
 class ExternalOptimizer(ExecModel):
     """
     Use an external optimization method for parameterization of a mechanistic model.
@@ -44,6 +42,10 @@ class ExternalOptimizer(ExecModel):
         The BioMASS model object.
     optimize : Callable
         The external optimizer, e.g., :func:`scipy.optimize.differential_evolution`.
+    x_id : int
+        Index of parameter set to estimate.
+    disp_here: bool (default: False)
+        Whether to show the evaluated *objective* at every iteration.
 
     Examples
     --------
@@ -52,7 +54,8 @@ class ExternalOptimizer(ExecModel):
     >>> from biomass.estimation import ExternalOptimizer
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> model = Model(Nakakuki_Cell_2010.__package__).create()
-    >>> optimizer = ExternalOptimizer(model, differential_evolution)
+    >>> param_idx = 1
+    >>> optimizer = ExternalOptimizer(model, differential_evolution, param_idx)
     >>> def obj_fun(x):
     ...    '''Objective function to be minimized.'''
     ...    return optimizer.get_obj_val(x)
@@ -77,23 +80,42 @@ class ExternalOptimizer(ExecModel):
 
     >>> from biomass import run_simulation
     >>> param_values = model.problem.gene2val(res.x)
-    >>> optimizer.import_solution(param_values, x_id=0)
-    >>> run_simulation(model, viz_type="0")
+    >>> optimizer.import_solution(param_values)
+    >>> run_simulation(model, viz_type=str(param_idx))
     """
 
     model: ModelObject
     optimize: Callable
+    x_id: int
     disp_here: bool = False
 
-    def __post_init__(self):
-        os.makedirs(os.path.join(self.model.path, "out", DIRNAME), exist_ok=True)
+    def __init__(self,
+        model: ModelObject,
+        optimize: Callable,
+        x_id: int,
+        disp_here: bool = False,
+    ):
+        super().__init__(model)
+        self.optimize = optimize
+        self.x_id = x_id
+        self.disp_here = disp_here
+
+        self.savedir = os.path.join(self.model.path, "out", f"{self.x_id:d}")
+        if os.path.isdir(self.savedir):
+            raise ValueError(
+                f"out{os.sep}{self.x_id:d} already exists in {self.model.path}. "
+                "Use another parameter id."
+            )
+        else:
+            os.makedirs(self.savedir)
+        os.makedirs(os.path.join(self.model.path, "out", DIRNAME + str(self.x_id)), exist_ok=True)
         self.default_stdout = sys.stdout
 
     def minimize(self, *args, **kwargs):
         """
         Execute the external optimizer.
         """
-        os.makedirs(os.path.join(self.model.path, "out", DIRNAME), exist_ok=True)
+        os.makedirs(os.path.join(self.model.path, "out", DIRNAME + str(self.x_id)), exist_ok=True)
         try:
             sys.stdout = _Logger(self.model.path, self.disp_here)
             with warnings.catch_warnings():
@@ -103,10 +125,10 @@ class ExternalOptimizer(ExecModel):
         finally:
             sys.stdout = self.default_stdout
 
-    def _get_n_iter(self, savedir: str) -> int:
+    def _get_n_iter(self) -> int:
         n_iter: int = 0
         with open(
-            os.path.join(savedir, "optimization.log"),
+            os.path.join(self.savedir, "optimization.log"),
             mode="r",
             encoding="utf-8",
         ) as f:
@@ -116,7 +138,7 @@ class ExternalOptimizer(ExecModel):
                 n_iter += 1
         return n_iter
 
-    def import_solution(self, x: Union[np.ndarray, List[float]], x_id: int = 0) -> None:
+    def import_solution(self, x: Union[np.ndarray, List[float]], cleanup: bool = True) -> None:
         """
         Import the solution of the optimization to the model.
         The solution vector `x` will be saved to `path_to_model`/out/`x_id`/.
@@ -126,22 +148,19 @@ class ExternalOptimizer(ExecModel):
         ----------
         x : Union[np.ndarray, List[float]]
             The solution of the optimization.
-        x_id : int (default: 0)
-            Index of the parameter set.
+        cleanup : bool (default: True)
+            If :obj:`True, the folder `path_to_model`/out/`_tmp{n}`/ will be deleted.
         """
-        savedir = os.path.join(self.model.path, "out", f"{x_id:d}")
-        if os.path.isdir(savedir):
-            raise ValueError(
-                f"out{os.sep}{x_id:d} already exists in {self.model.path}. "
-                "Use another parameter id."
-            )
-        else:
-            os.makedirs(savedir)
-        shutil.move(os.path.join(self.model.path, "out", DIRNAME, "optimization.log"), savedir)
+        shutil.move(
+            os.path.join(self.model.path, "out", DIRNAME + str(self.x_id), "optimization.log"),
+            self.savedir,
+        )
 
         best_fitness: float = self.model.problem.objective(x)
-        n_iter = self._get_n_iter(savedir)
-        np.save(os.path.join(savedir, "best_fitness"), best_fitness)
-        np.save(os.path.join(savedir, "count_num"), n_iter)
-        np.save(os.path.join(savedir, "generation"), n_iter)
-        np.save(os.path.join(savedir, f"fit_param{n_iter:d}"), x)
+        n_iter = self._get_n_iter()
+        np.save(os.path.join(self.savedir, "best_fitness"), best_fitness)
+        np.save(os.path.join(self.savedir, "count_num"), n_iter)
+        np.save(os.path.join(self.savedir, "generation"), n_iter)
+        np.save(os.path.join(self.savedir, f"fit_param{n_iter:d}"), x)
+        if cleanup:
+            shutil.rmtree(os.path.join(self.model.path, "out", DIRNAME + str(self.x_id)))

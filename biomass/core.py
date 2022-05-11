@@ -193,8 +193,8 @@ def optimize(
     model: ModelObject,
     x_id: int,
     *,
-    optimizer_options: Optional[dict] = None,
     disp_here: bool = False,
+    optimizer_options: Optional[dict] = None,
 ) -> None:
     """
     Estimate model parameters from experimental data.
@@ -207,19 +207,19 @@ def optimize(
     x_id : int
         Index of parameter set to estimate.
 
+    disp_here: bool (default: False)
+        Whether to show the evaluated *objective* at every iteration.
+
     optimizer_options : dict, optional
         Keyword arguments to pass to ``scipy.optimize.differential_evolution``.
         For details, please refer to https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html.
-
-    disp_here: bool (default: False)
-            Whether to show the evaluated *objective* at every iteration.
 
     Examples
     --------
     >>> from biomass.models import Nakakuki_Cell_2010
     >>> from biomass import Model, optimize
     >>> model = Model(Nakakuki_Cell_2010.__package__).create()
-    >>> optimize(model, x_id=1, options={"workers": -1})
+    >>> optimize(model, x_id=1)
 
     Notes
     -----
@@ -249,13 +249,14 @@ def optimize(
         )
     if optimizer_options["workers"] != 1:
         raise ValueError(
-            "Currently `optimize` does not accept multiprocessing. "
+            "Currently `optimize` function does not accept multiprocessing. "
             "To set workers > 1, please refer to the example code in ExternalOptimizer."
         )
 
     optimizer = ExternalOptimizer(
         model,
         differential_evolution,
+        x_id,
         disp_here,
     )
 
@@ -265,7 +266,7 @@ def optimize(
         **optimizer_options,
     )
     param_values = model.problem.gene2val(res.x)
-    optimizer.import_solution(param_values, x_id)
+    optimizer.import_solution(param_values)
 
 
 def run_simulation(

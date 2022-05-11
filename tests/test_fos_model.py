@@ -13,7 +13,7 @@ from biomass.models import Nakakuki_Cell_2010
 # from biomass import run_analysis
 
 model = Model(Nakakuki_Cell_2010.__package__).create()
-optimizer = ExternalOptimizer(model, differential_evolution)
+optimizer = ExternalOptimizer(model, differential_evolution, 0)
 
 
 def test_initialization():
@@ -112,7 +112,7 @@ def test_external_optimizer():
     )
     assert isinstance(res, OptimizeResult)
     param_values = model.problem.gene2val(res.x)
-    optimizer.import_solution(param_values, x_id=0)
+    optimizer.import_solution(param_values)
     n_iter: int = 0
     with open(
         os.path.join(model.path, "out", "0", "optimization.log"),
