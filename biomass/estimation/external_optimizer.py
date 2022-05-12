@@ -100,10 +100,10 @@ class ExternalOptimizer(ExecModel):
         self.x_id = x_id
         self.disp_here = disp_here
 
-        self.savedir = os.path.join(self.model.path, "out", f"{self.x_id:d}")
+        self.savedir = os.path.join(self.model.path, "out", f"{self.x_id}")
         if os.path.isdir(self.savedir):
             raise ValueError(
-                f"out{os.sep}{self.x_id:d} already exists in {self.model.path}. "
+                f"out{os.sep}{self.x_id} already exists in {self.model.path}. "
                 "Use another parameter id."
             )
         else:
@@ -127,11 +127,9 @@ class ExternalOptimizer(ExecModel):
 
     def _get_n_iter(self) -> int:
         n_iter: int = 0
-        with open(
-            os.path.join(self.savedir, "optimization.log"),
-            mode="r",
-            encoding="utf-8",
-        ) as f:
+        path_to_log = os.path.join(self.savedir, "optimization.log")
+        assert os.path.isfile(path_to_log)
+        with open(path_to_log, mode="r", encoding="utf-8") as f:
             log_file = f.readlines()
         for message in log_file:
             if len(message.strip()) > 0:
@@ -149,7 +147,7 @@ class ExternalOptimizer(ExecModel):
         x : Union[np.ndarray, List[float]]
             The solution of the optimization.
         cleanup : bool (default: True)
-            If :obj:`True, the folder `path_to_model`/out/`_tmp{n}`/ will be deleted.
+            If True (default), delete the temporary folder after the optimization is finished.
         """
         shutil.move(
             os.path.join(self.model.path, "out", DIRNAME + str(self.x_id), "optimization.log"),
@@ -161,6 +159,6 @@ class ExternalOptimizer(ExecModel):
         np.save(os.path.join(self.savedir, "best_fitness"), best_fitness)
         np.save(os.path.join(self.savedir, "count_num"), n_iter)
         np.save(os.path.join(self.savedir, "generation"), n_iter)
-        np.save(os.path.join(self.savedir, f"fit_param{n_iter:d}"), x)
+        np.save(os.path.join(self.savedir, f"fit_param{n_iter}"), x)
         if cleanup:
             shutil.rmtree(os.path.join(self.model.path, "out", DIRNAME + str(self.x_id)))
