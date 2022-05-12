@@ -128,7 +128,6 @@ class ExternalOptimizer(ExecModel):
     def _get_n_iter(self) -> int:
         n_iter: int = 0
         path_to_log = os.path.join(self.savedir, "optimization.log")
-        assert os.path.isfile(path_to_log)
         with open(path_to_log, mode="r", encoding="utf-8") as f:
             log_file = f.readlines()
         for message in log_file:

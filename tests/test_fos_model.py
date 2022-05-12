@@ -113,16 +113,7 @@ def test_external_optimizer():
     assert isinstance(res, OptimizeResult)
     param_values = model.problem.gene2val(res.x)
     optimizer.import_solution(param_values)
-    n_iter: int = 0
-    with open(
-        os.path.join(model.path, "out", "0", "optimization.log"),
-        mode="r",
-        encoding="utf-8",
-    ) as f:
-        log_file = f.readlines()
-    for message in log_file:
-        if len(message.strip()) > 0:
-            n_iter += 1
+    n_iter = optimizer._get_n_iter()
     for fname in [
         "count_num.npy",
         "generation.npy",
