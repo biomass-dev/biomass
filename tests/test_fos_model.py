@@ -85,7 +85,7 @@ def test_run_analysis():
 
 
 def test_param_estim():
-    optimize(model, x_id=11, optimizer_options={"popsize": 5, "workers": 1})
+    optimize(model, x_id=11, optimizer_options={"maxiter": 5, "workers": 1})
     with open(os.path.join(model.path, "out", "11", "optimization.log")) as f:
         logs = f.readlines()
     assert logs[-1].startswith("differential_evolution step 5: ")
