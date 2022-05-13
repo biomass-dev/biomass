@@ -83,7 +83,7 @@ class InitialConditionSensitivity(SignalingMetric):
             np.nan,
         )
         for i, nth_paramset in enumerate(n_file):
-            optimized = self.load_param(nth_paramset)
+            optimized = self.model.load_param(nth_paramset)
             for j, idx in enumerate(nonzero_indices):
                 y0 = optimized.initials[:]
                 y0[idx] = optimized.initials[idx] * rate
