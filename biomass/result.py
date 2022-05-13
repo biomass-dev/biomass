@@ -1,7 +1,6 @@
 import csv
 import os
 from dataclasses import dataclass
-from sys import prefix
 from typing import Optional, Tuple
 
 import matplotlib.pyplot as plt
