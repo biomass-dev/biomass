@@ -274,11 +274,6 @@ def optimize(
             "If you don't want to see the evaluated objective function at every iteration, "
             "set the keyword argument `disp_here` to False."
         )
-    if optimizer_options["workers"] != 1:
-        raise ValueError(
-            "Currently `optimize` function does not accept multiprocessing. "
-            "To set workers > 1, please refer to the example code in ExternalOptimizer."
-        )
 
     optimizer = Optimizer(model, differential_evolution, x_id, disp_here)
     res = optimizer.minimize(

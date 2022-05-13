@@ -56,7 +56,7 @@ Parameters are adjusted to minimize the distance between model simulation and ex
 
     from biomass import optimize
     
-    optimize(model, x_id=1)
+    optimize(model, x_id=1, optimizer_options={"workers": -1})
 
 The temporary result will be saved in ``out/_tmp/`` after each iteration.
 
@@ -82,88 +82,9 @@ Progress list: ``out/_tmp/optimization.log``::
     Generation18: Best Fitness = 7.018051e-01
     Generation19: Best Fitness = 6.862063e-01
     Generation20: Best Fitness = 6.862063e-01
-    
-.. warning::
 
-    To set optimizer_options["workers"] greater than 1, use :class:`~biomass.estimation.ExternalOptimizer` (see example below).
-
-* If you want to search multiple parameter sets (e.g., from 1 to 10) simultaneously,
-
-1. Prepare ``optimize.py``
-
-.. code-block:: python
-    
-    import sys
-    from biomass import Model
-    from biomass.models import Nakakuki_Cell_2010
-    
-    if __name__ == "__main__":
-        args = sys.argv
-        model = Model(Nakakuki_Cell_2010.__package__).create()
-        optimize(model, x_id=args[1], disp_here=True)
-
-2. Prepare ``optimize_parallel.sh``
-
-.. code-block:: shell
-    
-    #!/bin/sh
-    
-    for i in $(seq 1 10); do
-        nohup python optimzie.py $i >> progress/$i.log 2>&1 &
-    done
-
-3. Run ``optimize_parallel.sh``
-
-.. code-block::
-    
-    $ mkdir progress
-    $ sh optimize_parallel.sh
-
-To kill jobs, run
-
-.. code-block::
-    
-    $ pgrep -f optimize.py | xargs kill -9
-
-Using external optimizers
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-You can also use external optimization methods to determine model parameters.
-Below is an example of using ``scipy.optimize.differential_evolution`` for parameter estimation.
-
-.. code-block:: python
-
-    from scipy.optimize import differential_evolution
-
-    from biomass import Model, run_simulation
-    from biomass.estimation import Optimizer
-    from biomass.models import Nakakuki_Cell_2010
-
-    model = Model(Nakakuki_Cell_2010.__package__).create()
-    param_idx = 1
-    optimizer = Optimizer(model, differential_evolution, param_idx)
-
-    def obj_fun(x):
-        """Objective function to be minimized."""
-        return optimizer.get_obj_val(x)
-
-    res = optimizer.minimize(
-        obj_fun,
-        [(0, 1) for _ in range(len(model.problem.bounds))],
-        strategy="best1bin",
-        maxiter=50,
-        tol=1e-4,
-        mutation=0.1,
-        recombination=0.5,
-        disp=True,
-        polish=False,
-        workers=-1,
-    )
-    
-    # Import the solution of the optimization (res.x) and visualize the result.
-    param_values = model.problem.gene2val(res.x)
-    optimizer.import_solution(param_values)
-    run_simulation(model, viz_type=str(param_idx))
+.. note::
+    For detailed information about ``optimizer_options``, please refer to `scipy docs <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html>`.
 
 Data export and visualization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
