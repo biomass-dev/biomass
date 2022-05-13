@@ -5,7 +5,7 @@ from math import isnan
 
 import numpy as np
 
-from ..exec_model import ModelObject
+from ...exec_model import ModelObject
 from ._step import OptimizeStep
 
 
