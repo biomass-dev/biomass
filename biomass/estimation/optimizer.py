@@ -32,7 +32,7 @@ class _Logger(object):
         self.log.write(message)
 
 
-class ExternalOptimizer(ExecModel):
+class Optimizer(ExecModel):
     """
     Use an external optimization method for parameterization of a mechanistic model.
 
@@ -41,7 +41,7 @@ class ExternalOptimizer(ExecModel):
     model : ModelObject
         The BioMASS model object.
     optimize : Callable
-        The external optimizer, e.g., :func:`scipy.optimize.differential_evolution`.
+        The optimizer, e.g., :func:`scipy.optimize.differential_evolution`.
     x_id : int
         Index of parameter set to estimate.
     disp_here: bool (default: False)

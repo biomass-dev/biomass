@@ -15,7 +15,7 @@ from scipy.optimize import differential_evolution
 
 from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
 from .dynamics import SignalingSystems
-from .estimation import ExternalOptimizer
+from .estimation import Optimizer
 from .exec_model import ModelObject
 
 __all__ = ["Model", "optimize", "run_simulation", "run_analysis"]
@@ -253,13 +253,7 @@ def optimize(
             "To set workers > 1, please refer to the example code in ExternalOptimizer."
         )
 
-    optimizer = ExternalOptimizer(
-        model,
-        differential_evolution,
-        x_id,
-        disp_here,
-    )
-
+    optimizer = Optimizer(model, differential_evolution, x_id, disp_here)
     res = optimizer.minimize(
         optimizer.get_obj_val,
         [(0, 1) for _ in range(len(model.problem.bounds))],
