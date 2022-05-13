@@ -8,7 +8,6 @@ import numpy as np
 
 from ..exec_model import ExecModel, ModelObject
 
-
 DIRNAME = "_tmp"
 
 
@@ -89,7 +88,8 @@ class Optimizer(ExecModel):
     x_id: int
     disp_here: bool = False
 
-    def __init__(self,
+    def __init__(
+        self,
         model: ModelObject,
         optimize: Callable,
         x_id: int,

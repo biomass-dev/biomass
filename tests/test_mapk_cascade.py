@@ -3,13 +3,7 @@ import shutil
 
 import numpy as np
 
-from biomass import (
-    Model,
-    OptimizationResults,
-    optimize,
-    run_analysis,
-    run_simulation,
-)
+from biomass import Model, OptimizationResults, optimize, run_analysis, run_simulation
 from biomass.models import mapk_cascade
 
 model = Model(mapk_cascade.__package__).create()
