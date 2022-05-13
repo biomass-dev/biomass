@@ -28,9 +28,9 @@ Name                    Content
 
 .. code-block:: python
 
-    >>> from biomass import Model
+    >>> from biomass import create_model
     >>> from biomass.models import Nakakuki_Cell_2010
-    >>> model = Model(Nakakuki_Cell_2010.__package__).create(show_info=True)
+    >>> model = create_model(Nakakuki_Cell_2010.__package__, show_info=True)
     Nakakuki_Cell_2010 information
     ------------------------------
     36 species

@@ -18,7 +18,7 @@ from .dynamics import SignalingSystems
 from .estimation import Optimizer
 from .exec_model import ModelObject
 
-__all__ = ["Model", "optimize", "run_simulation", "run_analysis"]
+__all__ = ["Model", "create_model", "optimize", "run_simulation", "run_analysis"]
 
 
 class BiomassIndexError(Exception):
@@ -189,6 +189,33 @@ class Model(object):
         return model
 
 
+def create_model(pkg_name: str, show_info: bool = False) -> ModelObject:
+    """
+    Create a BioMASS model.
+
+    Parameters
+    ----------
+    pkg_name : str
+        Path (dot-sepalated) to a biomass model directory.
+        Use ``__package__``.
+    show_info : bool (default: :obj:`False`)
+        Set to :obj:`True` to print the information related to model size.
+
+    Returns
+    -------
+    model : :class:`biomass.exec_model.ModelObject`
+        The BioMASS model object.
+
+    Examples
+    --------
+    >>> from biomass import create_model
+    >>> import your_model
+    >>> model = create_model(your_model.__package__)
+    """
+    model = Model(pkg_name).create(show_info)
+    return model
+
+
 def optimize(
     model: ModelObject,
     x_id: int,
@@ -255,7 +282,7 @@ def optimize(
 
     optimizer = Optimizer(model, differential_evolution, x_id, disp_here)
     res = optimizer.minimize(
-        optimizer.get_obj_val,
+        model.get_obj_val,
         [(0, 1) for _ in range(len(model.problem.bounds))],
         **optimizer_options,
     )
