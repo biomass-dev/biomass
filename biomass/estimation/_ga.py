@@ -5,7 +5,7 @@ from math import isnan
 
 import numpy as np
 
-from ..exec_model import ExecModel, ModelObject
+from ..exec_model import ModelObject
 from ._step import OptimizeStep
 
 
@@ -19,7 +19,7 @@ def _check_unknown_options(unknown_options: dict) -> None:
         warnings.warn(f"Unknown optimization options: {msg}", OptimizeWarning)
 
 
-class GeneticAlgorithmInit(ExecModel):
+class GeneticAlgorithmInit(object):
     """
     Use genetic algorithm to estimate model parameters from experimental measurements.
     """
@@ -38,7 +38,7 @@ class GeneticAlgorithmInit(ExecModel):
         overwrite: bool,
         **unknown_options,
     ) -> None:
-        super().__init__(model)
+        self.model = model
         self.search_rgn: np.ndarray = self.model.problem.get_region()
         self.n_population: int = int(popsize * self.search_rgn.shape[1])
         self.n_gene: int = self.search_rgn.shape[1]
@@ -226,7 +226,7 @@ class GeneticAlgorithmInit(ExecModel):
             Otherwise, `Generation` <- `Generation` + 1, and return to the step 2.
         """
         step = OptimizeStep(
-            self.get_obj_val,
+            self.model.get_obj_val,
             self.n_population,
             self.n_gene,
             self.n_children,
@@ -360,7 +360,7 @@ class GeneticAlgorithmInit(ExecModel):
         return
 
 
-class GeneticAlgorithmContinue(ExecModel):
+class GeneticAlgorithmContinue(object):
     """
     Continue optimization from where you stopped in the last parameter estimation.
     """
@@ -379,7 +379,7 @@ class GeneticAlgorithmContinue(ExecModel):
         p0_bounds: list,
         **unknown_options,
     ) -> None:
-        super().__init__(model)
+        self.model = model
         self.search_rgn: np.ndarray = self.model.problem.get_region()
         self.n_population: int = int(popsize * self.search_rgn.shape[1])
         self.n_gene: int = self.search_rgn.shape[1]
@@ -440,7 +440,7 @@ class GeneticAlgorithmContinue(ExecModel):
             while self.initial_threshold <= population[i, -1]:
                 population[i, : self.n_gene] = self._encode_bestIndivVal2randGene(best_individual)
                 population[i, : self.n_gene] = np.clip(population[i, : self.n_gene], 0.0, 1.0)
-                population[i, -1] = self.get_obj_val(population[i, : self.n_gene])
+                population[i, -1] = self.model.get_obj_val(population[i, : self.n_gene])
             with open(
                 os.path.join(
                     self.model.path,
@@ -473,7 +473,7 @@ class GeneticAlgorithmContinue(ExecModel):
 
     def _ga_v2_continue(self, nth_paramset: int) -> None:
         step = OptimizeStep(
-            self.get_obj_val,
+            self.model.get_obj_val,
             self.n_population,
             self.n_gene,
             self.n_children,

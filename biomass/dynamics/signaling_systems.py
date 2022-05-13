@@ -24,7 +24,7 @@ class SignalingSystems(TemporalDynamics):
         """
         Run simulation and save figures.
         """
-        n_file: List[int] = [] if viz_type in ["original", "experiment"] else self.get_executable()
+        n_file: List[int] = [] if viz_type in ["original", "experiment"] else self.model.get_executable()
         simulations_all = np.full(
             (
                 len(self.model.observables),
@@ -152,7 +152,7 @@ class SignalingSystems(TemporalDynamics):
             True if integration was successful.
 
         """
-        optimized = self.load_param(nth_paramset)
+        optimized = self.model.load_param(nth_paramset)
         if self.model.problem.simulate(*optimized) is None:
             is_successful = True
         else:
@@ -175,7 +175,7 @@ class SignalingSystems(TemporalDynamics):
             Index of parameter set with the best objective value.
 
         """
-        optimized = self.load_param(best_paramset)
+        optimized = self.model.load_param(best_paramset)
         with open(
             os.path.join(
                 self.model.path,

@@ -6,7 +6,7 @@ from typing import Callable, List, Union
 
 import numpy as np
 
-from ..exec_model import ExecModel, ModelObject
+from ..exec_model import ModelObject
 
 DIRNAME = "_tmp"
 
@@ -31,7 +31,7 @@ class _Logger(object):
         self.log.write(message)
 
 
-class Optimizer(ExecModel):
+class Optimizer(object):
     """
     Use an external optimization method for parameterization of a mechanistic model.
 
@@ -83,11 +83,6 @@ class Optimizer(ExecModel):
     >>> run_simulation(model, viz_type=str(param_idx))
     """
 
-    model: ModelObject
-    optimize: Callable
-    x_id: int
-    disp_here: bool = False
-
     def __init__(
         self,
         model: ModelObject,
@@ -95,7 +90,7 @@ class Optimizer(ExecModel):
         x_id: int,
         disp_here: bool = False,
     ):
-        super().__init__(model)
+        self.model = model
         self.optimize = optimize
         self.x_id = x_id
         self.disp_here = disp_here

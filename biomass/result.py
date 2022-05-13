@@ -8,11 +8,11 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from .exec_model import ExecModel, ModelObject
+from .exec_model import ModelObject
 
 
 @dataclass
-class OptimizationResults(ExecModel):
+class OptimizationResults(object):
     model: ModelObject
 
     def __post_init__(self) -> None:
@@ -46,7 +46,7 @@ class OptimizationResults(ExecModel):
         * optimization_results/optimized_params.csv
         * optimization_results/optimized_initials.csv
         """
-        n_file = self.get_executable()
+        n_file = self.model.get_executable()
 
         if len(self.model.problem.idx_params) + len(self.model.problem.idx_initials) > 0:
             optimized_params = np.empty(
@@ -229,9 +229,9 @@ class OptimizationResults(ExecModel):
                 y0 = self.model.ival()
                 obj_val = self.model.problem.objective(None, x, y0)
                 writer.writerow(["original", f"{obj_val:8.3e}"])
-            n_file = self.get_executable()
+            n_file = self.model.get_executable()
             for paramset in sorted(n_file):
-                optimized = self.load_param(paramset)
+                optimized = self.model.load_param(paramset)
                 obj_val = self.model.problem.objective(None, *optimized)
                 writer.writerow([f"{paramset:d}", f"{obj_val:8.3e}"])
 
@@ -284,7 +284,7 @@ class OptimizationResults(ExecModel):
         * optimization_results/obj_func_traces.pdf
 
         """
-        n_file = self.get_executable()
+        n_file = self.model.get_executable()
         # matplotlib
         if config is None:
             config = {}
