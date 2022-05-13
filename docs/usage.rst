@@ -58,30 +58,30 @@ Parameters are adjusted to minimize the distance between model simulation and ex
     
     optimize(model, x_id=1, optimizer_options={"workers": -1})
 
-The temporary result will be saved in ``out/_tmp/`` after each iteration.
+The temporary result will be saved in ``out/_tmp{n}/`` after each iteration.
 
-Progress list: ``out/_tmp/optimization.log``::
+Progress list: ``out/_tmp{n}/optimization.log``::
 
-    Generation1: Best Fitness = 5.864228e+00
-    Generation2: Best Fitness = 5.864228e+00
-    Generation3: Best Fitness = 4.488934e+00
-    Generation4: Best Fitness = 3.793744e+00
-    Generation5: Best Fitness = 3.652047e+00
-    Generation6: Best Fitness = 3.652047e+00
-    Generation7: Best Fitness = 3.652047e+00
-    Generation8: Best Fitness = 3.452999e+00
-    Generation9: Best Fitness = 3.180878e+00
-    Generation10: Best Fitness = 1.392501e+00
-    Generation11: Best Fitness = 1.392501e+00
-    Generation12: Best Fitness = 1.392501e+00
-    Generation13: Best Fitness = 1.392501e+00
-    Generation14: Best Fitness = 7.018051e-01
-    Generation15: Best Fitness = 7.018051e-01
-    Generation16: Best Fitness = 7.018051e-01
-    Generation17: Best Fitness = 7.018051e-01
-    Generation18: Best Fitness = 7.018051e-01
-    Generation19: Best Fitness = 6.862063e-01
-    Generation20: Best Fitness = 6.862063e-01
+    differential_evolution step 1: f(x)= 4.96181
+    differential_evolution step 2: f(x)= 3.555
+    differential_evolution step 3: f(x)= 2.50626
+    differential_evolution step 4: f(x)= 2.00657
+    differential_evolution step 5: f(x)= 1.83556
+    differential_evolution step 6: f(x)= 1.28031
+    differential_evolution step 7: f(x)= 0.973207
+    differential_evolution step 8: f(x)= 0.741667
+    differential_evolution step 9: f(x)= 0.741667
+    differential_evolution step 10: f(x)= 0.735682
+    differential_evolution step 11: f(x)= 0.717266
+    differential_evolution step 12: f(x)= 0.603178
+    differential_evolution step 13: f(x)= 0.56934
+    differential_evolution step 14: f(x)= 0.56934
+    differential_evolution step 15: f(x)= 0.549331
+    differential_evolution step 16: f(x)= 0.459069
+    differential_evolution step 17: f(x)= 0.447772
+    differential_evolution step 18: f(x)= 0.430385
+    differential_evolution step 19: f(x)= 0.37085
+    differential_evolution step 20: f(x)= 0.37085
 
 .. note::
     For detailed information about ``optimizer_options``, please refer to `scipy docs <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html>`.
