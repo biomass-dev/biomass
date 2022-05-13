@@ -1,6 +1,7 @@
 import csv
 import os
 from dataclasses import dataclass
+from sys import prefix
 from typing import Optional, Tuple
 
 import matplotlib.pyplot as plt
@@ -243,6 +244,9 @@ class OptimizationResults(ExecModel):
         ylabel: str = "Objective function value",
         xticks: Optional[list] = None,
         yticks: Optional[list] = None,
+        message_head: str = "differential_evolution step",
+        sep: str = ":",
+        prefix: str = "=",
     ) -> None:
         """
         Visualize objective function traces for different optimization runs.
@@ -259,6 +263,12 @@ class OptimizationResults(ExecModel):
             The list of xtick locations.
         yticks: list, optional
             The list of ytick locations.
+        message_head : str (default: "differential_evolution step")
+            Beginning of the progress status message.
+        sep : str (default: ":")
+            Suffix for iteration number.
+        prefix : str (default: "=")
+            Prefix for objective function value.
 
         Examples
         --------
@@ -299,14 +309,9 @@ class OptimizationResults(ExecModel):
             iters = []
             obj_val = []
             for line in traces:
-                if line.startswith("Generation"):
-                    # biomass.optimize()
-                    iters.append(line.lstrip("Generation").split(":")[0])
-                    obj_val.append(line.split("=")[-1].strip())
-                elif line.startswith("differential_evolution step"):
-                    # pasmopy.ScipyDifferentialEvolution
-                    iters.append(line.lstrip("differential_evolution step").split(":")[0])
-                    obj_val.append(line.split("=")[-1].strip())
+                if line.startswith(message_head):
+                    iters.append(line.lstrip(message_head).split(sep)[0])
+                    obj_val.append(line.split(prefix)[-1].strip())
             plt.plot([int(num) - 1 for num in iters], [float(val) for val in obj_val])
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
