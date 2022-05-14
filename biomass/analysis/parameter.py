@@ -7,13 +7,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-from ..exec_model import ExecModel, ModelObject
+from ..exec_model import ModelObject
 from ..plotting import SensitivityOptions
 from .util import SignalingMetric, dlnyi_dlnxj
 
 
 @dataclass
-class ParameterSensitivity(ExecModel, SignalingMetric):
+class ParameterSensitivity(SignalingMetric):
     """Sensitivity for parameters"""
 
     model: ModelObject
@@ -71,7 +71,7 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
         """
 
         rate = 1.01  # 1% change
-        n_file = self.get_executable()
+        n_file = self.model.get_executable()
 
         signaling_metric = np.full(
             (
@@ -83,7 +83,7 @@ class ParameterSensitivity(ExecModel, SignalingMetric):
             np.nan,
         )
         for i, nth_paramset in enumerate(n_file):
-            optimized = self.load_param(nth_paramset)
+            optimized = self.model.load_param(nth_paramset)
             for j, idx in enumerate(param_indices):
                 x = optimized.params[:]
                 x[idx] = optimized.params[idx] * rate

@@ -8,11 +8,11 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from .exec_model import ExecModel, ModelObject
+from .exec_model import ModelObject
 
 
 @dataclass
-class OptimizationResults(ExecModel):
+class OptimizationResults(object):
     model: ModelObject
 
     def __post_init__(self) -> None:
@@ -46,7 +46,7 @@ class OptimizationResults(ExecModel):
         * optimization_results/optimized_params.csv
         * optimization_results/optimized_initials.csv
         """
-        n_file = self.get_executable()
+        n_file = self.model.get_executable()
 
         if len(self.model.problem.idx_params) + len(self.model.problem.idx_initials) > 0:
             optimized_params = np.empty(
@@ -229,9 +229,9 @@ class OptimizationResults(ExecModel):
                 y0 = self.model.ival()
                 obj_val = self.model.problem.objective(None, x, y0)
                 writer.writerow(["original", f"{obj_val:8.3e}"])
-            n_file = self.get_executable()
+            n_file = self.model.get_executable()
             for paramset in sorted(n_file):
-                optimized = self.load_param(paramset)
+                optimized = self.model.load_param(paramset)
                 obj_val = self.model.problem.objective(None, *optimized)
                 writer.writerow([f"{paramset:d}", f"{obj_val:8.3e}"])
 
@@ -243,6 +243,9 @@ class OptimizationResults(ExecModel):
         ylabel: str = "Objective function value",
         xticks: Optional[list] = None,
         yticks: Optional[list] = None,
+        message_head: str = "differential_evolution step",
+        sep: str = ":",
+        prefix: str = "=",
     ) -> None:
         """
         Visualize objective function traces for different optimization runs.
@@ -259,6 +262,12 @@ class OptimizationResults(ExecModel):
             The list of xtick locations.
         yticks: list, optional
             The list of ytick locations.
+        message_head : str (default: "differential_evolution step")
+            Beginning of the progress status message.
+        sep : str (default: ":")
+            Suffix for iteration number.
+        prefix : str (default: "=")
+            Prefix for objective function value.
 
         Examples
         --------
@@ -275,7 +284,7 @@ class OptimizationResults(ExecModel):
         * optimization_results/obj_func_traces.pdf
 
         """
-        n_file = self.get_executable()
+        n_file = self.model.get_executable()
         # matplotlib
         if config is None:
             config = {}
@@ -299,14 +308,9 @@ class OptimizationResults(ExecModel):
             iters = []
             obj_val = []
             for line in traces:
-                if line.startswith("Generation"):
-                    # biomass.optimize()
-                    iters.append(line.lstrip("Generation").split(":")[0])
-                    obj_val.append(line.split("=")[-1].strip())
-                elif line.startswith("differential_evolution step"):
-                    # pasmopy.ScipyDifferentialEvolution
-                    iters.append(line.lstrip("differential_evolution step").split(":")[0])
-                    obj_val.append(line.split("=")[-1].strip())
+                if line.startswith(message_head):
+                    iters.append(line.lstrip(message_head).split(sep)[0])
+                    obj_val.append(line.split(prefix)[-1].strip())
             plt.plot([int(num) - 1 for num in iters], [float(val) for val in obj_val])
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)

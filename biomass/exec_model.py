@@ -1,9 +1,13 @@
 import os
 import re
-from dataclasses import dataclass
 from typing import Any, List, NamedTuple
 
 import numpy as np
+
+
+class OptimizedValues(NamedTuple):
+    params: list
+    initials: list
 
 
 class ModelObject(object):
@@ -85,16 +89,6 @@ class ModelObject(object):
         else:
             raise NameError(f"Duplicate observables: {', '.join(duplicate)}")
 
-
-class OptimizedValues(NamedTuple):
-    params: list
-    initials: list
-
-
-@dataclass
-class ExecModel(object):
-    model: ModelObject
-
     def get_individual(self, paramset: int) -> np.ndarray:
         """
         Get estimated parameter values from optimization results.
@@ -111,7 +105,7 @@ class ExecModel(object):
         """
         best_generation = np.load(
             os.path.join(
-                self.model.path,
+                self.path,
                 "out",
                 f"{paramset:d}",
                 "generation.npy",
@@ -119,7 +113,7 @@ class ExecModel(object):
         )
         best_individual = np.load(
             os.path.join(
-                self.model.path,
+                self.path,
                 "out",
                 f"{paramset:d}",
                 f"fit_param{int(best_generation):d}.npy",
@@ -142,7 +136,7 @@ class ExecModel(object):
             Optimized parameter/initial values.
         """
         best_individual = self.get_individual(paramset)
-        (x, y0) = self.model.problem.update(best_individual)
+        (x, y0) = self.problem.update(best_individual)
         optimized_values = OptimizedValues(x, y0)
         return optimized_values
 
@@ -154,7 +148,7 @@ class ExecModel(object):
         try:
             fitparam_files = os.listdir(
                 os.path.join(
-                    self.model.path,
+                    self.path,
                     "out",
                 )
             )
@@ -165,7 +159,7 @@ class ExecModel(object):
             for i, nth_paramset in enumerate(n_file):
                 if not os.path.isfile(
                     os.path.join(
-                        self.model.path,
+                        self.path,
                         "out",
                         f"{nth_paramset:d}",
                         "generation.npy",
@@ -192,5 +186,5 @@ class ExecModel(object):
         obj_val : float
             Objective function value.
         """
-        obj_val = self.model.problem.objective(self.model.problem.gene2val(indiv_gene))
+        obj_val = self.problem.objective(self.problem.gene2val(indiv_gene))
         return obj_val

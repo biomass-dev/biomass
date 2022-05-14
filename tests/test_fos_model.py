@@ -4,16 +4,13 @@ from distutils.dir_util import copy_tree
 
 import numpy as np
 import pytest
-from scipy.optimize import OptimizeResult, differential_evolution
 
 from biomass import Model, OptimizationResults, optimize, run_analysis, run_simulation
-from biomass.estimation import ExternalOptimizer
 from biomass.models import Nakakuki_Cell_2010
 
 # from biomass import run_analysis
 
 model = Model(Nakakuki_Cell_2010.__package__).create()
-optimizer = ExternalOptimizer(model, differential_evolution)
 
 
 def test_initialization():
@@ -85,63 +82,12 @@ def test_run_analysis():
 
 
 def test_param_estim():
-    optimize(
-        model,
-        x_id=11,
-        options={
-            "popsize": 3,
-            "max_generation": 5,
-            "allowable_error": 0.0,
-            "local_search_method": "DE",
-            "maxiter": 3,
-            "workers": -1,
-        },
-    )
+    optimize(model, x_id=11, optimizer_options={"maxiter": 5, "workers": -1})
     with open(os.path.join(model.path, "out", "11", "optimization.log")) as f:
         logs = f.readlines()
-    assert logs[-1][:13] == "Generation5: "
-
-
-def _obj_fun(x) -> float:
-    """Ojjective function to be minimized in ExternalOptimizer"""
-    obj_val = optimizer.get_obj_val(x)
-    return obj_val
-
-
-def test_external_optimizer():
-    res = optimizer.run(
-        _obj_fun,
-        [(0, 1) for _ in range(len(model.problem.bounds))],
-        strategy="best2bin",
-        maxiter=5,
-        popsize=3,
-        tol=1e-4,
-        mutation=0.1,
-        recombination=0.5,
-        polish=False,
-        workers=-1,
-    )
-    assert isinstance(res, OptimizeResult)
-    param_values = model.problem.gene2val(res.x)
-    optimizer.import_solution(param_values, x_id=0)
-    n_iter: int = 0
-    with open(
-        os.path.join(model.path, "out", "0", "optimization.log"),
-        mode="r",
-        encoding="utf-8",
-    ) as f:
-        log_file = f.readlines()
-    for message in log_file:
-        if len(message.strip()) > 0:
-            n_iter += 1
-    for fname in [
-        "count_num.npy",
-        "generation.npy",
-        f"fit_param{n_iter}.npy",
-    ]:
-        assert os.path.isfile(os.path.join(model.path, "out", "0", f"{fname}"))
-    assert run_simulation(model, viz_type="0") is None
-    assert os.path.isdir(os.path.join(model.path, "figure", "simulation", "0"))
+    assert logs[-1].startswith("differential_evolution step 5: ")
+    assert run_simulation(model, viz_type="11") is None
+    assert os.path.isdir(os.path.join(model.path, "figure", "simulation", "11"))
 
 
 def test_cleanup():

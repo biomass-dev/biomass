@@ -7,13 +7,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-from ..exec_model import ExecModel, ModelObject
+from ..exec_model import ModelObject
 from ..plotting import SensitivityOptions
 from .util import SignalingMetric, dlnyi_dlnxj
 
 
 @dataclass
-class InitialConditionSensitivity(ExecModel, SignalingMetric):
+class InitialConditionSensitivity(SignalingMetric):
     """Sensitivity for species with nonzero initial conditions"""
 
     model: ModelObject
@@ -71,7 +71,7 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
         """
 
         rate = 1.01  # 1% change
-        n_file = self.get_executable()
+        n_file = self.model.get_executable()
 
         signaling_metric = np.full(
             (
@@ -83,7 +83,7 @@ class InitialConditionSensitivity(ExecModel, SignalingMetric):
             np.nan,
         )
         for i, nth_paramset in enumerate(n_file):
-            optimized = self.load_param(nth_paramset)
+            optimized = self.model.load_param(nth_paramset)
             for j, idx in enumerate(nonzero_indices):
                 y0 = optimized.initials[:]
                 y0[idx] = optimized.initials[idx] * rate
