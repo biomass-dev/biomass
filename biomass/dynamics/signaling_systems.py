@@ -24,7 +24,9 @@ class SignalingSystems(TemporalDynamics):
         """
         Run simulation and save figures.
         """
-        n_file: List[int] = [] if viz_type in ["original", "experiment"] else self.model.get_executable()
+        n_file: List[int] = (
+            [] if viz_type in ["original", "experiment"] else self.model.get_executable()
+        )
         simulations_all = np.full(
             (
                 len(self.model.observables),

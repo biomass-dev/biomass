@@ -1,9 +1,9 @@
 import multiprocessing
 import warnings
-from typing import Union, Iterable, Optional
+from typing import Iterable, Optional, Union
 
-from ._ga import GeneticAlgorithmContinue, GeneticAlgorithmInit
 from ...exec_model import ModelObject
+from ._ga import GeneticAlgorithmContinue, GeneticAlgorithmInit
 
 
 def _check_optional_arguments(
