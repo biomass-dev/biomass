@@ -84,7 +84,7 @@ Progress list: ``out/_tmp{n}/optimization.log``::
     differential_evolution step 20: f(x)= 0.37085
 
 .. note::
-    For detailed information about ``optimizer_options``, please refer to `scipy docs <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html>`.
+    For detailed information about ``optimizer_options``, please refer to `scipy docs <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html>`_.
 
 Data export and visualization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
