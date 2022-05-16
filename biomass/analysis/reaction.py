@@ -7,13 +7,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-from ..exec_model import ExecModel, ModelObject
+from ..exec_model import ModelObject
 from ..plotting import SensitivityOptions
 from .util import SignalingMetric, dlnyi_dlnxj
 
 
 @dataclass
-class ReactionSensitivity(ExecModel, SignalingMetric):
+class ReactionSensitivity(SignalingMetric):
     """Sensitivity for rate equations"""
 
     model: ModelObject
@@ -59,7 +59,7 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
 
         """
         rate = 1.01  # 1% change
-        n_file = self.get_executable()
+        n_file = self.model.get_executable()
         signaling_metric = np.full(
             (
                 len(n_file),
@@ -70,7 +70,7 @@ class ReactionSensitivity(ExecModel, SignalingMetric):
             np.nan,
         )
         for i, nth_paramset in enumerate(n_file):
-            optimized = self.load_param(nth_paramset)
+            optimized = self.model.load_param(nth_paramset)
             for j, rxn_idx in enumerate(reaction_indices):
                 perturbation: Dict[int, float] = {}
                 for idx in reaction_indices:
