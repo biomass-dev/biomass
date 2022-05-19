@@ -26,13 +26,6 @@ Author
 
 `Hiroaki Imoto <https://github.com/himoto>`_
 
-Citation
---------
-
-When using BioMASS, please cite the following paper:
-
-* Imoto, H., Zhang, S. & Okada, M. A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway. *Cancers* **12**, 2878 (2020). :cite:p:`cancers12102878`
-
 Contact
 -------
 
@@ -52,6 +45,7 @@ You can also always send me an `email <mailto:himoto@protein.osaka-u.ac.jp>`_.
    models
    api/index
    references
+   citing
 
 .. |PyPI version| image:: https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&logoColor=white
    :target: https://pypi.python.org/pypi/biomass/
