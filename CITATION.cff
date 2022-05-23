@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software in your work, we suggest citing the following paper:"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Imoto"
+    given-names: "Hiroaki"
+    orcid: "https://orcid.org/0000-0002-6817-642X"
+  - family-names: "Zhang"
+    given-names: "Suxiang"
+  - family-names: "Okada"
+    given-names: "Mariko"
+    orcid: "https://orcid.org/0000-0002-6210-8223"
+  doi: "10.3390/cancers12102878"
+  journal: "Cancers"
+  title: "A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway"
+  issue: 10
+  volume: 12
+  start: 2878
+  end: 2878
+  year: 2020
+  url: "https://www.mdpi.com/2072-6694/12/10/2878"

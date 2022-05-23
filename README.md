@@ -14,9 +14,10 @@
 
 _BioMASS_ is a computational framework for modeling and analysis of biological signaling systems in Python.
 
-- **Documentation:** https://biomass-core.readthedocs.io
+- **Documentation:** https://biomass-core.rtfd.io
 - **Source code:** https://github.com/biomass-dev/biomass
 - **Bug reports:** https://github.com/biomass-dev/biomass/issues
+- **Citing in your work:** https://biomass-core.rtfd.io/en/latest/citing.html
 
 It provides useful tools for numerical simulation, parameter estimation, network analysis, and result visualization.
 
