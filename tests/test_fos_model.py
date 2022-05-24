@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from biomass import Model, OptimizationResults, optimize, run_analysis, run_simulation
+from biomass.estimation import InitialPopulation
 from biomass.models import Nakakuki_Cell_2010
 
 # from biomass import run_analysis
@@ -82,7 +83,8 @@ def test_run_analysis():
 
 
 def test_param_estim():
-    optimize(model, x_id=11, optimizer_options={"maxiter": 5, "workers": -1})
+    initpop = InitialPopulation(model).generate(n_proc=-1)
+    optimize(model, x_id=11, optimizer_options={"maxiter": 5, "init": initpop, "workers": -1})
     with open(os.path.join(model.path, "out", "11", "optimization.log")) as f:
         logs = f.readlines()
     assert logs[-1].startswith("differential_evolution step 5: ")
