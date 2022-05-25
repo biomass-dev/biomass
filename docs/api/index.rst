@@ -7,5 +7,5 @@ API
    model_object
    core
    result
-   estimation/index
+   optimizer
    visualization
