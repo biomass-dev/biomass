@@ -252,8 +252,8 @@ def optimize(
     -----
 
     * Set simulation conditions and the corresponding experimental data in ``observable.py``
-    * Define an objective function to be minimized (:func:`objective`) in ``fitness.py``
-    * Set lower/upper bounds of parameters to be estimated in ``set_search_param.py``
+    * Define an objective function to be minimized (:func:`objective`) in ``problem.py``
+    * Set lower/upper bounds of parameters to be estimated in ``search_param.py``
 
     """
     if optimizer_options is None:
