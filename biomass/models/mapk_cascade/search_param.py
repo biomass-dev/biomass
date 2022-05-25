@@ -3,7 +3,7 @@ import numpy as np
 from biomass.estimation import convert_scale, initialize_search_param
 
 from .name2idx import C, V
-from .set_model import initial_values, param_values
+from .ode import initial_values, param_values
 
 
 class SearchParam(object):
@@ -11,10 +11,33 @@ class SearchParam(object):
 
     def __init__(self):
         # parameters
-        self.idx_params = []
+        self.idx_params: list = [
+            C.V1,
+            # C.n,
+            C.KI,
+            C.K1,
+            C.V2,
+            C.K2,
+            C.k3,
+            C.K3,
+            C.k4,
+            C.K4,
+            C.V5,
+            C.K5,
+            C.V6,
+            C.K6,
+            C.k7,
+            C.K7,
+            C.k8,
+            C.K8,
+            C.V9,
+            C.K9,
+            C.V10,
+            C.K10,
+        ]
 
         # initial values
-        self.idx_initials = [
+        self.idx_initials: list = [
             # V.(specie)
         ]
 
@@ -34,8 +57,8 @@ class SearchParam(object):
         search_rgn = np.zeros((2, len(x) + len(y0)))
         # Default: 0.1 ~ 10
         for i, j in enumerate(self.idx_params):
-            search_rgn[0, j] = search_param[i] * 0.1  # lower bound
-            search_rgn[1, j] = search_param[i] * 10.0  # upper bound
+            search_rgn[0, j] = search_param[i] * 0.5  # lower bound
+            search_rgn[1, j] = search_param[i] * 2.0  # upper bound
         # Default: 0.5 ~ 2
         for i, j in enumerate(self.idx_initials):
             search_rgn[0, j + len(x)] = search_param[i + len(self.idx_params)] * 0.5  # lower bound
