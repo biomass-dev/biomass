@@ -12,12 +12,12 @@ A brief description of each file/folder is below:
 Name                    Content
 ======================= ========================================================================================================
 ``name2idx/``           Names of model parameters and species
-``set_model.py``        Differential equation, parameters and initial condition
+``reaction_network.py`` Flux vector and reaction indices grouped according to biological processes
+``ode.py``              Differential equation, parameters and initial condition
 ``observalbe.py``       Observables, simulations and experimental data
+``search_param.py``     Lower and upper bounds of model parameters to be estimated
+``problem.py``          An objective function to be minimized, i.e., the distance between model simulation and experimental data
 ``viz.py``              Plotting parameters for customizing figure properties
-``set_search_param.py`` Model parameters to optimize and search region
-``fitness.py``          An objective function to be minimized, i.e., the distance between model simulation and experimental data
-``reaction_network.py`` Reaction indices grouped according to biological processes
 ======================= ========================================================================================================
 
 .. code-block:: shell
@@ -49,8 +49,8 @@ Using :func:`~biomass.core.optimize` function
 Parameters are adjusted to minimize the distance between model simulation and experimental data.
 
 * Set simulation conditions and the corresponding experimental data in ``observable.py``
-* Define an objective function to be minimized (:func:`objective`) in ``fitness.py``
-* Set lower/upper bounds of parameters to be estimated in ``set_search_param.py``
+* Define an objective function to be minimized (:func:`objective`) in ``problem.py``
+* Set lower/upper bounds of parameters to be estimated in ``search_param.py``
 
 .. code-block:: python
 

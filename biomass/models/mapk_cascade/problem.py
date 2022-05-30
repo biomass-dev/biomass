@@ -2,7 +2,7 @@ import numpy as np
 from scipy.spatial.distance import cosine
 
 from .observable import Observable
-from .set_search_param import SearchParam
+from .search_param import SearchParam
 
 
 class OptimizationProblem(Observable, SearchParam):

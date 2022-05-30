@@ -57,7 +57,7 @@ class Model(object):
         Check indices used in a BioMASS model.
         'C' and 'V' must be used for parameters and species, respectively.
         """
-        files = ["set_model.py", "set_search_param.py", "observable.py", "reaction_network.py"]
+        files = ["ode.py", "search_param.py", "observable.py", "reaction_network.py"]
         for file in files:
             with open(os.path.join(model.path, file)) as f:
                 lines = f.readlines()
@@ -252,8 +252,8 @@ def optimize(
     -----
 
     * Set simulation conditions and the corresponding experimental data in ``observable.py``
-    * Define an objective function to be minimized (:func:`objective`) in ``fitness.py``
-    * Set lower/upper bounds of parameters to be estimated in ``set_search_param.py``
+    * Define an objective function to be minimized (:func:`objective`) in ``problem.py``
+    * Set lower/upper bounds of parameters to be estimated in ``search_param.py``
 
     """
     if optimizer_options is None:
