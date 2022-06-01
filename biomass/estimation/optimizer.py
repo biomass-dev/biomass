@@ -197,7 +197,7 @@ class InitialPopulation(object):
 
     def generate(self, n_proc: int = 1, progress: bool = False) -> np.ndarray:
         """
-        Return initial population for ``optimizer_options['init'] `` in ``biomass.optimize`` function.
+        Return initial population for ``optimizer_options['init']`` in ``biomass.optimize`` function.
 
         Parameters
         ----------

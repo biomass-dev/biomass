@@ -174,7 +174,7 @@ class ModelObject(object):
 
     def get_obj_val(self, indiv_gene: np.ndarray) -> float:
         """
-        An objective function to minimize in GA.
+        An objective function to minimize in parameter estimation.
 
         Parameters
         ----------
