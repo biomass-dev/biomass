@@ -1,10 +1,10 @@
 Tutorial
 ========
 
-This tutorial shows you how to build computational models, estimate parameter values from experimetnal data, and identiry sensitive componets in coplex biochemical systems.
+This tutorial shows you how to build computational models, estimate parameter values from experimetnal data, and identiry sensitive componets in complex biochemical systems.
 We will use a mechanistic model of the c-Fos expression network dynamics :cite:p:`NAKAKUKI2010884`. For details, please refer to the following paper:
 
-* `Nakakuki, T. et al. Ligand-specific c-Fos expression emerges from the spatiotemporal control of ErbB network dynamics. Cell 141, 884–896 (2010). <https://doi.org/10.1016/j.cell.2010.03.054>`_
+* Nakakuki, T. *et al*. Ligand-specific c-Fos expression emerges from the spatiotemporal control of ErbB network dynamics. *Cell* **141**, 884–896 (2010). https://doi.org/10.1016/j.cell.2010.03.054
 
 In this tutorial, please use ``biomass`` 0.7.0+ and ``pasmopy`` 0.3.0+.
 
