@@ -6,7 +6,11 @@ We will use a mechanistic model of the c-Fos expression network dynamics :cite:p
 
 * Nakakuki, T. *et al*. Ligand-specific c-Fos expression emerges from the spatiotemporal control of ErbB network dynamics. *Cell* **141**, 884–896 (2010). https://doi.org/10.1016/j.cell.2010.03.054
 
-In this tutorial, please use ``biomass`` 0.7.0+ and ``pasmopy`` 0.3.0+.
+Requirements
+^^^^^^^^^^^^
+
+* ``biomass>=0.7.0`` for simulation, parameterization, and analysis of the model
+* ``pasmopy>=0.3.0`` for text-to-model conversion
 
 To check the software versions, run the following code:
 
