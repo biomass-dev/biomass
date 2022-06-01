@@ -64,7 +64,7 @@ class Model(object):
         else:
             warnings.warn(
                 f"Rename core modules in {model.path}. "
-                "For details, please refer to https://biomass-core.readthedocs.io/en/latest/usage.html#model-preparation",
+                "For details, please refer to https://github.com/biomass-dev/biomass/issues/114",
                 FutureWarning,
             )
             files = ["set_model.py", "set_search_param.py", "observable.py", "reaction_network.py"]
