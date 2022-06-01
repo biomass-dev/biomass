@@ -1,5 +1,6 @@
 """BioMASS core functions"""
 import os
+import warnings
 from dataclasses import dataclass
 from importlib import import_module
 from pathlib import Path
@@ -17,6 +18,7 @@ from .analysis import InitialConditionSensitivity, ParameterSensitivity, Reactio
 from .dynamics import SignalingSystems
 from .estimation import Optimizer
 from .exec_model import ModelObject
+from .version import __version__
 
 __all__ = ["Model", "create_model", "optimize", "run_simulation", "run_analysis"]
 
@@ -57,7 +59,15 @@ class Model(object):
         Check indices used in a BioMASS model.
         'C' and 'V' must be used for parameters and species, respectively.
         """
-        files = ["set_model.py", "set_search_param.py", "observable.py", "reaction_network.py"]
+        if ["0", "7"] <= __version__.split("."):
+            files = ["ode.py", "search_param.py", "observable.py", "reaction_network.py"]
+        else:
+            warnings.warn(
+                f"Rename core modules in {model.path}. "
+                "For details, please refer to https://github.com/biomass-dev/biomass/issues/114",
+                FutureWarning,
+            )
+            files = ["set_model.py", "set_search_param.py", "observable.py", "reaction_network.py"]
         for file in files:
             with open(os.path.join(model.path, file)) as f:
                 lines = f.readlines()
@@ -252,8 +262,8 @@ def optimize(
     -----
 
     * Set simulation conditions and the corresponding experimental data in ``observable.py``
-    * Define an objective function to be minimized (:func:`objective`) in ``fitness.py``
-    * Set lower/upper bounds of parameters to be estimated in ``set_search_param.py``
+    * Define an objective function to be minimized (:func:`objective`) in ``problem.py``
+    * Set lower/upper bounds of parameters to be estimated in ``search_param.py``
 
     """
     if optimizer_options is None:

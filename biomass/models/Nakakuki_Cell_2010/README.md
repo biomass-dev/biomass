@@ -13,10 +13,10 @@ Nakakuki, T. _et al._ Ligand-specific c-Fos expression emerges from the spatiote
 1. Model construction
 
    ```python
-   from biomass import Model
+   from biomass import create_model
    from biomass.models import Nakakuki_Cell_2010
 
-   model = Model(Nakakuki_Cell_2010.__package__).create(show_info=True)
+   model = create_model(Nakakuki_Cell_2010.__package__, show_info=True)
    ```
 
    ↓
@@ -31,18 +31,12 @@ Nakakuki, T. _et al._ Ligand-specific c-Fos expression emerges from the spatiote
 1. Parameter estimation
 
    ```python
+   from tqdm import tqdm
    from biomass import optimize
 
-   # Estimate 10 parameter sets simultaneously
-   optimize(
-      model=model, start=1, end=10, options={
-         "popsize": 5,
-         "max_generation": 100,
-         "allowable_error": 0.5,
-         "local_search_method": "DE",
-         "maxiter": 30
-      }
-   )
+   # Estimate 10 parameter sets
+   for x_id in tqdm(range(1, 11)):
+      optimize(model, x_id=x_id, optimizer_options={"workers": -1})
    ```
 
 1. Visualization of simulation results
