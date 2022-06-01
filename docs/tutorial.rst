@@ -8,6 +8,14 @@ We will use a mechanistic model of the c-Fos expression network dynamics :cite:p
 
 In this tutorial, please use ``biomass`` 0.7.0+ and ``pasmopy`` 0.3.0+.
 
+To check the software versions, run the following code:
+
+.. code-block:: python
+
+    import biomass, pasmopy
+    print('biomass version:', biomass.__version__)
+    print('pasmopy version:', pasmopy.__version__)
+
 Model preparation
 -----------------
 
@@ -229,6 +237,7 @@ Open ``observable.py``.
         
         ...
         
+        self.normalization: dict = {}
         for observable in self.obs_names:
             self.normalization[observable] = {"timepoint": None, "condition": []}
 
@@ -246,7 +255,7 @@ Choose an ODE solver to use
 
 Most systems biology models are non-linear and closed form solutions are not available. Accordingly, numerical integration methods have to be employed to study them :cite:p:`maiwald2008dynamical`.
 
-Open ``observable.py``.
+Open ``observable.py`` and choose integration method in :func:`~biomass.dynamics.solver.get_steady_state` and :func:`~biomass.dynamics.solver.solve_ode`.
 
 .. code-block:: python
 
@@ -268,6 +277,7 @@ Open ``observable.py``.
             sol = solve_ode(self.diffeq, y0, self.t, tuple(x), method="BDF")
 
 - ``get_steady_state`` runs a model simulation till steady state for that parameter set. First, we simulate the model with no ligand until the system reaches steady state, take the final state of the equilibration simulation and use it as the initial state of the new simulation.
+- By default, `LSODA <https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.LSODA.html>`_ is used in both integrators.
 
 Set experimental data for parameterization of the model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -275,7 +285,7 @@ Set experimental data for parameterization of the model
 - self.experiments : *list of dict*
     Time-series experimetal measurements.
 - self.error_bars : *list of dict*
-    Error bars to show in figures.
+    Error bars to show in figures (e.g., SD or SE).
 
 
 Open ``observable.py``.
@@ -423,6 +433,8 @@ Open ``search_param.py``.
             
             ...
             
+            search_rgn = np.zeros((2, len(x) + len(y0)))
+            
             search_rgn[:, C.V1] = [7.33e-2, 6.60e-01]
             search_rgn[:, C.Km1] = [1.83e2, 8.50e2]
             search_rgn[:, C.V5] = [6.48e-3, 7.20e1]
@@ -498,6 +510,9 @@ Open ``search_param.py``.
             search_rgn[:, C.KF31] = [np.exp(-10), np.exp(10)]
             search_rgn[:, C.nF31] = [1.00, 4.00]
             search_rgn[:, C.a] = [1.00e2, 5.00e2]
+
+* Lower bound must be smaller than upper bound.
+* Lower/upper buonds must be positive.
 
 Need help?
 ^^^^^^^^^^
