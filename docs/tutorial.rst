@@ -541,12 +541,12 @@ Parameters are adjusted to minimize the distance between model simulation and ex
     from tqdm import tqdm
     from biomass import optimize
     
-    # Get 30 parameter sets
+    # Get 30 parameter sets, it will take more than a few hours
     for x_id in tqdm(range(1, 31)):
         optimize(model, x_id=x_id, optimizer_options={"workers": -1})
 
 .. note::
-    ``["workers"]`` specifies the number of processes to use (default: 1). Set to a larger number (e.g. the number of CPU cores available) for parallel execution of optimizations. For detailed information about ``optimizer_options``, please refer to `scipy docs <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html>`_.
+    ``"workers"`` specifies the number of processes to use (default: 1). Set to a larger number (e.g. the number of CPU cores available) for parallel execution of optimizations. For detailed information about ``optimizer_options``, please refer to `scipy docs <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html>`_.
 
 The temporary result will be saved in ``out/_tmp{n}/`` after each iteration.
 
