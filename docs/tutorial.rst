@@ -613,6 +613,42 @@ Sensitivity analysis
 
 Sensitivity analysis examines how perturbations to the processes in the model affect the quantity of interest, e.g., the integral of the pc-Fos concentration.
 
+To perform sensitivity analysis on reaction rates (``target='reaction'``), you will need to modify ``reaction_network.py`` in the model folder as follows:
+
+.. code-block:: python
+    
+    class ReactionNetwork(object):
+
+        def __init__(self) -> None:
+            """
+            Reaction indices grouped according to biological processes.
+            This is used for sensitivity analysis (target='reaction').
+            """
+            super(ReactionNetwork, self).__init__()
+    
+            self.reactions: Dict[str, List[int]] = {
+                "ERK_activation": [i for i in range(1, 7)],
+                "ERK_dephosphorylation_by_DUSP": [i for i in range(47, 57)],
+                "ERK_transport": [i for i in range(7, 10)],
+                "RSK_activation": [24, 25],
+                "RSK_transport": [26],
+                "Elk1_activation": [29, 30],
+                "CREB_activation": [27, 28],
+                "dusp_production_etc": [i for i in range(10, 14)],
+                "DUSP_transport": [18, 19],
+                "DUSP_stabilization": [14, 15, 20, 21],
+                "DUSP_degradation": [16, 17, 22, 23],
+                "cfos_production_etc": [i for i in range(31, 35)],
+                "cFos_transport": [40, 41],
+                "cFos_stabilization": [35, 36, 37, 42, 43, 44],
+                "cFos_degradation": [38, 39, 45, 46],
+                "Feedback_from_F": [i for i in range(57, 64)],
+            }
+            
+            ...
+
+Then, run the following code:
+
 .. code-block:: python
 
     from biomass import run_analysis
