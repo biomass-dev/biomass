@@ -130,7 +130,9 @@ By comparing the reaction scheme (`Fig.1E <https://ars.els-cdn.com/content/image
     @sim condition EGF: p[Ligand] = 1
     @sim condition HRG: p[Ligand] = 2
 
-Text-to-model conversion:
+You can download this text file from `here <https://github.com/pasmopy/pasmopy/blob/master/tests/text_files/fos_model.txt>`_.
+
+**Text-to-model conversion:**
 
 .. code-block:: python
 
