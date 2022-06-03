@@ -138,13 +138,12 @@ You can download this text file from `here <https://github.com/pasmopy/pasmopy/b
 
     >>> from pasmopy import Text2Model
     >>> description = Text2Model("cfos_model")
-    >>> description.convert()
+    >>> description.convert()  # generate cfos_model/ in your working directory.
     Model information
     -----------------
     63 reactions
     36 species
     110 parameters
-    >>> model = create_model('cfos_model')
 
 Set the input of the model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -277,10 +276,16 @@ Open ``observable.py`` and choose integration method in :func:`~biomass.dynamics
             y0 = get_steady_state(self.diffeq, y0, tuple(x), integrator='vode')
             if not y0:
                 return False
-            
-            ...
-            
-            sol = solve_ode(self.diffeq, y0, self.t, tuple(x), method="BDF")
+
+            for i, condition in enumerate(self.conditions):
+                if condition == "EGF":
+                    x[C.Ligand] = 1
+                elif condition == "HRG":
+                    x[C.Ligand] = 2
+ 
+                sol = solve_ode(self.diffeq, y0, self.t, tuple(x), method="BDF")
+                
+                ...
 
 - ``get_steady_state`` runs a model simulation till steady state for that parameter set. First, we simulate the model with no ligand until the system reaches steady state, take the final state of the equilibration simulation and use it as the initial state of the new simulation.
 - By default, `LSODA <https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.LSODA.html>`_ is used in both integrators.
@@ -519,6 +524,18 @@ Open ``search_param.py``.
 
 * Lower bound must be smaller than upper bound.
 * Lower/upper buonds must be positive.
+
+Create a new model
+^^^^^^^^^^^^^^^^^^
+
+BioMASS core functions require :class:`~biomass.exec_model.ModelObject` in the first argument.
+
+.. code-block:: python
+    
+    >>> from biomass import create_model
+    >>> model = create_model('cfos_model')  # Create a new BioMASS model object.
+
+In the following examples, you will use the BioMASS model object: ``model`` created here for parameter estimation, visualization of simulation results, and sensitivity analysis.
 
 Need help?
 ^^^^^^^^^^
