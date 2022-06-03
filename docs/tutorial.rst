@@ -160,54 +160,23 @@ Open ``ode.py``.
             self.perturbation = perturbation
     
         @staticmethod
-        def _timecourse_ppMEK_EGF10nM(t) -> float:
-            """
-            ppMEK dynamics when stimulated by EGF 10 nM
-            """
-            if t < 300.0:
-                slope = 0.00258
-            elif t < 600.0:
-                slope = -0.00111
-            elif t < 900.0:
-                slope = -0.000625
-            elif t < 1200.0:
-                slope = -0.000135
-            elif t < 1800.0:
-                slope = -0.000135
-            elif t < 2700.0:
-                slope = -0.0000480
-            elif t < 3600.0:
-                slope = -0.00000852
-            elif t <= 5400.0:
-                slope = -0.00000728
-            else:
-                assert False
-            return slope
-    
-        @staticmethod
-        def _timecourse_ppMEK_HRG10nM(t) -> float:
-            """
-            ppMEK dynamics when stimulated by HRG 10 nM
-            """
-            if t < 300.0:
-                slope = 0.00288
-            elif t < 600.0:
-                slope = 0.000451
-            elif t < 900.0:
-                slope = -0.000545
-            elif t < 1200.0:
-                slope = 0.0000522
-            elif t < 1800.0:
-                slope = 0.0000522
-            elif t < 2700.0:
-                slope = 0.0000399
-            elif t < 3600.0:
-                slope = -0.0000500
-            elif t <= 5400.0:
-                slope = -0.0000478
-            else:
-                assert False
-            return slope
+        def _get_ppMEK_slope(t, ligand) -> float:
+            assert ligand in ['EGF', 'HRG']
+            timepoints = [0, 300, 600, 900, 1800, 2700, 3600, 5400]
+            ppMEK_data = {
+                'EGF': [0.000, 0.773, 0.439, 0.252, 0.130, 0.087, 0.080, 0.066],
+                'HRG': [0.000, 0.865, 1.000, 0.837, 0.884, 0.920, 0.875, 0.789],
+            }
+            assert len(timepoints) == len(ppMEK_data[ligand])
+            slope = [
+                (ppMEK_data[ligand][i + 1] - activity) / (timepoints[i + 1] - timepoint)
+                for i, (timepoint, activity) in enumerate(zip(timepoints, ppMEK_data[ligand]))
+                if i + 1 < len(timepoints)
+            ]
+            for i, timepoint in enumerate(timepoints):
+                if timepoint <= t <= timepoints[i + 1]:
+                    return slope[i]
+            assert False
     
         # Refined Model
         def diffeq(self, t, y, *x):
@@ -221,9 +190,9 @@ Open ``ode.py``.
             dydt = [0] * V.NUM
     
             if x[C.Ligand] == 1:  # EGF=10nM
-                dydt[V.ppMEKc] = self._timecourse_ppMEK_EGF10nM(t)
+                dydt[V.ppMEKc] = self._get_ppMEK_slope(t, 'EGF')
             elif x[C.Ligand] == 2:  # HRG=10nM
-                dydt[V.ppMEKc] = self._timecourse_ppMEK_HRG10nM(t)
+                dydt[V.ppMEKc] = self._get_ppMEK_slope(t, 'HRG')
             else:  # Default: No ligand input
                 dydt[V.ppMEKc] = 0.0
 
