@@ -9,7 +9,7 @@ class DifferentialEquation(ReactionNetwork):
 
     @staticmethod
     def _get_ppMEK_slope(t, ligand) -> float:
-        assert ligand in ['EGF', 'HRG']
+        assert ligand in ["EGF", "HRG"]
         timepoints = [0, 300, 600, 900, 1800, 2700, 3600, 5400]
         ppMEK_data = {
             "EGF": [0.000, 0.773, 0.439, 0.252, 0.130, 0.087, 0.080, 0.066],
@@ -38,9 +38,9 @@ class DifferentialEquation(ReactionNetwork):
         dydt = [0] * V.NUM
 
         if x[C.Ligand] == x[C.EGF]:  # EGF=10nM
-            dydt[V.ppMEKc] = self._get_ppMEK_slope(t, 'EGF')
+            dydt[V.ppMEKc] = self._get_ppMEK_slope(t, "EGF")
         elif x[C.Ligand] == x[C.HRG]:  # HRG=10nM
-            dydt[V.ppMEKc] = self._get_ppMEK_slope(t, 'HRG')
+            dydt[V.ppMEKc] = self._get_ppMEK_slope(t, "HRG")
         else:  # Default: No ligand input
             dydt[V.ppMEKc] = 0.0
 
