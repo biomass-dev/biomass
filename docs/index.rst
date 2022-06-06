@@ -41,7 +41,7 @@ You can also always send me an `email <mailto:himoto@protein.osaka-u.ac.jp>`_.
    :hidden:
 
    installation
-   usage
+   tutorial
    models
    api/index
    references
