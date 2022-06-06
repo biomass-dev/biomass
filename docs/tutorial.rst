@@ -1,8 +1,8 @@
 Tutorial
 ========
 
-This tutorial shows you how to build computational models, estimate parameter values from experimetnal data, and identiry sensitive componets in complex biochemical systems.
-We will use a mechanistic model of the c-Fos expression network dynamics :cite:p:`NAKAKUKI2010884`. For details, please refer to the following paper:
+This tutorial shows you how to build computational models, estimate parameter values from experimetnal data, and identify sensitive componets in complex biochemical systems.
+We will use a mechanistic model of the c-Fos expression network dynamics :cite:p:`NAKAKUKI2010884`. For a detailed description of the model, please refer to the following paper:
 
 * Nakakuki, T. *et al*. Ligand-specific c-Fos expression emerges from the spatiotemporal control of ErbB network dynamics. *Cell* **141**, 884–896 (2010). https://doi.org/10.1016/j.cell.2010.03.054
 
