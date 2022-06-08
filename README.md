@@ -1,8 +1,9 @@
+<br>
 <p align="center">
     <a href="https://biomass-core.readthedocs.io/en/latest">
         <img src="https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/biomass-logo.png" width="400">
     </a>
-</p><br>
+</p>
 
 [![PyPI version](https://img.shields.io/pypi/v/biomass.svg?logo=PyPI&logoColor=white)](https://pypi.python.org/pypi/biomass)
 [![Actions Status](https://github.com/biomass-dev/biomass/workflows/Tests/badge.svg)](https://github.com/biomass-dev/biomass/actions)
