@@ -144,6 +144,13 @@ You can download this text file from `here <https://github.com/pasmopy/pasmopy/b
     63 reactions
     36 species
     110 parameters
+    
+You can also export model reactions as markdown files by running the following code:
+
+.. code-block:: python
+
+    >>> description.to_markdown(n_reaction=63, savedir="markdown")  # generate markdown/ in your working directory.
+
 
 Set the input of the model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
