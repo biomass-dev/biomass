@@ -4,7 +4,8 @@ import warnings
 from dataclasses import dataclass
 from importlib import import_module
 from pathlib import Path
-from typing import Any, Callable, Dict, Optional, Union
+from types import ModuleType
+from typing import Callable, Dict, Optional, Union
 
 try:  # python 3.8+
     from typing import Literal
@@ -45,7 +46,7 @@ class Model(object):
 
     pkg_name: str
 
-    def _load_model(self) -> Any:
+    def _load_model(self) -> Optional[ModuleType]:
         try:
             biomass_model = import_module(self.pkg_name)
             return biomass_model
