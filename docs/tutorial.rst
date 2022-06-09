@@ -263,7 +263,7 @@ Open ``observable.py`` and choose integration method in :func:`~biomass.dynamics
                 
                 ...
 
-- ``get_steady_state`` runs a model simulation till steady state for that parameter set. First, we simulate the model with no ligand until the system reaches steady state, take the final state of the equilibration simulation and use it as the initial state of the new simulation.
+- ``get_steady_state`` runs a model simulation till steady state for that parameter set. First, we simulate the model with no ligand until the system reaches steady state, take the final state of the equilibration simulation, and use it as the initial state of the new simulation.
 - By default, `LSODA <https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.LSODA.html>`_ is used in both integrators.
 
 Set experimental data for parameterization of the model
