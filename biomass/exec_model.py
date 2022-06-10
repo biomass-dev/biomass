@@ -1,6 +1,7 @@
 import os
 import re
-from typing import Any, List, NamedTuple
+from types import ModuleType
+from typing import List, NamedTuple
 
 import numpy as np
 
@@ -57,7 +58,7 @@ class ModelObject(object):
     Observables: 2
     """
 
-    def __init__(self, path: str, biomass_model: Any):
+    def __init__(self, path: str, biomass_model: ModuleType):
         self._path = path
         self._parameters = biomass_model.C.NAMES
         self._species = biomass_model.V.NAMES
