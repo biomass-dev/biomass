@@ -11,6 +11,7 @@ Requirements
 
 * ``biomass>=0.7.0`` for simulation, parameterization, and analysis of the model
 * ``pasmopy>=0.3.0`` for text-to-model conversion
+* `tqdm <https://github.com/tqdm/tqdm>`_ for visualizing progress bars
 
 To check the software versions, run the following code:
 
@@ -162,6 +163,7 @@ Open ``ode.py``.
 .. code-block:: python
     
     class DifferentialEquation(ReactionNetwork):
+
         def __init__(self, perturbation):
             super(DifferentialEquation, self).__init__()
             self.perturbation = perturbation
