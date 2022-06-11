@@ -241,13 +241,10 @@ def optimize(
     ----------
     model : ModelObject
         Model for parameter estimation.
-
     x_id : int
         Index of parameter set to estimate.
-
     disp_here: bool (default: False)
         Whether to show the evaluated *objective* at every iteration.
-
     optimizer_options : dict, optional
         Keyword arguments to pass to ``scipy.optimize.differential_evolution``.
         For details, please refer to https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html.
@@ -310,7 +307,6 @@ def run_simulation(
     ----------
     model : ModelObject
         Model for simulation.
-
     viz_type : str
         * 'average':
             The average of simulation results with parameter sets in ``out/``.
@@ -322,10 +318,8 @@ def run_simulation(
             Use the parameter set in ``out/n/``.
         * 'experiment'
             Draw the experimental data written in ``observable.py`` without simulation results.
-
     show_all : bool (default: :obj:`False`)
         Whether to show all simulation results.
-
     stdev : bool (default: :obj:`False`)
         If :obj:`True`, the standard deviation of simulated values will be shown
         (only available for 'average' visualization type).
@@ -373,23 +367,18 @@ def run_analysis(
     each nonzero species, parameter value or reaction rate.
 
     Parameters
-    ---------
+    ----------
     model : ModelObject
         Model for sensitivity analysis.
-
     target : Literal["reaction", "parameter", "initial_condition"]
         Where to add a small perturbation to calculate sensitivity coefficients.
-
     metric : str (default: 'integral')
         A word to specify the signaling metric.
-
     create_metrics : Dict[str, Callable[[np.ndarray], Union[int, float]]], optional
         Create user-defined signaling metrics.
-
     style :  Literal["barplot", "heatmap"] (default: 'barplot')
         * 'barplot'
         * 'heatmap'
-
     options : dict, optional
         * show_indices : bool (default: :obj:`True`)
             (``target`` == 'reaction') Set to :obj:`True` to put reaction index on each bar.
