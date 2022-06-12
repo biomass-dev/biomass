@@ -1,7 +1,7 @@
 Tutorial
 ========
 
-This tutorial shows you how to build computational models, estimate parameter values from experimetnal data, and identify sensitive componets in complex biochemical systems.
+This tutorial shows you how to build computational models, estimate parameter values from experimental data, and identify sensitive components in complex biochemical systems.
 We will use a mechanistic model of the c-Fos expression network dynamics :cite:p:`NAKAKUKI2010884`. For a detailed description of the model, please refer to the following paper:
 
 * Nakakuki, T. *et al*. Ligand-specific c-Fos expression emerges from the spatiotemporal control of ErbB network dynamics. *Cell* **141**, 884–896 (2010). https://doi.org/10.1016/j.cell.2010.03.054
@@ -11,6 +11,7 @@ Requirements
 
 * ``biomass>=0.7.0`` for simulation, parameterization, and analysis of the model
 * ``pasmopy>=0.3.0`` for text-to-model conversion
+* `tqdm <https://github.com/tqdm/tqdm>`_ for visualizing progress bars
 
 To check the software versions, run the following code:
 
@@ -144,6 +145,13 @@ You can download this text file from `here <https://github.com/pasmopy/pasmopy/b
     63 reactions
     36 species
     110 parameters
+    
+You can also export model reactions as markdown files by running the following code:
+
+.. code-block:: python
+
+    >>> description.to_markdown(n_reaction=63, savedir="markdown")  # generate markdown/ in your working directory.
+
 
 Set the input of the model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -155,6 +163,7 @@ Open ``ode.py``.
 .. code-block:: python
     
     class DifferentialEquation(ReactionNetwork):
+
         def __init__(self, perturbation):
             super(DifferentialEquation, self).__init__()
             self.perturbation = perturbation
@@ -256,7 +265,7 @@ Open ``observable.py`` and choose integration method in :func:`~biomass.dynamics
                 
                 ...
 
-- ``get_steady_state`` runs a model simulation till steady state for that parameter set. First, we simulate the model with no ligand until the system reaches steady state, take the final state of the equilibration simulation and use it as the initial state of the new simulation.
+- ``get_steady_state`` runs a model simulation till steady state for that parameter set. First, we simulate the model with no ligand until the system reaches steady state, take the final state of the equilibration simulation, and use it as the initial state of the new simulation.
 - By default, `LSODA <https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.LSODA.html>`_ is used in both integrators.
 
 Set experimental data for parameterization of the model
@@ -531,14 +540,12 @@ Parameters are adjusted to minimize the distance between model simulation and ex
     
     # Get 30 parameter sets, it will take more than a few hours
     for x_id in tqdm(range(1, 31)):
-        optimize(model, x_id=x_id, optimizer_options={"workers": -1})
+        optimize(model, x_id=x_id, disp_here=False, optimizer_options={"workers": -1})
 
 .. note::
     ``"workers"`` specifies the number of processes to use (default: 1). Set to a larger number (e.g. the number of CPU cores available) for parallel execution of optimizations. For detailed information about ``optimizer_options``, please refer to `scipy docs <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html>`_.
 
-The temporary result will be saved in ``out/_tmp{n}/`` after each iteration.
-
-Progress list: ``out/_tmp{n}/optimization.log``::
+The progress list will be saved in ``out/{x_id}/``::
 
     differential_evolution step 1: f(x)= 4.96181
     differential_evolution step 2: f(x)= 3.555
@@ -560,6 +567,8 @@ Progress list: ``out/_tmp{n}/optimization.log``::
     differential_evolution step 18: f(x)= 0.430385
     differential_evolution step 19: f(x)= 0.37085
     differential_evolution step 20: f(x)= 0.37085
+
+To print the evaluated *func* at every iteration, set ``disp_here`` to :obj:`True`.
 
 Data export and visualization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
