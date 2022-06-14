@@ -28,6 +28,7 @@ def test_initialization():
 
 
 def test_run_simulation():
+    assert run_simulation(model, viz_type="experiment") is None
     with pytest.warns(RuntimeWarning) as record:
         run_simulation(model, viz_type="original")
     # check that the message matches
