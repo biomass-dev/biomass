@@ -150,7 +150,7 @@ You can also export model reactions as markdown files by running the following c
 
 .. code-block:: python
 
-    >>> description.to_markdown(n_reaction=63, savedir="markdown")  # generate markdown/ in your working directory.
+    >>> description.to_markdown(n_reaction=63)  # generate markdown/ in your working directory.
 
 
 Set the input of the model
