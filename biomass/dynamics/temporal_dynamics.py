@@ -400,7 +400,7 @@ class TemporalDynamics(object):
                     for barlinecol in exp_data[2]:
                         barlinecol.set_clip_on(False)
                 except ValueError as e:
-                    print(f"{e} in {obs_name}.")
+                    print(e, f"in {obs_name}.")
 
     def _plot_experimental_data_without_error_bars(
         self,
@@ -441,7 +441,7 @@ class TemporalDynamics(object):
                         else None,
                     )
                 except ValueError as e:
-                    print(f"{e} in {obs_name}.")
+                    print(e, f"in {obs_name}.")
 
     def _save_mode_0(
         self,
