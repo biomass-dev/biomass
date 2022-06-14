@@ -370,34 +370,37 @@ class TemporalDynamics(object):
                 and (mode == 0 and condition not in singleplotting[i].dont_show)
                 or (mode == 1 and condition == multiplotting.condition)
             ):
-                exp_data = plt.errorbar(
-                    np.array(exp_t) / singleplotting[i].divided_by,
-                    self.model.problem.experiments[i][condition],
-                    yerr=self.model.problem.error_bars[i][condition],
-                    color=singleplotting[i].cmap[k]
-                    if mode == 0
-                    else multiplotting.cmap[multiplotting.observables.index(obs_name)],
-                    ecolor=singleplotting[i].cmap[k]
-                    if mode == 0
-                    else multiplotting.cmap[multiplotting.observables.index(obs_name)],
-                    elinewidth=1,
-                    capsize=8,
-                    markerfacecolor="None",
-                    markeredgecolor=singleplotting[i].cmap[k]
-                    if mode == 0
-                    else multiplotting.cmap[multiplotting.observables.index(obs_name)],
-                    fmt=singleplotting[i].shape[k]
-                    if mode == 0
-                    else multiplotting.shape[multiplotting.observables.index(obs_name)],
-                    clip_on=False,
-                    label=singleplotting[i].ylabel
-                    if mode == 1 and viz_type == "experiment"
-                    else None,
-                )
-                for capline in exp_data[1]:
-                    capline.set_clip_on(False)
-                for barlinecol in exp_data[2]:
-                    barlinecol.set_clip_on(False)
+                try:
+                    exp_data = plt.errorbar(
+                        np.array(exp_t) / singleplotting[i].divided_by,
+                        self.model.problem.experiments[i][condition],
+                        yerr=self.model.problem.error_bars[i][condition],
+                        color=singleplotting[i].cmap[k]
+                        if mode == 0
+                        else multiplotting.cmap[multiplotting.observables.index(obs_name)],
+                        ecolor=singleplotting[i].cmap[k]
+                        if mode == 0
+                        else multiplotting.cmap[multiplotting.observables.index(obs_name)],
+                        elinewidth=1,
+                        capsize=8,
+                        markerfacecolor="None",
+                        markeredgecolor=singleplotting[i].cmap[k]
+                        if mode == 0
+                        else multiplotting.cmap[multiplotting.observables.index(obs_name)],
+                        fmt=singleplotting[i].shape[k]
+                        if mode == 0
+                        else multiplotting.shape[multiplotting.observables.index(obs_name)],
+                        clip_on=False,
+                        label=singleplotting[i].ylabel
+                        if mode == 1 and viz_type == "experiment"
+                        else None,
+                    )
+                    for capline in exp_data[1]:
+                        capline.set_clip_on(False)
+                    for barlinecol in exp_data[2]:
+                        barlinecol.set_clip_on(False)
+                except ValueError as e:
+                    print(e, f"in {obs_name}.")
 
     def _plot_experimental_data_without_error_bars(
         self,
@@ -418,24 +421,27 @@ class TemporalDynamics(object):
                 and (mode == 0 and condition not in singleplotting[i].dont_show)
                 or (mode == 1 and condition == multiplotting.condition)
             ):
-                plt.plot(
-                    np.array(exp_t) / singleplotting[i].divided_by,
-                    self.model.problem.experiments[i][condition],
-                    singleplotting[i].shape[k]
-                    if mode == 0
-                    else multiplotting.shape[multiplotting.observables.index(obs_name)],
-                    markerfacecolor="None",
-                    markeredgecolor=singleplotting[i].cmap[k]
-                    if mode == 0
-                    else multiplotting.cmap[multiplotting.observables.index(obs_name)],
-                    color=singleplotting[i].cmap[k]
-                    if mode == 0
-                    else multiplotting.cmap[multiplotting.observables.index(obs_name)],
-                    clip_on=False,
-                    label=singleplotting[i].ylabel
-                    if mode == 1 and viz_type == "experiment"
-                    else None,
-                )
+                try:
+                    plt.plot(
+                        np.array(exp_t) / singleplotting[i].divided_by,
+                        self.model.problem.experiments[i][condition],
+                        singleplotting[i].shape[k]
+                        if mode == 0
+                        else multiplotting.shape[multiplotting.observables.index(obs_name)],
+                        markerfacecolor="None",
+                        markeredgecolor=singleplotting[i].cmap[k]
+                        if mode == 0
+                        else multiplotting.cmap[multiplotting.observables.index(obs_name)],
+                        color=singleplotting[i].cmap[k]
+                        if mode == 0
+                        else multiplotting.cmap[multiplotting.observables.index(obs_name)],
+                        clip_on=False,
+                        label=singleplotting[i].ylabel
+                        if mode == 1 and viz_type == "experiment"
+                        else None,
+                    )
+                except ValueError as e:
+                    print(e, f"in {obs_name}.")
 
     def _save_mode_0(
         self,
