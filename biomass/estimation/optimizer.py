@@ -106,7 +106,7 @@ class Optimizer(object):
         if os.path.isdir(self.savedir) and not overwrite:
             raise ValueError(
                 f"out{os.sep}{self.x_id} already exists in {self.model.path}. "
-                "Use another parameter id."
+                "Use another parameter id or set `overwrite` to True."
             )
         elif os.path.isdir(self.savedir) and overwrite:
             files = os.listdir(self.savedir)
