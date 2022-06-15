@@ -111,7 +111,7 @@ class Optimizer(object):
         elif os.path.isdir(self.savedir) and overwrite:
             files = os.listdir(self.savedir)
             for file in files:
-                if any(map(file.__contains__,(".npy",".log"))):
+                if any(map(file.__contains__, (".npy", ".log"))):
                     os.remove(os.path.join(self.savedir, file))
         else:
             os.makedirs(self.savedir, exist_ok=True)
