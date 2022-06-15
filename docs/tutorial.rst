@@ -225,7 +225,7 @@ Open ``observable.py``.
         for observable in self.obs_names:
             self.normalization[observable] = {"timepoint": None, "condition": []}
 
-Here, you can define how you would like to normalize simulation results for each observable. The `normalization[observable]` dictionary accepts two keys, `'timepoint'` and `'condition'`.
+Here, you can define how you would like to normalize simulation results for each observable. The ``normalization[observable]`` dictionary accepts two keys, `'timepoint'` and `'condition'`.
 
 - 'timepoint' : *Optional[int]*
     The time point at which simulated values are normalized.
