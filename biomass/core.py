@@ -232,6 +232,7 @@ def optimize(
     x_id: int,
     *,
     disp_here: bool = False,
+    overwrite:bool = False,
     optimizer_options: Optional[dict] = None,
 ) -> None:
     """
@@ -243,8 +244,10 @@ def optimize(
         Model for parameter estimation.
     x_id : int
         Index of parameter set to estimate.
-    disp_here: bool (default: False)
+    disp_here : bool (default: :obj:`False`)
         Whether to show the evaluated *objective* at every iteration.
+    overwrite : bool (default: :obj:`False`)
+        If :obj:`True`, the directory (``x_id/``) will be overwritten.
     optimizer_options : dict, optional
         Keyword arguments to pass to ``scipy.optimize.differential_evolution``.
         For details, please refer to https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html.
@@ -283,7 +286,7 @@ def optimize(
             "set the keyword argument `disp_here` to False."
         )
 
-    optimizer = Optimizer(model, differential_evolution, x_id, disp_here)
+    optimizer = Optimizer(model, differential_evolution, x_id, disp_here, overwrite)
     res = optimizer.minimize(
         model.get_obj_val,
         [(0, 1) for _ in range(len(model.problem.bounds))],
