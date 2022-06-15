@@ -232,7 +232,7 @@ def optimize(
     x_id: int,
     *,
     disp_here: bool = False,
-    overwrite:bool = False,
+    overwrite: bool = False,
     optimizer_options: Optional[dict] = None,
 ) -> None:
     """
