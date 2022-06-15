@@ -32,7 +32,7 @@ Name                    Content
 ``name2idx/``           Names of model parameters and species
 ``reaction_network.py`` Flux vector and reaction indices grouped according to biological processes
 ``ode.py``              Differential equation, parameters and initial condition
-``observalbe.py``       Observables, simulations and experimental data
+``observable.py``       Observables, simulations and experimental data
 ``search_param.py``     Lower and upper bounds of model parameters to be estimated
 ``problem.py``          An objective function to be minimized, i.e., the distance between model simulation and experimental data
 ``viz.py``              Plotting parameters for customizing figure properties
