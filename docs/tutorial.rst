@@ -32,7 +32,7 @@ Name                    Content
 ``name2idx/``           Names of model parameters and species
 ``reaction_network.py`` Flux vector and reaction indices grouped according to biological processes
 ``ode.py``              Differential equation, parameters and initial condition
-``observalbe.py``       Observables, simulations and experimental data
+``observable.py``       Observables, simulations and experimental data
 ``search_param.py``     Lower and upper bounds of model parameters to be estimated
 ``problem.py``          An objective function to be minimized, i.e., the distance between model simulation and experimental data
 ``viz.py``              Plotting parameters for customizing figure properties
@@ -131,7 +131,8 @@ By comparing the reaction scheme (`Fig.1E <https://ars.els-cdn.com/content/image
     @sim condition EGF: p[Ligand] = 1
     @sim condition HRG: p[Ligand] = 2
 
-You can download this text file from `here <https://github.com/pasmopy/pasmopy/blob/master/tests/text_files/fos_model.txt>`_.
+* You can download this text file from `here <https://github.com/pasmopy/pasmopy/blob/master/tests/text_files/fos_model.txt>`_.
+* For more details about available reaction rules, please see `ReactionRules <https://pasmopy.readthedocs.io/en/latest/modules/reaction_rules.html>`_.
 
 **Text-to-model conversion:**
 
@@ -224,7 +225,7 @@ Open ``observable.py``.
         for observable in self.obs_names:
             self.normalization[observable] = {"timepoint": None, "condition": []}
 
-Here, you can define how you would like to normalize simulation results for each observable. The `normalization[observable]` dictionary accepts two keys, `'timepoint'` and `'condition'`.
+Here, you can define how you would like to normalize simulation results for each observable. The ``normalization[observable]`` dictionary accepts two keys, `'timepoint'` and `'condition'`.
 
 - 'timepoint' : *Optional[int]*
     The time point at which simulated values are normalized.

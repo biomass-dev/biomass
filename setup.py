@@ -79,10 +79,13 @@ def setup_package():
         keywords=[
             "systems",
             "biology",
+            "kinetic",
             "modeling",
-            "optimization",
-            "sensitivity",
-            "analysis",
+            "biochemical",
+            "reaction",
+            "network",
+            "simulation",
+            "ode",
         ],
         classifiers=[
             "Development Status :: 4 - Beta",

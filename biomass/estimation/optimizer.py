@@ -47,8 +47,10 @@ class Optimizer(object):
         The optimizer, e.g., :func:`scipy.optimize.differential_evolution`.
     x_id : int
         Index of parameter set to estimate.
-    disp_here: bool (default: False)
+    disp_here : bool (default: :obj:`False`)
         Whether to show the evaluated *objective* at every iteration.
+    overwrite : bool (default: :obj:`False`)
+        If :obj:`True`, the directory (``x_id/``) will be overwritten.
 
     Examples
     --------
@@ -93,6 +95,7 @@ class Optimizer(object):
         optimize: Callable,
         x_id: int,
         disp_here: bool = False,
+        overwrite: bool = False,
     ):
         self.model = model
         self.optimize = optimize
@@ -100,13 +103,18 @@ class Optimizer(object):
         self.disp_here = disp_here
 
         self.savedir = os.path.join(self.model.path, "out", f"{self.x_id}")
-        if os.path.isdir(self.savedir):
+        if os.path.isdir(self.savedir) and not overwrite:
             raise ValueError(
                 f"out{os.sep}{self.x_id} already exists in {self.model.path}. "
-                "Use another parameter id."
+                "Use another parameter id or set `overwrite` to True."
             )
+        elif os.path.isdir(self.savedir) and overwrite:
+            files = os.listdir(self.savedir)
+            for file in files:
+                if any(map(file.__contains__, (".npy", ".log"))):
+                    os.remove(os.path.join(self.savedir, file))
         else:
-            os.makedirs(self.savedir)
+            os.makedirs(self.savedir, exist_ok=True)
         os.makedirs(os.path.join(self.model.path, "out", DIRNAME + str(self.x_id)), exist_ok=True)
         self.default_stdout = sys.stdout
 
