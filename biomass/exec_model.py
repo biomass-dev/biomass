@@ -2,7 +2,7 @@ import os
 import re
 from types import ModuleType
 from typing import List, NamedTuple
-
+from .graph import NetworkGraph
 import numpy as np
 
 
@@ -11,7 +11,7 @@ class OptimizedValues(NamedTuple):
     initials: list
 
 
-class ModelObject(object):
+class ModelObject(NetworkGraph):
     """
     The BioMASS model object.
 
@@ -59,6 +59,7 @@ class ModelObject(object):
     """
 
     def __init__(self, path: str, biomass_model: ModuleType):
+        super().__init__(path, biomass_model)
         self._path = path
         self._parameters = biomass_model.C.NAMES
         self._species = biomass_model.V.NAMES
