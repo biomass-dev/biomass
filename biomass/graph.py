@@ -111,11 +111,7 @@ class NetworkGraph(object):
                     equation_cache += line
                 if len(equation_cache) == 0:
                     try:
-<<<<<<< HEAD
                         warning_match = re.findall(r'\[V\.', line.split('=')[1])
-=======
-                        warning_match = re.findall("\[V\.", line.split("=")[1])
->>>>>>> 92640c61ae4cffdb02c5ed696cac03e35d1762ac
                     except:
                         warning_match = None
                     if warning_match and not was_warned:
@@ -144,7 +140,6 @@ class NetworkGraph(object):
             use_flux = False
 
         if use_flux == False:
-<<<<<<< HEAD
             left_re = r'(?<=dydt\[V.)(.+?)(?=\])'
             right_re = r'(?<=y\[V.)(.+?)\]'
             edges = self._extract_equation(self.path, 'ode.py', left_re, right_re)
@@ -153,22 +148,10 @@ class NetworkGraph(object):
             right_re_flux = r'(?<=y\[V.)(.+?)\]'
             left_re_ode = r'(?<=dydt\[V.)(.+?)(?=\])'
             right_re_ode = r'(?<=v\[)(.+?)\]'
-            fluxes = self._extract_equation(self.path, 'reaction_network.py', left_re_flux, right_re_flux)
-            odes = self._extract_equation(self.path, 'ode.py', left_re_ode, right_re_ode)
-=======
-            left_re = "(?<=dydt\[V.)(.+?)(?=\])"
-            right_re = "(?<=y\[V.)(.+?)\]"
-            edges = self._extract_equation(self.path, "ode.py", left_re, right_re)
-        elif use_flux == True:
-            left_re_flux = "(?<=v\[)(.+?)(?=\])"
-            right_re_flux = "(?<=y\[V.)(.+?)\]"
-            left_re_ode = "(?<=dydt\[V.)(.+?)(?=\])"
-            right_re_ode = "(?<=v\[)(.+?)\]"
             fluxes = self._extract_equation(
-                self.path, "reaction_network.py", left_re_flux, right_re_flux
+                self.path, 'reaction_network.py', left_re_flux, right_re_flux
             )
-            odes = self._extract_equation(self.path, "ode.py", left_re_ode, right_re_ode)
->>>>>>> 92640c61ae4cffdb02c5ed696cac03e35d1762ac
+            odes = self._extract_equation(self.path, 'ode.py', left_re_ode, right_re_ode)
             edges = defaultdict(lambda: [])
             for species, velocities in odes.items():
                 for velocity in velocities:
