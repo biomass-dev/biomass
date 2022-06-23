@@ -1,7 +1,7 @@
-from ast import Is
 import os
 import re
 import warnings
+from ast import Is
 from collections import defaultdict
 from types import ModuleType
 
@@ -112,7 +112,7 @@ class NetworkGraph(object):
                     equation_cache += line
                 if len(equation_cache) == 0:
                     try:
-                        warning_match = re.findall(r'\[V\.', line.split('=')[1])
+                        warning_match = re.findall(r"\[V\.", line.split("=")[1])
                     except IndexError:
                         warning_match = None
                     if warning_match and not was_warned:
@@ -141,14 +141,14 @@ class NetworkGraph(object):
             use_flux = False
 
         if use_flux is False:
-            left_re = r'(?<=dydt\[V.)(.+?)(?=\])'
-            right_re = r'(?<=y\[V.)(.+?)\]'
-            edges = self._extract_equation(self.path, 'ode.py', left_re, right_re)
+            left_re = r"(?<=dydt\[V.)(.+?)(?=\])"
+            right_re = r"(?<=y\[V.)(.+?)\]"
+            edges = self._extract_equation(self.path, "ode.py", left_re, right_re)
         elif use_flux is True:
-            left_re_flux = r'(?<=v\[)(.+?)(?=\])'
-            right_re_flux = r'(?<=y\[V.)(.+?)\]'
-            left_re_ode = r'(?<=dydt\[V.)(.+?)(?=\])'
-            right_re_ode = r'(?<=v\[)(.+?)\]'
+            left_re_flux = r"(?<=v\[)(.+?)(?=\])"
+            right_re_flux = r"(?<=y\[V.)(.+?)\]"
+            left_re_ode = r"(?<=dydt\[V.)(.+?)(?=\])"
+            right_re_ode = r"(?<=v\[)(.+?)\]"
             fluxes = self._extract_equation(
                 self.path, "reaction_network.py", left_re_flux, right_re_flux
             )
