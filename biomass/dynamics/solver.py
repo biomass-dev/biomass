@@ -1,7 +1,7 @@
 import math
 import sys
 import time
-from typing import Callable, List, Optional, Tuple, Union, Literal
+from typing import Callable, List, Literal, Optional, Tuple, Union
 
 import numpy as np
 from scipy.integrate import ode, solve_ivp
