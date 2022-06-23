@@ -100,7 +100,7 @@ class NetworkGraph(object):
                     equation_cache += line
                 if len(equation_cache) == 0:
                     try:
-                        warning_match = re.findall('\[V\.', line.split('=')[1])
+                        warning_match = re.findall(r'\[V\.', line.split('=')[1])
                     except:
                         warning_match = None
                     if warning_match and not was_warned:
@@ -123,14 +123,14 @@ class NetworkGraph(object):
             use_flux = False
 
         if use_flux == False:
-            left_re = '(?<=dydt\[V.)(.+?)(?=\])'
-            right_re = '(?<=y\[V.)(.+?)\]'
+            left_re = r'(?<=dydt\[V.)(.+?)(?=\])'
+            right_re = r'(?<=y\[V.)(.+?)\]'
             edges = self._extract_equation(self.path, 'ode.py', left_re, right_re)
         elif use_flux == True:
-            left_re_flux = '(?<=v\[)(.+?)(?=\])'
-            right_re_flux = '(?<=y\[V.)(.+?)\]'
-            left_re_ode = '(?<=dydt\[V.)(.+?)(?=\])'
-            right_re_ode = '(?<=v\[)(.+?)\]'
+            left_re_flux = r'(?<=v\[)(.+?)(?=\])'
+            right_re_flux = r'(?<=y\[V.)(.+?)\]'
+            left_re_ode = r'(?<=dydt\[V.)(.+?)(?=\])'
+            right_re_ode = r'(?<=v\[)(.+?)\]'
             fluxes = self._extract_equation(self.path, 'reaction_network.py', left_re_flux, right_re_flux)
             odes = self._extract_equation(self.path, 'ode.py', left_re_ode, right_re_ode)
             edges = defaultdict(lambda: [])
