@@ -126,22 +126,22 @@ class NetworkGraph(object):
 
     def to_graph(
         self,
-        file_name: str,        
+        file_name: str,
         gviz_args: str = "",
         gviz_prog: str = "dot",
     ):
         """Constructs and draws a directed graph of the model.
         Using the pygraphviz library and graphviz a directed graph of the model is constructed by parsing the equations from
-        ode.py/reaction_network.py. Equations will be split at the equal sign and an edge is added between the species on the 
+        ode.py/reaction_network.py. Equations will be split at the equal sign and an edge is added between the species on the
         lefthand side to all species on the righthand side. Self references will not be considered. Graphviz is then used to
-        save the graph as an image. 
-        
+        save the graph as an image.
+
         Parameters
         ----------
         file_name : string
                     Name as which the image of the graph will be stored.
         gviz_args : string, optional, default=""
-                    Used to specify command line options for gviz, see https://graphviz.org/pdf/dot.1.pdf for available options. 
+                    Used to specify command line options for gviz, see https://graphviz.org/pdf/dot.1.pdf for available options.
         gviz_prog : {"neato", "dot", "twopi", "circo", "fdp", "nop"}, default="dot"
                     Layout engine with which the graph will be arranged. For details see https://graphviz.org/docs/layouts/ .
 
@@ -153,8 +153,8 @@ class NetworkGraph(object):
         Warnings
         ---------
         UserWarning
-            If species equations are detected outside of the ODE section.       
-        
+            If species equations are detected outside of the ODE section.
+
         Examples
         --------
         >>> model.create_graph("path/to/graph.png")

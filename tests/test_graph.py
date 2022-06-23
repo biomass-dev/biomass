@@ -14,16 +14,10 @@ def test_graph():
             with pytest.warns(UserWarning):
                 model.to_graph(os.path.join(model_name + "test.png"))
                 assert (
-                    os.stat(
-                        os.path.join(model.path, model_name + "test.png")
-                    ).st_size
-                    > 1024 * 10
+                    os.stat(os.path.join(model.path, model_name + "test.png")).st_size > 1024 * 10
                 )
             continue
         model = create_model(".".join(("biomass", "models", model_name)))
         model.to_graph(os.path.join(model_name + "test.png"))
-        assert (
-            os.stat(os.path.join(model.path, model_name + "test.png")).st_size
-            > 1024 * 10
-        )
+        assert os.stat(os.path.join(model.path, model_name + "test.png")).st_size > 1024 * 10
         os.remove(os.path.join(model.path, model_name + "test.png"))
