@@ -2,8 +2,10 @@ import os
 import re
 from types import ModuleType
 from typing import List, NamedTuple
-from .graph import NetworkGraph
+
 import numpy as np
+
+from .graph import NetworkGraph
 
 
 class OptimizedValues(NamedTuple):

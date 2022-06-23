@@ -1,7 +1,10 @@
-from types import ModuleType
-import pygraphviz as pgv
-import re, os, warnings
+import os
+import re
+import warnings
 from collections import defaultdict
+from types import ModuleType
+
+import pygraphviz as pgv
 
 
 class NetworkGraph(object):
@@ -14,7 +17,7 @@ class NetworkGraph(object):
         Path to a biomass model.
     biomass_model : Any
         A package containing biomass model properties.
-    
+
     Attributes
     ----------
     path : str
@@ -78,21 +81,29 @@ class NetworkGraph(object):
         with open(os.path.join(dir, filepath)) as f:
             was_warned = False
             lefthand = None
-            equation_cache = ''
+            equation_cache = ""
             for line in f.readlines():
                 match = re.search(left_match, line)
                 cache_full = bool(len(equation_cache))
-                if 'return' in line:
+                if "return" in line:
                     if cache_full:
-                        equation_cache = ''.join(equation_cache).split('=')[1]
-                        data[lefthand] = [found for found in re.findall(right_match, equation_cache) if found != lefthand]
-                    equation_cache = ''
+                        equation_cache = "".join(equation_cache).split("=")[1]
+                        data[lefthand] = [
+                            found
+                            for found in re.findall(right_match, equation_cache)
+                            if found != lefthand
+                        ]
+                    equation_cache = ""
                     cache_full = False
                 if match is not None:
                     if cache_full:
-                        equation_cache = ''.join(equation_cache).split('=')[1]
-                        data[lefthand] = [found for found in re.findall(right_match, equation_cache) if found != lefthand]
-                        equation_cache = ''
+                        equation_cache = "".join(equation_cache).split("=")[1]
+                        data[lefthand] = [
+                            found
+                            for found in re.findall(right_match, equation_cache)
+                            if found != lefthand
+                        ]
+                        equation_cache = ""
                         cache_full = False
                     lefthand = match.group(0)
                     equation_cache += line
@@ -100,17 +111,23 @@ class NetworkGraph(object):
                     equation_cache += line
                 if len(equation_cache) == 0:
                     try:
-                        warning_match = re.findall('\[V\.', line.split('=')[1])
+                        warning_match = re.findall("\[V\.", line.split("=")[1])
                     except:
                         warning_match = None
                     if warning_match and not was_warned:
-                        warnings.warn('Usage of species concentrations outside of rate equations detected.'+ 
-                        ' Species concentrations outside of rate equations will not be considered in Graph generation.'+
-                        ' Might lead to faulty graph.')
-                        was_warned=True 
+                        warnings.warn(
+                            "Usage of species concentrations outside of rate equations detected."
+                            + " Species concentrations outside of rate equations will not be considered in Graph generation."
+                            + " Might lead to faulty graph."
+                        )
+                        was_warned = True
         return data
 
-    def to_graph(self, save_path: str, gviz_prog: str ='dot', ):
+    def to_graph(
+        self,
+        save_path: str,
+        gviz_prog: str = "dot",
+    ):
         """
         Constructs and draws a directed graph of the model using ode.py/reaction_network.py as text files.
         """
@@ -123,16 +140,18 @@ class NetworkGraph(object):
             use_flux = False
 
         if use_flux == False:
-            left_re = '(?<=dydt\[V.)(.+?)(?=\])'
-            right_re = '(?<=y\[V.)(.+?)\]'
-            edges = self._extract_equation(self.path, 'ode.py', left_re, right_re)
+            left_re = "(?<=dydt\[V.)(.+?)(?=\])"
+            right_re = "(?<=y\[V.)(.+?)\]"
+            edges = self._extract_equation(self.path, "ode.py", left_re, right_re)
         elif use_flux == True:
-            left_re_flux = '(?<=v\[)(.+?)(?=\])'
-            right_re_flux = '(?<=y\[V.)(.+?)\]'
-            left_re_ode = '(?<=dydt\[V.)(.+?)(?=\])'
-            right_re_ode = '(?<=v\[)(.+?)\]'
-            fluxes = self._extract_equation(self.path, 'reaction_network.py', left_re_flux, right_re_flux)
-            odes = self._extract_equation(self.path, 'ode.py', left_re_ode, right_re_ode)
+            left_re_flux = "(?<=v\[)(.+?)(?=\])"
+            right_re_flux = "(?<=y\[V.)(.+?)\]"
+            left_re_ode = "(?<=dydt\[V.)(.+?)(?=\])"
+            right_re_ode = "(?<=v\[)(.+?)\]"
+            fluxes = self._extract_equation(
+                self.path, "reaction_network.py", left_re_flux, right_re_flux
+            )
+            odes = self._extract_equation(self.path, "ode.py", left_re_ode, right_re_ode)
             edges = defaultdict(lambda: [])
             for species, velocities in odes.items():
                 for velocity in velocities:
@@ -143,7 +162,9 @@ class NetworkGraph(object):
         for participants in edges.values():
             num_participants += participants
         num_participants += edges.keys()
-        assert set(self.species) == set(num_participants), f"Not all species are extracted. Expected {len(self.species)}, got {len(set(num_participants))}"
+        assert set(self.species) == set(
+            num_participants
+        ), f"Not all species are extracted. Expected {len(self.species)}, got {len(set(num_participants))}"
         graph = pgv.AGraph(directed=True)
         for species, partners in edges.items():
             graph.add_node(species)
