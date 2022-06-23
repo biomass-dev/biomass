@@ -5,12 +5,7 @@ from dataclasses import dataclass
 from importlib import import_module
 from pathlib import Path
 from types import ModuleType
-from typing import Callable, Dict, Optional, Union
-
-try:  # python 3.8+
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
+from typing import Callable, Dict, Optional, Union, Literal
 
 import numpy as np
 from scipy.optimize import differential_evolution
