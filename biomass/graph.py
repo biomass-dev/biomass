@@ -1,3 +1,4 @@
+from ast import Is
 import os
 import re
 import warnings
@@ -112,7 +113,7 @@ class NetworkGraph(object):
                 if len(equation_cache) == 0:
                     try:
                         warning_match = re.findall(r'\[V\.', line.split('=')[1])
-                    except:
+                    except IndexError:
                         warning_match = None
                     if warning_match and not was_warned:
                         warnings.warn(
@@ -139,11 +140,11 @@ class NetworkGraph(object):
         except AttributeError:
             use_flux = False
 
-        if use_flux == False:
+        if use_flux is False:
             left_re = r'(?<=dydt\[V.)(.+?)(?=\])'
             right_re = r'(?<=y\[V.)(.+?)\]'
             edges = self._extract_equation(self.path, 'ode.py', left_re, right_re)
-        elif use_flux == True:
+        elif use_flux is True:
             left_re_flux = r'(?<=v\[)(.+?)(?=\])'
             right_re_flux = r'(?<=y\[V.)(.+?)\]'
             left_re_ode = r'(?<=dydt\[V.)(.+?)(?=\])'
