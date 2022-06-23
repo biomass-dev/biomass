@@ -1,7 +1,6 @@
 import os
 import re
 import warnings
-from ast import Is
 from collections import defaultdict
 from types import ModuleType
 from typing import List
@@ -127,11 +126,41 @@ class NetworkGraph(object):
 
     def to_graph(
         self,
-        save_path: str,
+        file_name: str,        
+        gviz_args: str = "",
         gviz_prog: str = "dot",
     ):
-        """
-        Constructs and draws a directed graph of the model using ode.py/reaction_network.py as text files.
+        """Constructs and draws a directed graph of the model.
+        Using the pygraphviz library and graphviz a directed graph of the model is constructed by parsing the equations from
+        ode.py/reaction_network.py. Equations will be split at the equal sign and an edge is added between the species on the 
+        lefthand side to all species on the righthand side. Self references will not be considered. Graphviz is then used to
+        save the graph as an image. 
+        
+        Parameters
+        ----------
+        file_name : string
+                    Name as which the image of the graph will be stored.
+        gviz_args : string, optional, default=""
+                    Used to specify command line options for gviz, see https://graphviz.org/pdf/dot.1.pdf for available options. 
+        gviz_prog : {"neato", "dot", "twopi", "circo", "fdp", "nop"}, default="dot"
+                    Layout engine with which the graph will be arranged. For details see https://graphviz.org/docs/layouts/ .
+
+        Raises
+        ------
+        AssertionError
+            If more species are part of the model, than are detected from ode.py/reaction_network.py or vice versa.
+
+        Warnings
+        ---------
+        UserWarning
+            If species equations are detected outside of the ODE section.       
+        
+        Examples
+        --------
+        >>> model.create_graph("path/to/graph.png")
+        Creates graph with dot layout and default options.
+        >>> model.create_graph("path/to/graph.pdf, gviz_prog="-Nshape=box -Nstyle=filled -Nfillcolor="#ffe4c4" -Edir=none")
+        Creates graph with dot layout in pdf file format. Nodes will be rectangular and colored bisque, edges will have no arrows indicating direction.
         """
         try:
             if len(self.rxn.flux(0, self.ival(), self.pval())) > 0:
@@ -173,6 +202,6 @@ class NetworkGraph(object):
             for partner in partners:
                 graph.add_edge(partner, species)
         self.graph = graph
-        graph.layout(prog=gviz_prog)
-        graph.draw(save_path)
+        graph.layout(prog=gviz_prog, args=gviz_args)
+        graph.draw(os.path.join(self.path, file_name))
         return
