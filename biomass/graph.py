@@ -4,6 +4,7 @@ import warnings
 from ast import Is
 from collections import defaultdict
 from types import ModuleType
+from typing import List
 
 import pygraphviz as pgv
 
