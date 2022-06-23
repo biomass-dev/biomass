@@ -56,7 +56,7 @@ class NetworkGraph(object):
         return self._path
 
     @property
-    def parameters(self) -> list[str]:
+    def parameters(self) -> List[str]:
         return self._parameters
 
     @property
@@ -64,7 +64,7 @@ class NetworkGraph(object):
         return self._species
 
     @property
-    def observables(self) -> list[str]:
+    def observables(self) -> List[str]:
         duplicate = [
             name for name in set(self.problem.obs_names) if self.problem.obs_names.count(name) > 1
         ]
