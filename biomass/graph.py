@@ -150,9 +150,9 @@ class NetworkGraph(object):
             left_re_ode = r'(?<=dydt\[V.)(.+?)(?=\])'
             right_re_ode = r'(?<=v\[)(.+?)\]'
             fluxes = self._extract_equation(
-                self.path, 'reaction_network.py', left_re_flux, right_re_flux
+                self.path, "reaction_network.py", left_re_flux, right_re_flux
             )
-            odes = self._extract_equation(self.path, 'ode.py', left_re_ode, right_re_ode)
+            odes = self._extract_equation(self.path, "ode.py", left_re_ode, right_re_ode)
             edges = defaultdict(lambda: [])
             for species, velocities in odes.items():
                 for velocity in velocities:
