@@ -3,7 +3,7 @@ import re
 import warnings
 from collections import defaultdict
 from types import ModuleType
-from typing import List
+from typing import List, Literal
 
 import pygraphviz as pgv
 
@@ -74,9 +74,9 @@ class NetworkGraph(object):
             raise NameError(f"Duplicate observables: {', '.join(duplicate)}")
 
     @staticmethod
-    def _extract_equation(dir: str, filepath: str, left_match: str, right_match: str):
+    def _extract_equation(dir: str, filepath: str, left_match: str, right_match: str) -> dict:
         """
-        Matches species that interact with eachother by reading python files as text and looking for equations.
+        Matches species that interact with each other by reading python files as text and looking for equations.
         """
         data = {}
         with open(os.path.join(dir, filepath)) as f:
@@ -128,8 +128,8 @@ class NetworkGraph(object):
         self,
         file_name: str,
         gviz_args: str = "",
-        gviz_prog: str = "dot",
-    ):
+        gviz_prog: Literal["neato", "dot", "twopi", "circo", "fdp", "nop"] = "dot",
+    ) -> None:
         """Constructs and draws a directed graph of the model.
         Using the pygraphviz library and graphviz a directed graph of the model is constructed by parsing the equations from
         ode.py/reaction_network.py. Equations will be split at the equal sign and an edge is added between the species on the
@@ -150,8 +150,8 @@ class NetworkGraph(object):
         AssertionError
             If more species are part of the model, than are detected from ode.py/reaction_network.py or vice versa.
 
-        Warnings
-        ---------
+        Warns
+        -----
         UserWarning
             If species equations are detected outside of the ODE section.
 
@@ -162,6 +162,12 @@ class NetworkGraph(object):
         >>> model.create_graph("path/to/graph.pdf, gviz_prog="-Nshape=box -Nstyle=filled -Nfillcolor="#ffe4c4" -Edir=none")
         Creates graph with dot layout in pdf file format. Nodes will be rectangular and colored bisque, edges will have no arrows indicating direction.
         """
+
+        # Check gviz_prog
+        if gviz_prog not in (available_layout := ["neato", "dot", "twopi", "circo", "fdp", "nop"]):
+            raise ValueError(
+                f"gviz_prog must be one of [{', '.join(available_layout)}], got {gviz_prog}."
+            )
         try:
             if len(self.rxn.flux(0, self.ival(), self.pval())) > 0:
                 use_flux = True
@@ -204,4 +210,3 @@ class NetworkGraph(object):
         self.graph = graph
         graph.layout(prog=gviz_prog, args=gviz_args)
         graph.draw(os.path.join(self.path, file_name))
-        return
