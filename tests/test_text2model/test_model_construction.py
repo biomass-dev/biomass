@@ -84,7 +84,7 @@ def test_run_simulation():
         from .text_files import Kholodenko1999, michaelis_menten
 
         _packaging: Callable[[str], str] = lambda model_name: ".".join(
-            ["tests.text_files", model_name]
+            ["tests.test_text2model.text_files", model_name]
         )
         for model_name in ["Kholodenko1999", "michaelis_menten"]:
             model = Model(_packaging(model_name)).create()
@@ -122,7 +122,7 @@ def test_text2markdown():
                 )
             )
             mm_kinetics.register_word({"dissociate": ["releases"]})
-            mm_kinetics.to_markdown(n_reaction=2)
+            mm_kinetics.to_markdown(num_reactions=2)
         elif model == "Kholodenko1999":
             mapk_cascade = Text2Model(
                 os.path.join(
@@ -131,7 +131,7 @@ def test_text2markdown():
                     f"{model}.txt",
                 )
             )
-            mapk_cascade.to_markdown(n_reaction=25)
+            mapk_cascade.to_markdown(num_reactions=25)
         assert os.path.isfile(os.path.join("markdown", model, "rate.md"))
         assert os.path.isfile(os.path.join("markdown", model, "diffeq.md"))
         shutil.rmtree("markdown")

@@ -80,7 +80,7 @@ def test_model_construction():
 
 
 def test_parameter_estimation(workers: int = -1):
-    model = Model("tests.text_files.fos_model").create()
+    model = Model("tests.test_text2model.text_files.fos_model").create()
     assert len(model.species) == 36
     assert len(model.observables) == 8
     assert len(model.problem.bounds) == 75
