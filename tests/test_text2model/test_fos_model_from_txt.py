@@ -91,10 +91,14 @@ def test_parameter_estimation(workers: int = -1):
     assert run_simulation(model, viz_type=str(param_idx)) is None
     simulation_results = np.load(os.path.join(model.path, "simulation_data", "simulations_1.npy"))
     assert np.isfinite(simulation_results).all()
-    for obs_name in model.observables:
-        assert os.path.isfile(
-            os.path.join(model.path, "figure", "simulation", "1", f"{obs_name}.png")
-        ), ", ".join(os.listdir(os.path.join(model.path, "figure", "simulation", "1")))
+    assert len(
+        [
+            file for file in os.listdir(os.path.join(model.path, "figure", "simulation", "1"))
+            if file.endswith(".pdf") or file.endswith(".png")
+        ]
+    ) == len(model.observables), ", ".join(
+        os.listdir(os.path.join(model.path, "figure", "simulation", "1"))
+    )
 
 
 def test_cleanup():
