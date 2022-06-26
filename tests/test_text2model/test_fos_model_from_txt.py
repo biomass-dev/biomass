@@ -94,7 +94,7 @@ def test_parameter_estimation(workers: int = -1):
     for obs_name in model.observables:
         assert os.path.isfile(
             os.path.join(model.path, "figure", "simulation", "1", f"{obs_name}.png")
-        )
+        ), ", ".join(os.listdir(os.path.join(model.path, "figure", "simulation", "1")))
 
 
 def test_cleanup():
