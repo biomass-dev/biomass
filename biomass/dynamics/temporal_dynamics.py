@@ -188,9 +188,7 @@ class TemporalDynamics(object):
                             j,
                             [
                                 self.model.problem.conditions.index(c)
-                                for c in self.model.problem.normalization[obs_name][
-                                    "condition"
-                                ]
+                                for c in self.model.problem.normalization[obs_name]["condition"]
                             ],
                             self.model.problem.normalization[obs_name]["timepoint"],
                         ]
@@ -202,9 +200,7 @@ class TemporalDynamics(object):
                             j,
                             [
                                 self.model.problem.conditions.index(c)
-                                for c in self.model.problem.normalization[obs_name][
-                                    "condition"
-                                ]
+                                for c in self.model.problem.normalization[obs_name]["condition"]
                             ],
                         ]
                     )
