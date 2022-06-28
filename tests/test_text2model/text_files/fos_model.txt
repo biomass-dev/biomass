@@ -1,0 +1,80 @@
+@rxn ERKc --> pERKc: p[V1] * p[a] * u[ppMEKc] * u[ERKc] /  ( p[K1] * (1 + u[pERKc] / p[K2]) + u[ERKc] ) || ERKc=9.60e02
+@rxn pERKc --> ppERKc: p[V2] * p[a] * u[ppMEKc] * u[pERKc] /  ( p[K2] * (1 + u[ERKc] / p[K1]) + u[pERKc] ) | const V2=2.20e-01, const K2=3.50e02
+@rxn pERKc --> ERKc: p[V3] * u[pERKc] /  ( p[K3] * (1 + u[ppERKc] / p[K4]) + u[pERKc] ) | const V3=7.20e-01, const K3=1.60e02
+@rxn ppERKc --> pERKc: p[V4] * u[ppERKc] /  ( p[K4]* (1 + u[pERKc] / p[K3]) + u[ppERKc] ) | const V4=6.48e-01, const K4=6.00e01
+@rxn pERKn --> ERKn: p[V5] * u[pERKn] /  ( p[K5] * (1 + u[ppERKn] / p[K6]) + u[pERKn] )
+@rxn ppERKn --> pERKn: p[V6] * u[ppERKn] /  ( p[K6] * (1 + u[pERKn] / p[K5]) + u[ppERKn] ) |5|
+ERKc translocates to nucleus (0.94, 0.22) <--> ERKn | const kf=1.20e-02, const kr=1.80e-02
+pERKc translocates to nucleus (0.94, 0.22) <--> pERKn | const kf=1.20e-02, const kr=1.80e-02
+ppERKc translocates to nucleus (0.94, 0.22) <--> ppERKn | const kf=1.10e-02, const kr=1.30e-02
+ppERKn transcribes PreduspmRNAn
+PreduspmRNAn translocates to cytoplasm --> duspmRNAc
+duspmRNAc is degraded
+duspmRNAc is translated into DUSPc
+ppERKc phosphorylates DUSPc --> pDUSPc
+pDUSPc is dephosphorylated --> DUSPc
+DUSPc is degraded | const kf=2.57e-04
+pDUSPc is degraded | const kf=9.63e-05
+DUSPc translocates to nucleus (0.94, 0.22) <--> DUSPn
+pDUSPc translocates to nucleus (0.94, 0.22) <--> pDUSPn |18|
+ppERKn phosphorylates DUSPn --> pDUSPn
+pDUSPn is dephosphorylated --> DUSPn
+DUSPn is degraded | const kf=2.57e-04
+pDUSPn is degraded | const kf=9.63e-05
+ppERKc phosphorylates RSKc --> pRSKc || RSKc=3.53e02
+pRSKc is dephosphorylated --> RSKc
+pRSKc translocates to nucleus (0.94, 0.22) <--> pRSKn
+pRSKn phosphorylates CREBn --> pCREBn || CREBn=1.00e03
+pCREBn is dephosphorylated --> CREBn
+ppERKn phosphorylates Elk1n --> pElk1n || Elk1n=1.51e03
+pElk1n is dephosphorylated --> Elk1n
+pCREBn & pElk1n transcribes PrecfosmRNAn, repressed by Fn
+PrecfosmRNAn translocates to cytoplasm --> cfosmRNAc
+cfosmRNAc is degraded
+cfosmRNAc is translated into cFOSc
+ppERKc phosphorylates cFOSc --> pcFOSc
+pRSKc phosphorylates cFOSc --> pcFOSc
+pcFOSc is dephosphorylated --> cFOSc
+cFOSc is degraded | const kf=2.57e-04
+pcFOSc is degraded | const kf=9.63e-05
+cFOSc translocates to nucleus (0.94, 0.22) <--> cFOSn
+pcFOSc translocates to nucleus (0.94, 0.22) <--> pcFOSn |40|
+ppERKn phosphorylates cFOSn --> pcFOSn
+pRSKn phosphorylates cFOSn --> pcFOSn
+pcFOSn is dephosphorylated --> cFOSn
+cFOSn is degraded | const kf=2.57e-04
+pcFOSn is degraded | const kf=9.63e-05
+DUSPn + ppERKn <--> DUSPn_ppERKn
+DUSPn_ppERKn --> DUSPn + pERKn
+DUSPn + pERKn <--> DUSPn_pERKn
+DUSPn_pERKn --> DUSPn + ERKn
+DUSPn + ERKn <--> DUSPn_ERKn
+pDUSPn + ppERKn <--> pDUSPn_ppERKn |47|
+pDUSPn_ppERKn --> pDUSPn + pERKn |48|
+pDUSPn + pERKn <--> pDUSPn_pERKn |49|
+pDUSPn_pERKn --> pDUSPn + ERKn |50|
+pDUSPn + ERKn <--> pDUSPn_ERKn |51|
+pcFOSn transcribes PreFmRNAn
+PreFmRNAn translocates to cytoplasm --> FmRNAc
+FmRNAc is degraded
+FmRNAc is translated into Fc
+Fc is degraded
+Fc translocates to nucleus (0.94, 0.22) <--> Fn
+Fn is degraded
+
+@add species ppMEKc
+@add param Ligand
+
+@obs Phosphorylated_MEKc: u[ppMEKc]
+@obs Phosphorylated_ERKc: u[pERKc] + u[ppERKc]
+@obs Phosphorylated_RSKw: u[pRSKc] + u[pRSKn] * (0.22 / 0.94)
+@obs Phosphorylated_CREBw: u[pCREBn] * (0.22 / 0.94)
+@obs dusp_mRNA: u[duspmRNAc]
+@obs cfos_mRNA: u[cfosmRNAc]
+@obs cFos_Protein: (u[pcFOSn] + u[cFOSn]) * (0.22 / 0.94) + u[cFOSc] + u[pcFOSc]
+@obs Phosphorylated_cFos: u[pcFOSn] * (0.22 / 0.94) + u[pcFOSc]
+
+@sim tspan: [0, 5400]
+@sim unperturbed: p[Ligand] = 0
+@sim condition EGF: p[Ligand] = 1
+@sim condition HRG: p[Ligand] = 2
