@@ -1,4 +1,5 @@
 import numpy as np
+
 from biomass.estimation import convert_scale, initialize_search_param
 
 from .name2idx import C, V

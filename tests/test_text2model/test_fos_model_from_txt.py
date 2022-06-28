@@ -93,7 +93,8 @@ def test_parameter_estimation(workers: int = -1):
     assert np.isfinite(simulation_results).all()
     assert len(
         [
-            file for file in os.listdir(os.path.join(model.path, "figure", "simulation", "1"))
+            file
+            for file in os.listdir(os.path.join(model.path, "figure", "simulation", "1"))
             if file.endswith(".pdf") or file.endswith(".png")
         ]
     ) == len(model.observables), ", ".join(

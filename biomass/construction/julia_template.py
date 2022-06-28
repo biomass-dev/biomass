@@ -7,7 +7,9 @@ BioMASS.jl >= 0.7.2
 
 from typing import Final
 
-PARAMETERS: Final[str] = """\
+PARAMETERS: Final[
+    str
+] = """\
 module C
 
 const NAMES = []
@@ -22,7 +24,9 @@ end  # module
 """
 
 
-SPECIES: Final[str] = """\
+SPECIES: Final[
+    str
+] = """\
 module V
 
 const NAMES = []
@@ -37,7 +41,9 @@ end  # module
 """
 
 
-ODE: Final[str] = """\
+ODE: Final[
+    str
+] = """\
 function diffeq!(du, u, p, t)
     v = Dict{Int64,Float64}()
 
@@ -63,7 +69,9 @@ end
 """
 
 
-OBSERVABLE: Final[str] = """\
+OBSERVABLE: Final[
+    str
+] = """\
 const observables = []
 
 function observables_index(observable_name::String)::Int
@@ -75,7 +83,9 @@ end
 """
 
 
-SIMULATION: Final[str] = """\
+SIMULATION: Final[
+    str
+] = """\
 module Sim
 include("./name2idx/parameters.jl")
 include("./name2idx/species.jl")
@@ -183,7 +193,9 @@ end # module
 """
 
 
-EXPERIMENTAL_DATA: Final[str] = """\
+EXPERIMENTAL_DATA: Final[
+    str
+] = """\
 module Exp
 include("./observable.jl")
 
@@ -198,7 +210,9 @@ end # module
 """
 
 
-SEARCH_PARAM: Final[str] = """\
+SEARCH_PARAM: Final[
+    str
+] = """\
 # Specify model parameters and/or initial values to optimize
 function get_search_index()::Tuple{Array{Int64,1},Array{Int64,1}}
     # parameters
@@ -429,7 +443,9 @@ function convert_scale(
 end
 """
 
-PROBLEM: Final[str] = """\
+PROBLEM: Final[
+    str
+] = """\
 # Residual Sum of Squares
 function compute_objval_rss(
     sim_data::Vector{Float64},
