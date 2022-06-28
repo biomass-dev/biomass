@@ -75,9 +75,7 @@ class TemporalDynamics(object):
                             n_file, simulations_all, obs_name, mode, singleplotting, multiplotting
                         )
                     if viz_type == "average":
-                        normalized = self._normalize_array(
-                            n_file, simulations_all, obs_name, mode, singleplotting, multiplotting
-                        )
+                        normalized = self._normalize_array(n_file, simulations_all, obs_name)
                         if (
                             self.model.problem.normalization
                             and self.model.problem.normalization[obs_name]["timepoint"] is None
@@ -172,9 +170,6 @@ class TemporalDynamics(object):
         n_file: List[int],
         simulations_all: np.ndarray,
         obs_name: str,
-        mode: int,
-        singleplotting: List[SingleObservable],
-        multiplotting: MultipleObservables,
     ) -> np.ndarray:
         """
         Normalize the array simulations_all using problem.normalization set in observable.py.
@@ -182,41 +177,38 @@ class TemporalDynamics(object):
         normalized: np.ndarray = np.empty_like(simulations_all)
         i = self.model.observables.index(obs_name)
         for j, _ in enumerate(n_file):
-            for k, condition in enumerate(self.model.problem.conditions):
-                if (mode == 0 and condition not in singleplotting[i].dont_show) or (
-                    mode == 1 and condition == multiplotting.condition
-                ):
-                    normalized[i, j, k] = simulations_all[i, j, k] / (
-                        1
-                        if not self.model.problem.normalization
-                        or np.max(simulations_all[i, j, k]) == 0.0
-                        else np.max(
-                            simulations_all[
-                                i,
-                                j,
-                                [
-                                    self.model.problem.conditions.index(c)
-                                    for c in self.model.problem.normalization[obs_name][
-                                        "condition"
-                                    ]
-                                ],
-                                self.model.problem.normalization[obs_name]["timepoint"],
-                            ]
-                        )
-                        if self.model.problem.normalization[obs_name]["timepoint"] is not None
-                        else np.max(
-                            simulations_all[
-                                i,
-                                j,
-                                [
-                                    self.model.problem.conditions.index(c)
-                                    for c in self.model.problem.normalization[obs_name][
-                                        "condition"
-                                    ]
-                                ],
-                            ]
-                        )
+            for k, _ in enumerate(self.model.problem.conditions):
+                normalized[i, j, k] = simulations_all[i, j, k] / (
+                    1
+                    if not self.model.problem.normalization
+                    or np.max(simulations_all[i, j, k]) == 0.0
+                    else np.max(
+                        simulations_all[
+                            i,
+                            j,
+                            [
+                                self.model.problem.conditions.index(c)
+                                for c in self.model.problem.normalization[obs_name][
+                                    "condition"
+                                ]
+                            ],
+                            self.model.problem.normalization[obs_name]["timepoint"],
+                        ]
                     )
+                    if self.model.problem.normalization[obs_name]["timepoint"] is not None
+                    else np.max(
+                        simulations_all[
+                            i,
+                            j,
+                            [
+                                self.model.problem.conditions.index(c)
+                                for c in self.model.problem.normalization[obs_name][
+                                    "condition"
+                                ]
+                            ],
+                        ]
+                    )
+                )
         return normalized
 
     def _divide_by_maximum(self, normalized: np.ndarray, obs_name: str) -> np.ndarray:
