@@ -9,17 +9,15 @@ We will use a mechanistic model of the c-Fos expression network dynamics :cite:p
 Requirements
 ------------
 
-* ``biomass>=0.7.0`` for simulation, parameterization, and analysis of the model
-* ``pasmopy>=0.3.0`` for text-to-model conversion
+* ``biomass>=0.8.0`` for simulation, parameterization, and analysis of the model
 * `tqdm <https://github.com/tqdm/tqdm>`_ for visualizing progress bars
 
 To check the software versions, run the following code:
 
 .. code-block:: python
 
-    import biomass, pasmopy
+    import biomass
     print('biomass version:', biomass.__version__)
-    print('pasmopy version:', pasmopy.__version__)
 
 Model preparation
 -----------------
@@ -39,13 +37,13 @@ Name                    Content
 ======================= ========================================================================================================
 
 .. note::
-    `pasmopy.Text2Model <https://pasmopy.readthedocs.io/en/latest/model_development.html>`_ allows you to build a BioMASS model from text :cite:p:`imoto2022text`.
+    `Text2Model <https://pasmopy.readthedocs.io/en/latest/model_development.html>`_ allows you to build a BioMASS model from text :cite:p:`imoto2022text`.
     You simply describe biochemical reactions and the molecular mechanisms extracted from text are converted into an executable model.
 
 Prepare a text file describing the biochemical reactions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-By comparing the reaction scheme (`Fig.1E <https://ars.els-cdn.com/content/image/1-s2.0-S0092867410003739-gr1_lrg.jpg>`_) and the description below, you can learn how to build computational models via `pasmopy.Text2Model <https://pasmopy.readthedocs.io/en/latest/model_development.html>`_.
+By comparing the reaction scheme (`Fig.1E <https://ars.els-cdn.com/content/image/1-s2.0-S0092867410003739-gr1_lrg.jpg>`_) and the description below, you can learn how to build computational models via `Text2Model <https://pasmopy.readthedocs.io/en/latest/model_development.html>`_.
 
 .. code-block::
     :linenos:
@@ -131,14 +129,14 @@ By comparing the reaction scheme (`Fig.1E <https://ars.els-cdn.com/content/image
     @sim condition EGF: p[Ligand] = 1
     @sim condition HRG: p[Ligand] = 2
 
-* You can download this text file from `here <https://github.com/pasmopy/pasmopy/blob/master/tests/text_files/fos_model.txt>`_.
-* For more details about available reaction rules, please see `ReactionRules <https://pasmopy.readthedocs.io/en/latest/modules/reaction_rules.html>`_.
+* You can download this text file from `here <https://github.com/biomass-dev/biomass/blob/master/tests/text_files/fos_model.txt>`_.
+* For more details about available reaction rules, please see `ReactionRules <https://biomass-core.readthedocs.io/en/latest/api/reaction_rules.html>`_.
 
 **Text-to-model conversion:**
 
 .. code-block:: python
 
-    >>> from pasmopy import Text2Model
+    >>> from biomass import Text2Model
     >>> description = Text2Model("cfos_model")
     >>> description.convert()  # generate cfos_model/ in your working directory.
     Model information
@@ -151,7 +149,7 @@ You can also export model reactions as markdown files by running the following c
 
 .. code-block:: python
 
-    >>> description.to_markdown(n_reaction=63)  # generate markdown/ in your working directory.
+    >>> description.to_markdown(num_reactions=63)  # generate markdown/ in your working directory.
 
 
 Set the input of the model
