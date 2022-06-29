@@ -34,44 +34,14 @@ class ModelObject(NetworkGraph):
 
     def __init__(self, path: str, biomass_model: ModuleType):
         super().__init__(path, biomass_model)
-        self._path = path
-        self._parameters = biomass_model.C.NAMES
-        self._species = biomass_model.V.NAMES
-        self.pval = biomass_model.param_values
-        self.ival = biomass_model.initial_values
-        self.problem = biomass_model.OptimizationProblem()
-        self.viz = biomass_model.Visualization()
-        self.rxn = biomass_model.ReactionNetwork()
 
-    @property
-    def path(self) -> str:
-        return self._path
-
-    @property
-    def parameters(self) -> List[str]:
-        return self._parameters
-
-    @property
-    def species(self) -> list:
-        return self._species
-
-    @property
-    def observables(self) -> List[str]:
-        duplicate = [
-            name for name in set(self.problem.obs_names) if self.problem.obs_names.count(name) > 1
-        ]
-        if not duplicate:
-            return self.problem.obs_names
-        else:
-            raise NameError(f"Duplicate observables: {', '.join(duplicate)}")
-
-    def get_individual(self, paramset: int) -> np.ndarray:
+    def get_individual(self, paramset_id: int) -> np.ndarray:
         """
         Get estimated parameter values from optimization results.
 
         Parameters
         ----------
-        paramset : int
+        paramset_id : int
             Index of parameter set.
 
         Returns
@@ -83,7 +53,7 @@ class ModelObject(NetworkGraph):
             os.path.join(
                 self.path,
                 "out",
-                f"{paramset:d}",
+                f"{paramset_id}",
                 "generation.npy",
             )
         )
@@ -91,8 +61,8 @@ class ModelObject(NetworkGraph):
             os.path.join(
                 self.path,
                 "out",
-                f"{paramset:d}",
-                f"fit_param{int(best_generation):d}.npy",
+                f"{paramset_id}",
+                f"fit_param{int(best_generation)}.npy",
             )
         )
         return best_individual
