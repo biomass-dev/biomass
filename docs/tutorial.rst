@@ -129,7 +129,7 @@ By comparing the reaction scheme (`Fig.1E <https://ars.els-cdn.com/content/image
     @sim condition EGF: p[Ligand] = 1
     @sim condition HRG: p[Ligand] = 2
 
-* You can download this text file from `here <https://github.com/biomass-dev/biomass/blob/master/tests/text_files/fos_model.txt>`_.
+* You can download this text file from `here <https://github.com/biomass-dev/biomass/blob/master/tests/test_text2model/text_files/fos_model.txt>`_.
 * For more details about available reaction rules, please see `ReactionRules <https://biomass-core.readthedocs.io/en/latest/api/reaction_rules.html>`_.
 
 **Text-to-model conversion:**
