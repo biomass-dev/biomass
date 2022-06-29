@@ -17,34 +17,6 @@ class ModelObject(NetworkGraph):
     """
     The BioMASS model object.
 
-    Parameters
-    ----------
-    path : str
-        Path to a biomass model.
-    biomass_model : Any
-        A package containing biomass model properties.
-
-    Attributes
-    ----------
-    path : str
-        Path to the model.
-    parameters : list of strings
-        Names of model parameters.
-    species : list of strings
-        Names of model species.
-    observables : list of strings
-        Names of model observables.
-    pval : Callable
-        Numerical values of the parameters.
-    ival : Callable
-        Initial values.
-    problem : OptimizationProblem
-        The optimization problem.
-    viz : Visualization
-        Plotting parameters for customizing figure properties.
-    rxn : ReactionNetwork
-        Reaction indices grouped according to biological processes.
-
     Examples
     --------
     >>> from biomass import Model
