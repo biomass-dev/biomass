@@ -150,7 +150,7 @@ class NetworkGraph(object):
         Creates graph with dot layout and default options.
         >>> model.create_graph("path/to/graph.pdf, gviz_prog="-Nshape=box -Nstyle=filled -Nfillcolor="#ffe4c4" -Edir=none")
         Creates graph with dot layout in pdf file format. Nodes will be rectangular and colored bisque, edges will have no arrows indicating direction.
-        """        
+        """
         try:
             if len(self.rxn.flux(0, self.ival(), self.pval())) > 0:
                 use_flux = True
@@ -191,43 +191,44 @@ class NetworkGraph(object):
             for partner in partners:
                 graph.add_edge(partner, species)
         self.graph = graph
-        
-    def static_plot(self,
-        save_dir: str = '',
-        file_name: str = 'model_graph.png',        
+
+    def static_plot(
+        self,
+        save_dir: str = "",
+        file_name: str = "model_graph.png",
         gviz_args: str = "",
         gviz_prog: Literal["neato", "dot", "twopi", "circo", "fdp", "nop"] = "dot",
-        ) -> None:
+    ) -> None:
         """Saves a static image of the network.
 
-            Accesses the graph attribute of the NetworkGraph object, saves as temporary .dot file, reads .dot file with pygraphviz and 
-            produces a static image of that graph. The image is created using pygraphviz and graphviz since the layouting of networkx 
-            is subpar for biological networks.
+        Accesses the graph attribute of the NetworkGraph object, saves as temporary .dot file, reads .dot file with pygraphviz and
+        produces a static image of that graph. The image is created using pygraphviz and graphviz since the layouting of networkx
+        is subpar for biological networks.
 
-            Parameters
-            ----------
-            save_dir : string
-                        Name of the directory in which the image will be stored.
-            file_name : string
-                        Name as which the image of the graph will be stored.
-            gviz_args : string, optional, default=""
-                        Used to specify command line options for gviz, see https://graphviz.org/pdf/dot.1.pdf for available options.
-            gviz_prog : {"neato", "dot", "twopi", "circo", "fdp", "nop"}, default="dot"
-                        Layout engine with which the graph will be arranged. For details see https://graphviz.org/docs/layouts/ .
-            
-            Raises
-            ------
-            ValueError
-                If something is passed as the gviz_prog that is not a viable layout program.
+        Parameters
+        ----------
+        save_dir : string
+                    Name of the directory in which the image will be stored.
+        file_name : string
+                    Name as which the image of the graph will be stored.
+        gviz_args : string, optional, default=""
+                    Used to specify command line options for gviz, see https://graphviz.org/pdf/dot.1.pdf for available options.
+        gviz_prog : {"neato", "dot", "twopi", "circo", "fdp", "nop"}, default="dot"
+                    Layout engine with which the graph will be arranged. For details see https://graphviz.org/docs/layouts/ .
 
-            Examples
-            --------
-            >>> model.static_plot("path/to/", "graph.png")
-            Creates graph with dot layout and default options.
-            >>> model.static_plot("path/to/", "graph.pdf", gviz_prog="-Nshape=box -Nstyle=filled -Nfillcolor="#ffe4c4" -Edir=none")
-            Creates graph with dot layout in pdf file format. Nodes will be rectangular and colored bisque, edges will have no arrows indicating direction.
-            
-            """
+        Raises
+        ------
+        ValueError
+            If something is passed as the gviz_prog that is not a viable layout program.
+
+        Examples
+        --------
+        >>> model.static_plot("path/to/", "graph.png")
+        Creates graph with dot layout and default options.
+        >>> model.static_plot("path/to/", "graph.pdf", gviz_prog="-Nshape=box -Nstyle=filled -Nfillcolor="#ffe4c4" -Edir=none")
+        Creates graph with dot layout in pdf file format. Nodes will be rectangular and colored bisque, edges will have no arrows indicating direction.
+
+        """
         try:
             _ = self.graph
         except AttributeError:
@@ -241,16 +242,16 @@ class NetworkGraph(object):
 
     def dynamic_plot(
         self,
-        save_dir : str = '.',
-        file_name : str = 'network.html',
-        show : bool = True,
-        annotate_nodes : bool = True, 
-        show_controls : bool = False, 
-        which_controls : list[str] = []
-        ) -> None:
+        save_dir: str = ".",
+        file_name: str = "network.html",
+        show: bool = True,
+        annotate_nodes: bool = True,
+        show_controls: bool = False,
+        which_controls: List[str] = None,
+    ) -> None:
         """Saves a dynamic and interactive image of the network graph.
         Using the pyvis library and the graph attribute of the NetworkGraph object a dynamic and interactive representation of the biological network
-        is created in html format. 
+        is created in html format.
 
         Parameters
         ----------
@@ -260,8 +261,8 @@ class NetworkGraph(object):
             If true nodes will be scaled according to number of edges and hovering over a node will show interaction partners.
         show_controls : bool, default=False
             If true control buttons will be displayed.
-        which_controls : List(str), default=['']
-            Used to specify which control buttons should be displayed. If empty all buttons will be displayed. 
+        which_controls : List(str), default=None
+            Used to specify which control buttons should be displayed. If empty all buttons will be displayed.
 
         Examples
         --------
@@ -274,25 +275,25 @@ class NetworkGraph(object):
             _ = self.graph
         except AttributeError:
             self.to_graph()
-        self.graph.write('temp_graph.dot')
-        if os.path.splitext(file_name)[1] != '.html':
-            file_name = file_name + '.html'
+        self.graph.write("temp_graph.dot")
+        if os.path.splitext(file_name)[1] != ".html":
+            file_name = file_name + ".html"
+        if which_controls is None:
+            which_controls = []
         network = Network()
-        network.from_DOT('temp_graph.dot')
-        os.remove('temp_graph.dot')
+        network.from_DOT("temp_graph.dot")
+        os.remove("temp_graph.dot")
         if show_controls is True:
             network.show_controls(filter_=which_controls)
         if annotate_nodes is True:
             neighbor_map = network.get_adj_list()
             for node in network.nodes:
-                node['title'] = ' Neighbors:\n'
-                node['title'] += '\n'.join(neighbor_map[node['id']])
-                node['value'] = len(neighbor_map[node['id']])
+                node["title"] = " Neighbors:\n"
+                node["title"] += "\n".join(neighbor_map[node["id"]])
+                node["value"] = len(neighbor_map[node["id"]])
         if show is True:
             network.show(os.path.join(save_dir, file_name))
         elif show is False:
             network.save_graph(os.path.join(save_dir, file_name))
         else:
-            raise ValueError(
-                f'show should be either true or false, received {show} instead'
-            )
+            raise ValueError(f"show should be either true or false, received {show} instead")
