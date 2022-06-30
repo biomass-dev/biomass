@@ -1,5 +1,4 @@
 import os
-import shutil
 
 import pytest
 
@@ -12,12 +11,19 @@ def test_graph():
         if model_name in ["prolif_quies", "g1s_transition"]:
             model = create_model(".".join(("biomass", "models", model_name)))
             with pytest.warns(UserWarning):
-                model.to_graph(os.path.join(model_name + "test.png"))
+                model.static_plot(os.path.join('biomass', 'models', model_name),os.path.join(model_name + "test.png"))
                 assert (
                     os.stat(os.path.join(model.path, model_name + "test.png")).st_size > 1024 * 10
                 )
-            continue
-        model = create_model(".".join(("biomass", "models", model_name)))
-        model.to_graph(os.path.join(model_name + "test.png"))
-        assert os.stat(os.path.join(model.path, model_name + "test.png")).st_size > 1024 * 10
+                model.dynamic_plot(os.path.join('biomass', 'models', model_name),os.path.join(model_name + "test.html"), show=False)
+                assert (
+                    os.stat(os.path.join(model.path, model_name + "test.html")).st_size > 1024 * 2
+                )
+        else:
+            model = create_model(".".join(("biomass", "models", model_name)))
+            model.static_plot(os.path.join('biomass', 'models', model_name),os.path.join(model_name + "test.png"))
+            model.dynamic_plot(os.path.join('biomass', 'models', model_name),os.path.join(model_name + "test.html"), show=False)
+            assert os.stat(os.path.join(model.path, model_name + "test.png")).st_size > 1024 * 10
+            assert os.stat(os.path.join(model.path, model_name + "test.html")).st_size > 1024 * 2
         os.remove(os.path.join(model.path, model_name + "test.png"))
+        os.remove(os.path.join(model.path, model_name + "test.html"))
