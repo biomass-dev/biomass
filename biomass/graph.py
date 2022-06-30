@@ -8,6 +8,8 @@ from typing import List, Literal
 import networkx as nx
 import pygraphviz as pgv
 from pyvis.network import Network
+
+
 class NetworkGraph(object):
     """
     Visualization of the biological network as a graph.
