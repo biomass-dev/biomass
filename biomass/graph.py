@@ -5,7 +5,6 @@ from collections import defaultdict
 from types import ModuleType
 from typing import List, Literal
 
-import networkx as nx
 import pygraphviz as pgv
 from pyvis.network import Network
 
