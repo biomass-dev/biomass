@@ -3,9 +3,10 @@ import re
 import warnings
 from collections import defaultdict
 from types import ModuleType
-from typing import List, Literal
+from typing import List, Literal, Optional
 
 import pygraphviz as pgv
+from pyvis.network import Network
 
 
 class NetworkGraph(object):
@@ -124,26 +125,11 @@ class NetworkGraph(object):
                         was_warned = True
         return data
 
-    def to_graph(
-        self,
-        file_name: str,
-        gviz_args: str = "",
-        gviz_prog: Literal["neato", "dot", "twopi", "circo", "fdp", "nop"] = "dot",
-    ) -> None:
-        """Constructs and draws a directed graph of the model.
-        Using the pygraphviz library and graphviz a directed graph of the model is constructed by parsing the equations from
+    def to_graph(self) -> None:
+        """Constructs a directed graph of the model.
+        Using the pygraphviz library a directed graph of the model is constructed by parsing the equations from
         ode.py/reaction_network.py. Equations will be split at the equal sign and an edge is added between the species on the
-        lefthand side to all species on the righthand side. Self references will not be considered. Graphviz is then used to
-        save the graph as an image.
-
-        Parameters
-        ----------
-        file_name : string
-                    Name as which the image of the graph will be stored.
-        gviz_args : string, optional, default=""
-                    Used to specify command line options for gviz, see https://graphviz.org/pdf/dot.1.pdf for available options.
-        gviz_prog : {"neato", "dot", "twopi", "circo", "fdp", "nop"}, default="dot"
-                    Layout engine with which the graph will be arranged. For details see https://graphviz.org/docs/layouts/ .
+        lefthand side to all species on the righthand side. Self references will not be considered.
 
         Raises
         ------
@@ -154,20 +140,8 @@ class NetworkGraph(object):
         -----
         UserWarning
             If species equations are detected outside of the ODE section.
-
-        Examples
-        --------
-        >>> model.create_graph("path/to/graph.png")
-        Creates graph with dot layout and default options.
-        >>> model.create_graph("path/to/graph.pdf, gviz_prog="-Nshape=box -Nstyle=filled -Nfillcolor="#ffe4c4" -Edir=none")
-        Creates graph with dot layout in pdf file format. Nodes will be rectangular and colored bisque, edges will have no arrows indicating direction.
         """
-
-        # Check gviz_prog
-        if gviz_prog not in (available_layout := ["neato", "dot", "twopi", "circo", "fdp", "nop"]):
-            raise ValueError(
-                f"gviz_prog must be one of [{', '.join(available_layout)}], got {gviz_prog}."
-            )
+        use_flux = False
         try:
             if len(self.rxn.flux(0, self.ival(), self.pval())) > 0:
                 use_flux = True
@@ -176,11 +150,11 @@ class NetworkGraph(object):
         except AttributeError:
             use_flux = False
 
-        if use_flux is False:
+        if not use_flux:
             left_re = r"(?<=dydt\[V.)(.+?)(?=\])"
             right_re = r"(?<=y\[V.)(.+?)\]"
             edges = self._extract_equation(self.path, "ode.py", left_re, right_re)
-        elif use_flux is True:
+        else:
             left_re_flux = r"(?<=v\[)(.+?)(?=\])"
             right_re_flux = r"(?<=y\[V.)(.+?)\]"
             left_re_ode = r"(?<=dydt\[V.)(.+?)(?=\])"
@@ -208,5 +182,107 @@ class NetworkGraph(object):
             for partner in partners:
                 graph.add_edge(partner, species)
         self.graph = graph
-        graph.layout(prog=gviz_prog, args=gviz_args)
-        graph.draw(os.path.join(self.path, file_name))
+
+    def static_plot(
+        self,
+        save_dir: str = "",
+        file_name: str = "model_graph.png",
+        gviz_args: str = "",
+        gviz_prog: Literal["neato", "dot", "twopi", "circo", "fdp", "nop"] = "dot",
+    ) -> None:
+        """Saves a static image of the network.
+
+        Static image is created using pygraphviz.
+
+        Parameters
+        ----------
+        save_dir : string
+            Name of the directory in which the image will be stored.
+        file_name : string
+            Name as which the image of the graph will be stored.
+        gviz_args : string, optional, default=""
+            Used to specify command line options for gviz, see https://graphviz.org/pdf/dot.1.pdf for available options.
+        gviz_prog : {"neato", "dot", "twopi", "circo", "fdp", "nop"}, default="dot"
+            Layout engine with which the graph will be arranged. For details see https://graphviz.org/docs/layouts/ .
+
+        Raises
+        ------
+        ValueError
+            If something is passed as the gviz_prog that is not a viable layout program.
+
+        Examples
+        --------
+        >>> model.static_plot("path/to/", "graph.png")
+        Creates graph with dot layout and default options.
+        >>> model.static_plot("path/to/", "graph.pdf", gviz_prog="-Nshape=box -Nstyle=filled -Nfillcolor="#ffe4c4" -Edir=none")
+        Creates graph with dot layout in pdf file format. Nodes will be rectangular and colored bisque, edges will have no arrows indicating direction.
+
+        """
+        try:
+            _ = self.graph
+        except AttributeError:
+            self.to_graph()
+        if gviz_prog not in (available_layout := ["neato", "dot", "twopi", "circo", "fdp", "nop"]):
+            raise ValueError(
+                f"gviz_prog must be one of [{', '.join(available_layout)}], got {gviz_prog}."
+            )
+        self.graph.layout(prog=gviz_prog, args=gviz_args)
+        self.graph.draw(os.path.join(save_dir, file_name))
+
+    def dynamic_plot(
+        self,
+        save_dir: str = ".",
+        file_name: str = "network.html",
+        show: bool = True,
+        annotate_nodes: bool = True,
+        show_controls: bool = False,
+        which_controls: Optional[List[str]] = None,
+    ) -> None:
+        """Saves a dynamic and interactive image of the network graph.
+        Graph is temporarily saved as .dot file and read by pyvis. Using the pyvis a dynamic and interactive representation of the biological network
+        is created in html format.
+
+        Parameters
+        ----------
+        show: bool, default=True
+            If true the plot will immediately be displayed in the webbrowser.
+        annotate_nodes : bool, default=True
+            If true nodes will be scaled according to number of edges and hovering over a node will show interaction partners.
+        show_controls : bool, default=False
+            If true control buttons will be displayed.
+        which_controls : List(str), optional, default=None
+            Used to specify which control buttons should be displayed. If empty all buttons will be displayed.
+
+        Examples
+        --------
+        >>> model.dynamic_plot("path/to/", "graph.html")
+        Creates graph and shows interactive graph with default options.
+        >>> model.dynamic_plot("path/to/", "graph.html", show=False, show_controls=True, which_controls=["physics", "manipulation", "interaction"])
+        Creates interactive graph. Controls for physics, manipulation and interaction will be available.
+        """
+        try:
+            _ = self.graph
+        except AttributeError:
+            self.to_graph()
+        self.graph.write("temp_graph.dot")
+        if os.path.splitext(file_name)[1] != ".html":
+            file_name = file_name + ".html"
+        if which_controls is None:
+            which_controls = []
+        network = Network()
+        network.from_DOT("temp_graph.dot")
+        os.remove("temp_graph.dot")
+        if not isinstance(show_controls, bool):
+            raise TypeError(f"show_controls is type {type(show_controls)}, needs to be boolean")
+        if show_controls:
+            network.show_buttons(filter_=which_controls)
+        if annotate_nodes:
+            neighbor_map = network.get_adj_list()
+            for node in network.nodes:
+                node["title"] = " Neighbors:\n"
+                node["title"] += "\n".join(neighbor_map[node["id"]])
+                node["value"] = len(neighbor_map[node["id"]])
+        if show:
+            network.show(os.path.join(save_dir, file_name))
+        else:
+            network.save_graph(os.path.join(save_dir, file_name))
