@@ -127,7 +127,7 @@ class NetworkGraph(object):
 
     def to_graph(self) -> None:
         """Constructs a directed graph of the model.
-        Using the networkx library a directed graph of the model is constructed by parsing the equations from
+        Using the pygraphviz library a directed graph of the model is constructed by parsing the equations from
         ode.py/reaction_network.py. Equations will be split at the equal sign and an edge is added between the species on the
         lefthand side to all species on the righthand side. Self references will not be considered.
 
@@ -191,9 +191,7 @@ class NetworkGraph(object):
     ) -> None:
         """Saves a static image of the network.
 
-        Accesses the graph attribute of the NetworkGraph object, saves as temporary .dot file, reads .dot file with pygraphviz and
-        produces a static image of that graph. The image is created using pygraphviz and graphviz since the layouting of networkx
-        is subpar for biological networks.
+        Static image is created using pygraphviz.
 
         Parameters
         ----------
@@ -240,7 +238,7 @@ class NetworkGraph(object):
         which_controls: Optional[List[str]] = None,
     ) -> None:
         """Saves a dynamic and interactive image of the network graph.
-        Using the pyvis library and the graph attribute of the NetworkGraph object a dynamic and interactive representation of the biological network
+        Graph is temporarily saved as .dot file and read by pyvis. Using the pyvis a dynamic and interactive representation of the biological network
         is created in html format.
 
         Parameters
