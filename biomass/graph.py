@@ -154,7 +154,7 @@ class NetworkGraph(object):
             left_re = r"(?<=dydt\[V.)(.+?)(?=\])"
             right_re = r"(?<=y\[V.)(.+?)\]"
             edges = self._extract_equation(self.path, "ode.py", left_re, right_re)
-        elif use_flux:
+        else:
             left_re_flux = r"(?<=v\[)(.+?)(?=\])"
             right_re_flux = r"(?<=y\[V.)(.+?)\]"
             left_re_ode = r"(?<=dydt\[V.)(.+?)(?=\])"
@@ -169,10 +169,6 @@ class NetworkGraph(object):
                     for participant in fluxes[velocity]:
                         if participant != species:
                             edges[species].append(participant)
-        else:
-            raise ValueError(
-                f'use_flux should be boolean but is {type(use_flux)}'
-            )
         num_participants = []
         for participants in edges.values():
             num_participants += participants
@@ -277,7 +273,7 @@ class NetworkGraph(object):
         network.from_DOT("temp_graph.dot")
         os.remove("temp_graph.dot")
         if not isinstance(show_controls, bool):
-            raise ValueError(
+            raise TypeError(
                 f'show_controls is type {type(show_controls)}, needs to be boolean'
             )
         if show_controls:
