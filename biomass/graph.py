@@ -141,6 +141,7 @@ class NetworkGraph(object):
         UserWarning
             If species equations are detected outside of the ODE section.
         """
+        use_flux=False
         try:
             if len(self.rxn.flux(0, self.ival(), self.pval())) > 0:
                 use_flux = True
@@ -149,11 +150,11 @@ class NetworkGraph(object):
         except AttributeError:
             use_flux = False
 
-        if use_flux is False:
+        if not use_flux:
             left_re = r"(?<=dydt\[V.)(.+?)(?=\])"
             right_re = r"(?<=y\[V.)(.+?)\]"
             edges = self._extract_equation(self.path, "ode.py", left_re, right_re)
-        elif use_flux is True:
+        elif use_flux:
             left_re_flux = r"(?<=v\[)(.+?)(?=\])"
             right_re_flux = r"(?<=y\[V.)(.+?)\]"
             left_re_ode = r"(?<=dydt\[V.)(.+?)(?=\])"
@@ -168,6 +169,10 @@ class NetworkGraph(object):
                     for participant in fluxes[velocity]:
                         if participant != species:
                             edges[species].append(participant)
+        else:
+            raise ValueError(
+                f'use_flux should be boolean but is {type(use_flux)}'
+            )
         num_participants = []
         for participants in edges.values():
             num_participants += participants
@@ -271,8 +276,12 @@ class NetworkGraph(object):
         network = Network()
         network.from_DOT("temp_graph.dot")
         os.remove("temp_graph.dot")
+        if not isinstance(show_controls, bool):
+            raise ValueError(
+                f'show_controls is type {type(show_controls)}, needs to be boolean'
+            )
         if show_controls:
-            network.show_controls(filter_=which_controls)
+            network.show_buttons(filter_=which_controls)
         if annotate_nodes:
             neighbor_map = network.get_adj_list()
             for node in network.nodes:
