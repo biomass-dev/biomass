@@ -141,7 +141,7 @@ class NetworkGraph(object):
         UserWarning
             If species equations are detected outside of the ODE section.
         """
-        use_flux=False
+        use_flux = False
         try:
             if len(self.rxn.flux(0, self.ival(), self.pval())) > 0:
                 use_flux = True
@@ -273,9 +273,7 @@ class NetworkGraph(object):
         network.from_DOT("temp_graph.dot")
         os.remove("temp_graph.dot")
         if not isinstance(show_controls, bool):
-            raise TypeError(
-                f'show_controls is type {type(show_controls)}, needs to be boolean'
-            )
+            raise TypeError(f"show_controls is type {type(show_controls)}, needs to be boolean")
         if show_controls:
             network.show_buttons(filter_=which_controls)
         if annotate_nodes:
