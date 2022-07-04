@@ -9,7 +9,7 @@ For demonstration purposes we will use the `nfkb_pathway <https://github.com/bio
 Requirements
 ------------
 * ``biomass>=0.9.0``
-* ``graphviz>=2.42`` Installation isntructions can be found `here <https://graphviz.org/download/>`_
+* ``graphviz>=2.42`` Installation instructions can be found `here <https://graphviz.org/download/>`_
 
 Import the model
 ^^^^^^^^^^^^^^^^^^^^
@@ -42,12 +42,8 @@ A static image of the graph is drawn using
 The desired file format is inferred from the ending of file_name. Graphviz provides a variety of different engines that automatically generate a layout for the graph. By default the 'dot' engine is used, since it uses a hierarchical approach that is natural for biological data. Feel free to play around with the available engines, but be aware that biological networks can quickly become messy due to the prevalance of feedback interactions.  
 Additionally graphviz provides a large variety of customization options, that have to be passed in the command line format. For a comprehensive list see the `graphviz manual <https://graphviz.org/pdf/dot.1.pdf>`_.  
 
-.. raw:: html
-
-   <p align="center">
-      <img src="_static/img/static_nsfkb_graph_default.png" alt="Static NFkb default graph">
-      <img src="_static/img/static_nsfkb_graph_custom.png" alt="Static NFkb customized graph">
-   </p>
+.. figure:: _static/img/static_nfkb_graph.svg
+    :align: center
 
 Dynamic image
 ^^^^^^^^^^^^^^^
@@ -55,6 +51,9 @@ Thanks to the package pyvis we can also provide an interactive graph. The genera
 
 .. code-block:: python
 
-    model.dynamic_plot(save_dir='example_dir', file_name='nfkb_dynamic.html')
+    model.dynamic_plot(save_dir='example_dir', file_name='nfkb_dynamic.html' show_controls='True', which_controls=['physics', 'layout'])
     
 By default the plot will be immediately displayed in your browser. Set show to False if you don't want that. pyvis provides a variety of customization options as well. They can be directly accessed in the html file by setting show_controls to True. You can also specify which controls you want.
+
+.. raw:: html
+    :file: dynamic_nfkb_graph.html
