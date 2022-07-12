@@ -239,7 +239,7 @@ class NetworkGraph(object):
         which_controls: Optional[List[str]] = None,
     ) -> None:
         """Saves a dynamic and interactive image of the network graph.
-        Graph is temporarily saved as .dot file and read by pyvis. Using the pyvis a dynamic and interactive representation of the biological network
+        Graph is read by pyvis. Using pyvis a dynamic and interactive representation of the biological network
         is created in html format.
 
         Parameters
@@ -264,14 +264,11 @@ class NetworkGraph(object):
             _ = self.graph
         except AttributeError:
             self.to_graph()
-        self.graph.write("temp_graph.dot")
         if os.path.splitext(file_name)[1] != ".html":
             file_name = file_name + ".html"
-        if which_controls is None:
-            which_controls = []
-        network = Network()
-        network.from_DOT("temp_graph.dot")
-        os.remove("temp_graph.dot")
+        network = Network(directed=True)
+        network.add_nodes(self.graph.nodes())
+        network.add_edges(self.graph.edges())
         if not isinstance(show_controls, bool):
             raise TypeError(f"show_controls is type {type(show_controls)}, needs to be boolean")
         if show_controls:
