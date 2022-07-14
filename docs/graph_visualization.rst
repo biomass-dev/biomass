@@ -21,7 +21,7 @@ Import the model
     model = create_model('biomass.models.nfkb_pathway')
 
 Graph generation and static image
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The graph is extracted from the equations contained in ``ode.py`` and ``reaction_network.py``. If flux equations are not provided it is assumed that you directly declare them in ``ode.py``. Otherwise the individual fluxes are associated with their participating species, and the fluxes in turn are associated with the species in the differential equations in ode.py.  
 
 .. code-block:: python
