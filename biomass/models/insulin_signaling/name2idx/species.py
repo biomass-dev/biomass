@@ -23,9 +23,6 @@ NAMES: List[str] = [
     "G6Pase",
 ]
 
-for idx, name in enumerate(NAMES):
-    exec("{} = {:d}".format(name, idx))
-
 NUM: int = len(NAMES)
 
 Species = make_dataclass(
