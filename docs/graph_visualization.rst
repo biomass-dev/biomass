@@ -12,7 +12,7 @@ Requirements
 * ``graphviz>=2.42`` Installation instructions can be found `here <https://graphviz.org/download/>`_
 
 Import the model
-------------------
+----------------
 .. code-block:: python
 
     import biomass
@@ -21,8 +21,8 @@ Import the model
     model = create_model('biomass.models.nfkb_pathway')
 
 Graph generation and static image
-----------------------------------
-The graph is extracted from the equations contained in ``ode.py`` and ``reaction_network.py``. If flux equations are not provided it is assumed that you directly declare them in ``ode.py``. Otherwise the individual fluxes are associated with their participating species, and the fluxes in turn are associated with the species in the differential equations in ode.py.  
+---------------------------------
+The graph is extracted from the equations contained in ``ode.py`` and ``reaction_network.py``. If flux equations are not provided it is assumed that you directly declare them in ``ode.py``. Otherwise the individual fluxes are associated with their participating species, and the fluxes in turn are associated with the species in the differential equations in ``ode.py``.  
 
 .. code-block:: python
 
@@ -36,7 +36,7 @@ A static image of the graph is drawn using
 .. code-block:: python
 
     model.static_plot(save_dir='example_dir', file_name='nfkb_static.png')
-    model.static_plot(save_dir='example_dir', file_name='nfkb_static_cust.png',\
+    model.static_plot(save_dir='example_dir', file_name='nfkb_static_cust.png',
                       gviz_args='-Nshape=parallelogram -Nstyle=bold -Estyle=dashed')
     
 The desired file format is inferred from the ending of file_name. Graphviz provides a variety of different engines that automatically generate a layout for the graph. By default the 'dot' engine is used, since it uses a hierarchical approach that is natural for biological data. Feel free to play around with the available engines, but be aware that biological networks can quickly become messy due to the prevalance of feedback interactions.  
@@ -47,13 +47,13 @@ Additionally graphviz provides a large variety of customization options, that ha
 
 Dynamic image
 --------------
-Thanks to the package pyvis we can also provide an interactive graph. The generation is just as simple as for the static image:  
+Thanks to the package `pyvis <https://github.com/WestHealth/pyvis>`_ we can also provide an interactive graph. The generation is just as simple as for the static image:  
 
 .. code-block:: python
 
-    model.dynamic_plot(save_dir='example_dir', file_name='nfkb_dynamic.html' show_controls='True', which_controls=['physics', 'layout'])
+    model.dynamic_plot(save_dir='example_dir', file_name='nfkb_dynamic.html' show_controls=True, which_controls=['physics', 'layout'])
     
-By default the plot will be immediately displayed in your browser. Set show to False if you don't want that. pyvis provides a variety of customization options as well. They can be directly accessed in the html file by setting show_controls to True. You can also specify which controls you want.
+By default the plot will be immediately displayed in your browser. Set ``show`` to :obj:`False` if you don't want that. ``pyvis`` provides a variety of customization options as well. They can be directly accessed in the html file by setting ``show_controls`` to :obj:`True`. You can also specify which controls you want.
 
 .. raw:: html
     :file: dynamic_nfkb_graph.html
