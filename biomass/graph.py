@@ -226,7 +226,7 @@ class NetworkGraph(object):
             raise ValueError(
                 f"gviz_prog must be one of [{', '.join(available_layout)}], got {gviz_prog}."
             )
-        if save_dir == "":
+        if not save_dir:
             save_dir = self.path
         self.graph.layout(prog=gviz_prog, args=gviz_args)
         self.graph.draw(os.path.join(save_dir, file_name))
@@ -272,7 +272,7 @@ class NetworkGraph(object):
             self.to_graph()
         if os.path.splitext(file_name)[1] != ".html":
             file_name = file_name + ".html"
-        if save_dir == "":
+        if not save_dir:
             save_dir = self.path
         network = Network(directed=True)
         network.add_nodes(self.graph.nodes())
