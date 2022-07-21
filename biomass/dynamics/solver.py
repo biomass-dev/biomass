@@ -1,12 +1,7 @@
 import math
 import sys
 import time
-from typing import Callable, List, Optional, Tuple, Union
-
-try:  # python 3.8+
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
+from typing import Callable, List, Literal, Optional, Tuple, Union
 
 import numpy as np
 from scipy.integrate import ode, solve_ivp

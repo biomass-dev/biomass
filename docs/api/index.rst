@@ -6,6 +6,7 @@ API
    
    graph
    model_object
+   construction
    core
    result
    optimizer

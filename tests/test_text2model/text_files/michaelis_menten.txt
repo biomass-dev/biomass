@@ -1,0 +1,10 @@
+E binds S <--> ES | kf=0.003, kr=0.001 | E=100, S=50
+ES releases E and P | kf=0.002, kr=0
+
+@obs Substrate: u[S]
+@obs E_free: u[E]
+@obs E_total: u[E] + u[ES]
+@obs Product: u[P]
+@obs Complex: u[ES]
+
+@sim tspan: [0, 100]
