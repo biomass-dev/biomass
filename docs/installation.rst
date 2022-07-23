@@ -12,32 +12,8 @@ Install BioMASS from PyPI using::
    pip install biomass
 
 .. Note::
-    You will need to manually install `Graphviz <https://www.graphviz.org>`_ (version 2.42 or later).
-
-Linux (Ubuntu and Debian)
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block::
-
-    $ sudo apt-get install graphviz graphviz-dev
-
-Linux (Fedora and Red Hat)
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-You may need to replace ``dnf`` with ``yum`` in the example below.
-
-.. code-block::
-    
-    $ sudo dnf install graphviz graphviz-devel
-
-macOS
-^^^^^
-
-Use the Homebrew package manager.
-
-.. code-block::
-
-    $ brew install graphviz
+    If you wish to use `graph visualization functions <https://biomass-core.readthedocs.io/en/latest/graph_visualization.html>`_, install biomass via ``pip install biomass[graph]``.
+    In that case you will need to manually install `Graphviz <https://www.graphviz.org>`_ (version 2.42 or later).
 
 Development version
 -------------------
