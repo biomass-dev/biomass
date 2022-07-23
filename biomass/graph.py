@@ -275,7 +275,6 @@ class NetworkGraph(object):
         >>> model.dynamic_plot("path/to/", "graph.html", show=False, show_controls=True, which_controls=["physics", "manipulation", "interaction"])
         Creates interactive graph. Controls for physics, manipulation and interaction will be available.
         """
-        self._check_pygraphviz()
         try:
             from pyvis.network import Network
         except ImportError:
