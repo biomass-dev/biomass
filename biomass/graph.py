@@ -5,11 +5,6 @@ from collections import defaultdict
 from types import ModuleType
 from typing import List, Literal, Optional
 
-try:
-    import pygraphviz as pgv
-except ImportError:
-    pgv = None
-
 
 class NetworkGraph(object):
     """
@@ -79,11 +74,6 @@ class NetworkGraph(object):
             raise NameError(f"Duplicate observables: {', '.join(duplicate)}")
 
     @staticmethod
-    def _check_pygraphviz():
-        if pgv is None:
-            raise ImportError("pygraphviz is required to run this function.")
-
-    @staticmethod
     def _extract_equation(dir: str, filepath: str, left_match: str, right_match: str) -> dict:
         """
         Matches species that interact with each other by reading python files as text and looking for equations.
@@ -150,7 +140,11 @@ class NetworkGraph(object):
         UserWarning
             If species equations are detected outside of the ODE section.
         """
-        self._check_pygraphviz()
+        try:
+            import pygraphviz as pgv
+        except ImportError:
+            print("pygraphviz is required to run this function.")
+
         use_flux = False
         try:
             if len(self.rxn.flux(0, self.ival(), self.pval())) > 0:
@@ -228,7 +222,6 @@ class NetworkGraph(object):
         Creates graph with dot layout in pdf file format. Nodes will be rectangular and colored bisque, edges will have no arrows indicating direction.
 
         """
-        self._check_pygraphviz()
         if self.graph is None:
             self.to_graph()
         if gviz_prog not in (available_layout := ["neato", "dot", "twopi", "circo", "fdp", "nop"]):
