@@ -17,6 +17,7 @@ class UnregisteredRule(NamedTuple):
 class KineticInfo(NamedTuple):
     reactants: tuple
     products: tuple
+    modifiers: tuple
     rate: str
 
 
@@ -676,6 +677,7 @@ class ReactionRules(ThermodynamicRestrictions):
                     KineticInfo(
                         (component1, component2),
                         (complex,),
+                        (),
                         f"kf{line_num:d} * {component1} * {component2}"
                     )
                 )
@@ -684,6 +686,7 @@ class ReactionRules(ThermodynamicRestrictions):
                         KineticInfo(
                             (complex,),
                             (component1, component2),
+                            (),
                             f"kr{line_num:d} * {complex}"
                         )
                     )
@@ -701,6 +704,7 @@ class ReactionRules(ThermodynamicRestrictions):
                     KineticInfo(
                         (complex,),
                         (component1, component2),
+                        (),
                         f"kf{line_num:d} * {complex}"
                     )
                 )
@@ -709,6 +713,7 @@ class ReactionRules(ThermodynamicRestrictions):
                         KineticInfo(
                             (component1, component2),
                             (complex,),
+                            (),
                             f"kr{line_num:d} * {component1} * {component2}"
                         )
                     )
@@ -801,6 +806,7 @@ class ReactionRules(ThermodynamicRestrictions):
             KineticInfo(
                 (monomer, monomer),
                 (dimer,),
+                (),
                 f"kf{line_num:d} * {monomer} * {monomer}",
             )
         )
@@ -809,6 +815,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 KineticInfo(
                     (dimer,),
                     (monomer, monomer),
+                    (),
                     f"kr{line_num:d} * {dimer}",
                 )
             )
@@ -884,6 +891,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 KineticInfo(
                     (component1, component2),
                     (complex,),
+                    (),
                     f"kf{line_num:d} * {component1} * {component2}"
                 )
             )
@@ -892,6 +900,7 @@ class ReactionRules(ThermodynamicRestrictions):
                     KineticInfo(
                         (complex,),
                         (component1, component2),
+                        (),
                         f"kr{line_num:d} * {complex}",
                     )
                 )
@@ -962,6 +971,7 @@ class ReactionRules(ThermodynamicRestrictions):
             KineticInfo(
                 (complex,),
                 (component1, component2),
+                (),
                 f"kf{line_num:d} * {complex}"
             )
         )
@@ -969,6 +979,7 @@ class ReactionRules(ThermodynamicRestrictions):
             KineticInfo(
                 (component1, component2),
                 (complex,),
+                (),
                 f"kr{line_num:d} * {component1} * {component2}"
             )
         )
@@ -1046,6 +1057,7 @@ class ReactionRules(ThermodynamicRestrictions):
             KineticInfo(
                 (unphosphorylated_form,),
                 (phosphorylated_form,),
+                (),
                 f"kf{line_num:d} * {unphosphorylated_form}",
             )
         )
@@ -1054,6 +1066,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 KineticInfo(
                     (phosphorylated_form,),
                     (unphosphorylated_form,),
+                    (),
                     f"kr{line_num:d} * {phosphorylated_form}"
                 )
             )
@@ -1118,6 +1131,7 @@ class ReactionRules(ThermodynamicRestrictions):
             KineticInfo(
                 (phosphorylated_form,),
                 (unphosphorylated_form,),
+                (),
                 f"V{line_num:d} * {phosphorylated_form} / "
                 f"(K{line_num:d} + {phosphorylated_form})"
             )
@@ -1187,6 +1201,7 @@ class ReactionRules(ThermodynamicRestrictions):
             KineticInfo(
                 (unphosphorylated_form,),
                 (phosphorylated_form,),
+                (kinase,),
                 f"V{line_num:d} * {kinase} * {unphosphorylated_form} / "
                 f"(K{line_num:d} + {unphosphorylated_form})"
             )
@@ -1256,6 +1271,7 @@ class ReactionRules(ThermodynamicRestrictions):
             KineticInfo(
                 (phosphorylated_form,),
                 (unphosphorylated_form,),
+                (phosphatase,),
                 f"V{line_num:d} * {phosphatase} * {phosphorylated_form} / "
                 f"(K{line_num:d} + {phosphorylated_form})",
             )
@@ -1324,9 +1340,11 @@ class ReactionRules(ThermodynamicRestrictions):
             repressor = description[1].split(", repressed by")[1].strip()
         if " & " not in description[0]:
             TF = description[0].strip(" ")
+            modifiers = (TF,)
             self._set_species(mRNA, TF)
             if repressor is not None:
                 self._set_species(repressor)
+                modifiers = modifiers + (repressor,)
             self.reactions.append(
                 f"v[{line_num:d}] = "
                 f"x[C.V{line_num:d}] * y[V.{TF}] ** x[C.n{line_num:d}] / "
@@ -1342,8 +1360,9 @@ class ReactionRules(ThermodynamicRestrictions):
                 KineticInfo(
                     (),
                     (mRNA,),
+                    modifiers,
                     f"V{line_num:d} * {TF} ** n{line_num:d} / "
-                    f"K{line_num:d} ** n{line_num:d} + "
+                    f"(K{line_num:d} ** n{line_num:d} + "
                     f"{TF} ** n{line_num:d}"
                     + (
                         ")"
@@ -1356,8 +1375,10 @@ class ReactionRules(ThermodynamicRestrictions):
             # AND-gate
             TFs = [TF.strip(" ") for TF in description[0].split(" & ")]
             self._set_species(mRNA, *TFs)
+            modifiers = (*TFs,)
             if repressor is not None:
                 self._set_species(repressor)
+                modifiers = modifiers + (repressor,)
             self.reactions.append(
                 f"v[{line_num:d}] = "
                 f"x[C.V{line_num:d}] * ({'y[V.' + '] * y[V.'.join(TFs) + ']'}) ** x[C.n{line_num:d}] / "
@@ -1373,6 +1394,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 KineticInfo(
                     (),
                     (mRNA,),
+                    modifiers,
                     f"V{line_num:d} * ({' * '.join(TFs)}) ** n{line_num:d} / "
                     f"(K{line_num:d} ** n{line_num:d} + "
                     f"({' * '.join(TFs)}) ** n{line_num:d}"
@@ -1418,6 +1440,7 @@ class ReactionRules(ThermodynamicRestrictions):
             KineticInfo(
                 (),
                 (product,),
+                (catalyst,),
                 f"kf{line_num:d} * {catalyst}"
             )
         )
@@ -1455,6 +1478,7 @@ class ReactionRules(ThermodynamicRestrictions):
             KineticInfo(
                 (),
                 (chemical_species,),
+                (),
                 f"kf{line_num:d}"
             )
         )
@@ -1495,7 +1519,8 @@ class ReactionRules(ThermodynamicRestrictions):
             KineticInfo(
                 (protein,),
                 (),
-                f"kf{line_num:d}] * {protease} * {protein}"
+                (protease,),
+                f"kf{line_num:d} * {protease} * {protein}"
             )
         )
         counter_protein = 0
@@ -1532,7 +1557,8 @@ class ReactionRules(ThermodynamicRestrictions):
             KineticInfo(
                 (chemical_species,),
                 (),
-                f"kf{line_num:d}] * {chemical_species}"
+                (),
+                f"kf{line_num:d} * {chemical_species}"
             )
         )
         counter_chemical_species = 0
@@ -1607,7 +1633,8 @@ class ReactionRules(ThermodynamicRestrictions):
             KineticInfo(
                 (pre_translocation,),
                 (post_translocation,),
-                f"kf{line_num:d}] * {pre_translocation}",
+                (),
+                f"kf{line_num:d} * {pre_translocation}",
             )
         )
         if not is_unidirectional:
@@ -1615,6 +1642,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 KineticInfo(
                     (post_translocation,),
                     (pre_translocation,),
+                    (),
                     f"kr{line_num:d} * {post_translocation}"
                 )
             )
@@ -1685,6 +1713,15 @@ class ReactionRules(ThermodynamicRestrictions):
             rate_equation.replace("p[", "x[C.").replace("u[", "y[V.").replace("^", "**")
         )
         self.reactions.append(f"v[{line_num:d}] = " + rate_equation.strip())
+        modulators = (*list(set([ent for ent in re.findall(r"(?<=\[V.)(.+?)(?=\])", rate_equation) if ent not in [reactant, product]])),)
+        self.kinetics.append(
+            KineticInfo(
+                (reactant,),
+                (product,),
+                () if modulators is None else (modulators),
+                rate_equation.replace("x[C.", "").replace("y[V.", "").replace("]", ""),
+            )
+        )
         counter_reactant = 0
         counter_product = 0
         for i, eq in enumerate(self.differential_equations):
