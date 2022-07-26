@@ -6,11 +6,12 @@ from pathlib import Path
 import re
 from typing import NamedTuple
 
+
 class ExportModel(object):
     def __init__(
         self,
         model: Text2Model,
-        ) -> None:
+    ) -> None:
         """
         Transfer biomass model to SBML format.
 
@@ -32,7 +33,7 @@ class ExportModel(object):
     def _get_species(
         self,
         species: str,
-        ) -> sbml.Species:
+    ) -> sbml.Species:
         """Helper to generate species object
 
         Parameters
@@ -42,11 +43,11 @@ class ExportModel(object):
         Returns:
             sbml.Species: sbmlutils species object for model creation
         """
-        match = 'y0[V.' + species + ']'
+        match = "y0[V." + species + "]"
         y0 = 0
         for init in self.model.init_info:
             if match in init:
-                y0 = float(init.split('=')[1])
+                y0 = float(init.split("=")[1])
                 break
         sbmlspecies = sbml.Species(
             sid=species,
@@ -59,8 +60,8 @@ class ExportModel(object):
     def _get_param(
         self,
         param: str,
-        _recurse: bool =False,
-        ) -> sbml.Parameter:
+        _recurse: bool = False,
+    ) -> sbml.Parameter:
         """Helper function to generate parameter object
 
         Args:
@@ -70,16 +71,16 @@ class ExportModel(object):
         Returns:
             sbml.Parameter: sbmlutils Parameter object
         """
-        match = 'x[C.' + param + ']'
+        match = "x[C." + param + "]"
         paramval = 1
 
         for parameter in self.model.param_info:
-            if match in parameter.split('=')[0]:
+            if match in parameter.split("=")[0]:
                 try:
-                    paramval = float(parameter.split('=')[1])
+                    paramval = float(parameter.split("=")[1])
                 except ValueError:
                     reg = r"(?<=x\[C\.)(.+)(?=\])"
-                    righthand = re.search(reg, parameter.split('=')[1]).group()
+                    righthand = re.search(reg, parameter.split("=")[1]).group()
                     paramval = self._get_param(righthand, _recurse=True)
                 break
         if _recurse is True:
@@ -94,9 +95,9 @@ class ExportModel(object):
 
     def _get_reaction(
         self,
-        num:int,
-        kinetics:NamedTuple,
-        ) -> sbml.Reaction:
+        num: int,
+        kinetics: NamedTuple,
+    ) -> sbml.Reaction:
         """Helper function to generate reaction object
 
         Parameters
@@ -112,17 +113,15 @@ class ExportModel(object):
         equation = lefthand + " => " + righthand
         if kinetics.modifiers:
             modifiers = "[" + ",".join(kinetics.modifiers) + "]"
-            equation = equation + ' ' + modifiers
-        rate = kinetics.rate.replace('**', '^')
-        reaction = sbml.Reaction(sid="R" + str(num), name="R" + str(num), equation=equation, formula=(rate, None)
+            equation = equation + " " + modifiers
+        rate = kinetics.rate.replace("**", "^")
+        reaction = sbml.Reaction(
+            sid="R" + str(num), name="R" + str(num), equation=equation, formula=(rate, None)
         )
         return reaction
 
-    def model2sbml(
-        self
-        ) -> None:
-        """Uses helper functions to get model species, parameters and reactions to generate SBML model
-        """
+    def model2sbml(self) -> None:
+        """Uses helper functions to get model species, parameters and reactions to generate SBML model"""
         self.sbmlmodel = sbml.Model(
             "menten_model",
             name="menten_model",
@@ -131,19 +130,21 @@ class ExportModel(object):
                 time=sbml.Units.second,
                 substance=sbml.Units.mole,
                 extent=sbml.Units.mole,
-                volume=sbml.Units.litre
+                volume=sbml.Units.litre,
             ),
-            compartments=[sbml.Compartment(sid='C', value=1.0)],
-            species = [self._get_species(species) for species in self.model.species],
-            parameters= [self._get_param(param) for param in self.model.parameters],
-            reactions = [self._get_reaction(i, kinetics) for i, kinetics in enumerate(self.model.kinetics)],
+            compartments=[sbml.Compartment(sid="C", value=1.0)],
+            species=[self._get_species(species) for species in self.model.species],
+            parameters=[self._get_param(param) for param in self.model.parameters],
+            reactions=[
+                self._get_reaction(i, kinetics) for i, kinetics in enumerate(self.model.kinetics)
+            ],
         )
 
     def save_sbml(
         self,
         savepath: str,
         filename: str,
-        ) -> None:
+    ) -> None:
         """Generates SBML file and validates it.
 
         Args:
@@ -152,12 +153,12 @@ class ExportModel(object):
         """
         with tempfile.TemporaryDirectory() as tmp_path:
             results = sbml.create_model(
-            models=self.sbmlmodel,
-            output_dir=Path(tmp_path),
-            tmp=False,
-            units_consistency=False,
-            sbml_level=3,
-            sbml_version=1,
-        )
+                models=self.sbmlmodel,
+                output_dir=Path(tmp_path),
+                tmp=False,
+                units_consistency=False,
+                sbml_level=3,
+                sbml_version=1,
+            )
             doc = read_sbml(source=results.sbml_path, validate=False)
         write_sbml(doc, Path(os.path.join(savepath, filename)))
