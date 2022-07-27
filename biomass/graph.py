@@ -5,9 +5,6 @@ from collections import defaultdict
 from types import ModuleType
 from typing import List, Literal, Optional
 
-import pygraphviz as pgv
-from pyvis.network import Network
-
 
 class NetworkGraph(object):
     """
@@ -51,6 +48,8 @@ class NetworkGraph(object):
         self.problem = biomass_model.OptimizationProblem()
         self.viz = biomass_model.Visualization()
         self.rxn = biomass_model.ReactionNetwork()
+
+        self.graph = None
 
     @property
     def path(self) -> str:
@@ -129,7 +128,7 @@ class NetworkGraph(object):
         """Constructs a directed graph of the model.
         Using the pygraphviz library a directed graph of the model is constructed by parsing the equations from
         ode.py/reaction_network.py. Equations will be split at the equal sign and an edge is added between the species on the
-        lefthand side to all species on the righthand side. Self references will not be considered.
+        lefthand side to all species on the right hand side. Self references will not be considered.
 
         Raises
         ------
@@ -141,6 +140,11 @@ class NetworkGraph(object):
         UserWarning
             If species equations are detected outside of the ODE section.
         """
+        try:
+            import pygraphviz as pgv
+        except ImportError:
+            print("pygraphviz is required to run this function.")
+
         use_flux = False
         try:
             if len(self.rxn.flux(0, self.ival(), self.pval())) > 0:
@@ -218,9 +222,7 @@ class NetworkGraph(object):
         Creates graph with dot layout in pdf file format. Nodes will be rectangular and colored bisque, edges will have no arrows indicating direction.
 
         """
-        try:
-            _ = self.graph
-        except AttributeError:
+        if self.graph is None:
             self.to_graph()
         if gviz_prog not in (available_layout := ["neato", "dot", "twopi", "circo", "fdp", "nop"]):
             raise ValueError(
@@ -267,8 +269,11 @@ class NetworkGraph(object):
         Creates interactive graph. Controls for physics, manipulation and interaction will be available.
         """
         try:
-            _ = self.graph
-        except AttributeError:
+            from pyvis.network import Network
+        except ImportError:
+            print("pyvis is required to run this function.")
+
+        if self.graph is None:
             self.to_graph()
         if os.path.splitext(file_name)[1] != ".html":
             file_name = file_name + ".html"
