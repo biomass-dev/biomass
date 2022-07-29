@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from .exec_model import ModelObject
+from .model_object import ModelObject
 
 
 @dataclass

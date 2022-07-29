@@ -7,7 +7,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.axes._axes import _log as matplotlib_axes_logger
 
-from ..exec_model import ModelObject
+from ..model_object import ModelObject
 from ..plotting import MultipleObservables, SingleObservable
 
 matplotlib_axes_logger.setLevel("ERROR")
