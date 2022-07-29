@@ -1,7 +1,5 @@
 from typing import Dict, List
 
-from biomass.analysis.reaction import is_duplicate
-
 from .name2idx import C, V
 
 
