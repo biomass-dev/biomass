@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-from ..exec_model import ModelObject
+from ..model_object import ModelObject
 from ..plotting import SensitivityOptions
 from .util import SignalingMetric, dlnyi_dlnxj
 
