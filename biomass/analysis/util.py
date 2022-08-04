@@ -4,7 +4,7 @@ from math import fabs, isnan, log
 from typing import Callable, Dict, List, Union
 
 import numpy as np
-from numba import njit
+from numba import jit, prange
 from scipy.integrate import simpson
 
 
@@ -29,7 +29,7 @@ class SignalingMetric(object):
     )
 
 
-@njit
+@jit(fastmath=True)
 def dlnyi_dlnxj(
     signaling_metric: np.ndarray,
     n_file: List[int],
@@ -92,3 +92,24 @@ def dlnyi_dlnxj(
                         ) / log(rate)
 
     return sensitivity_coefficients
+
+
+@jit(fastmath=True, parallel=True)
+def remove_nan(sensitivity_matrix: np.ndarray) -> np.ndarray:
+    """
+    Remove NaN from sensitivity matrix. This function is used for preprocessing of visualizing
+    the result of sensitivity analysis through a heatmap.
+
+    Parameters
+    ----------
+    sensitivity_matrix : numpy.ndarray
+        M x N matrix, where M and M are # of parameter sets and # of perturbed objects, respectively.
+    """ 
+    nan_idx = []
+    for i in prange(sensitivity_matrix.shape[0]):
+        if np.isnan(sensitivity_matrix[i, :]).any():
+            nan_idx.append(i)
+        if np.nanmax(np.abs(sensitivity_matrix[i, :])) < sys.float_info.epsilon:
+            sensitivity_matrix[i, :] = np.zeros(sensitivity_matrix.shape[1])
+
+    return np.delete(sensitivity_matrix, nan_idx, axis=0)
