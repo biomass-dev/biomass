@@ -1,6 +1,7 @@
 import sys
+import warnings
 from dataclasses import dataclass, field
-from math import fabs, isnan, log
+from math import isnan, log
 from typing import Callable, Dict, Union
 
 import numpy as np
@@ -77,8 +78,8 @@ def dlnyi_dlnxj(
                     if isnan(signaling_metric[i, j, k, l]):
                         sensitivity_coefficients[i, j, k, l] = np.nan
                     elif (
-                        float(fabs(signaling_metric[i, -1, k, l])) < sys.float_info.epsilon
-                        or fabs(signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l])
+                        abs(signaling_metric[i, -1, k, l]) < sys.float_info.epsilon
+                        or abs(signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l])
                         < sys.float_info.epsilon
                         or (signaling_metric[i, j, k, l] / signaling_metric[i, -1, k, l]) <= 0
                     ):
