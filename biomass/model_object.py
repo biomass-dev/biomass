@@ -134,7 +134,7 @@ class ModelObject(NetworkGraph):
             Corresponding values.
         """
         bounds = self.problem.get_region()
-        indiv_values = _convert_gene2val(indiv_gene, bounds)
+        indiv_values = _decode(indiv_gene, bounds)
         return indiv_values
 
     def get_obj_val(self, indiv_gene: np.ndarray) -> float:
@@ -156,6 +156,20 @@ class ModelObject(NetworkGraph):
 
 
 @njit(cache=True, fastmath=True)
-def _convert_gene2val(indiv_gene: np.ndarray, bounds: np.ndarray) -> np.ndarray:
+def _decode(indiv_gene: np.ndarray, bounds: np.ndarray) -> np.ndarray:
+    """
+    Parameters
+    ----------
+    indiv_gene : numpy.ndarray
+        Genes, not parameter values.
+    bounds : numpy.ndarray
+        Lower and upper bounds for parameters when searched.
+
+    Returns
+    -------
+    indiv_values : ``numpy.ndarray```
+        Corresponding values.
+
+    """
     indiv_values = 10 ** (indiv_gene * (bounds[1, :] - bounds[0, :]) + bounds[0, :])
     return indiv_values
