@@ -3,7 +3,7 @@ from math import isnan, log
 from typing import Callable, Final, Dict, Union
 
 import numpy as np
-from numba import njit, prange
+from numba import njit
 from scipy.integrate import simpson
 
 
@@ -31,7 +31,7 @@ class SignalingMetric(object):
     )
 
 
-@njit(fastmath=True, parallel=True)
+@njit(fastmath=True)
 def dlnyi_dlnxj(
     signaling_metric: np.ndarray,
     num_file_ids: int,
@@ -72,10 +72,10 @@ def dlnyi_dlnxj(
     sensitivity_coefficients = np.empty(
         (num_file_ids, num_perturbed_ids, num_observables, num_conditions),
     )
-    for i in prange(num_file_ids):
-        for j in prange(num_perturbed_ids):
-            for k in prange(num_observables):
-                for l in prange(num_conditions):
+    for i in range(num_file_ids):
+        for j in range(num_perturbed_ids):
+            for k in range(num_observables):
+                for l in range(num_conditions):
                     if isnan(signaling_metric[i, j, k, l]):
                         sensitivity_coefficients[i, j, k, l] = np.nan
                     elif (
@@ -95,7 +95,7 @@ def dlnyi_dlnxj(
     return sensitivity_coefficients
 
 
-@njit(fastmath=True, parallel=True)
+@njit(fastmath=True)
 def remove_nan(sensitivity_matrix: np.ndarray) -> np.ndarray:
     """
     Remove NaN from sensitivity matrix. This function is used for preprocessing of visualizing
@@ -107,7 +107,7 @@ def remove_nan(sensitivity_matrix: np.ndarray) -> np.ndarray:
         M x N matrix, where M and M are # of parameter sets and # of perturbed objects, respectively.
     """
     nan_idx = []
-    for i in prange(sensitivity_matrix.shape[0]):
+    for i in range(sensitivity_matrix.shape[0]):
         if np.isnan(sensitivity_matrix[i, :]).any():
             nan_idx.append(i)
         if np.nanmax(np.abs(sensitivity_matrix[i, :])) < EPS:
