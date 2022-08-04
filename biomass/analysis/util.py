@@ -4,6 +4,7 @@ from math import fabs, isnan, log
 from typing import Callable, Dict, List, Union
 
 import numpy as np
+from numba import njit
 from scipy.integrate import simpson
 
 
@@ -28,6 +29,7 @@ class SignalingMetric(object):
     )
 
 
+@njit
 def dlnyi_dlnxj(
     signaling_metric: np.ndarray,
     n_file: List[int],
