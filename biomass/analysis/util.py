@@ -7,7 +7,7 @@ from numba import njit, prange
 from scipy.integrate import simpson
 
 
-EPS: Final[float] = 1e-12
+EPS: Final = np.finfo(float).eps
 
 
 @dataclass
@@ -105,7 +105,7 @@ def remove_nan(sensitivity_matrix: np.ndarray) -> np.ndarray:
     ----------
     sensitivity_matrix : numpy.ndarray
         M x N matrix, where M and M are # of parameter sets and # of perturbed objects, respectively.
-    """ 
+    """
     nan_idx = []
     for i in prange(sensitivity_matrix.shape[0]):
         if np.isnan(sensitivity_matrix[i, :]).any():
