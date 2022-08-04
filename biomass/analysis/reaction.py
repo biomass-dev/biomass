@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-from ..exec_model import ModelObject
+from ..model_object import ModelObject
 from ..plotting import SensitivityOptions
 from .util import SignalingMetric, dlnyi_dlnxj
 
@@ -327,7 +327,7 @@ class ReactionSensitivity(SignalingMetric):
             os.remove(self._coefficients(metric))
         if not self.model.rxn.reactions:
             raise ValueError("Define reaction indices (reactions) in reaction_network.py")
-        biological_processes = self.model.rxn.group()
+        biological_processes = self._group()
         reaction_indices = np.sum(biological_processes, axis=0)
         sensitivity_coefficients = self._load_sc(metric, reaction_indices)
 
@@ -348,26 +348,40 @@ class ReactionSensitivity(SignalingMetric):
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")
 
-
-def is_duplicate(
-    reactions: Dict[str, List[int]],
-    biological_processes: List[List[int]],
-) -> bool:
-    reaction_indices = (
-        sum(biological_processes, []) if len(reactions) > 1 else biological_processes[0]
-    )
-    duplicate_reaction = [i for i in set(reaction_indices) if reaction_indices.count(i) > 1]
-    if not duplicate_reaction:
-        return False
-    else:
-        which_process = []
-        for reaction_index in duplicate_reaction:
-            for process, indices in reactions.items():
-                if reaction_index in indices:
-                    which_process.append(process)
-        raise ValueError(
-            "Duplicate reaction: {} found in {}.".format(
-                ", ".join(map(str, duplicate_reaction)),
-                ", ".join(which_process),
-            )
+    @staticmethod
+    def _is_duplicate(
+        reactions: Dict[str, List[int]],
+        biological_processes: List[List[int]],
+    ) -> bool:
+        reaction_indices = (
+            sum(biological_processes, []) if len(reactions) > 1 else biological_processes[0]
         )
+        duplicate_reaction = [i for i in set(reaction_indices) if reaction_indices.count(i) > 1]
+        if not duplicate_reaction:
+            return False
+        else:
+            which_process = []
+            for reaction_index in duplicate_reaction:
+                for process, indices in reactions.items():
+                    if reaction_index in indices:
+                        which_process.append(process)
+            raise ValueError(
+                "Duplicate reaction: {} found in {}.".format(
+                    ", ".join(map(str, duplicate_reaction)),
+                    ", ".join(which_process),
+                )
+            )
+
+    def _group(self) -> list:
+        """
+        Group reactions according to biological processes.
+        """
+        biological_processes = []
+        for process, indices in self.model.rxn.reactions.items():
+            if not isinstance(indices, list):
+                raise TypeError("Use list for reaction indices in {}".format(process))
+            biological_processes.append(indices)
+
+        if not self._is_duplicate(self.model.rxn.reactions, biological_processes):
+            return biological_processes
+        assert False

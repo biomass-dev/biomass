@@ -13,7 +13,7 @@ from scipy.optimize import differential_evolution
 from .analysis import InitialConditionSensitivity, ParameterSensitivity, ReactionSensitivity
 from .dynamics import SignalingSystems
 from .estimation import Optimizer
-from .exec_model import ModelObject
+from .model_object import ModelObject
 from .version import __version__
 
 __all__ = ["Model", "create_model", "optimize", "run_simulation", "run_analysis"]
@@ -280,6 +280,11 @@ def optimize(
             "If you don't want to see the evaluated objective function at every iteration, "
             "set the keyword argument `disp_here` to False."
         )
+    if optimizer_options["polish"]:
+        warnings.warn(
+            "Setting optimizer_options['polish'] to False is highly recommended.",
+            UserWarning,
+        )
 
     optimizer = Optimizer(model, differential_evolution, x_id, disp_here, overwrite)
     res = optimizer.minimize(
@@ -287,7 +292,7 @@ def optimize(
         [(0, 1) for _ in range(len(model.problem.bounds))],
         **optimizer_options,
     )
-    param_values = model.problem.gene2val(res.x)
+    param_values = model.gene2val(res.x)
     optimizer.import_solution(param_values)
 
 

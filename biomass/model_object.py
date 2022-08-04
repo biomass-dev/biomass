@@ -118,6 +118,24 @@ class ModelObject(NetworkGraph):
             print(e)
         return n_file
 
+    def gene2val(self, indiv_gene: np.ndarray) -> np.ndarray:
+        """
+        Convert gene to actual value. Mainly used in parameter estimation.
+
+        Parameters
+        ----------
+        indiv_gene : ``numpy.ndarray```
+            Individual gene.
+
+        Returns
+        -------
+        indiv_values : ``numpy.ndarray```
+            Corresponding values.
+        """
+        bounds = self.problem.get_region()
+        indiv_values = 10 ** (indiv_gene * (bounds[1, :] - bounds[0, :]) + bounds[0, :])
+        return indiv_values
+
     def get_obj_val(self, indiv_gene: np.ndarray) -> float:
         """
         An objective function to minimize in parameter estimation.
@@ -132,5 +150,5 @@ class ModelObject(NetworkGraph):
         obj_val : float
             Objective function value.
         """
-        obj_val = self.problem.objective(self.problem.gene2val(indiv_gene))
+        obj_val = self.problem.objective(self.gene2val(indiv_gene))
         return obj_val
