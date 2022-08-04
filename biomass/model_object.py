@@ -4,6 +4,7 @@ from types import ModuleType
 from typing import List, NamedTuple
 
 import numpy as np
+from numba import njit
 
 from .graph import NetworkGraph
 
@@ -133,7 +134,7 @@ class ModelObject(NetworkGraph):
             Corresponding values.
         """
         bounds = self.problem.get_region()
-        indiv_values = 10 ** (indiv_gene * (bounds[1, :] - bounds[0, :]) + bounds[0, :])
+        indiv_values = _convert_gene2val(indiv_gene, bounds)
         return indiv_values
 
     def get_obj_val(self, indiv_gene: np.ndarray) -> float:
@@ -152,3 +153,9 @@ class ModelObject(NetworkGraph):
         """
         obj_val = self.problem.objective(self.gene2val(indiv_gene))
         return obj_val
+
+
+@njit(cache=True, fastmath=True)
+def _convert_gene2val(indiv_gene: np.ndarray, bounds: np.ndarray) -> np.ndarray:
+    indiv_values = 10 ** (indiv_gene * (bounds[1, :] - bounds[0, :]) + bounds[0, :])
+    return indiv_values
