@@ -1,12 +1,13 @@
-import sys
-import warnings
 from dataclasses import dataclass, field
 from math import isnan, log
-from typing import Callable, Dict, Union
+from typing import Callable, Final, Dict, Union
 
 import numpy as np
 from numba import njit, prange
 from scipy.integrate import simpson
+
+
+EPS: Final[float] = 1e-12
 
 
 @dataclass
@@ -78,9 +79,8 @@ def dlnyi_dlnxj(
                     if isnan(signaling_metric[i, j, k, l]):
                         sensitivity_coefficients[i, j, k, l] = np.nan
                     elif (
-                        abs(signaling_metric[i, -1, k, l]) < sys.float_info.epsilon
-                        or abs(signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l])
-                        < sys.float_info.epsilon
+                        abs(signaling_metric[i, -1, k, l]) < EPS
+                        or abs(signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l]) < EPS
                         or (signaling_metric[i, j, k, l] / signaling_metric[i, -1, k, l]) <= 0
                     ):
                         # 1. Signaling metric before adding perturbation is zero
@@ -110,7 +110,7 @@ def remove_nan(sensitivity_matrix: np.ndarray) -> np.ndarray:
     for i in prange(sensitivity_matrix.shape[0]):
         if np.isnan(sensitivity_matrix[i, :]).any():
             nan_idx.append(i)
-        if np.nanmax(np.abs(sensitivity_matrix[i, :])) < sys.float_info.epsilon:
+        if np.nanmax(np.abs(sensitivity_matrix[i, :])) < EPS:
             sensitivity_matrix[i, :] = np.zeros(sensitivity_matrix.shape[1])
 
     return np.delete(sensitivity_matrix, nan_idx, axis=0)

@@ -49,6 +49,7 @@ def solve_ode(
         options = {}
     options.setdefault("rtol", 1e-8)
     options.setdefault("atol", 1e-8)
+
     try:
         sol = solve_ivp(
             diffeq,
