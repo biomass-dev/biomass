@@ -4,6 +4,7 @@ from math import fabs, isnan, log
 from typing import Callable, Dict, List, Union
 
 import numpy as np
+from numba import njit, prange
 from scipy.integrate import simpson
 
 
@@ -28,12 +29,13 @@ class SignalingMetric(object):
     )
 
 
+@njit(fastmath=True)
 def dlnyi_dlnxj(
     signaling_metric: np.ndarray,
-    file_ids: List[int],
-    perturbed_ids: List[int],
-    observables: List[str],
-    conditions: List[str],
+    file_ids:np.ndarray,
+    perturbed_ids: np.ndarray,
+    num_observables: int,
+    num_conditions: int,
     rate: float,
 ) -> np.ndarray:
     """
@@ -45,17 +47,17 @@ def dlnyi_dlnxj(
     signaling_metric : numpy array
         Signaling metric
 
-    n_file : list of integers
+    file_ids : numpy array
         Optimized parameter sets in out/
 
-    perturbed_ids : list of integers
+    perturbed_ids : numpy array
         Indices of rate equations or non-zero initial values.
 
-    observables : list of strings
-        observables in observable.py
+    num_observables : int
+        Number of observables in observable.py
 
-    conditions : list of strings
-        Experimental conditions.
+    num_conditions : int
+        Number of experimental conditions.
 
     rate : float ~ 1
         1.01 for 1% change.
@@ -66,17 +68,17 @@ def dlnyi_dlnxj(
 
     """
     sensitivity_coefficients = np.empty(
-        (len(file_ids), len(perturbed_ids), len(observables), len(conditions))
+        (len(file_ids), len(perturbed_ids), num_observables, num_conditions),
     )
     for i, _ in enumerate(file_ids):
         for j, _ in enumerate(perturbed_ids):
-            for k, _ in enumerate(observables):
-                for l, _ in enumerate(conditions):
-                    if isnan(signaling_metric[i, j, k, l]):
+            for k in range(num_observables):
+                for l in range(num_conditions):
+                    if np.isnan(signaling_metric[i, j, k, l]):
                         sensitivity_coefficients[i, j, k, l] = np.nan
                     elif (
-                        fabs(signaling_metric[i, -1, k, l]) < sys.float_info.epsilon
-                        or fabs(signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l])
+                        np.abs(signaling_metric[i, -1, k, l]) < sys.float_info.epsilon
+                        or np.abs(signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l])
                         < sys.float_info.epsilon
                         or (signaling_metric[i, j, k, l] / signaling_metric[i, -1, k, l]) <= 0
                     ):
@@ -85,13 +87,14 @@ def dlnyi_dlnxj(
                         # 3. Antilogarithm <= 0
                         sensitivity_coefficients[i, j, k, l] = 0.0
                     else:
-                        sensitivity_coefficients[i, j, k, l] = log(
+                        sensitivity_coefficients[i, j, k, l] = np.log(
                             signaling_metric[i, j, k, l] / signaling_metric[i, -1, k, l]
-                        ) / log(rate)
+                        ) / np.log(rate)
 
     return sensitivity_coefficients
 
 
+@njit(fastmath=True, parallel=True)
 def remove_nan(sensitivity_matrix: np.ndarray) -> np.ndarray:
     """
     Remove NaN from sensitivity matrix. This function is used for preprocessing of visualizing
@@ -103,7 +106,7 @@ def remove_nan(sensitivity_matrix: np.ndarray) -> np.ndarray:
         M x N matrix, where M and M are # of parameter sets and # of perturbed objects, respectively.
     """ 
     nan_idx = []
-    for i in range(sensitivity_matrix.shape[0]):
+    for i in prange(sensitivity_matrix.shape[0]):
         if np.isnan(sensitivity_matrix[i, :]).any():
             nan_idx.append(i)
         if np.nanmax(np.abs(sensitivity_matrix[i, :])) < sys.float_info.epsilon:

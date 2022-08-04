@@ -109,10 +109,10 @@ class InitialConditionSensitivity(SignalingMetric):
                         )
         sensitivity_coefficients = dlnyi_dlnxj(
             signaling_metric,
-            n_file,
-            nonzero_indices,
-            self.model.observables,
-            self.model.problem.conditions,
+            np.array(n_file),
+            np.array(nonzero_indices),
+            len(self.model.observables),
+            len(self.model.problem.conditions),
             rate,
         )
 

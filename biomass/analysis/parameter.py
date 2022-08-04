@@ -108,10 +108,10 @@ class ParameterSensitivity(SignalingMetric):
                         )
         sensitivity_coefficients = dlnyi_dlnxj(
             signaling_metric,
-            n_file,
-            param_indices,
-            self.model.observables,
-            self.model.problem.conditions,
+            np.array(n_file),
+            np.array(param_indices),
+            len(self.model.observables),
+            len(self.model.problem.conditions),
             rate,
         )
 
