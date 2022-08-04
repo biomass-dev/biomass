@@ -4,7 +4,6 @@ from math import fabs, isnan, log
 from typing import Callable, Dict, List, Union
 
 import numpy as np
-from numba import jit, prange
 from scipy.integrate import simpson
 
 
@@ -29,11 +28,10 @@ class SignalingMetric(object):
     )
 
 
-@jit(fastmath=True)
 def dlnyi_dlnxj(
     signaling_metric: np.ndarray,
-    n_file: List[int],
-    perturbed_idx: List[int],
+    file_ids: List[int],
+    perturbed_ids: List[int],
     observables: List[str],
     conditions: List[str],
     rate: float,
@@ -50,7 +48,7 @@ def dlnyi_dlnxj(
     n_file : list of integers
         Optimized parameter sets in out/
 
-    perturbed_idx : list of integers
+    perturbed_ids : list of integers
         Indices of rate equations or non-zero initial values.
 
     observables : list of strings
@@ -68,10 +66,10 @@ def dlnyi_dlnxj(
 
     """
     sensitivity_coefficients = np.empty(
-        (len(n_file), len(perturbed_idx), len(observables), len(conditions))
+        (len(file_ids), len(perturbed_ids), len(observables), len(conditions))
     )
-    for i, _ in enumerate(n_file):
-        for j, _ in enumerate(perturbed_idx):
+    for i, _ in enumerate(file_ids):
+        for j, _ in enumerate(perturbed_ids):
             for k, _ in enumerate(observables):
                 for l, _ in enumerate(conditions):
                     if isnan(signaling_metric[i, j, k, l]):
@@ -94,7 +92,6 @@ def dlnyi_dlnxj(
     return sensitivity_coefficients
 
 
-@jit(fastmath=True, parallel=True)
 def remove_nan(sensitivity_matrix: np.ndarray) -> np.ndarray:
     """
     Remove NaN from sensitivity matrix. This function is used for preprocessing of visualizing
@@ -106,7 +103,7 @@ def remove_nan(sensitivity_matrix: np.ndarray) -> np.ndarray:
         M x N matrix, where M and M are # of parameter sets and # of perturbed objects, respectively.
     """ 
     nan_idx = []
-    for i in prange(sensitivity_matrix.shape[0]):
+    for i in range(sensitivity_matrix.shape[0]):
         if np.isnan(sensitivity_matrix[i, :]).any():
             nan_idx.append(i)
         if np.nanmax(np.abs(sensitivity_matrix[i, :])) < sys.float_info.epsilon:
