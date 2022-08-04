@@ -7,7 +7,7 @@ from numba import njit, prange
 from scipy.integrate import simpson
 
 
-EPS: Final = np.finfo(float).eps
+EPS: Final[np.float64] = np.finfo(float).eps
 
 
 @dataclass
@@ -31,11 +31,11 @@ class SignalingMetric(object):
     )
 
 
-@njit(fastmath=True)
+@njit(fastmath=True, parallel=True)
 def dlnyi_dlnxj(
     signaling_metric: np.ndarray,
-    file_ids:np.ndarray,
-    perturbed_ids: np.ndarray,
+    num_file_ids: int,
+    num_perturbed_ids: int,
     num_observables: int,
     num_conditions: int,
     rate: float,
@@ -49,11 +49,11 @@ def dlnyi_dlnxj(
     signaling_metric : numpy array
         Signaling metric
 
-    file_ids : numpy array
-        Optimized parameter sets in out/
+    num_file_ids : int
+        Number of ptimized parameter sets in out/
 
-    perturbed_ids : numpy array
-        Indices of rate equations or non-zero initial values.
+    num_perturbed_ids : int
+        Number of parameters, rate equations, or non-zero initial conditions to be perturbed.
 
     num_observables : int
         Number of observables in observable.py
@@ -70,12 +70,12 @@ def dlnyi_dlnxj(
 
     """
     sensitivity_coefficients = np.empty(
-        (len(file_ids), len(perturbed_ids), num_observables, num_conditions),
+        (num_file_ids, num_perturbed_ids, num_observables, num_conditions),
     )
-    for i, _ in enumerate(file_ids):
-        for j, _ in enumerate(perturbed_ids):
-            for k in range(num_observables):
-                for l in range(num_conditions):
+    for i in prange(num_file_ids):
+        for j in prange(num_perturbed_ids):
+            for k in prange(num_observables):
+                for l in prange(num_conditions):
                     if isnan(signaling_metric[i, j, k, l]):
                         sensitivity_coefficients[i, j, k, l] = np.nan
                     elif (

@@ -99,8 +99,8 @@ class ReactionSensitivity(SignalingMetric):
                         )
         sensitivity_coefficients = dlnyi_dlnxj(
             signaling_metric,
-            np.array(n_file),
-            np.array(reaction_indices),
+            len(n_file),
+            len(reaction_indices),
             len(self.model.observables),
             len(self.model.problem.conditions),
             rate,
