@@ -1,7 +1,7 @@
 import sys
 from dataclasses import dataclass, field
 from math import fabs, isnan, log
-from typing import Callable, Dict, List, Union
+from typing import Callable, Dict, Union
 
 import numpy as np
 from numba import njit, prange
@@ -74,11 +74,11 @@ def dlnyi_dlnxj(
         for j, _ in enumerate(perturbed_ids):
             for k in range(num_observables):
                 for l in range(num_conditions):
-                    if np.isnan(signaling_metric[i, j, k, l]):
+                    if isnan(signaling_metric[i, j, k, l]):
                         sensitivity_coefficients[i, j, k, l] = np.nan
                     elif (
-                        np.abs(signaling_metric[i, -1, k, l]) < sys.float_info.epsilon
-                        or np.abs(signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l])
+                        float(fabs(signaling_metric[i, -1, k, l])) < sys.float_info.epsilon
+                        or fabs(signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l])
                         < sys.float_info.epsilon
                         or (signaling_metric[i, j, k, l] / signaling_metric[i, -1, k, l]) <= 0
                     ):
@@ -87,9 +87,9 @@ def dlnyi_dlnxj(
                         # 3. Antilogarithm <= 0
                         sensitivity_coefficients[i, j, k, l] = 0.0
                     else:
-                        sensitivity_coefficients[i, j, k, l] = np.log(
+                        sensitivity_coefficients[i, j, k, l] = log(
                             signaling_metric[i, j, k, l] / signaling_metric[i, -1, k, l]
-                        ) / np.log(rate)
+                        ) / log(rate)
 
     return sensitivity_coefficients
 
