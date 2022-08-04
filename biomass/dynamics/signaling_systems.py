@@ -2,12 +2,16 @@ import os
 import sys
 import warnings
 from dataclasses import dataclass
-from typing import List
+from typing import Final, List
 
 import numpy as np
+from numba import njit, prange
 
 from ..model_object import ModelObject
 from .temporal_dynamics import TemporalDynamics
+
+
+EPS: Final[np.float64] = np.finfo(float).eps
 
 
 @dataclass
@@ -80,28 +84,6 @@ class SignalingSystems(TemporalDynamics):
 
         self.plot_timecourse(n_file, viz_type, show_all, stdev, simulations_all)
 
-    def _preprocessing(self, simulated_values: np.ndarray) -> np.ndarray:
-        """
-        Replace small value in time-course simulated values to zero
-        when all(abs(time_course) < sys.float_info.epsilon).
-
-        Parameters
-        ----------
-        simulated_values : matrix (len(self.model.problem.conditions) x len(t))
-        """
-        if simulated_values.ndim == 2:
-            for k, time_course in enumerate(simulated_values):
-                if np.all(np.abs(time_course) < sys.float_info.epsilon):
-                    simulated_values[k, :] = np.zeros(len(self.model.problem.t))
-        elif simulated_values.ndim == 3:
-            for i, _ in enumerate(self.model.observables):
-                simulated_values[i] = self._preprocessing(simulated_values[i])
-        elif simulated_values.ndim == 4:
-            for j in range(simulated_values.shape[1]):
-                for i, _ in enumerate(self.model.observables):
-                    simulated_values[i, j] = self._preprocessing(simulated_values[i, j])
-        return simulated_values
-
     def _save_simulations(self, viz_type: str, simulated_values: np.ndarray) -> None:
         """
         Save time course simulated values to simulation_data/.
@@ -112,7 +94,9 @@ class SignalingSystems(TemporalDynamics):
                 "simulation_data",
                 "simulations_{}.npy".format(viz_type if simulated_values.ndim < 4 else "all"),
             ),
-            self._preprocessing(simulated_values),
+            _preprocessing(
+                simulated_values, len(self.model.problem.t), len(self.model.observables)
+            ),
         )
 
     def _get_best_objval(self, n_file: List[int]) -> np.ndarray:
@@ -195,3 +179,35 @@ class SignalingSystems(TemporalDynamics):
                 for i, name in enumerate(self.model.species):
                     if optimized.initials[i] != 0:
                         f.write(f"{indentation}y0[V.{name}] = {optimized.initials[i]:8.3e}\n")
+
+
+@njit(cache=True, parallel=True)
+def _preprocessing(
+    simulated_values: np.ndarray,
+    num_timipoints: int,
+    num_observables: int,
+) -> np.ndarray:
+    """
+    Replace small value in time-course simulated values to zero
+    when all(abs(time_course) < EPS).
+
+    Parameters
+    ----------
+    simulated_values : matrix (len(self.model.problem.conditions) x len(t))
+    """
+    if simulated_values.ndim == 2:
+        for k, time_course in enumerate(simulated_values):
+            if np.all(np.abs(time_course) < EPS):
+                simulated_values[k, :] = np.zeros(num_timipoints)
+    elif simulated_values.ndim == 3:
+        for i in prange(num_observables):
+            simulated_values[i] = _preprocessing(
+                simulated_values[i], num_timipoints, num_observables
+            )
+    elif simulated_values.ndim == 4:
+        for j in prange(simulated_values.shape[1]):
+            for i in prange(num_observables):
+                simulated_values[i, j] = _preprocessing(
+                    simulated_values[i, j], num_timipoints, num_observables
+                )
+    return simulated_values
