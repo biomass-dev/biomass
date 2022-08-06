@@ -55,15 +55,7 @@ class Model(object):
         Check indices used in a BioMASS model.
         'C' and 'V' must be used for parameters and species, respectively.
         """
-        if ["0", "7"] <= __version__.split("."):
-            files = ["ode.py", "search_param.py", "observable.py", "reaction_network.py"]
-        else:
-            warnings.warn(
-                f"Rename core modules in {model.path}. "
-                "For details, please refer to https://github.com/biomass-dev/biomass/issues/114",
-                FutureWarning,
-            )
-            files = ["set_model.py", "set_search_param.py", "observable.py", "reaction_network.py"]
+        files = ["ode.py", "search_param.py", "observable.py", "reaction_network.py"]
         for file in files:
             with open(os.path.join(model.path, file)) as f:
                 lines = f.readlines()
