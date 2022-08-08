@@ -628,6 +628,7 @@ class ReactionRules(ThermodynamicRestrictions):
         description = self._preprocessing(
             sys._getframe().f_code.co_name, line_num, line, *params_used
         )
+        assert len(description) == 2, f"Line{line_num}: Cannot put the plus symbol in both left- and right-hand side of arrow."
         is_binding: bool
         is_unidirectional: bool
         for arrow in self._available_arrows():
