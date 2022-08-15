@@ -8,7 +8,7 @@ RPLP <--> RP + PLCgP | kf=0.3, kr=0.006
 PLCgP is dephosphorylated --> PLCg | V=1, K=100
 RP + Grb2 <--> RG | kf=0.003, kr=0.05 | Grb2=85
 RG + SOS <--> RGS | kf=0.01, kr=0.06 | SOS=34
-RGS i<--> RP + GS | kf=0.03, kr=4.5e-3
+RGS <--> RP + GS | kf=0.03, kr=4.5e-3
 GS <--> Grb2 + SOS | kf=1.5e-3, kr=1e-4
 RP + Shc <--> RSh | kf=0.09, kr=0.6 | Shc=150
 RSh <--> RShP | kf=6, kr=0.06
