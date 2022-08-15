@@ -2,7 +2,7 @@ import re
 import sys
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
-from typing import Dict, List, NamedTuple, NoReturn, Optional
+from typing import Dict, List, NamedTuple, Optional
 
 import numpy as np
 
@@ -11,7 +11,7 @@ from .thermodynamic_restrictions import ComplexFormation, DuplicateError, Thermo
 
 class UnregisteredRule(NamedTuple):
     expected: Optional[str]
-    original: Optional[str]
+    match_sores: List[float]
 
 
 class KineticInfo(NamedTuple):
@@ -372,19 +372,22 @@ class ReactionRules(ThermodynamicRestrictions):
             if s_name not in self.species:
                 self.species.append(s_name)
 
-    def _raise_detection_error(self, line_num: int, line: str) -> NoReturn:
+    def _raise_exception(self, line_num: int, line: str) -> None:
         """
-        Raise `DetectionError` when a keyword is invalid.
+        Apply `state_transition` rule or raise `DetectionError` when a keyword is invalid.
         """
-        unregistered_rule = self._get_partial_similarity(line)
-        raise DetectionError(
-            f"Unregistered words in line{line_num:d}: {line}"
-            + (
-                f"\nMaybe: '{unregistered_rule.expected.lstrip()}'."
-                if unregistered_rule.expected is not None
-                else ""
+        expected_word = self._get_partial_similarity(line)
+        if expected_word is None and any(map(lambda arrow: arrow in line, self._available_arrows())):
+            self.state_transition(line_num, line)
+        else:
+            raise DetectionError(
+                f"Unregistered words in line{line_num:d}: {line}"
+                + (
+                    f"\nMaybe: '{expected_word.lstrip()}'."
+                    if expected_word is not None
+                    else ""
+                )
             )
-        )
 
     def _process_pval_section(self, func_name: str, line_num: int, line: str, *args: str) -> None:
 
@@ -519,7 +522,7 @@ class ReactionRules(ThermodynamicRestrictions):
             if line.count("|") > 1 and line.split("|")[2].strip():
                 self._process_ival_section(line_num, line)
             line = line.split("|")[0]
-        if func_name != "user_defined":
+        if func_name not in ["state_transition", "user_defined"]:
             hit_words: List[str] = []
             for word in self.rule_words[func_name]:
                 # Choose longer word
@@ -527,9 +530,13 @@ class ReactionRules(ThermodynamicRestrictions):
                     hit_words.append(word)
             description = line.strip().split(max(hit_words, key=len))
             if description[1] and not description[1].startswith(" "):
-                self._raise_detection_error(line_num, line)
-        else:
+                self._raise_exception(line_num, line)
+        elif func_name == "state_transition":
+            description = [line.strip()]
+        elif func_name == "user_defined":
             description = line.strip().split(":")
+        else:
+            assert False
         return description
 
     @staticmethod
@@ -556,7 +563,7 @@ class ReactionRules(ThermodynamicRestrictions):
         ]
         return scores
 
-    def _get_partial_similarity(self, line: str) -> UnregisteredRule:
+    def _get_partial_similarity(self, line: str) -> Optional[str]:
         """
         Suggest similar rule word when user-defined word is not registered
         in rule_words.
@@ -587,12 +594,10 @@ class ReactionRules(ThermodynamicRestrictions):
             if all([score < self.similarity_threshold for score in match_scores])
             else match_words[np.argmax(match_scores)]
         )
-        original_word = (
-            None if expected_word is None else str_subset[match_words.index(expected_word)]
-        )
-        unregistered_rule = UnregisteredRule(expected_word, original_word)
-
-        return unregistered_rule
+        # original_word = (
+        #     None if expected_word is None else str_subset[match_words.index(expected_word)]
+        # )
+        return expected_word
 
     @staticmethod
     def _remove_prepositions(sentence: str) -> str:
@@ -650,6 +655,8 @@ class ReactionRules(ThermodynamicRestrictions):
             raise ArrowError(self._get_arrow_error_message(line_num) + ".")
         if component1 == complex or component2 == complex:
             raise ValueError(f"line{line_num:d}: {complex} <- Use a different name.")
+        elif component1 == component2:
+            self.dimerize(line_num, line.replace(f"+ {component2}", "dimerizes"))
         else:
             self._set_species(component1, component2, complex)
             self.complex_formations.append(
@@ -871,7 +878,7 @@ class ReactionRules(ThermodynamicRestrictions):
         if component1 == complex or component2 == complex:
             raise ValueError(f"line{line_num:d}: {complex} <- Use a different name.")
         elif component1 == component2:
-            self.dimerize(line_num, line)
+            raise ValueError(f"line{line_num}: {line}\nUse `dimerize()` rule instead of `bind()`.")
         else:
             self._set_species(component1, component2, complex)
             self.complex_formations.append(
@@ -1645,11 +1652,86 @@ class ReactionRules(ThermodynamicRestrictions):
                     -1
                 ] += f" * ({pre_volume.strip()} / {post_volume.strip()})"
 
+    def state_transition(self, line_num: int, line: str) -> None:
+        """
+        This rule is applied only when any rule words are not detected.
+
+        Examples
+        --------
+        'Reactant --> Product'
+        'Reactant <--> Product'
+
+        Notes
+        -----
+        * Parameters
+            .. math:: kf (, kr)
+
+        * Rate equation
+            .. math:: v = kf * [Reactant] (- kr * [Product])
+
+        * Differential equation
+            .. math:: d[Reactant]/dt = - v
+            .. math:: d[Product]/dt = + v
+
+        """
+        for arrow in self._available_arrows():
+            if arrow in line:
+                params_used = ["kf"] if arrow in self.fwd_arrows else ["kf", "kr"]
+                break
+        else:
+            raise ArrowError(self._get_arrow_error_message(line_num) + ".")
+        description = self._preprocessing(
+            sys._getframe().f_code.co_name, line_num, line, *params_used
+        )
+        is_unidirectional: bool
+        for arrow in self._available_arrows():
+            if arrow in description[0]:
+                is_unidirectional = True if arrow in self.fwd_arrows else False
+                two_species = description[0].split(arrow)
+                reactant = two_species[0].strip(" ")
+                product = two_species[1].strip(" ")
+                break
+        else:
+            raise ArrowError(self._get_arrow_error_message(line_num) + ".")
+        if reactant == product:
+            raise ValueError(f"line{line_num:d}: {product} <- Use a different name.")
+        else:
+            self._set_species(reactant, product)
+            self.reactions.append(
+                f"v[{line_num:d}] = "
+                f"x[C.kf{line_num:d}] * y[V.{reactant}]"
+                + (
+                    f" - x[C.kr{line_num:d}] * y[V.{product}]"
+                    if not is_unidirectional
+                    else ""
+                )
+            )
+            self.kinetics.append(
+                KineticInfo((reactant,), (product,), (), f"kf{line_num} * {reactant}")
+            )
+            if not is_unidirectional:
+                self.kinetics.append(
+                    KineticInfo((product,), (reactant,), (), f"kr{line_num} * {product}")
+                )
+
+            counter_reactant, counter_product = (0, 0)
+            for i, eq in enumerate(self.differential_equations):
+                if f"dydt[V.{reactant}]" in eq:
+                    counter_reactant += 1
+                    self.differential_equations[i] = (eq + f" - v[{line_num:d}]")
+                elif f"dydt[V.{product}]" in eq:
+                    counter_product += 1
+                    self.differential_equations[i] = (eq + f" + v[{line_num:d}]")
+            if counter_reactant == 0:
+                self.differential_equations.append(f"dydt[V.{reactant}] = - v[{line_num:d}]")
+            if counter_product == 0:
+                self.differential_equations.append(f"dydt[V.{product}] = + v[{line_num:d}]")
+
     def user_defined(self, line_num: int, line: str) -> None:
         """
         Examples
         --------
-        >>> 'Reactant --> Product: define rate equation here'
+        >>> '@rxn Reactant --> Product: define rate equation here'
 
         Notes
         -----
@@ -1819,4 +1901,4 @@ class ReactionRules(ThermodynamicRestrictions):
                         exec("self." + reaction_rule + "(line_num, line)")
                         break
                 else:
-                    self._raise_detection_error(line_num, line)
+                    self._raise_exception(line_num, line)
