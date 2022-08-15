@@ -9,11 +9,6 @@ import numpy as np
 from .thermodynamic_restrictions import ComplexFormation, DuplicateError, ThermodynamicRestrictions
 
 
-class UnregisteredRule(NamedTuple):
-    expected: Optional[str]
-    match_sores: List[float]
-
-
 class KineticInfo(NamedTuple):
     reactants: tuple
     products: tuple
@@ -573,7 +568,7 @@ class ReactionRules(ThermodynamicRestrictions):
 
         Returns
         -------
-        unregistered_rule : UnregisteredRule
+        expected_word : Optional[str]
             Rule word with the highest similarity score.
 
         """
