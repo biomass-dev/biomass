@@ -22,7 +22,7 @@ ShP + Grb2 <--> ShG | kf=0.003, kr=0.1
 ShG + SOS <--> ShGS | kf=0.03, kr=0.064
 ShGS <--> ShP + GS | kf=0.1, kr=0.021
 RShP + GS <--> RShGS | kf=0.009, kr=4.29e-2
-PLCgP is translocated to cytoskeletal or membrane structures <--> PLCgP_I | kf=1, kr=0.03
+PLCgP <--> PLCgP_I | kf=1, kr=0.03
 
 # Kholodenko, B. N., Demin, O. V, Moehren, G. & Hoek, J. B.
 # Quantification of short term signaling by the epidermal growth factor receptor.
