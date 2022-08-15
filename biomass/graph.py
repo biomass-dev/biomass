@@ -5,9 +5,6 @@ from collections import defaultdict
 from types import ModuleType
 from typing import List, Literal, Optional
 
-import pygraphviz as pgv
-from pyvis.network import Network
-
 
 class NetworkGraph(object):
     """
@@ -51,6 +48,8 @@ class NetworkGraph(object):
         self.problem = biomass_model.OptimizationProblem()
         self.viz = biomass_model.Visualization()
         self.rxn = biomass_model.ReactionNetwork()
+
+        self.graph = None
 
     @property
     def path(self) -> str:
@@ -129,7 +128,7 @@ class NetworkGraph(object):
         """Constructs a directed graph of the model.
         Using the pygraphviz library a directed graph of the model is constructed by parsing the equations from
         ode.py/reaction_network.py. Equations will be split at the equal sign and an edge is added between the species on the
-        lefthand side to all species on the righthand side. Self references will not be considered.
+        lefthand side to all species on the right hand side. Self references will not be considered.
 
         Raises
         ------
@@ -141,6 +140,11 @@ class NetworkGraph(object):
         UserWarning
             If species equations are detected outside of the ODE section.
         """
+        try:
+            import pygraphviz as pgv
+        except ImportError:
+            print("pygraphviz is required to run this function.")
+
         use_flux = False
         try:
             if len(self.rxn.flux(0, self.ival(), self.pval())) > 0:
@@ -197,7 +201,7 @@ class NetworkGraph(object):
         Parameters
         ----------
         save_dir : string
-            Name of the directory in which the image will be stored.
+            Name of the directory in which the image will be stored. If empty will be the path of the model folder.
         file_name : string
             Name as which the image of the graph will be stored.
         gviz_args : string, optional, default=""
@@ -218,20 +222,20 @@ class NetworkGraph(object):
         Creates graph with dot layout in pdf file format. Nodes will be rectangular and colored bisque, edges will have no arrows indicating direction.
 
         """
-        try:
-            _ = self.graph
-        except AttributeError:
+        if self.graph is None:
             self.to_graph()
         if gviz_prog not in (available_layout := ["neato", "dot", "twopi", "circo", "fdp", "nop"]):
             raise ValueError(
                 f"gviz_prog must be one of [{', '.join(available_layout)}], got {gviz_prog}."
             )
+        if not save_dir:
+            save_dir = self.path
         self.graph.layout(prog=gviz_prog, args=gviz_args)
         self.graph.draw(os.path.join(save_dir, file_name))
 
     def dynamic_plot(
         self,
-        save_dir: str = ".",
+        save_dir: str = "",
         file_name: str = "network.html",
         show: bool = True,
         annotate_nodes: bool = True,
@@ -244,6 +248,10 @@ class NetworkGraph(object):
 
         Parameters
         ----------
+        save_dir : string
+            Name of the directory in which the image will be stored. If empty will be the path of the model folder.
+        file_name : string
+            Name as which the image of the graph will be stored.
         show: bool, default=True
             If true the plot will immediately be displayed in the webbrowser.
         annotate_nodes : bool, default=True
@@ -261,11 +269,16 @@ class NetworkGraph(object):
         Creates interactive graph. Controls for physics, manipulation and interaction will be available.
         """
         try:
-            _ = self.graph
-        except AttributeError:
+            from pyvis.network import Network
+        except ImportError:
+            print("pyvis is required to run this function.")
+
+        if self.graph is None:
             self.to_graph()
         if os.path.splitext(file_name)[1] != ".html":
             file_name = file_name + ".html"
+        if not save_dir:
+            save_dir = self.path
         network = Network(directed=True)
         network.add_nodes(self.graph.nodes())
         network.add_edges(self.graph.edges())

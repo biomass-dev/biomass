@@ -61,6 +61,10 @@ def setup_package():
         packages=find_packages(exclude=["tests", "docs"]),
         install_requires=get_install_requires(),
         extras_require={
+            "graph": [
+                "pygraphviz>=1.9",
+                "pyvis>=0.2.1",
+            ],
             "dev": [
                 "black>=20.8b1",
                 "flake8",

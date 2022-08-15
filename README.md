@@ -36,8 +36,6 @@ $ pip install biomass
 
 BioMASS supports Python 3.7 or newer.
 
-:ledger: **Note: You will need to manually install [Graphviz](https://www.graphviz.org) (version 2.42 or later).**
-
 ## References
 
 - Imoto, H., Zhang, S. & Okada, M. A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway. _Cancers_ **12**, 2878 (2020). https://doi.org/10.3390/cancers12102878
