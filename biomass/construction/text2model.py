@@ -4,7 +4,8 @@ import shutil
 from dataclasses import dataclass, field
 from typing import Dict, Final, List, Literal, Optional
 
-from scipy.sparse import lil_matrix, csr_matrix
+from scipy.sparse import csr_matrix, lil_matrix
+
 from . import julia_template as jl
 from .reaction_rules import ReactionRules
 
@@ -688,7 +689,7 @@ class Text2Model(ReactionRules):
         The model's stoichiometry_matrix.
         """
         if self._stoichiometry_matrix is None:
-            sm = lil_matrix((len(self.species), len(self.kinetics)), dtype='int')
+            sm = lil_matrix((len(self.species), len(self.kinetics)), dtype="int")
             for i, reaction in enumerate(self.kinetics):
                 for r in reaction.reactants:
                     sm[self.species.index(r), i] -= 1

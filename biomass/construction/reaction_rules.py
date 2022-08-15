@@ -377,16 +377,14 @@ class ReactionRules(ThermodynamicRestrictions):
         Apply `state_transition` rule or raise `DetectionError` when a keyword is invalid.
         """
         expected_word = self._get_partial_similarity(line)
-        if expected_word is None and any(map(lambda arrow: arrow in line, self._available_arrows())):
+        if expected_word is None and any(
+            map(lambda arrow: arrow in line, self._available_arrows())
+        ):
             self.state_transition(line_num, line)
         else:
             raise DetectionError(
                 f"Unregistered words in line{line_num:d}: {line}"
-                + (
-                    f"\nMaybe: '{expected_word.lstrip()}'."
-                    if expected_word is not None
-                    else ""
-                )
+                + (f"\nMaybe: '{expected_word.lstrip()}'." if expected_word is not None else "")
             )
 
     def _process_pval_section(self, func_name: str, line_num: int, line: str, *args: str) -> None:
@@ -633,7 +631,9 @@ class ReactionRules(ThermodynamicRestrictions):
         description = self._preprocessing(
             sys._getframe().f_code.co_name, line_num, line, *params_used
         )
-        assert len(description) == 2, f"Line{line_num}: Cannot put the plus symbol in both left- and right-hand side of arrow."
+        assert (
+            len(description) == 2
+        ), f"Line{line_num}: Cannot put the plus symbol in both left- and right-hand side of arrow."
         is_binding: bool
         is_unidirectional: bool
         for arrow in self._available_arrows():
@@ -1700,11 +1700,7 @@ class ReactionRules(ThermodynamicRestrictions):
             self.reactions.append(
                 f"v[{line_num:d}] = "
                 f"x[C.kf{line_num:d}] * y[V.{reactant}]"
-                + (
-                    f" - x[C.kr{line_num:d}] * y[V.{product}]"
-                    if not is_unidirectional
-                    else ""
-                )
+                + (f" - x[C.kr{line_num:d}] * y[V.{product}]" if not is_unidirectional else "")
             )
             self.kinetics.append(
                 KineticInfo((reactant,), (product,), (), f"kf{line_num} * {reactant}")
@@ -1718,10 +1714,10 @@ class ReactionRules(ThermodynamicRestrictions):
             for i, eq in enumerate(self.differential_equations):
                 if f"dydt[V.{reactant}]" in eq:
                     counter_reactant += 1
-                    self.differential_equations[i] = (eq + f" - v[{line_num:d}]")
+                    self.differential_equations[i] = eq + f" - v[{line_num:d}]"
                 elif f"dydt[V.{product}]" in eq:
                     counter_product += 1
-                    self.differential_equations[i] = (eq + f" + v[{line_num:d}]")
+                    self.differential_equations[i] = eq + f" + v[{line_num:d}]"
             if counter_reactant == 0:
                 self.differential_equations.append(f"dydt[V.{reactant}] = - v[{line_num:d}]")
             if counter_product == 0:

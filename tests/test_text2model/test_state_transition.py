@@ -49,6 +49,7 @@ def test_text2model():
     for l2 in desired:
         assert l2 in actual
 
+
 def test_run_simulation():
     try:
         from .text_files import Kholodenko1999_2
