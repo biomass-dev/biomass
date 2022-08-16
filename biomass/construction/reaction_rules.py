@@ -2,7 +2,7 @@ import re
 import sys
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
-from typing import Dict, List, NamedTuple, Optional
+from typing import Dict, List, NamedTuple, Optional, Tuple
 
 import numpy as np
 
@@ -609,6 +609,32 @@ class ReactionRules(ThermodynamicRestrictions):
         )
         return message
 
+    @staticmethod
+    def _extract_modifier(reactant: str, product: str) -> Tuple[str, str, str]:
+        species_1 = reactant.split("+")[0].strip()
+        species_2 = reactant.split("+")[1].strip()
+        species_3 = product.split("+")[0].strip()
+        species_4 = product.split("+")[1].strip()
+        if species_1 == species_3 and species_2 != species_4:
+            modifier = species_1
+            reactant = species_2
+            product = species_4
+        elif species_1 == species_4 and species_2 != species_3:
+            modifier = species_1
+            reactant = species_2
+            product = species_3
+        elif species_2 == species_3 and species_1 != species_4:
+            modifier = species_2
+            reactant = species_1
+            product = species_4
+        elif species_2 == species_4 and species_1 != species_3:
+            modifier = species_2
+            reactant = species_1
+            product = species_3
+        else:
+            raise ValueError("Should be defined as: E + S --> E + P")
+        return modifier, reactant, product
+
     def _bind_and_dissociate(self, line_num: int, line: str) -> None:
         """
         Examples
@@ -626,9 +652,10 @@ class ReactionRules(ThermodynamicRestrictions):
         description = self._preprocessing(
             sys._getframe().f_code.co_name, line_num, line, *params_used
         )
-        assert (
-            len(description) == 2
-        ), f"Line{line_num}: Cannot put the plus symbol in both left- and right-hand side of arrow."
+        if len(description) != 2:
+            # In the case like: E + S --> E + P
+            self.state_transition(line_num, line)
+            return
         is_binding: bool
         is_unidirectional: bool
         for arrow in self._available_arrows():
@@ -652,6 +679,7 @@ class ReactionRules(ThermodynamicRestrictions):
             raise ValueError(f"line{line_num:d}: {complex} <- Use a different name.")
         elif component1 == component2:
             self.dimerize(line_num, line.replace(f"+ {component2}", "dimerizes"))
+            return
         else:
             self._set_species(component1, component2, complex)
             self.complex_formations.append(
@@ -1655,6 +1683,7 @@ class ReactionRules(ThermodynamicRestrictions):
         --------
         'Reactant --> Product'
         'Reactant <--> Product'
+        'E + S --> E + P'
 
         Notes
         -----
@@ -1688,18 +1717,32 @@ class ReactionRules(ThermodynamicRestrictions):
                 break
         else:
             raise ArrowError(self._get_arrow_error_message(line_num) + ".")
+        if all(map(lambda s: "+" in s, [reactant, product])):
+            modifier, reactant, product = self._extract_modifier(reactant, product)
+            if not is_unidirectional:
+                raise ValueError("Only unidirectional reaction is supported, e.g., E + S --> E + P.")
+        else:
+            modifier = None
         if reactant == product:
             raise ValueError(f"line{line_num:d}: {product} <- Use a different name.")
         else:
             self._set_species(reactant, product)
+            if modifier is not None:
+                self._set_species(modifier)
             self.reactions.append(
                 f"v[{line_num:d}] = "
                 f"x[C.kf{line_num:d}] * y[V.{reactant}]"
+                + (f" * y[V.{modifier}]" if modifier is not None else "")
                 + (f" - x[C.kr{line_num:d}] * y[V.{product}]" if not is_unidirectional else "")
             )
-            self.kinetics.append(
-                KineticInfo((reactant,), (product,), (), f"kf{line_num} * {reactant}")
-            )
+            if modifier is None:
+                self.kinetics.append(
+                    KineticInfo((reactant,), (product,), (), f"kf{line_num} * {reactant}")
+                )
+            else:
+                self.kinetics.append(
+                    KineticInfo((reactant,), (product,), (modifier,), f"kf{line_num} * {reactant} * {modifier}")
+                )
             if not is_unidirectional:
                 self.kinetics.append(
                     KineticInfo((product,), (reactant,), (), f"kr{line_num} * {product}")
