@@ -1720,7 +1720,9 @@ class ReactionRules(ThermodynamicRestrictions):
         if all(map(lambda s: "+" in s, [reactant, product])):
             modifier, reactant, product = self._extract_modifier(reactant, product)
             if not is_unidirectional:
-                raise ValueError("Only unidirectional reaction is supported, e.g., E + S --> E + P.")
+                raise ValueError(
+                    "Only unidirectional reaction is supported, e.g., E + S --> E + P."
+                )
         else:
             modifier = None
         if reactant == product:
@@ -1741,7 +1743,12 @@ class ReactionRules(ThermodynamicRestrictions):
                 )
             else:
                 self.kinetics.append(
-                    KineticInfo((reactant,), (product,), (modifier,), f"kf{line_num} * {reactant} * {modifier}")
+                    KineticInfo(
+                        (reactant,),
+                        (product,),
+                        (modifier,),
+                        f"kf{line_num} * {reactant} * {modifier}",
+                    )
                 )
             if not is_unidirectional:
                 self.kinetics.append(
