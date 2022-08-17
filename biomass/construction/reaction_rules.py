@@ -1,17 +1,13 @@
-from collections import defaultdict
 import re
 import sys
+from collections import defaultdict
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 from typing import Dict, List, NamedTuple, Optional, Tuple
 
 import numpy as np
 
-from .thermodynamic_restrictions import (
-    ComplexFormation,
-    DuplicateError,
-    ThermodynamicRestrictions,
-)
+from .thermodynamic_restrictions import ComplexFormation, DuplicateError, ThermodynamicRestrictions
 
 
 class KineticInfo(NamedTuple):
@@ -349,9 +345,7 @@ class ReactionRules(ThermodynamicRestrictions):
         """
         return self.fwd_arrows + self.double_arrows
 
-    def _set_params(
-        self, line_num: Optional[int], func_name: Optional[str], *args: str
-    ) -> None:
+    def _set_params(self, line_num: Optional[int], func_name: Optional[str], *args: str) -> None:
         """
         Set model parameters.
         """
@@ -386,16 +380,10 @@ class ReactionRules(ThermodynamicRestrictions):
         else:
             raise DetectionError(
                 f"Unregistered words in line{line_num:d}: {line}"
-                + (
-                    f"\nMaybe: '{expected_word.lstrip()}'."
-                    if expected_word is not None
-                    else ""
-                )
+                + (f"\nMaybe: '{expected_word.lstrip()}'." if expected_word is not None else "")
             )
 
-    def _process_pval_section(
-        self, func_name: str, line_num: int, line: str, *args: str
-    ) -> None:
+    def _process_pval_section(self, func_name: str, line_num: int, line: str, *args: str) -> None:
 
         param_values = line.split("|")[1].strip().split(",")
         if all("=" in pval for pval in param_values):
@@ -412,27 +400,16 @@ class ReactionRules(ThermodynamicRestrictions):
                         self.param_info.append(
                             "x[C."
                             + base_param
-                            + (
-                                f"{line_num:d}]"
-                                if func_name != "user_defined"
-                                else "]"
-                            )
+                            + (f"{line_num:d}]" if func_name != "user_defined" else "]")
                             + " = "
                             + pval.split("=")[1].strip(" ")
                         )
                         # If a parameter value is initialized to 0.0 or fixed,
                         # then add it to param_excluded.
-                        if (
-                            float(pval.split("=")[1].strip(" ")) == 0.0
-                            or fixed
-                        ):
+                        if float(pval.split("=")[1].strip(" ")) == 0.0 or fixed:
                             self.param_excluded.append(
                                 base_param
-                                + (
-                                    f"{line_num:d}"
-                                    if func_name != "user_defined"
-                                    else ""
-                                )
+                                + (f"{line_num:d}" if func_name != "user_defined" else "")
                             )
                     else:
                         raise ValueError(
@@ -456,39 +433,24 @@ class ReactionRules(ThermodynamicRestrictions):
                     )
                 else:
                     if f"x[C.{param_name}" + (
-                        f"{line_num:d}]"
-                        if func_name != "user_defined"
-                        else "]"
+                        f"{line_num:d}]" if func_name != "user_defined" else "]"
                     ) != (
-                        f"x[C.{self._get_base_pname(param_name)}"
-                        + f"{int(param_values[0]):d}]"
+                        f"x[C.{self._get_base_pname(param_name)}" + f"{int(param_values[0]):d}]"
                     ):
                         self.param_excluded.append(
                             f"{param_name}"
-                            + (
-                                f"{line_num:d}"
-                                if func_name != "user_defined"
-                                else ""
-                            )
+                            + (f"{line_num:d}" if func_name != "user_defined" else "")
                         )
                         self.param_info.append(
                             f"x[C.{param_name}"
-                            + (
-                                f"{line_num:d}]"
-                                if func_name != "user_defined"
-                                else "]"
-                            )
+                            + (f"{line_num:d}]" if func_name != "user_defined" else "]")
                             + " = "
                             + f"x[C.{self._get_base_pname(param_name)}"
                             + f"{int(param_values[0]):d}]"
                         )
                         self.param_constraints.append(
                             f"x[C.{param_name}"
-                            + (
-                                f"{line_num:d}]"
-                                if func_name != "user_defined"
-                                else "]"
-                            )
+                            + (f"{line_num:d}]" if func_name != "user_defined" else "]")
                             + " = "
                             + f"x[C.{self._get_base_pname(param_name)}"
                             + f"{int(param_values[0]):d}]"
@@ -514,13 +476,10 @@ class ReactionRules(ThermodynamicRestrictions):
                         + ival.split("=")[1].strip(" ")
                     )
                 else:
-                    raise ValueError(
-                        f"line{line_num:d}: Initial value must be int or float."
-                    )
+                    raise ValueError(f"line{line_num:d}: Initial value must be int or float.")
             else:
                 raise NameError(
-                    f"line{line_num:d}: "
-                    f"Name'{ival.split('=')[0].strip(' ')}' is not defined."
+                    f"line{line_num:d}: " f"Name'{ival.split('=')[0].strip(' ')}' is not defined."
                 )
 
     @staticmethod
@@ -529,9 +488,7 @@ class ReactionRules(ThermodynamicRestrictions):
             param_name = param_name[:-1]
         return param_name
 
-    def _preprocessing(
-        self, func_name: str, line_num: int, line: str, *args: str
-    ) -> List[str]:
+    def _preprocessing(self, func_name: str, line_num: int, line: str, *args: str) -> List[str]:
         """
         Extract the information about parameter and/or initial values
         if '|' in the line and find a keyword to identify reaction rules.
@@ -625,14 +582,10 @@ class ReactionRules(ThermodynamicRestrictions):
                 if ratio:
                     match_words.append(word)
                     match_scores.append(max(ratio))
-                    str_subset.append(
-                        line[np.argmax(ratio) : np.argmax(ratio) + len(word)]
-                    )
+                    str_subset.append(line[np.argmax(ratio) : np.argmax(ratio) + len(word)])
         expected_word = (
             None
-            if all(
-                [score < self.similarity_threshold for score in match_scores]
-            )
+            if all([score < self.similarity_threshold for score in match_scores])
             else match_words[np.argmax(match_scores)]
         )
         # original_word = (
@@ -693,9 +646,7 @@ class ReactionRules(ThermodynamicRestrictions):
         """
         for arrow in self._available_arrows():
             if arrow in line:
-                params_used = (
-                    ["kf"] if arrow in self.fwd_arrows else ["kf", "kr"]
-                )
+                params_used = ["kf"] if arrow in self.fwd_arrows else ["kf", "kr"]
                 break
         else:
             raise ArrowError(self._get_arrow_error_message(line_num) + ".")
@@ -726,13 +677,9 @@ class ReactionRules(ThermodynamicRestrictions):
         else:
             raise ArrowError(self._get_arrow_error_message(line_num) + ".")
         if component1 == complex or component2 == complex:
-            raise ValueError(
-                f"line{line_num:d}: {complex} <- Use a different name."
-            )
+            raise ValueError(f"line{line_num:d}: {complex} <- Use a different name.")
         elif component1 == component2:
-            self.dimerize(
-                line_num, line.replace(f"+ {component2}", "dimerizes")
-            )
+            self.dimerize(line_num, line.replace(f"+ {component2}", "dimerizes"))
             return
         else:
             self._set_species(component1, component2, complex)
@@ -761,11 +708,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 self.reactions.append(
                     f"v[{line_num:d}] = "
                     f"x[C.kf{line_num:d}] * y[V.{component1}] * y[V.{component2}]"
-                    + (
-                        f" - x[C.kr{line_num:d}] * y[V.{complex}]"
-                        if not is_unidirectional
-                        else ""
-                    )
+                    + (f" - x[C.kr{line_num:d}] * y[V.{complex}]" if not is_unidirectional else "")
                 )
                 self.kinetics.append(
                     KineticInfo(
@@ -817,23 +760,17 @@ class ReactionRules(ThermodynamicRestrictions):
                 if f"dydt[V.{component1}]" in eq:
                     counter_component1 += 1
                     self.differential_equations[i] = (
-                        eq
-                        + (" - " if is_binding else " + ")
-                        + f"v[{line_num:d}]"
+                        eq + (" - " if is_binding else " + ") + f"v[{line_num:d}]"
                     )
                 elif f"dydt[V.{component2}]" in eq:
                     counter_component2 += 1
                     self.differential_equations[i] = (
-                        eq
-                        + (" - " if is_binding else " + ")
-                        + f"v[{line_num:d}]"
+                        eq + (" - " if is_binding else " + ") + f"v[{line_num:d}]"
                     )
                 elif f"dydt[V.{complex}]" in eq:
                     counter_complex += 1
                     self.differential_equations[i] = (
-                        eq
-                        + (" + " if is_binding else " - ")
-                        + f"v[{line_num:d}]"
+                        eq + (" + " if is_binding else " - ") + f"v[{line_num:d}]"
                     )
             if counter_component1 == 0:
                 self.differential_equations.append(
@@ -891,23 +828,16 @@ class ReactionRules(ThermodynamicRestrictions):
                 break
         else:
             raise ArrowError(
-                self._get_arrow_error_message(line_num)
-                + " to specify the name of the dimer."
+                self._get_arrow_error_message(line_num) + " to specify the name of the dimer."
             )
         if monomer == dimer:
             raise ValueError(f"{dimer} <- Use a different name.")
         self._set_species(monomer, dimer)
-        self.complex_formations.append(
-            ComplexFormation(line_num, set(monomer), dimer, True)
-        )
+        self.complex_formations.append(ComplexFormation(line_num, set(monomer), dimer, True))
         self.reactions.append(
             f"v[{line_num:d}] = "
             f"x[C.kf{line_num:d}] * y[V.{monomer}] * y[V.{monomer}]"
-            + (
-                f" - x[C.kr{line_num:d}] * y[V.{dimer}]"
-                if not is_unidirectional
-                else ""
-            )
+            + (f" - x[C.kr{line_num:d}] * y[V.{dimer}]" if not is_unidirectional else "")
         )
         self.kinetics.append(
             KineticInfo(
@@ -935,13 +865,9 @@ class ReactionRules(ThermodynamicRestrictions):
                 counter_dimer += 1
                 self.differential_equations[i] = eq + f" + v[{line_num:d}]"
         if counter_monomer == 0:
-            self.differential_equations.append(
-                f"dydt[V.{monomer}] = - v[{line_num:d}]"
-            )
+            self.differential_equations.append(f"dydt[V.{monomer}] = - v[{line_num:d}]")
         if counter_dimer == 0:
-            self.differential_equations.append(
-                f"dydt[V.{dimer}] = + v[{line_num:d}]"
-            )
+            self.differential_equations.append(f"dydt[V.{dimer}] = + v[{line_num:d}]")
 
     def bind(self, line_num: int, line: str) -> None:
         """
@@ -985,28 +911,18 @@ class ReactionRules(ThermodynamicRestrictions):
                 + " to specify the name of the protein complex."
             )
         if component1 == complex or component2 == complex:
-            raise ValueError(
-                f"line{line_num:d}: {complex} <- Use a different name."
-            )
+            raise ValueError(f"line{line_num:d}: {complex} <- Use a different name.")
         elif component1 == component2:
-            raise ValueError(
-                f"line{line_num}: {line}\nUse `dimerize()` rule instead of `bind()`."
-            )
+            raise ValueError(f"line{line_num}: {line}\nUse `dimerize()` rule instead of `bind()`.")
         else:
             self._set_species(component1, component2, complex)
             self.complex_formations.append(
-                ComplexFormation(
-                    line_num, set([component1, component2]), complex, True
-                )
+                ComplexFormation(line_num, set([component1, component2]), complex, True)
             )
             self.reactions.append(
                 f"v[{line_num:d}] = "
                 f"x[C.kf{line_num:d}] * y[V.{component1}] * y[V.{component2}]"
-                + (
-                    f" - x[C.kr{line_num:d}] * y[V.{complex}]"
-                    if not is_unidirectional
-                    else ""
-                )
+                + (f" - x[C.kr{line_num:d}] * y[V.{complex}]" if not is_unidirectional else "")
             )
             self.kinetics.append(
                 KineticInfo(
@@ -1037,17 +953,11 @@ class ReactionRules(ThermodynamicRestrictions):
                     counter_complex += 1
                     self.differential_equations[i] = eq + f" + v[{line_num:d}]"
             if counter_component1 == 0:
-                self.differential_equations.append(
-                    f"dydt[V.{component1}] = - v[{line_num:d}]"
-                )
+                self.differential_equations.append(f"dydt[V.{component1}] = - v[{line_num:d}]")
             if counter_component2 == 0:
-                self.differential_equations.append(
-                    f"dydt[V.{component2}] = - v[{line_num:d}]"
-                )
+                self.differential_equations.append(f"dydt[V.{component2}] = - v[{line_num:d}]")
             if counter_complex == 0:
-                self.differential_equations.append(
-                    f"dydt[V.{complex}] = + v[{line_num:d}]"
-                )
+                self.differential_equations.append(f"dydt[V.{complex}] = + v[{line_num:d}]")
 
     def dissociate(self, line_num: int, line: str) -> None:
         """
@@ -1087,9 +997,7 @@ class ReactionRules(ThermodynamicRestrictions):
             component2 = description[1].split(" and ")[1].strip(" ")
         self._set_species(complex, component1, component2)
         self.complex_formations.append(
-            ComplexFormation(
-                line_num, set([component1, component2]), complex, False
-            )
+            ComplexFormation(line_num, set([component1, component2]), complex, False)
         )
         self.reactions.append(
             f"v[{line_num:d}] = "
@@ -1128,17 +1036,11 @@ class ReactionRules(ThermodynamicRestrictions):
                 counter_component2 += 1
                 self.differential_equations[i] = eq + f" + v[{line_num:d}]"
         if counter_complex == 0:
-            self.differential_equations.append(
-                f"dydt[V.{complex}] = - v[{line_num:d}]"
-            )
+            self.differential_equations.append(f"dydt[V.{complex}] = - v[{line_num:d}]")
         if counter_component1 == 0:
-            self.differential_equations.append(
-                f"dydt[V.{component1}] = + v[{line_num:d}]"
-            )
+            self.differential_equations.append(f"dydt[V.{component1}] = + v[{line_num:d}]")
         if counter_component2 == 0:
-            self.differential_equations.append(
-                f"dydt[V.{component2}] = + v[{line_num:d}]"
-            )
+            self.differential_equations.append(f"dydt[V.{component2}] = + v[{line_num:d}]")
 
     def is_phosphorylated(self, line_num: int, line: str) -> None:
         """
@@ -1244,15 +1146,11 @@ class ReactionRules(ThermodynamicRestrictions):
                 d[pA]/dt = - v
 
         """
-        description = self._preprocessing(
-            sys._getframe().f_code.co_name, line_num, line, "V", "K"
-        )
+        description = self._preprocessing(sys._getframe().f_code.co_name, line_num, line, "V", "K")
         phosphorylated_form = description[0].strip(" ")
         for arrow in self.fwd_arrows:
             if arrow in description[1]:
-                unphosphorylated_form = (
-                    description[1].split(arrow)[1].strip(" ")
-                )
+                unphosphorylated_form = description[1].split(arrow)[1].strip(" ")
                 break
         else:
             raise ArrowError(
@@ -1314,15 +1212,11 @@ class ReactionRules(ThermodynamicRestrictions):
                 d[pA]/dt = + v
 
         """
-        description = self._preprocessing(
-            sys._getframe().f_code.co_name, line_num, line, "V", "K"
-        )
+        description = self._preprocessing(sys._getframe().f_code.co_name, line_num, line, "V", "K")
         kinase = description[0].strip(" ")
         for arrow in self.fwd_arrows:
             if arrow in description[1]:
-                unphosphorylated_form = (
-                    description[1].split(arrow)[0].strip(" ")
-                )
+                unphosphorylated_form = description[1].split(arrow)[0].strip(" ")
                 phosphorylated_form = description[1].split(arrow)[1].strip(" ")
                 break
         else:
@@ -1332,9 +1226,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 "the name of the phosphorylated (or activated) protein."
             )
         if unphosphorylated_form == phosphorylated_form:
-            raise ValueError(
-                f"line{line_num:d}: {phosphorylated_form} <- Use a different name."
-            )
+            raise ValueError(f"line{line_num:d}: {phosphorylated_form} <- Use a different name.")
         self._set_species(kinase, unphosphorylated_form, phosphorylated_form)
 
         self.reactions.append(
@@ -1390,16 +1282,12 @@ class ReactionRules(ThermodynamicRestrictions):
                 d[pA]/dt = - v
 
         """
-        description = self._preprocessing(
-            sys._getframe().f_code.co_name, line_num, line, "V", "K"
-        )
+        description = self._preprocessing(sys._getframe().f_code.co_name, line_num, line, "V", "K")
         phosphatase = description[0].strip(" ")
         for arrow in self.fwd_arrows:
             if arrow in description[1]:
                 phosphorylated_form = description[1].split(arrow)[0].strip(" ")
-                unphosphorylated_form = (
-                    description[1].split(arrow)[1].strip(" ")
-                )
+                unphosphorylated_form = description[1].split(arrow)[1].strip(" ")
                 break
         else:
             raise ArrowError(
@@ -1408,12 +1296,8 @@ class ReactionRules(ThermodynamicRestrictions):
                 "the name of the dephosphorylated (or deactivated) protein."
             )
         if phosphorylated_form == unphosphorylated_form:
-            raise ValueError(
-                f"line{line_num:d}: {unphosphorylated_form} <- Use a different name."
-            )
-        self._set_species(
-            phosphatase, phosphorylated_form, unphosphorylated_form
-        )
+            raise ValueError(f"line{line_num:d}: {unphosphorylated_form} <- Use a different name.")
+        self._set_species(phosphatase, phosphorylated_form, unphosphorylated_form)
 
         self.reactions.append(
             f"v[{line_num:d}] = "
@@ -1571,9 +1455,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 counter_mRNA += 1
                 self.differential_equations[i] = eq + f" + v[{line_num:d}]"
         if counter_mRNA == 0:
-            self.differential_equations.append(
-                f"dydt[V.{mRNA}] = + v[{line_num:d}]"
-            )
+            self.differential_equations.append(f"dydt[V.{mRNA}] = + v[{line_num:d}]")
 
     def synthesize(self, line_num: int, line: str) -> None:
         """
@@ -1593,19 +1475,13 @@ class ReactionRules(ThermodynamicRestrictions):
             .. math:: d[A]/dt = + v
 
         """
-        description = self._preprocessing(
-            sys._getframe().f_code.co_name, line_num, line, "kf"
-        )
+        description = self._preprocessing(sys._getframe().f_code.co_name, line_num, line, "kf")
         catalyst = description[0].strip(" ")
         product = description[1].strip(" ")
         self._set_species(catalyst, product)
-        self.reactions.append(
-            f"v[{line_num:d}] = x[C.kf{line_num:d}] * y[V.{catalyst}]"
-        )
+        self.reactions.append(f"v[{line_num:d}] = x[C.kf{line_num:d}] * y[V.{catalyst}]")
         self.kinetics.append(
-            KineticInfo(
-                (), (product,), (catalyst,), f"kf{line_num:d} * {catalyst}"
-            )
+            KineticInfo((), (product,), (catalyst,), f"kf{line_num:d} * {catalyst}")
         )
         counter_product = 0
         for i, eq in enumerate(self.differential_equations):
@@ -1613,9 +1489,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 counter_product += 1
                 self.differential_equations[i] = eq + f" + v[{line_num:d}]"
         if counter_product == 0:
-            self.differential_equations.append(
-                f"dydt[V.{product}] = + v[{line_num:d}]"
-            )
+            self.differential_equations.append(f"dydt[V.{product}] = + v[{line_num:d}]")
 
     def is_synthesized(self, line_num: int, line: str) -> None:
         """
@@ -1635,24 +1509,18 @@ class ReactionRules(ThermodynamicRestrictions):
             .. math:: d[A]/dt = + v
 
         """
-        description = self._preprocessing(
-            sys._getframe().f_code.co_name, line_num, line, "kf"
-        )
+        description = self._preprocessing(sys._getframe().f_code.co_name, line_num, line, "kf")
         chemical_species = description[0].strip(" ")
         self._set_species(chemical_species)
         self.reactions.append(f"v[{line_num:d}] = x[C.kf{line_num:d}]")
-        self.kinetics.append(
-            KineticInfo((), (chemical_species,), (), f"kf{line_num:d}")
-        )
+        self.kinetics.append(KineticInfo((), (chemical_species,), (), f"kf{line_num:d}"))
         counter_chemical_species = 0
         for i, eq in enumerate(self.differential_equations):
             if f"dydt[V.{chemical_species}]" in eq:
                 counter_chemical_species += 1
                 self.differential_equations[i] = eq + f" + v[{line_num:d}]"
         if counter_chemical_species == 0:
-            self.differential_equations.append(
-                f"dydt[V.{chemical_species}] = + v[{line_num:d}]"
-            )
+            self.differential_equations.append(f"dydt[V.{chemical_species}] = + v[{line_num:d}]")
 
     def degrade(self, line_num: int, line: str) -> None:
         """
@@ -1672,9 +1540,7 @@ class ReactionRules(ThermodynamicRestrictions):
             .. math:: d[A]/dt = - v
 
         """
-        description = self._preprocessing(
-            sys._getframe().f_code.co_name, line_num, line, "kf"
-        )
+        description = self._preprocessing(sys._getframe().f_code.co_name, line_num, line, "kf")
         protease = description[0].strip(" ")
         protein = description[1].strip(" ")
         self._set_species(protease, protein)
@@ -1695,9 +1561,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 counter_protein += 1
                 self.differential_equations[i] = eq + f" - v[{line_num:d}]"
         if counter_protein == 0:
-            self.differential_equations.append(
-                f"dydt[V.{protein}] = - v[{line_num:d}]"
-            )
+            self.differential_equations.append(f"dydt[V.{protein}] = - v[{line_num:d}]")
 
     def is_degraded(self, line_num: int, line: str) -> None:
         """
@@ -1717,14 +1581,10 @@ class ReactionRules(ThermodynamicRestrictions):
             .. math:: d[A]/dt = - v
 
         """
-        description = self._preprocessing(
-            sys._getframe().f_code.co_name, line_num, line, "kf"
-        )
+        description = self._preprocessing(sys._getframe().f_code.co_name, line_num, line, "kf")
         chemical_species = description[0].strip(" ")
         self._set_species(chemical_species)
-        self.reactions.append(
-            f"v[{line_num:d}] = x[C.kf{line_num:d}] * y[V.{chemical_species}]"
-        )
+        self.reactions.append(f"v[{line_num:d}] = x[C.kf{line_num:d}] * y[V.{chemical_species}]")
         self.kinetics.append(
             KineticInfo(
                 (chemical_species,),
@@ -1739,9 +1599,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 counter_chemical_species += 1
                 self.differential_equations[i] = eq + f" - v[{line_num:d}]"
         if counter_chemical_species == 0:
-            self.differential_equations.append(
-                f"dydt[V.{chemical_species}] = - v[{line_num:d}]"
-            )
+            self.differential_equations.append(f"dydt[V.{chemical_species}] = - v[{line_num:d}]")
 
     def translocate(self, line_num: int, line: str) -> None:
         r"""
@@ -1784,20 +1642,14 @@ class ReactionRules(ThermodynamicRestrictions):
         else:
             assert False
         if pre_translocation == post_translocation:
-            raise ValueError(
-                f"line{line_num:d}: {post_translocation} <- Use a different name."
-            )
+            raise ValueError(f"line{line_num:d}: {post_translocation} <- Use a different name.")
         # Information about compartment volumes
         if "(" in description[1] and ")" in description[1]:
-            [pre_volume, post_volume] = (
-                description[1].split("(")[-1].split(")")[0].split(",")
-            )
+            [pre_volume, post_volume] = description[1].split("(")[-1].split(")")[0].split(",")
             if not self._isfloat(pre_volume.strip(" ")) or not self._isfloat(
                 post_volume.strip(" ")
             ):
-                raise ValueError(
-                    "pre_volume and post_volume must be float or int."
-                )
+                raise ValueError("pre_volume and post_volume must be float or int.")
         else:
             [pre_volume, post_volume] = ["1", "1"]
         self._set_species(pre_translocation, post_translocation)
@@ -1827,16 +1679,14 @@ class ReactionRules(ThermodynamicRestrictions):
                 )
             )
         if float(pre_volume.strip(" ")) != float(post_volume.strip(" ")):
-            self.reactions[-1] = (
-                f"v[{line_num:d}] = "
-                f"x[C.kf{line_num:d}] * y[V.{pre_translocation}]"
-                + (
-                    f" - x[C.kr{line_num:d}] * "
-                    f"({post_volume.strip()} / {pre_volume.strip()}) * "
-                    f"y[V.{post_translocation}]"
-                    if not is_unidirectional
-                    else ""
-                )
+            self.reactions[
+                -1
+            ] = f"v[{line_num:d}] = " f"x[C.kf{line_num:d}] * y[V.{pre_translocation}]" + (
+                f" - x[C.kr{line_num:d}] * "
+                f"({post_volume.strip()} / {pre_volume.strip()}) * "
+                f"y[V.{post_translocation}]"
+                if not is_unidirectional
+                else ""
             )
         counter_pre_translocation, counter_post_translocation = (0, 0)
         for i, eq in enumerate(self.differential_equations):
@@ -1846,20 +1696,14 @@ class ReactionRules(ThermodynamicRestrictions):
             elif f"dydt[V.{post_translocation}]" in eq:
                 counter_post_translocation += 1
                 self.differential_equations[i] = eq + f" + v[{line_num:d}]"
-                if float(pre_volume.strip(" ")) != float(
-                    post_volume.strip(" ")
-                ):
+                if float(pre_volume.strip(" ")) != float(post_volume.strip(" ")):
                     self.differential_equations[
                         i
                     ] += f" * ({pre_volume.strip()} / {post_volume.strip()})"
         if counter_pre_translocation == 0:
-            self.differential_equations.append(
-                f"dydt[V.{pre_translocation}] = - v[{line_num:d}]"
-            )
+            self.differential_equations.append(f"dydt[V.{pre_translocation}] = - v[{line_num:d}]")
         if counter_post_translocation == 0:
-            self.differential_equations.append(
-                f"dydt[V.{post_translocation}] = + v[{line_num:d}]"
-            )
+            self.differential_equations.append(f"dydt[V.{post_translocation}] = + v[{line_num:d}]")
             if float(pre_volume.strip(" ")) != float(post_volume.strip(" ")):
                 self.differential_equations[
                     -1
@@ -1890,9 +1734,7 @@ class ReactionRules(ThermodynamicRestrictions):
         """
         for arrow in self._available_arrows():
             if arrow in line:
-                params_used = (
-                    ["kf"] if arrow in self.fwd_arrows else ["kf", "kr"]
-                )
+                params_used = ["kf"] if arrow in self.fwd_arrows else ["kf", "kr"]
                 break
         else:
             raise ArrowError(self._get_arrow_error_message(line_num) + ".")
@@ -1931,11 +1773,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 f"v[{line_num:d}] = "
                 f"x[C.kf{line_num:d}] * " + lefthand
                 # + (f" * y[V.{modifier}]" if modifier is not None else "")
-                + (
-                    f" - x[C.kr{line_num:d}] * " + righthand
-                    if not is_unidirectional
-                    else ""
-                )
+                + (f" - x[C.kr{line_num:d}] * " + righthand if not is_unidirectional else "")
             )
             # if modifier is None:
             self.kinetics.append(
@@ -1971,25 +1809,17 @@ class ReactionRules(ThermodynamicRestrictions):
                 for reactant in reactants:
                     if f"dydt[V.{reactant}]" in eq:
                         counter_reactant[reactant] += 1
-                        self.differential_equations[i] = (
-                            eq + f" - v[{line_num:d}]"
-                        )
+                        self.differential_equations[i] = eq + f" - v[{line_num:d}]"
                 for product in products:
                     if f"dydt[V.{product}]" in eq:
                         counter_product[product] += 1
-                        self.differential_equations[i] = (
-                            eq + f" + v[{line_num:d}]"
-                        )
+                        self.differential_equations[i] = eq + f" + v[{line_num:d}]"
             for reactant in reactants:
                 if counter_reactant[reactant] == 0:
-                    self.differential_equations.append(
-                        f"dydt[V.{reactant}] = - v[{line_num:d}]"
-                    )
+                    self.differential_equations.append(f"dydt[V.{reactant}] = - v[{line_num:d}]")
             for product in products:
                 if counter_product[product] == 0:
-                    self.differential_equations.append(
-                        f"dydt[V.{product}] = + v[{line_num:d}]"
-                    )
+                    self.differential_equations.append(f"dydt[V.{product}] = + v[{line_num:d}]")
 
     def user_defined(self, line_num: int, line: str) -> None:
         """
@@ -2022,13 +1852,9 @@ class ReactionRules(ThermodynamicRestrictions):
                 self._set_species(reactant.strip(), product.strip())
                 break
         else:
-            raise ArrowError(
-                f"line{line_num:d}: Use one of {', '.join(self.fwd_arrows)}."
-            )
+            raise ArrowError(f"line{line_num:d}: Use one of {', '.join(self.fwd_arrows)}.")
         rate_equation = (
-            rate_equation.replace("p[", "x[C.")
-            .replace("u[", "y[V.")
-            .replace("^", "**")
+            rate_equation.replace("p[", "x[C.").replace("u[", "y[V.").replace("^", "**")
         )
         self.reactions.append(f"v[{line_num:d}] = " + rate_equation.strip())
         modulators = (
@@ -2036,9 +1862,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 set(
                     [
                         ent
-                        for ent in re.findall(
-                            r"(?<=\[V.)(.+?)(?=\])", rate_equation
-                        )
+                        for ent in re.findall(r"(?<=\[V.)(.+?)(?=\])", rate_equation)
                         if ent not in [reactant, product]
                     ]
                 )
@@ -2049,9 +1873,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 (reactant,),
                 (product,),
                 () if modulators is None else (modulators),
-                rate_equation.replace("x[C.", "")
-                .replace("y[V.", "")
-                .replace("]", ""),
+                rate_equation.replace("x[C.", "").replace("y[V.", "").replace("]", ""),
             )
         )
         counter_reactant = 0
@@ -2064,13 +1886,9 @@ class ReactionRules(ThermodynamicRestrictions):
                 counter_product += 1
                 self.differential_equations[i] = eq + f" + v[{line_num:d}]"
         if counter_reactant == 0 and reactant not in self.nothing:
-            self.differential_equations.append(
-                f"dydt[V.{reactant}] = - v[{line_num:d}]"
-            )
+            self.differential_equations.append(f"dydt[V.{reactant}] = - v[{line_num:d}]")
         if counter_product == 0 and product not in self.nothing:
-            self.differential_equations.append(
-                f"dydt[V.{product}] = + v[{line_num:d}]"
-            )
+            self.differential_equations.append(f"dydt[V.{product}] = + v[{line_num:d}]")
 
     def _extract_event(self, line_num: int, line: str):
         # About biochemical event
@@ -2099,19 +1917,12 @@ class ReactionRules(ThermodynamicRestrictions):
                 if line.startswith("tspan"):
                     t_info = line.split(":")[-1].strip()
                     if "[" in t_info and "]" in t_info:
-                        [t0, tf] = (
-                            t_info.split("[")[-1].split("]")[0].split(",")
-                        )
-                        if (
-                            t0.strip(" ").isdecimal()
-                            and tf.strip(" ").isdecimal()
-                        ):
+                        [t0, tf] = t_info.split("[")[-1].split("]")[0].split(",")
+                        if t0.strip(" ").isdecimal() and tf.strip(" ").isdecimal():
                             self.sim_tspan.append(t0)
                             self.sim_tspan.append(tf)
                         else:
-                            raise TypeError(
-                                "@sim tspan: [t0, tf] must be a list of integers."
-                            )
+                            raise TypeError("@sim tspan: [t0, tf] must be a list of integers.")
                     else:
                         raise ValueError(
                             "`tspan` must be a two element vector [t0, tf] "
@@ -2120,9 +1931,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 elif line.startswith("unperturbed"):
                     self.sim_unperturbed += line.split(":")[-1].strip()
                 elif line.startswith("condition "):
-                    self.sim_conditions.append(
-                        self._remove_prefix(line, "condition ").split(":")
-                    )
+                    self.sim_conditions.append(self._remove_prefix(line, "condition ").split(":"))
                 else:
                     raise ValueError(
                         f"(line{line_num:d}) Available options are: "
@@ -2147,9 +1956,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 else:
                     raise NameError(f"{new_param} is already defined.")
             else:
-                raise ValueError(
-                    f"(line{line_num:d}) Must be either @add param or @add species."
-                )
+                raise ValueError(f"(line{line_num:d}) Must be either @add param or @add species.")
         else:
             raise ValueError("Available symbols are: @rxn, @add, @obs, @sim.")
 
@@ -2177,25 +1984,14 @@ class ReactionRules(ThermodynamicRestrictions):
                 # Find duplicate lines
                 raise DuplicateError(
                     f"Reaction '{line}' is duplicated in lines "
-                    + ", ".join(
-                        [
-                            str(i + 1)
-                            for i, rxn in enumerate(lines)
-                            if rxn == line
-                        ]
-                    )
+                    + ", ".join([str(i + 1) for i, rxn in enumerate(lines) if rxn == line])
                 )
             elif line.startswith("@"):
                 self._extract_event(line_num, line)
             # Detect reaction rule
             else:
                 for reaction_rule, words in self.rule_words.items():
-                    if any(
-                        [
-                            self._remove_prepositions(word) in line
-                            for word in words
-                        ]
-                    ):
+                    if any([self._remove_prepositions(word) in line for word in words]):
                         exec("self." + reaction_rule + "(line_num, line)")
                         break
                 else:
