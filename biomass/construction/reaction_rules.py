@@ -1734,9 +1734,7 @@ class ReactionRules(ThermodynamicRestrictions):
         """
         for arrow in self._available_arrows():
             if arrow in line:
-                params_used = (
-                    ["kf"] if arrow in self.fwd_arrows else ["kf", "kr"]
-                )
+                params_used = ["kf"] if arrow in self.fwd_arrows else ["kf", "kr"]
                 break
         else:
             raise ArrowError(self._get_arrow_error_message(line_num) + ".")
@@ -1776,9 +1774,7 @@ class ReactionRules(ThermodynamicRestrictions):
         lefthand = "y[V." + "] * y[V.".join(reactants) + "]"
         righthand = "y[V." + "] * y[V.".join(products) + "]"
         if modifiers:
-            modifiers_string = " * " + " * ".join(
-                [f"y[V.{modifier}]" for modifier in modifiers]
-            )
+            modifiers_string = " * " + " * ".join([f"y[V.{modifier}]" for modifier in modifiers])
         else:
             modifiers_string = ""
         self.reactions.append(
@@ -1842,14 +1838,10 @@ class ReactionRules(ThermodynamicRestrictions):
                     self.differential_equations[i] = eq + f" + v[{line_num:d}]"
         for reactant in reactants:
             if counter_reactant[reactant] == 0:
-                self.differential_equations.append(
-                    f"dydt[V.{reactant}] = - v[{line_num:d}]"
-                )
+                self.differential_equations.append(f"dydt[V.{reactant}] = - v[{line_num:d}]")
         for product in products:
             if counter_product[product] == 0:
-                self.differential_equations.append(
-                    f"dydt[V.{product}] = + v[{line_num:d}]"
-                )
+                self.differential_equations.append(f"dydt[V.{product}] = + v[{line_num:d}]")
 
     def user_defined(self, line_num: int, line: str) -> None:
         """
