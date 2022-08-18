@@ -1,0 +1,44 @@
+EGF + EGFR <--> Ra | kf=0.003, kr=0.06 | EGFR=100
+Ra + Ra <--> R2 | kf=0.01, kr=0.1
+R2 <--> RP | kf=1, kr=0.01
+RP is dephosphorylated --> R2 | V=450, K=50
+RP + PLCg <--> RPL | kf=0.06, kr=0.2 | PLCg=105
+RPL <--> RPLP | kf=1, kr=0.05
+RPLP <--> RP + PLCgP | kf=0.3, kr=0.006
+PLCgP is dephosphorylated --> PLCg | V=1, K=100
+RP + Grb2 <--> RG | kf=0.003, kr=0.05 | Grb2=85
+RG + SOS <--> RGS | kf=0.01, kr=0.06 | SOS=34
+RGS <--> RP + GS | kf=0.03, kr=4.5e-3
+GS <--> Grb2 + SOS | kf=1.5e-3, kr=1e-4
+RP + Shc <--> RSh | kf=0.09, kr=0.6 | Shc=150
+RSh <--> RShP | kf=6, kr=0.06
+RShP <--> ShP + RP | kf=0.3, kr=9e-4
+ShP is dephosphorylated --> Shc | V=1.7, K=340
+RShP + Grb2 <--> RShG | kf=0.003, kr=0.1
+RShG <--> RP + ShG | kf=0.3, kr=9e-4
+RShG + SOS <--> RShGS | kf=0.01, kr=2.14e-2
+RShGS <--> ShGS + RP | kf=0.12, kr=2.4e-4
+ShP + Grb2 <--> ShG | kf=0.003, kr=0.1
+ShG + SOS <--> ShGS | kf=0.03, kr=0.064
+ShGS <--> ShP + GS | kf=0.1, kr=0.021
+RShP + GS <--> RShGS | kf=0.009, kr=4.29e-2
+PLCgP <--> PLCgP_I | kf=1, kr=0.03
+
+# Kholodenko, B. N., Demin, O. V, Moehren, G. & Hoek, J. B.
+# Quantification of short term signaling by the epidermal growth factor receptor.
+# J. Biol. Chem. 274, 30169–30181 (1999). https://doi.org/10.1074/jbc.274.42.30169
+
+# observable layer
+@obs Total_phosphorylated_Shc: u[RShP] + u[RShG] + u[RShGS] + u[ShP] + u[ShG] + u[ShGS]
+@obs Total_Grb2_coprecipitated_with_Shc: u[RShG] + u[ShG] + u[RShGS] + u[ShGS]
+@obs Total_phosphorylated_Shc_bound_to_EGFR: u[RShP] + u[RShG] + u[RShGS]
+@obs Total_Grb2_bound_to_EGFR: u[RG] + u[RGS] + u[RShG] + u[RShGS]
+@obs Total_SOS_bound_to_EGFR: u[RGS] + u[RShGS]
+@obs ShGS_complex: u[ShGS]
+@obs Total_phosphorylated_PLCg: u[RPLP] + u[PLCgP]
+
+# simulation layer
+@sim tspan: [0, 120]
+@sim condition EGF20nM: init[EGF] = 680
+@sim condition EGF2nM: init[EGF] = 68
+@sim condition Absence_PLCgP_transloc: init[EGF] = 680; p[kf25] = 0; p[kr25] = 0

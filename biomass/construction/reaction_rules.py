@@ -2,16 +2,18 @@ import re
 import sys
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
-from typing import Dict, List, NamedTuple, NoReturn, Optional
+from typing import Dict, List, NamedTuple, Optional, Tuple
 
 import numpy as np
 
 from .thermodynamic_restrictions import ComplexFormation, DuplicateError, ThermodynamicRestrictions
 
 
-class UnregisteredRule(NamedTuple):
-    expected: Optional[str]
-    original: Optional[str]
+class KineticInfo(NamedTuple):
+    reactants: tuple
+    products: tuple
+    modifiers: tuple
+    rate: str
 
 
 class DetectionError(Exception):
@@ -167,6 +169,10 @@ class ReactionRules(ThermodynamicRestrictions):
         init=False,
     )
     reactions: List[str] = field(
+        default_factory=list,
+        init=False,
+    )
+    kinetics: List[KineticInfo] = field(
         default_factory=list,
         init=False,
     )
@@ -361,19 +367,20 @@ class ReactionRules(ThermodynamicRestrictions):
             if s_name not in self.species:
                 self.species.append(s_name)
 
-    def _raise_detection_error(self, line_num: int, line: str) -> NoReturn:
+    def _raise_exception(self, line_num: int, line: str) -> None:
         """
-        Raise `DetectionError` when a keyword is invalid.
+        Apply `state_transition` rule or raise `DetectionError` when a keyword is invalid.
         """
-        unregistered_rule = self._get_partial_similarity(line)
-        raise DetectionError(
-            f"Unregistered words in line{line_num:d}: {line}"
-            + (
-                f"\nMaybe: '{unregistered_rule.expected.lstrip()}'."
-                if unregistered_rule.expected is not None
-                else ""
+        expected_word = self._get_partial_similarity(line)
+        if expected_word is None and any(
+            map(lambda arrow: arrow in line, self._available_arrows())
+        ):
+            self.state_transition(line_num, line)
+        else:
+            raise DetectionError(
+                f"Unregistered words in line{line_num:d}: {line}"
+                + (f"\nMaybe: '{expected_word.lstrip()}'." if expected_word is not None else "")
             )
-        )
 
     def _process_pval_section(self, func_name: str, line_num: int, line: str, *args: str) -> None:
 
@@ -508,7 +515,7 @@ class ReactionRules(ThermodynamicRestrictions):
             if line.count("|") > 1 and line.split("|")[2].strip():
                 self._process_ival_section(line_num, line)
             line = line.split("|")[0]
-        if func_name != "user_defined":
+        if func_name not in ["state_transition", "user_defined"]:
             hit_words: List[str] = []
             for word in self.rule_words[func_name]:
                 # Choose longer word
@@ -516,9 +523,13 @@ class ReactionRules(ThermodynamicRestrictions):
                     hit_words.append(word)
             description = line.strip().split(max(hit_words, key=len))
             if description[1] and not description[1].startswith(" "):
-                self._raise_detection_error(line_num, line)
-        else:
+                self._raise_exception(line_num, line)
+        elif func_name == "state_transition":
+            description = [line.strip()]
+        elif func_name == "user_defined":
             description = line.strip().split(":")
+        else:
+            assert False
         return description
 
     @staticmethod
@@ -545,7 +556,7 @@ class ReactionRules(ThermodynamicRestrictions):
         ]
         return scores
 
-    def _get_partial_similarity(self, line: str) -> UnregisteredRule:
+    def _get_partial_similarity(self, line: str) -> Optional[str]:
         """
         Suggest similar rule word when user-defined word is not registered
         in rule_words.
@@ -557,7 +568,7 @@ class ReactionRules(ThermodynamicRestrictions):
 
         Returns
         -------
-        unregistered_rule : UnregisteredRule
+        expected_word : Optional[str]
             Rule word with the highest similarity score.
 
         """
@@ -576,12 +587,10 @@ class ReactionRules(ThermodynamicRestrictions):
             if all([score < self.similarity_threshold for score in match_scores])
             else match_words[np.argmax(match_scores)]
         )
-        original_word = (
-            None if expected_word is None else str_subset[match_words.index(expected_word)]
-        )
-        unregistered_rule = UnregisteredRule(expected_word, original_word)
-
-        return unregistered_rule
+        # original_word = (
+        #     None if expected_word is None else str_subset[match_words.index(expected_word)]
+        # )
+        return expected_word
 
     @staticmethod
     def _remove_prepositions(sentence: str) -> str:
@@ -600,6 +609,32 @@ class ReactionRules(ThermodynamicRestrictions):
         )
         return message
 
+    @staticmethod
+    def _extract_modifier(reactant: str, product: str) -> Tuple[str, str, str]:
+        species_1 = reactant.split("+")[0].strip()
+        species_2 = reactant.split("+")[1].strip()
+        species_3 = product.split("+")[0].strip()
+        species_4 = product.split("+")[1].strip()
+        if species_1 == species_3 and species_2 != species_4:
+            modifier = species_1
+            reactant = species_2
+            product = species_4
+        elif species_1 == species_4 and species_2 != species_3:
+            modifier = species_1
+            reactant = species_2
+            product = species_3
+        elif species_2 == species_3 and species_1 != species_4:
+            modifier = species_2
+            reactant = species_1
+            product = species_4
+        elif species_2 == species_4 and species_1 != species_3:
+            modifier = species_2
+            reactant = species_1
+            product = species_3
+        else:
+            raise ValueError("Should be defined as: E + S --> E + P")
+        return modifier, reactant, product
+
     def _bind_and_dissociate(self, line_num: int, line: str) -> None:
         """
         Examples
@@ -617,6 +652,10 @@ class ReactionRules(ThermodynamicRestrictions):
         description = self._preprocessing(
             sys._getframe().f_code.co_name, line_num, line, *params_used
         )
+        if len(description) != 2:
+            # In the case like: E + S --> E + P
+            self.state_transition(line_num, line)
+            return
         is_binding: bool
         is_unidirectional: bool
         for arrow in self._available_arrows():
@@ -638,24 +677,72 @@ class ReactionRules(ThermodynamicRestrictions):
             raise ArrowError(self._get_arrow_error_message(line_num) + ".")
         if component1 == complex or component2 == complex:
             raise ValueError(f"line{line_num:d}: {complex} <- Use a different name.")
+        elif component1 == component2:
+            self.dimerize(line_num, line.replace(f"+ {component2}", "dimerizes"))
+            return
         else:
             self._set_species(component1, component2, complex)
             self.complex_formations.append(
                 ComplexFormation(line_num, set([component1, component2]), complex, is_binding)
             )
-            self.reactions.append(
-                f"v[{line_num:d}] = "
-                f"x[C.kf{line_num:d}] * y[V.{component1}] * y[V.{component2}]"
-                + (f" - x[C.kr{line_num:d}] * y[V.{complex}]" if not is_unidirectional else "")
-                if is_binding
-                else f"v[{line_num:d}] = "
-                f"x[C.kf{line_num:d}] * y[V.{complex}]"
-                + (
-                    f" - x[C.kr{line_num:d}] * y[V.{component1}] * y[V.{component2}]"
-                    if not is_unidirectional
-                    else ""
+            # self.reactions.append(
+            #     f"v[{line_num:d}] = "
+            #     f"x[C.kf{line_num:d}] * y[V.{component1}] * y[V.{component2}]"
+            #     + (f" - x[C.kr{line_num:d}] * y[V.{complex}]" if not is_unidirectional else "")
+            #     if is_binding
+            #     else f"v[{line_num:d}] = "
+            #     f"x[C.kf{line_num:d}] * y[V.{complex}]"
+            #     + (
+            #         f" - x[C.kr{line_num:d}] * y[V.{component1}] * y[V.{component2}]"
+            #         if not is_unidirectional
+            #         else ""
+            #     )
+            # )
+            if is_binding:
+                self.reactions.append(
+                    f"v[{line_num:d}] = "
+                    f"x[C.kf{line_num:d}] * y[V.{component1}] * y[V.{component2}]"
+                    + (f" - x[C.kr{line_num:d}] * y[V.{complex}]" if not is_unidirectional else "")
                 )
-            )
+                self.kinetics.append(
+                    KineticInfo(
+                        (component1, component2),
+                        (complex,),
+                        (),
+                        f"kf{line_num:d} * {component1} * {component2}",
+                    )
+                )
+                if not is_unidirectional:
+                    self.kinetics.append(
+                        KineticInfo(
+                            (complex,), (component1, component2), (), f"kr{line_num:d} * {complex}"
+                        )
+                    )
+            else:
+                self.reactions.append(
+                    f"v[{line_num:d}] = "
+                    f"x[C.kf{line_num:d}] * y[V.{complex}]"
+                    + (
+                        f" - x[C.kr{line_num:d}] * y[V.{component1}] * y[V.{component2}]"
+                        if not is_unidirectional
+                        else ""
+                    )
+                )
+                self.kinetics.append(
+                    KineticInfo(
+                        (complex,), (component1, component2), (), f"kf{line_num:d} * {complex}"
+                    )
+                )
+                if not is_unidirectional:
+                    self.kinetics.append(
+                        KineticInfo(
+                            (component1, component2),
+                            (complex,),
+                            (),
+                            f"kr{line_num:d} * {component1} * {component2}",
+                        )
+                    )
+
             counter_component1, counter_component2, counter_complex = (0, 0, 0)
             for i, eq in enumerate(self.differential_equations):
                 if f"dydt[V.{component1}]" in eq:
@@ -740,6 +827,23 @@ class ReactionRules(ThermodynamicRestrictions):
             f"x[C.kf{line_num:d}] * y[V.{monomer}] * y[V.{monomer}]"
             + (f" - x[C.kr{line_num:d}] * y[V.{dimer}]" if not is_unidirectional else "")
         )
+        self.kinetics.append(
+            KineticInfo(
+                (monomer, monomer),
+                (dimer,),
+                (),
+                f"kf{line_num:d} * {monomer} * {monomer}",
+            )
+        )
+        if not is_unidirectional:
+            self.kinetics.append(
+                KineticInfo(
+                    (dimer,),
+                    (monomer, monomer),
+                    (),
+                    f"kr{line_num:d} * {dimer}",
+                )
+            )
         counter_monomer, counter_dimer = (0, 0)
         for i, eq in enumerate(self.differential_equations):
             if f"dydt[V.{monomer}]" in eq:
@@ -797,7 +901,7 @@ class ReactionRules(ThermodynamicRestrictions):
         if component1 == complex or component2 == complex:
             raise ValueError(f"line{line_num:d}: {complex} <- Use a different name.")
         elif component1 == component2:
-            self.dimerize(line_num, line)
+            raise ValueError(f"line{line_num}: {line}\nUse `dimerize()` rule instead of `bind()`.")
         else:
             self._set_species(component1, component2, complex)
             self.complex_formations.append(
@@ -808,6 +912,23 @@ class ReactionRules(ThermodynamicRestrictions):
                 f"x[C.kf{line_num:d}] * y[V.{component1}] * y[V.{component2}]"
                 + (f" - x[C.kr{line_num:d}] * y[V.{complex}]" if not is_unidirectional else "")
             )
+            self.kinetics.append(
+                KineticInfo(
+                    (component1, component2),
+                    (complex,),
+                    (),
+                    f"kf{line_num:d} * {component1} * {component2}",
+                )
+            )
+            if not is_unidirectional:
+                self.kinetics.append(
+                    KineticInfo(
+                        (complex,),
+                        (component1, component2),
+                        (),
+                        f"kr{line_num:d} * {complex}",
+                    )
+                )
             counter_component1, counter_component2, counter_complex = (0, 0, 0)
             for i, eq in enumerate(self.differential_equations):
                 if f"dydt[V.{component1}]" in eq:
@@ -870,6 +991,17 @@ class ReactionRules(ThermodynamicRestrictions):
             f"v[{line_num:d}] = "
             f"x[C.kf{line_num:d}] * y[V.{complex}]"
             f" - x[C.kr{line_num:d}] * y[V.{component1}] * y[V.{component2}]"
+        )
+        self.kinetics.append(
+            KineticInfo((complex,), (component1, component2), (), f"kf{line_num:d} * {complex}")
+        )
+        self.kinetics.append(
+            KineticInfo(
+                (component1, component2),
+                (complex,),
+                (),
+                f"kr{line_num:d} * {component1} * {component2}",
+            )
         )
         counter_complex, counter_component1, counter_component2 = (0, 0, 0)
         for i, eq in enumerate(self.differential_equations):
@@ -941,6 +1073,23 @@ class ReactionRules(ThermodynamicRestrictions):
                 else ""
             )
         )
+        self.kinetics.append(
+            KineticInfo(
+                (unphosphorylated_form,),
+                (phosphorylated_form,),
+                (),
+                f"kf{line_num:d} * {unphosphorylated_form}",
+            )
+        )
+        if not is_unidirectional:
+            self.kinetics.append(
+                KineticInfo(
+                    (phosphorylated_form,),
+                    (unphosphorylated_form,),
+                    (),
+                    f"kr{line_num:d} * {phosphorylated_form}",
+                )
+            )
         counter_unphosphorylated_form, counter_phosphorylated_form = (0, 0)
         for i, eq in enumerate(self.differential_equations):
             if f"dydt[V.{unphosphorylated_form}]" in eq:
@@ -997,6 +1146,15 @@ class ReactionRules(ThermodynamicRestrictions):
             f"v[{line_num:d}] = "
             f"x[C.V{line_num:d}] * y[V.{phosphorylated_form}] / "
             f"(x[C.K{line_num:d}] + y[V.{phosphorylated_form}])"
+        )
+        self.kinetics.append(
+            KineticInfo(
+                (phosphorylated_form,),
+                (unphosphorylated_form,),
+                (),
+                f"V{line_num:d} * {phosphorylated_form} / "
+                f"(K{line_num:d} + {phosphorylated_form})",
+            )
         )
         counter_unphosphorylated_form, counter_phosphorylated_form = (0, 0)
         for i, eq in enumerate(self.differential_equations):
@@ -1059,6 +1217,15 @@ class ReactionRules(ThermodynamicRestrictions):
             f"x[C.V{line_num:d}] * y[V.{kinase}] * y[V.{unphosphorylated_form}] / "
             f"(x[C.K{line_num:d}] + y[V.{unphosphorylated_form}])"
         )
+        self.kinetics.append(
+            KineticInfo(
+                (unphosphorylated_form,),
+                (phosphorylated_form,),
+                (kinase,),
+                f"V{line_num:d} * {kinase} * {unphosphorylated_form} / "
+                f"(K{line_num:d} + {unphosphorylated_form})",
+            )
+        )
         counter_unphosphorylated_form, counter_phosphorylated_form = (0, 0)
         for i, eq in enumerate(self.differential_equations):
             if f"dydt[V.{unphosphorylated_form}]" in eq:
@@ -1119,6 +1286,15 @@ class ReactionRules(ThermodynamicRestrictions):
             f"v[{line_num:d}] = "
             f"x[C.V{line_num:d}] * y[V.{phosphatase}] * y[V.{phosphorylated_form}] / "
             f"(x[C.K{line_num:d}] + y[V.{phosphorylated_form}])"
+        )
+        self.kinetics.append(
+            KineticInfo(
+                (phosphorylated_form,),
+                (unphosphorylated_form,),
+                (phosphatase,),
+                f"V{line_num:d} * {phosphatase} * {phosphorylated_form} / "
+                f"(K{line_num:d} + {phosphorylated_form})",
+            )
         )
         counter_phosphorylated_form, counter_unphosphorylated_form = (0, 0)
         for i, eq in enumerate(self.differential_equations):
@@ -1184,9 +1360,11 @@ class ReactionRules(ThermodynamicRestrictions):
             repressor = description[1].split(", repressed by")[1].strip()
         if " & " not in description[0]:
             TF = description[0].strip(" ")
+            modifiers = (TF,)
             self._set_species(mRNA, TF)
             if repressor is not None:
                 self._set_species(repressor)
+                modifiers = modifiers + (repressor,)
             self.reactions.append(
                 f"v[{line_num:d}] = "
                 f"x[C.V{line_num:d}] * y[V.{TF}] ** x[C.n{line_num:d}] / "
@@ -1198,12 +1376,29 @@ class ReactionRules(ThermodynamicRestrictions):
                     else f" + (y[V.{repressor}] / x[C.KF{line_num:d}]) ** x[C.nF{line_num:d}])"
                 )
             )
+            self.kinetics.append(
+                KineticInfo(
+                    (),
+                    (mRNA,),
+                    modifiers,
+                    f"V{line_num:d} * {TF} ** n{line_num:d} / "
+                    f"(K{line_num:d} ** n{line_num:d} + "
+                    f"{TF} ** n{line_num:d}"
+                    + (
+                        ")"
+                        if repressor is None
+                        else f" + ({repressor} / KF{line_num:d}) ** nF{line_num:d})"
+                    ),
+                )
+            )
         else:
             # AND-gate
             TFs = [TF.strip(" ") for TF in description[0].split(" & ")]
             self._set_species(mRNA, *TFs)
+            modifiers = (*TFs,)
             if repressor is not None:
                 self._set_species(repressor)
+                modifiers = modifiers + (repressor,)
             self.reactions.append(
                 f"v[{line_num:d}] = "
                 f"x[C.V{line_num:d}] * ({'y[V.' + '] * y[V.'.join(TFs) + ']'}) ** x[C.n{line_num:d}] / "
@@ -1213,6 +1408,21 @@ class ReactionRules(ThermodynamicRestrictions):
                     ")"
                     if repressor is None
                     else f" + (y[V.{repressor}] / x[C.KF{line_num:d}]) ** x[C.nF{line_num:d}])"
+                )
+            )
+            self.kinetics.append(
+                KineticInfo(
+                    (),
+                    (mRNA,),
+                    modifiers,
+                    f"V{line_num:d} * ({' * '.join(TFs)}) ** n{line_num:d} / "
+                    f"(K{line_num:d} ** n{line_num:d} + "
+                    f"({' * '.join(TFs)}) ** n{line_num:d}"
+                    + (
+                        ")"
+                        if repressor is None
+                        else f" + ({repressor} / KF{line_num:d}) ** nF{line_num:d})"
+                    ),
                 )
             )
         counter_mRNA = 0
@@ -1246,6 +1456,9 @@ class ReactionRules(ThermodynamicRestrictions):
         product = description[1].strip(" ")
         self._set_species(catalyst, product)
         self.reactions.append(f"v[{line_num:d}] = x[C.kf{line_num:d}] * y[V.{catalyst}]")
+        self.kinetics.append(
+            KineticInfo((), (product,), (catalyst,), f"kf{line_num:d} * {catalyst}")
+        )
         counter_product = 0
         for i, eq in enumerate(self.differential_equations):
             if f"dydt[V.{product}]" in eq:
@@ -1276,6 +1489,7 @@ class ReactionRules(ThermodynamicRestrictions):
         chemical_species = description[0].strip(" ")
         self._set_species(chemical_species)
         self.reactions.append(f"v[{line_num:d}] = x[C.kf{line_num:d}]")
+        self.kinetics.append(KineticInfo((), (chemical_species,), (), f"kf{line_num:d}"))
         counter_chemical_species = 0
         for i, eq in enumerate(self.differential_equations):
             if f"dydt[V.{chemical_species}]" in eq:
@@ -1309,6 +1523,9 @@ class ReactionRules(ThermodynamicRestrictions):
         self.reactions.append(
             f"v[{line_num:d}] = x[C.kf{line_num:d}] * y[V.{protease}] * y[V.{protein}]"
         )
+        self.kinetics.append(
+            KineticInfo((protein,), (), (protease,), f"kf{line_num:d} * {protease} * {protein}")
+        )
         counter_protein = 0
         for i, eq in enumerate(self.differential_equations):
             if f"dydt[V.{protein}]" in eq:
@@ -1339,6 +1556,9 @@ class ReactionRules(ThermodynamicRestrictions):
         chemical_species = description[0].strip(" ")
         self._set_species(chemical_species)
         self.reactions.append(f"v[{line_num:d}] = x[C.kf{line_num:d}] * y[V.{chemical_species}]")
+        self.kinetics.append(
+            KineticInfo((chemical_species,), (), (), f"kf{line_num:d} * {chemical_species}")
+        )
         counter_chemical_species = 0
         for i, eq in enumerate(self.differential_equations):
             if f"dydt[V.{chemical_species}]" in eq:
@@ -1407,6 +1627,23 @@ class ReactionRules(ThermodynamicRestrictions):
                 else ""
             )
         )
+        self.kinetics.append(
+            KineticInfo(
+                (pre_translocation,),
+                (post_translocation,),
+                (),
+                f"kf{line_num:d} * {pre_translocation}",
+            )
+        )
+        if not is_unidirectional:
+            self.kinetics.append(
+                KineticInfo(
+                    (post_translocation,),
+                    (pre_translocation,),
+                    (),
+                    f"kr{line_num:d} * {post_translocation}",
+                )
+            )
         if float(pre_volume.strip(" ")) != float(post_volume.strip(" ")):
             self.reactions[
                 -1
@@ -1438,11 +1675,104 @@ class ReactionRules(ThermodynamicRestrictions):
                     -1
                 ] += f" * ({pre_volume.strip()} / {post_volume.strip()})"
 
+    def state_transition(self, line_num: int, line: str) -> None:
+        """
+        This rule is applied only when any rule words are not detected.
+
+        Examples
+        --------
+        'Reactant --> Product'
+        'Reactant <--> Product'
+        'E + S --> E + P'
+
+        Notes
+        -----
+        * Parameters
+            .. math:: kf (, kr)
+
+        * Rate equation
+            .. math:: v = kf * [Reactant] (- kr * [Product])
+
+        * Differential equation
+            .. math:: d[Reactant]/dt = - v
+            .. math:: d[Product]/dt = + v
+
+        """
+        for arrow in self._available_arrows():
+            if arrow in line:
+                params_used = ["kf"] if arrow in self.fwd_arrows else ["kf", "kr"]
+                break
+        else:
+            raise ArrowError(self._get_arrow_error_message(line_num) + ".")
+        description = self._preprocessing(
+            sys._getframe().f_code.co_name, line_num, line, *params_used
+        )
+        is_unidirectional: bool
+        for arrow in self._available_arrows():
+            if arrow in description[0]:
+                is_unidirectional = True if arrow in self.fwd_arrows else False
+                two_species = description[0].split(arrow)
+                reactant = two_species[0].strip(" ")
+                product = two_species[1].strip(" ")
+                break
+        else:
+            raise ArrowError(self._get_arrow_error_message(line_num) + ".")
+        if all(map(lambda s: "+" in s, [reactant, product])):
+            modifier, reactant, product = self._extract_modifier(reactant, product)
+            if not is_unidirectional:
+                raise ValueError(
+                    "Only unidirectional reaction is supported, e.g., E + S --> E + P."
+                )
+        else:
+            modifier = None
+        if reactant == product:
+            raise ValueError(f"line{line_num:d}: {product} <- Use a different name.")
+        else:
+            self._set_species(reactant, product)
+            if modifier is not None:
+                self._set_species(modifier)
+            self.reactions.append(
+                f"v[{line_num:d}] = "
+                f"x[C.kf{line_num:d}] * y[V.{reactant}]"
+                + (f" * y[V.{modifier}]" if modifier is not None else "")
+                + (f" - x[C.kr{line_num:d}] * y[V.{product}]" if not is_unidirectional else "")
+            )
+            if modifier is None:
+                self.kinetics.append(
+                    KineticInfo((reactant,), (product,), (), f"kf{line_num} * {reactant}")
+                )
+            else:
+                self.kinetics.append(
+                    KineticInfo(
+                        (reactant,),
+                        (product,),
+                        (modifier,),
+                        f"kf{line_num} * {reactant} * {modifier}",
+                    )
+                )
+            if not is_unidirectional:
+                self.kinetics.append(
+                    KineticInfo((product,), (reactant,), (), f"kr{line_num} * {product}")
+                )
+
+            counter_reactant, counter_product = (0, 0)
+            for i, eq in enumerate(self.differential_equations):
+                if f"dydt[V.{reactant}]" in eq:
+                    counter_reactant += 1
+                    self.differential_equations[i] = eq + f" - v[{line_num:d}]"
+                elif f"dydt[V.{product}]" in eq:
+                    counter_product += 1
+                    self.differential_equations[i] = eq + f" + v[{line_num:d}]"
+            if counter_reactant == 0:
+                self.differential_equations.append(f"dydt[V.{reactant}] = - v[{line_num:d}]")
+            if counter_product == 0:
+                self.differential_equations.append(f"dydt[V.{product}] = + v[{line_num:d}]")
+
     def user_defined(self, line_num: int, line: str) -> None:
         """
         Examples
         --------
-        >>> 'Reactant --> Product: define rate equation here'
+        >>> '@rxn Reactant --> Product: define rate equation here'
 
         Notes
         -----
@@ -1474,6 +1804,25 @@ class ReactionRules(ThermodynamicRestrictions):
             rate_equation.replace("p[", "x[C.").replace("u[", "y[V.").replace("^", "**")
         )
         self.reactions.append(f"v[{line_num:d}] = " + rate_equation.strip())
+        modulators = (
+            *list(
+                set(
+                    [
+                        ent
+                        for ent in re.findall(r"(?<=\[V.)(.+?)(?=\])", rate_equation)
+                        if ent not in [reactant, product]
+                    ]
+                )
+            ),
+        )
+        self.kinetics.append(
+            KineticInfo(
+                (reactant,),
+                (product,),
+                () if modulators is None else (modulators),
+                rate_equation.replace("x[C.", "").replace("y[V.", "").replace("]", ""),
+            )
+        )
         counter_reactant = 0
         counter_product = 0
         for i, eq in enumerate(self.differential_equations):
@@ -1593,4 +1942,4 @@ class ReactionRules(ThermodynamicRestrictions):
                         exec("self." + reaction_rule + "(line_num, line)")
                         break
                 else:
-                    self._raise_detection_error(line_num, line)
+                    self._raise_exception(line_num, line)
