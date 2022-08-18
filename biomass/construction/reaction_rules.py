@@ -1734,7 +1734,9 @@ class ReactionRules(ThermodynamicRestrictions):
         """
         for arrow in self._available_arrows():
             if arrow in line:
-                params_used = ["kf"] if arrow in self.fwd_arrows else ["kf", "kr"]
+                params_used = (
+                    ["kf"] if arrow in self.fwd_arrows else ["kf", "kr"]
+                )
                 break
         else:
             raise ArrowError(self._get_arrow_error_message(line_num) + ".")
@@ -1751,31 +1753,46 @@ class ReactionRules(ThermodynamicRestrictions):
                 break
         else:
             raise ArrowError(self._get_arrow_error_message(line_num) + ".")
-        # if all(map(lambda s: "+" in s, [reactant, product])):
-        #     modifier, reactant, product = self._extract_modifier(reactant, product)
-        #     if not is_unidirectional:
-        #         raise ValueError(
-        #             "Only unidirectional reaction is supported, e.g., E + S --> E + P."
-        #         )
-        # else:
-        #     modifier = None
         if list(set(reactants) & set(products)):
-            raise ValueError(
-                f"line{line_num:d}: {list(set(reactants) & set(products))} <- Use a different name."
+            modifiers = list(set(reactants) & set(products))
+            for modifier in modifiers:
+                reactants.remove(modifier)
+                products.remove(modifier)
+            # modifier, reactant, product = self._extract_modifier(reactant, product)
+            # if not is_unidirectional:
+            #     raise ValueError(
+            #         "Only unidirectional reaction is supported, e.g., E + S --> E + P."
+            #     )
+        else:
+            modifiers = None
+        # if list(set(reactants) & set(products)):
+        #     raise ValueError(
+        #         f"line{line_num:d}: {list(set(reactants) & set(products))} <- Use a different name."
+        #     )
+        # else:
+        self._set_species(*reactants, *products)
+        if modifiers is not None:
+            self._set_species(*modifiers)
+        lefthand = "y[V." + "] * y[V.".join(reactants) + "]"
+        righthand = "y[V." + "] * y[V.".join(products) + "]"
+        if modifiers:
+            modifiers_string = " * " + " * ".join(
+                [f"y[V.{modifier}]" for modifier in modifiers]
             )
         else:
-            self._set_species(*reactants, *products)
-            # if modifier is not None:
-            #     self._set_species(modifier)
-            lefthand = "y[V." + "] * y[V.".join(reactants) + "]"
-            righthand = "y[V." + "] * y[V.".join(products) + "]"
-            self.reactions.append(
-                f"v[{line_num:d}] = "
-                f"x[C.kf{line_num:d}] * " + lefthand
-                # + (f" * y[V.{modifier}]" if modifier is not None else "")
-                + (f" - x[C.kr{line_num:d}] * " + righthand if not is_unidirectional else "")
+            modifiers_string = ""
+        self.reactions.append(
+            f"v[{line_num:d}] = "
+            f"x[C.kf{line_num:d}] * "
+            + lefthand
+            + modifiers_string
+            + (
+                f" - x[C.kr{line_num:d}] * " + righthand + modifiers_string
+                if not is_unidirectional
+                else ""
             )
-            # if modifier is None:
+        )
+        if modifiers is None:
             self.kinetics.append(
                 KineticInfo(
                     tuple(reactants),
@@ -1784,42 +1801,55 @@ class ReactionRules(ThermodynamicRestrictions):
                     f"kf{line_num} * " + lefthand,
                 )
             )
-            # else:
-            #     self.kinetics.append(
-            #         KineticInfo(
-            #             (reactant,),
-            #             (product,),
-            #             (modifier,),
-            #             f"kf{line_num} * {reactant} * {modifier}",
-            #         )
-            #     )
-            if not is_unidirectional:
-                self.kinetics.append(
-                    KineticInfo(
-                        tuple(products),
-                        tuple(reactants),
-                        (),
-                        f"kr{line_num} * " + righthand,
-                    )
+        else:
+            self.kinetics.append(
+                KineticInfo(
+                    tuple(reactants),
+                    tuple(products),
+                    tuple(modifiers),
+                    f"kf{line_num} * " + lefthand + modifiers_string,
                 )
+            )
+        if not is_unidirectional and modifiers is None:
+            self.kinetics.append(
+                KineticInfo(
+                    tuple(products),
+                    tuple(reactants),
+                    (),
+                    f"kr{line_num} * " + righthand,
+                )
+            )
+        elif not is_unidirectional and modifiers:
+            self.kinetics.append(
+                KineticInfo(
+                    (reactants),
+                    (products),
+                    (modifiers),
+                    f"kr{line_num} * " + righthand + modifiers_string,
+                )
+            )
 
-            counter_reactant = defaultdict(lambda: 0)
-            counter_product = defaultdict(lambda: 0)
-            for i, eq in enumerate(self.differential_equations):
-                for reactant in reactants:
-                    if f"dydt[V.{reactant}]" in eq:
-                        counter_reactant[reactant] += 1
-                        self.differential_equations[i] = eq + f" - v[{line_num:d}]"
-                for product in products:
-                    if f"dydt[V.{product}]" in eq:
-                        counter_product[product] += 1
-                        self.differential_equations[i] = eq + f" + v[{line_num:d}]"
+        counter_reactant = defaultdict(lambda: 0)
+        counter_product = defaultdict(lambda: 0)
+        for i, eq in enumerate(self.differential_equations):
             for reactant in reactants:
-                if counter_reactant[reactant] == 0:
-                    self.differential_equations.append(f"dydt[V.{reactant}] = - v[{line_num:d}]")
+                if f"dydt[V.{reactant}]" in eq:
+                    counter_reactant[reactant] += 1
+                    self.differential_equations[i] = eq + f" - v[{line_num:d}]"
             for product in products:
-                if counter_product[product] == 0:
-                    self.differential_equations.append(f"dydt[V.{product}] = + v[{line_num:d}]")
+                if f"dydt[V.{product}]" in eq:
+                    counter_product[product] += 1
+                    self.differential_equations[i] = eq + f" + v[{line_num:d}]"
+        for reactant in reactants:
+            if counter_reactant[reactant] == 0:
+                self.differential_equations.append(
+                    f"dydt[V.{reactant}] = - v[{line_num:d}]"
+                )
+        for product in products:
+            if counter_product[product] == 0:
+                self.differential_equations.append(
+                    f"dydt[V.{product}] = + v[{line_num:d}]"
+                )
 
     def user_defined(self, line_num: int, line: str) -> None:
         """
