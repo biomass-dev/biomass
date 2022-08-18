@@ -1,16 +1,5 @@
-from typing import NamedTuple
-
-import numpy as np
-
 from .name2idx import C, V
 from .reaction_network import ReactionNetwork
-
-
-class KineticInfo(NamedTuple):
-    reactants: tuple
-    products: tuple
-    modifiers: tuple
-    rate: str
 
 
 class DifferentialEquation(ReactionNetwork):
@@ -43,17 +32,3 @@ def initial_values():
     y0 = [0] * V.NUM
 
     return y0
-
-
-def kinetics():
-    """Kinetics information"""
-    kinetics = None
-
-    return kinetics
-
-
-def stoichiometric_matrix():
-    """Stoichiometric matrix"""
-    stoichiometry = None
-
-    return stoichiometry

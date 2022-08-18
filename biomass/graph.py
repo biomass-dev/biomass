@@ -48,8 +48,6 @@ class NetworkGraph(object):
         self.problem = biomass_model.OptimizationProblem()
         self.viz = biomass_model.Visualization()
         self.rxn = biomass_model.ReactionNetwork()
-        self.stoichiometry = biomass_model.stoichiometric_matrix()
-        self.kinetics = biomass_model.kinetics()
 
         self.graph = None
 
