@@ -1,7 +1,9 @@
+from typing import NamedTuple
+
+import numpy as np
+
 from .name2idx import C, V
 from .reaction_network import ReactionNetwork
-from typing import NamedTuple
-import numpy as np
 
 
 class KineticInfo(NamedTuple):
