@@ -1,9 +1,9 @@
 import re
 import sys
+from collections import defaultdict
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 from typing import Dict, List, NamedTuple, Optional, Tuple
-from collections import defaultdict
 
 import numpy as np
 
