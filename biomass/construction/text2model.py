@@ -214,6 +214,7 @@ class Text2Model(ReactionRules):
                         )
 
                 elif line.startswith(self.indentation + "stoichiometry = None"):
+                    # Set stoichiometric matrix
                     stringified_stoichiometry = [
                         str(list(row)) for row in self.stoichiometry_matrix.toarray()
                     ]
@@ -247,6 +248,7 @@ class Text2Model(ReactionRules):
                         + "\n\n"
                     )
                 elif line.startswith(self.indentation + "kinetics = None"):
+                    # Set kinetics information
                     stringified_kinetics = [str(reaction) for reaction in self.kinetics]
                     kinetics_string = (
                         f"kinetics = [\n{2*self.indentation}"
