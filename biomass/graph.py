@@ -37,6 +37,10 @@ class NetworkGraph(object):
         Plotting parameters for customizing figure properties.
     rxn : ReactionNetwork
         Reaction indices grouped according to biological processes.
+    stoichiometry: Array
+        Stoichiometric matrix for the ODE system.
+    kinetics: NamedTuple
+        Information about kinetics of reactions.
     """
 
     def __init__(self, path: str, biomass_model: ModuleType):
@@ -48,6 +52,8 @@ class NetworkGraph(object):
         self.problem = biomass_model.OptimizationProblem()
         self.viz = biomass_model.Visualization()
         self.rxn = biomass_model.ReactionNetwork()
+        self.stoichiometry = biomass_model.stoichiometric_matrix()
+        self.kinetics = biomass_model.kinetics()
 
         self.graph = None
 

@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, NamedTuple
 
 from biomass.analysis.reaction import is_duplicate
 
@@ -37,3 +37,17 @@ class ReactionNetwork(object):
         v = {}
 
         return v
+
+
+class KineticInfo(NamedTuple):
+    reactants: tuple
+    products: tuple
+    modifiers: tuple
+    rate: str
+
+
+def kinetics():
+    """Kinetics information"""
+    kinetics = None
+
+    return kinetics
