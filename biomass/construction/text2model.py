@@ -214,17 +214,15 @@ class Text2Model(ReactionRules):
                         )
 
                 elif line.startswith(self.indentation + "stoichiometry = None"):
-                    stringified_stoichiometry = [str(list(row)) for row in self.stoichiometry_matrix.toarray()]
+                    stringified_stoichiometry = [
+                        str(list(row)) for row in self.stoichiometry_matrix.toarray()
+                    ]
                     stoich_string = (
                         f"stoichiometry = np.array([\n{2*self.indentation}"
                         + f",\n{2*self.indentation}".join(stringified_stoichiometry)
                         + "])"
                     )
-                    lines[line_num] = (
-                        f"{self.indentation}"
-                        + stoich_string
-                        + "\n"
-                    )
+                    lines[line_num] = f"{self.indentation}" + stoich_string + "\n"
             with open(
                 os.path.join(
                     f"{self.name}",
@@ -253,13 +251,9 @@ class Text2Model(ReactionRules):
                     kinetics_string = (
                         f"kinetics = [\n{2*self.indentation}"
                         + f",\n{2*self.indentation}".join(stringified_kinetics)
-                        + f'\n{self.indentation}]'
+                        + f"\n{self.indentation}]"
                     )
-                    lines[line_num] = (
-                        f"{self.indentation}"
-                        + kinetics_string
-                        + "\n"
-                    )
+                    lines[line_num] = f"{self.indentation}" + kinetics_string + "\n"
             with open(
                 os.path.join(f"{self.name}", "reaction_network.py"),
                 encoding="utf-8",
