@@ -1,5 +1,5 @@
-Graph visualization
-===================
+Tutorial 2: graph visualization
+===============================
 
 This tutorial will show you how to turn your computational model into a graph and generate both static and dynamic images from it.  
 For demonstration purposes we will use the `nfkb_pathway <https://github.com/biomass-dev/biomass/tree/master/biomass/models/nfkb_pathway>`_ model included in biomass. For a detailed description of the model, please refer to the following paper:  
