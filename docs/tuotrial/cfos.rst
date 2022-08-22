@@ -1,5 +1,5 @@
-Tutorial
-========
+Tutorial 1: parameter estimation and sensitivity analysis
+=========================================================
 
 This tutorial shows you how to build computational models, estimate parameter values from experimental data, and identify sensitive components in complex biochemical systems.
 We will use a mechanistic model of the c-Fos expression network dynamics :cite:p:`NAKAKUKI2010884`. For a detailed description of the model, please refer to the following paper:

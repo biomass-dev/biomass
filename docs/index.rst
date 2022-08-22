@@ -41,8 +41,7 @@ You can also always send me an `email <mailto:himoto@protein.osaka-u.ac.jp>`_.
    :hidden:
 
    installation
-   tutorial
-   graph_visualization
+   tutorial/index
    models
    api/index
    references

@@ -6,7 +6,7 @@ from typing import List
 
 import numpy as np
 
-from ..exec_model import ModelObject
+from ..model_object import ModelObject
 from .temporal_dynamics import TemporalDynamics
 
 

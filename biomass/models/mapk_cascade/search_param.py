@@ -87,15 +87,3 @@ class SearchParam(object):
             y0[j] = indiv[i + len(self.idx_params)]
 
         return x, y0
-
-    def gene2val(self, indiv_gene):
-        search_rgn = self.get_region()
-        indiv = 10 ** (indiv_gene * (search_rgn[1, :] - search_rgn[0, :]) + search_rgn[0, :])
-
-        return indiv
-
-    def val2gene(self, indiv):
-        search_rgn = self.get_region()
-        indiv_gene = (np.log10(indiv) - search_rgn[0, :]) / (search_rgn[1, :] - search_rgn[0, :])
-
-        return indiv_gene

@@ -10,7 +10,7 @@ from typing import Callable, List, Union
 import numpy as np
 from tqdm import tqdm
 
-from ..exec_model import ModelObject
+from ..model_object import ModelObject
 
 DIRNAME = "_tmp"
 
@@ -84,7 +84,7 @@ class Optimizer(object):
     differential_evolution step 50: f(x)= 0.519774\n
 
     >>> from biomass import run_simulation
-    >>> param_values = model.problem.gene2val(res.x)
+    >>> param_values = model.gene2val(res.x)
     >>> optimizer.import_solution(param_values)
     >>> run_simulation(model, viz_type=str(param_idx))
     """
