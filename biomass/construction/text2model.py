@@ -4,6 +4,8 @@ import shutil
 from dataclasses import dataclass, field
 from typing import Dict, Final, List, Literal, Optional
 
+from scipy.sparse import csr_matrix, lil_matrix
+
 from . import julia_template as jl
 from .reaction_rules import ReactionRules
 
@@ -39,6 +41,7 @@ class Text2Model(ReactionRules):
         if self.lang not in ["python", "julia"]:
             raise ValueError("lang must be either 'python' or 'julia'.")
         self.name: str = os.path.splitext(self.input_txt)[0]
+        self._stoichiometry_matrix = None
 
     def _update_parameters(self) -> None:
         """
@@ -527,23 +530,24 @@ class Text2Model(ReactionRules):
                             init=re.findall(r"init\[(.*?)\]", condition[1]),
                         )
                 elif "sol is None:" in line:
-                    lines[line_num + 3] = ""  # initialization (default: pass)
-                    for desc in self.obs_desc:
-                        lines[line_num + 3] += (
-                            "{}".format(4 * self.indentation)
-                            + "self.simulations"
-                            + f"[self.obs_names.index('{desc[0].strip()}'), i] = (\n"
-                            + f"{5 * self.indentation}"
-                            + desc[1].strip(" ").strip()
-                        )
-                        # p: parameters
-                        # u: species
-                        lines[line_num + 3] = self._convert_names(
-                            line=lines[line_num + 3],
-                            p=re.findall(r"p\[(.*?)\]", desc[1]),
-                            u=re.findall(r"u\[(.*?)\]", desc[1]),
-                        )
-                        lines[line_num + 3] += "\n{}".format(4 * self.indentation + ")\n")
+                    if self.obs_desc:
+                        lines[line_num + 3] = ""  # initialization (default: pass)
+                        for desc in self.obs_desc:
+                            lines[line_num + 3] += (
+                                "{}".format(4 * self.indentation)
+                                + "self.simulations"
+                                + f"[self.obs_names.index('{desc[0].strip()}'), i] = (\n"
+                                + f"{5 * self.indentation}"
+                                + desc[1].strip(" ").strip()
+                            )
+                            # p: parameters
+                            # u: species
+                            lines[line_num + 3] = self._convert_names(
+                                line=lines[line_num + 3],
+                                p=re.findall(r"p\[(.*?)\]", desc[1]),
+                                u=re.findall(r"u\[(.*?)\]", desc[1]),
+                            )
+                            lines[line_num + 3] += "\n{}".format(4 * self.indentation + ")\n")
             with open(
                 os.path.join(f"{self.name}", "observable.py"),
                 encoding="utf-8",
@@ -679,6 +683,23 @@ class Text2Model(ReactionRules):
             mode="w",
         ) as f:
             f.write("\n".join(lines))
+
+    @property
+    def stoichiometry_matrix(self) -> csr_matrix:
+        """
+        The model's stoichiometry_matrix.
+        """
+        if self._stoichiometry_matrix is None:
+            sm = lil_matrix((len(self.species), len(self.kinetics)), dtype="int")
+            for i, reaction in enumerate(self.kinetics):
+                for r in reaction.reactants:
+                    sm[self.species.index(r), i] -= 1
+                for p in reaction.products:
+                    sm[self.species.index(p), i] += 1
+            fixed = [self.species.index(fs) for fs in self.fixed_species]
+            sm[fixed, :] = 0
+            self._stoichiometry_matrix = sm.tocsr()
+        return self._stoichiometry_matrix
 
     def convert(
         self,
