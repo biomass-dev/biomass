@@ -5,6 +5,9 @@ from dataclasses import dataclass, field
 from typing import Dict, Final, List, Literal, Optional
 
 from scipy.sparse import csr_matrix, lil_matrix
+import numpy as np
+import pygraphviz as pgv
+from pyvis.network import Network
 
 from . import julia_template as jl
 from .reaction_rules import ReactionRules
@@ -42,6 +45,7 @@ class Text2Model(ReactionRules):
             raise ValueError("lang must be either 'python' or 'julia'.")
         self.name: str = os.path.splitext(self.input_txt)[0]
         self._stoichiometry_matrix = None
+        self._graph = None
 
     def _update_parameters(self) -> None:
         """
@@ -923,3 +927,135 @@ class Text2Model(ReactionRules):
                                 f"Currently, it is used in the rule: {rule}"
                             )
                 self.rule_words[rxn_rule].append(" " + my_word)
+
+    @property
+    def graph(self):
+        if self._graph is None:
+            num_species = len(self.species)
+            adj_matrix = np.zeros((num_species, num_species))
+            indx = {species: num for num, species in enumerate(self.species)}
+            for reaction in self.kinetics:
+                for product in reaction.products:
+                    for reactant in reaction.reactants:
+                        adj_matrix[indx[product], indx[reactant]] = 1
+                    for modifier in reaction.modifiers:
+                        adj_matrix[indx[product], indx[modifier]] = 1
+            self._graph = pgv.AGraph(directed=True)
+            self._graph.add_nodes_from(self.species)
+            # for species in self.species:
+            #     graph.add_node(species)
+            for i, reaction in enumerate(adj_matrix):
+                innode = self.species[i]
+                for j, species in enumerate(reaction):
+                    if species > 0:
+                        outnode = self.species[j]
+                        self._graph.add_edge(outnode, innode)
+            return self._graph
+        else:
+            return self._graph
+
+    def static_plot(
+        self,
+        save_dir: str = "",
+        file_name: str = "model_graph.png",
+        gviz_args: str = "",
+        gviz_prog: Literal[
+            "neato", "dot", "twopi", "circo", "fdp", "nop"
+        ] = "dot",
+    ) -> None:
+        """Saves a static image of the network.
+
+        Static image is created using pygraphviz.
+
+        Parameters
+        ----------
+        save_dir : string
+            Name of the directory in which the image will be stored.
+        file_name : string
+            Name as which the image of the graph will be stored.
+        gviz_args : string, optional, default=""
+            Used to specify command line options for gviz, see https://graphviz.org/pdf/dot.1.pdf for available options.
+        gviz_prog : {"neato", "dot", "twopi", "circo", "fdp", "nop"}, default="dot"
+            Layout engine with which the graph will be arranged. For details see https://graphviz.org/docs/layouts/ .
+
+        Raises
+        ------
+        ValueError
+            If something is passed as the gviz_prog that is not a viable layout program.
+
+        Examples
+        --------
+        >>> model.static_plot("path/to/", "graph.png")
+        Creates graph with dot layout and default options.
+        >>> model.static_plot("path/to/", "graph.pdf", gviz_prog="-Nshape=box -Nstyle=filled -Nfillcolor="#ffe4c4" -Edir=none")
+        Creates graph with dot layout in pdf file format. Nodes will be rectangular and colored bisque, edges will have no arrows indicating direction.
+
+        """
+        if gviz_prog not in (
+            available_layout := [
+                "neato",
+                "dot",
+                "twopi",
+                "circo",
+                "fdp",
+                "nop",
+            ]
+        ):
+            raise ValueError(
+                f"gviz_prog must be one of [{', '.join(available_layout)}], got {gviz_prog}."
+            )
+        self.graph.layout(prog=gviz_prog, args=gviz_args)
+        self.graph.draw(os.path.join(save_dir, file_name))
+
+    def dynamic_plot(
+        self,
+        save_dir: str = ".",
+        file_name: str = "network.html",
+        show: bool = True,
+        annotate_nodes: bool = True,
+        show_controls: bool = False,
+        which_controls: Optional[List[str]] = None,
+    ) -> None:
+        """Saves a dynamic and interactive image of the network graph.
+        Graph is read by pyvis. Using pyvis a dynamic and interactive representation of the biological network
+        is created in html format.
+
+        Parameters
+        ----------
+        show: bool, default=True
+            If true the plot will immediately be displayed in the webbrowser.
+        annotate_nodes : bool, default=True
+            If true nodes will be scaled according to number of edges and hovering over a node will show interaction partners.
+        show_controls : bool, default=False
+            If true control buttons will be displayed.
+        which_controls : List(str), optional, default=None
+            Used to specify which control buttons should be displayed. If empty all buttons will be displayed.
+
+        Examples
+        --------
+        >>> model.dynamic_plot("path/to/", "graph.html")
+        Creates graph and shows interactive graph with default options.
+        >>> model.dynamic_plot("path/to/", "graph.html", show=False, show_controls=True, which_controls=["physics", "manipulation", "interaction"])
+        Creates interactive graph. Controls for physics, manipulation and interaction will be available.
+        """
+        if os.path.splitext(file_name)[1] != ".html":
+            file_name = file_name + ".html"
+        network = Network(directed=True)
+        network.add_nodes(self.graph.nodes())
+        network.add_edges(self.graph.edges())
+        if not isinstance(show_controls, bool):
+            raise TypeError(
+                f"show_controls is type {type(show_controls)}, needs to be boolean"
+            )
+        if show_controls:
+            network.show_buttons(filter_=which_controls)
+        if annotate_nodes:
+            neighbor_map = network.get_adj_list()
+            for node in network.nodes:
+                node["title"] = " Neighbors:\n"
+                node["title"] += "\n".join(neighbor_map[node["id"]])
+                node["value"] = len(neighbor_map[node["id"]])
+        if show:
+            network.show(os.path.join(save_dir, file_name))
+        else:
+            network.save_graph(os.path.join(save_dir, file_name))
