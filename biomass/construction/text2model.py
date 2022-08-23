@@ -4,10 +4,10 @@ import shutil
 from dataclasses import dataclass, field
 from typing import Dict, Final, List, Literal, Optional
 
-from scipy.sparse import csr_matrix, lil_matrix
 import numpy as np
 import pygraphviz as pgv
 from pyvis.network import Network
+from scipy.sparse import csr_matrix, lil_matrix
 
 from . import julia_template as jl
 from .reaction_rules import ReactionRules
