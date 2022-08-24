@@ -42,7 +42,7 @@ A static image of the graph is drawn using
 The desired file format is inferred from the ending of file_name. Graphviz provides a variety of different engines that automatically generate a layout for the graph. By default the 'dot' engine is used, since it uses a hierarchical approach that is natural for biological data. Feel free to play around with the available engines, but be aware that biological networks can quickly become messy due to the prevalance of feedback interactions.  
 Additionally graphviz provides a large variety of customization options, that have to be passed in the command line format. For a comprehensive list see the `graphviz manual <https://graphviz.org/pdf/dot.1.pdf>`_.  
 
-.. figure:: _static/img/static_nfkb_graph.svg
+.. figure:: ../_static/img/static_nfkb_graph.svg
     :align: center
 
 Dynamic image
