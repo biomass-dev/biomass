@@ -5,8 +5,7 @@ from dataclasses import dataclass, field
 from typing import Dict, Final, List, Literal, Optional
 
 import numpy as np
-import pygraphviz as pgv
-from pyvis.network import Network
+
 from scipy.sparse import csr_matrix, lil_matrix
 
 from . import julia_template as jl
@@ -931,6 +930,10 @@ class Text2Model(ReactionRules):
     @property
     def graph(self):
         if self._graph is None:
+            try:
+                import pygraphviz as pgv
+            except ImportError:
+                print("pygraphviz and graphviz need to be properly installed for graph generation.")
             num_species = len(self.species)
             adj_matrix = np.zeros((num_species, num_species))
             indx = {species: num for num, species in enumerate(self.species)}
@@ -1038,6 +1041,10 @@ class Text2Model(ReactionRules):
         >>> model.dynamic_plot("path/to/", "graph.html", show=False, show_controls=True, which_controls=["physics", "manipulation", "interaction"])
         Creates interactive graph. Controls for physics, manipulation and interaction will be available.
         """
+        try:
+            from pyvis.network import Network
+        except ImportError:
+            print("pyvis package is necessary for dynamic graph generation.")
         if os.path.splitext(file_name)[1] != ".html":
             file_name = file_name + ".html"
         network = Network(directed=True)
