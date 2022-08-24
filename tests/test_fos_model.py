@@ -35,7 +35,7 @@ def test_run_simulation():
     assert record[-1].message.args[0] in [
         "Simulation failed. #original",
         "invalid value encountered in true_divide",
-    ]
+    ], f"got {record[-1].message.args[0]}"
     run_simulation(model, viz_type="average", stdev=True)
     assert os.path.isfile(
         os.path.join(
