@@ -163,7 +163,7 @@ class Model(object):
 
         Returns
         -------
-        model : :class:`biomass.exec_model.ModelObject`
+        model : :class:`biomass.model_object.ModelObject`
             The BioMASS model object.
 
         Examples
@@ -201,7 +201,7 @@ def create_model(pkg_name: str, show_info: bool = False) -> ModelObject:
 
     Returns
     -------
-    model : :class:`biomass.exec_model.ModelObject`
+    model : :class:`biomass.model_object.ModelObject`
         The BioMASS model object.
 
     Examples
