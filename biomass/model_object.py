@@ -5,15 +5,13 @@ from typing import List, NamedTuple
 
 import numpy as np
 
-from .graph import NetworkGraph
-
 
 class OptimizedValues(NamedTuple):
     params: list
     initials: list
 
 
-class ModelObject(NetworkGraph):
+class ModelObject(object):
     """
     The BioMASS model object.
 
@@ -33,7 +31,36 @@ class ModelObject(NetworkGraph):
     """
 
     def __init__(self, path: str, biomass_model: ModuleType):
-        super().__init__(path, biomass_model)
+        self._path = path
+        self._parameters = biomass_model.C.NAMES
+        self._species = biomass_model.V.NAMES
+        self.pval = biomass_model.param_values
+        self.ival = biomass_model.initial_values
+        self.problem = biomass_model.OptimizationProblem()
+        self.viz = biomass_model.Visualization()
+        self.rxn = biomass_model.ReactionNetwork()
+
+    @property
+    def path(self) -> str:
+        return self._path
+
+    @property
+    def parameters(self) -> List[str]:
+        return self._parameters
+
+    @property
+    def species(self) -> list:
+        return self._species
+
+    @property
+    def observables(self) -> List[str]:
+        duplicate = [
+            name for name in set(self.problem.obs_names) if self.problem.obs_names.count(name) > 1
+        ]
+        if not duplicate:
+            return self.problem.obs_names
+        else:
+            raise NameError(f"Duplicate observables: {', '.join(duplicate)}")
 
     def get_individual(self, paramset_id: int) -> np.ndarray:
         """
