@@ -5,7 +5,6 @@ from dataclasses import dataclass, field
 from typing import Dict, Final, List, Literal, Optional
 
 import numpy as np
-
 from scipy.sparse import csr_matrix, lil_matrix
 
 from . import julia_template as jl
@@ -933,7 +932,9 @@ class Text2Model(ReactionRules):
             try:
                 import pygraphviz as pgv
             except ImportError:
-                print("pygraphviz and graphviz need to be properly installed for graph generation.")
+                print(
+                    "pygraphviz and graphviz need to be properly installed for graph generation."
+                )
             num_species = len(self.species)
             adj_matrix = np.zeros((num_species, num_species))
             indx = {species: num for num, species in enumerate(self.species)}
@@ -962,9 +963,7 @@ class Text2Model(ReactionRules):
         save_dir: str = "",
         file_name: str = "model_graph.png",
         gviz_args: str = "",
-        gviz_prog: Literal[
-            "neato", "dot", "twopi", "circo", "fdp", "nop"
-        ] = "dot",
+        gviz_prog: Literal["neato", "dot", "twopi", "circo", "fdp", "nop"] = "dot",
     ) -> None:
         """Saves a static image of the network.
 
@@ -1051,9 +1050,7 @@ class Text2Model(ReactionRules):
         network.add_nodes(self.graph.nodes())
         network.add_edges(self.graph.edges())
         if not isinstance(show_controls, bool):
-            raise TypeError(
-                f"show_controls is type {type(show_controls)}, needs to be boolean"
-            )
+            raise TypeError(f"show_controls is type {type(show_controls)}, needs to be boolean")
         if show_controls:
             network.show_buttons(filter_=which_controls)
         if annotate_nodes:
