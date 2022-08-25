@@ -1096,7 +1096,7 @@ class ReactionRules(ThermodynamicRestrictions):
             if f"dydt[V.{unphosphorylated_form}]" in eq:
                 counter_unphosphorylated_form += 1
                 self.differential_equations[i] = eq + f" - v[{line_num:d}]"
-            elif "dydt[V.{phosphorylated_form}]" in eq:
+            elif f"dydt[V.{phosphorylated_form}]" in eq:
                 counter_phosphorylated_form += 1
                 self.differential_equations[i] = eq + f" + v[{line_num:d}]"
         if counter_unphosphorylated_form == 0:
