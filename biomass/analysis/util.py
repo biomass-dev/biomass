@@ -1,11 +1,10 @@
 from dataclasses import dataclass, field
 from math import isnan, log
-from typing import Callable, Final, Dict, Union
+from typing import Callable, Dict, Final, Union
 
 import numpy as np
 from numba import njit
 from scipy.integrate import simpson
-
 
 EPS: Final[np.float64] = np.finfo(float).eps
 
