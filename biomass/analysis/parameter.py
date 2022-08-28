@@ -1,7 +1,7 @@
 import os
 import sys
 from dataclasses import dataclass
-from typing import Callable, Dict, List, Optional, Union
+from typing import Callable, Dict, Final, List, Optional, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,7 +9,7 @@ import seaborn as sns
 
 from ..model_object import ModelObject
 from ..plotting import SensitivityOptions
-from .util import SignalingMetric, dlnyi_dlnxj
+from .util import SignalingMetric, dlnyi_dlnxj, remove_nan
 
 
 @dataclass
@@ -55,22 +55,18 @@ class ParameterSensitivity(SignalingMetric):
         param_indices: List[int],
     ) -> np.ndarray:
         """Calculating Sensitivity Coefficients
-
         Parameters
         ----------
         metric : str
             The signaling metric used for sensitivity analysis.
-
         param_indices : list of int
             List of parameter indices for sensitivity analysis.
-
         Returns
         -------
         sensitivity_coefficients : numpy array
-
         """
 
-        rate = 1.01  # 1% change
+        rate: Final[float] = 1.01  # 1% change
         n_file = self.model.get_executable()
 
         signaling_metric = np.full(
@@ -108,10 +104,10 @@ class ParameterSensitivity(SignalingMetric):
                         )
         sensitivity_coefficients = dlnyi_dlnxj(
             signaling_metric,
-            n_file,
-            param_indices,
-            self.model.observables,
-            self.model.problem.conditions,
+            len(n_file),
+            len(param_indices),
+            len(self.model.observables),
+            len(self.model.problem.conditions),
             rate,
         )
 
@@ -209,26 +205,6 @@ class ParameterSensitivity(SignalingMetric):
             )
             plt.close()
 
-    @staticmethod
-    def _remove_nan(sensitivity_matrix: np.ndarray, normalize: bool) -> np.ndarray:
-        """
-        Remove NaN from sensitivity matrix.
-        """
-        nan_idx = []
-        for i in range(sensitivity_matrix.shape[0]):
-            if np.isnan(sensitivity_matrix[i, :]).any():
-                nan_idx.append(i)
-            else:
-                pass
-            if np.nanmax(np.abs(sensitivity_matrix[i, :])) == 0.0:
-                sensitivity_matrix[i, :] = np.zeros(sensitivity_matrix.shape[1])
-            else:
-                sensitivity_matrix[i, :] = sensitivity_matrix[i, :] / (
-                    np.nanmax(np.abs(sensitivity_matrix[i, :])) if normalize else 1
-                )
-
-        return np.delete(sensitivity_matrix, nan_idx, axis=0)
-
     def _heatmap_sensitivity(
         self,
         metric: str,
@@ -244,9 +220,7 @@ class ParameterSensitivity(SignalingMetric):
 
         for k, obs_name in enumerate(self.model.observables):
             for l, condition in enumerate(self.model.problem.conditions):
-                sensitivity_matrix = self._remove_nan(
-                    sensitivity_coefficients[:, :, k, l], normalize=False
-                )
+                sensitivity_matrix = remove_nan(sensitivity_coefficients[:, :, k, l])
                 if sensitivity_matrix.shape[0] > 1 and not np.all(sensitivity_matrix == 0.0):
                     g = sns.clustermap(
                         data=sensitivity_matrix,
