@@ -34,6 +34,7 @@ def test_run_simulation():
     # check that the message matches
     assert record[-1].message.args[0] in [
         "Simulation failed. #original",
+        "invalid value encountered in divide",
         "invalid value encountered in true_divide",
     ], f"got {record[-1].message.args[0]}"
     run_simulation(model, viz_type="average", stdev=True)
