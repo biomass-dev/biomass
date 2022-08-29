@@ -613,6 +613,7 @@ class ReactionRules(ThermodynamicRestrictions):
     def _redirect_rules(
         self,
         line_num: int,
+        line: str,
         is_binding: bool,
         c1: str,
         c2: str,
@@ -620,7 +621,7 @@ class ReactionRules(ThermodynamicRestrictions):
     ) -> None:
         if c1 == c2:
             # A + A --> AA
-            self.dimerize(line_num, f"{c1} dimerizes --> {cmplx}")
+            self.dimerize(line_num, line.replace(f"+ {c2}", "dimerizes"))
         elif c1 == cmplx and c2 != cmplx:
             if is_binding:
                 # A + B --> A
@@ -680,10 +681,10 @@ class ReactionRules(ThermodynamicRestrictions):
         # raise ValueError(f"line{line_num:d}: {complex} <- Use a different name.")
         if (
             (component1 == component2)
-            or (component1 != complex and component2 == complex)
-            or (component1 == complex and component2 != complex)
+            or (component1 != complex and component2 == complex and is_unidirectional)
+            or (component1 == complex and component2 != complex and is_unidirectional)
         ):
-            self._redirect_rules(line_num, is_binding, component1, component2, complex)
+            self._redirect_rules(line_num, line, is_binding, component1, component2, complex)
             return
         else:
             self._set_species(component1, component2, complex)
