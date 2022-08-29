@@ -676,8 +676,26 @@ class ReactionRules(ThermodynamicRestrictions):
                 break
         else:
             raise ArrowError(self._get_arrow_error_message(line_num) + ".")
-        if component1 == complex or component2 == complex:
-            raise ValueError(f"line{line_num:d}: {complex} <- Use a different name.")
+        # if component1 == complex or component2 == complex:
+            # raise ValueError(f"line{line_num:d}: {complex} <- Use a different name.")
+        if component1 == complex and component2 != complex:
+            if is_binding:
+                # A + B --> A
+                self.degrade(line_num, f"{component1} degrades {component2}")
+                return
+            else:
+                # A --> A + B
+                self.synthesize(line_num, f"{component1} synthesizes {component2}")
+                return
+        elif component1 != complex and component2 == complex:
+            if is_binding:
+                # A + B --> B
+                self.degrade(line_num, f"{component2} degrades {component1}")
+                return
+            else:
+                # B --> A + B
+                self.synthesize(line_num, f"{component2} synthesizes {component1}")
+                return
         elif component1 == component2:
             self.dimerize(line_num, line.replace(f"+ {component2}", "dimerizes"))
             return
@@ -686,19 +704,6 @@ class ReactionRules(ThermodynamicRestrictions):
             self.complex_formations.append(
                 ComplexFormation(line_num, set([component1, component2]), complex, is_binding)
             )
-            # self.reactions.append(
-            #     f"v[{line_num:d}] = "
-            #     f"x[C.kf{line_num:d}] * y[V.{component1}] * y[V.{component2}]"
-            #     + (f" - x[C.kr{line_num:d}] * y[V.{complex}]" if not is_unidirectional else "")
-            #     if is_binding
-            #     else f"v[{line_num:d}] = "
-            #     f"x[C.kf{line_num:d}] * y[V.{complex}]"
-            #     + (
-            #         f" - x[C.kr{line_num:d}] * y[V.{component1}] * y[V.{component2}]"
-            #         if not is_unidirectional
-            #         else ""
-            #     )
-            # )
             if is_binding:
                 self.reactions.append(
                     f"v[{line_num:d}] = "
