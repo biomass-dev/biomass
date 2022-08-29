@@ -677,7 +677,7 @@ class ReactionRules(ThermodynamicRestrictions):
         else:
             raise ArrowError(self._get_arrow_error_message(line_num) + ".")
         # if component1 == complex or component2 == complex:
-            # raise ValueError(f"line{line_num:d}: {complex} <- Use a different name.")
+        # raise ValueError(f"line{line_num:d}: {complex} <- Use a different name.")
         if component1 == complex and component2 != complex:
             if is_binding:
                 # A + B --> A
