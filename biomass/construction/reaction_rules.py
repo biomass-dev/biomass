@@ -610,6 +610,32 @@ class ReactionRules(ThermodynamicRestrictions):
         )
         return message
 
+    def _redirect_rules(
+        self,
+        line_num: int,
+        is_binding: bool,
+        c1: str,
+        c2: str,
+        cmplx: str,
+    ) -> None:
+        if c1 == c2:
+            # A + A --> AA
+            self.dimerize(line_num, f"{c1} dimerizes --> {cmplx}")
+        elif c1 == cmplx and c2 != cmplx:
+            if is_binding:
+                # A + B --> A
+                self.degrade(line_num, f"{c1} degrades {c2}")
+            else:
+                # A --> A + B
+                self.synthesize(line_num, f"{c1} synthesizes {c2}")
+        elif c1 != cmplx and c2 == cmplx:
+            if is_binding:
+                # A + B --> B
+                self.degrade(line_num, f"{c2} degrades {c1}")
+            else:
+                # B --> A + B
+                self.synthesize(line_num, f"{c2} synthesizes {c1}")
+
     def _bind_and_dissociate(self, line_num: int, line: str) -> None:
         """
         Examples
@@ -652,26 +678,12 @@ class ReactionRules(ThermodynamicRestrictions):
             raise ArrowError(self._get_arrow_error_message(line_num) + ".")
         # if component1 == complex or component2 == complex:
         # raise ValueError(f"line{line_num:d}: {complex} <- Use a different name.")
-        if component1 == complex and component2 != complex:
-            if is_binding:
-                # A + B --> A
-                self.degrade(line_num, f"{component1} degrades {component2}")
-                return
-            else:
-                # A --> A + B
-                self.synthesize(line_num, f"{component1} synthesizes {component2}")
-                return
-        elif component1 != complex and component2 == complex:
-            if is_binding:
-                # A + B --> B
-                self.degrade(line_num, f"{component2} degrades {component1}")
-                return
-            else:
-                # B --> A + B
-                self.synthesize(line_num, f"{component2} synthesizes {component1}")
-                return
-        elif component1 == component2:
-            self.dimerize(line_num, line.replace(f"+ {component2}", "dimerizes"))
+        if (
+            (component1 == component2)
+            or (component1 != complex and component2 == complex)
+            or (component1 == complex and component2 != complex)
+        ):
+            self._redirect_rules(line_num, is_binding, component1, component2, complex)
             return
         else:
             self._set_species(component1, component2, complex)
