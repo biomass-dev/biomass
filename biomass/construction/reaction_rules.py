@@ -677,9 +677,9 @@ class ReactionRules(ThermodynamicRestrictions):
                 break
         else:
             raise ArrowError(self._get_arrow_error_message(line_num) + ".")
-        # if component1 == complex or component2 == complex:
-        # raise ValueError(f"line{line_num:d}: {complex} <- Use a different name.")
-        if (
+        if (component1 == complex or component2 == complex) and not is_unidirectional:
+            raise ValueError(f"line{line_num:d}: {complex} <- Use a different name.")
+        elif (
             (component1 == component2)
             or (component1 != complex and component2 == complex and is_unidirectional)
             or (component1 == complex and component2 != complex and is_unidirectional)
