@@ -610,32 +610,6 @@ class ReactionRules(ThermodynamicRestrictions):
         )
         return message
 
-    @staticmethod
-    def _extract_modifier(reactant: str, product: str) -> Tuple[str, str, str]:
-        species_1 = reactant.split("+")[0].strip()
-        species_2 = reactant.split("+")[1].strip()
-        species_3 = product.split("+")[0].strip()
-        species_4 = product.split("+")[1].strip()
-        if species_1 == species_3 and species_2 != species_4:
-            modifier = species_1
-            reactant = species_2
-            product = species_4
-        elif species_1 == species_4 and species_2 != species_3:
-            modifier = species_1
-            reactant = species_2
-            product = species_3
-        elif species_2 == species_3 and species_1 != species_4:
-            modifier = species_2
-            reactant = species_1
-            product = species_4
-        elif species_2 == species_4 and species_1 != species_3:
-            modifier = species_2
-            reactant = species_1
-            product = species_3
-        else:
-            raise ValueError("Should be defined as: E + S --> E + P")
-        return modifier, reactant, product
-
     def _bind_and_dissociate(self, line_num: int, line: str) -> None:
         """
         Examples
