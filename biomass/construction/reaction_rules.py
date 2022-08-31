@@ -1721,12 +1721,15 @@ class ReactionRules(ThermodynamicRestrictions):
                 products.remove(modifier)
             self._set_species(*modifiers)
             modifiers_string = " * " + " * ".join([f"y[V.{modifier}]" for modifier in modifiers])
+            modifiers_string_raw = " * " + " * ".join([f"{modifier}]" for modifier in modifiers])
         else:
             modifiers = None
             modifiers_string = ""
         self._set_species(*reactants, *products)
         lefthand = "y[V." + "] * y[V.".join(reactants) + "]"
+        lefthand_raw = " * ".join(reactants)
         righthand = "y[V." + "] * y[V.".join(products) + "]"
+        righthand_raw = " * ".join(products)
         self.reactions.append(
             f"v[{line_num:d}] = "
             f"x[C.kf{line_num:d}] * "
@@ -1744,7 +1747,7 @@ class ReactionRules(ThermodynamicRestrictions):
                     tuple(reactants),
                     tuple(products),
                     (),
-                    f"kf{line_num} * " + lefthand,
+                    f"kf{line_num} * " + lefthand_raw,
                 )
             )
         else:
@@ -1753,7 +1756,7 @@ class ReactionRules(ThermodynamicRestrictions):
                     tuple(reactants),
                     tuple(products),
                     tuple(modifiers),
-                    f"kf{line_num} * " + lefthand + modifiers_string,
+                    f"kf{line_num} * " + lefthand_raw + modifiers_string_raw,
                 )
             )
         if not is_unidirectional and modifiers is None:
@@ -1762,7 +1765,7 @@ class ReactionRules(ThermodynamicRestrictions):
                     tuple(products),
                     tuple(reactants),
                     (),
-                    f"kr{line_num} * " + righthand,
+                    f"kr{line_num} * " + righthand_raw,
                 )
             )
         elif not is_unidirectional and modifiers:
@@ -1771,7 +1774,7 @@ class ReactionRules(ThermodynamicRestrictions):
                     tuple(products),
                     tuple(reactants),
                     tuple(modifiers),
-                    f"kr{line_num} * " + righthand + modifiers_string,
+                    f"kr{line_num} * " + righthand_raw + modifiers_string_raw,
                 )
             )
 
