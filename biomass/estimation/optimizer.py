@@ -55,12 +55,12 @@ class Optimizer(object):
     Examples
     --------
     >>> from scipy.optimize import differential_evolution
-    >>> from biomass import Model
-    >>> from biomass.estimation import ExternalOptimizer
+    >>> from biomass import create_model
+    >>> from biomass.estimation import Optimizer
     >>> from biomass.models import Nakakuki_Cell_2010
-    >>> model = Model(Nakakuki_Cell_2010.__package__).create()
+    >>> model = create_model(Nakakuki_Cell_2010.__package__)
     >>> param_idx = 1
-    >>> optimizer = ExternalOptimizer(model, differential_evolution, param_idx)
+    >>> optimizer = Optimizer(model, differential_evolution, param_idx)
     >>> def obj_fun(x):
     ...    '''Objective function to be minimized.'''
     ...    return optimizer.get_obj_val(x)
@@ -217,7 +217,7 @@ class InitialPopulation(object):
 
         Returns
         -------
-        population : numpy.ndarray
+        population : ``numpy.ndarray``
             Array specifying the initial population.
             The array should have shape (M, len(x)),
             where M is the total population size and len(x) is the number of parameters.
