@@ -3,7 +3,7 @@ import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
-from typing import Dict, List, NamedTuple, Optional, Tuple
+from typing import Dict, List, NamedTuple, Optional
 
 import numpy as np
 
@@ -610,31 +610,34 @@ class ReactionRules(ThermodynamicRestrictions):
         )
         return message
 
-    @staticmethod
-    def _extract_modifier(reactant: str, product: str) -> Tuple[str, str, str]:
-        species_1 = reactant.split("+")[0].strip()
-        species_2 = reactant.split("+")[1].strip()
-        species_3 = product.split("+")[0].strip()
-        species_4 = product.split("+")[1].strip()
-        if species_1 == species_3 and species_2 != species_4:
-            modifier = species_1
-            reactant = species_2
-            product = species_4
-        elif species_1 == species_4 and species_2 != species_3:
-            modifier = species_1
-            reactant = species_2
-            product = species_3
-        elif species_2 == species_3 and species_1 != species_4:
-            modifier = species_2
-            reactant = species_1
-            product = species_4
-        elif species_2 == species_4 and species_1 != species_3:
-            modifier = species_2
-            reactant = species_1
-            product = species_3
-        else:
-            raise ValueError("Should be defined as: E + S --> E + P")
-        return modifier, reactant, product
+    def _redirect_rules(
+        self,
+        line_num: int,
+        is_binding: bool,
+        is_unidirectional: bool,
+        c1: str,
+        c2: str,
+        cmplx: str,
+    ) -> None:
+        if c1 == c2:
+            # A + A --> AA
+            self.dimerize(
+                line_num, f"{c1} dimerizes {'-->' if is_unidirectional else '<-->'} {cmplx}"
+            )
+        elif c1 == cmplx and c2 != cmplx:
+            if is_binding:
+                # A + B --> A
+                self.degrade(line_num, f"{c1} degrades {c2}")
+            else:
+                # A --> A + B
+                self.synthesize(line_num, f"{c1} synthesizes {c2}")
+        elif c1 != cmplx and c2 == cmplx:
+            if is_binding:
+                # A + B --> B
+                self.degrade(line_num, f"{c2} degrades {c1}")
+            else:
+                # B --> A + B
+                self.synthesize(line_num, f"{c2} synthesizes {c1}")
 
     def _bind_and_dissociate(self, line_num: int, line: str) -> None:
         """
@@ -676,29 +679,22 @@ class ReactionRules(ThermodynamicRestrictions):
                 break
         else:
             raise ArrowError(self._get_arrow_error_message(line_num) + ".")
-        if component1 == complex or component2 == complex:
+        if (component1 == complex or component2 == complex) and not is_unidirectional:
             raise ValueError(f"line{line_num:d}: {complex} <- Use a different name.")
-        elif component1 == component2:
-            self.dimerize(line_num, line.replace(f"+ {component2}", "dimerizes"))
+        elif (
+            (component1 == component2)
+            or (component1 != complex and component2 == complex and is_unidirectional)
+            or (component1 == complex and component2 != complex and is_unidirectional)
+        ):
+            self._redirect_rules(
+                line_num, is_binding, is_unidirectional, component1, component2, complex
+            )
             return
         else:
             self._set_species(component1, component2, complex)
             self.complex_formations.append(
                 ComplexFormation(line_num, set([component1, component2]), complex, is_binding)
             )
-            # self.reactions.append(
-            #     f"v[{line_num:d}] = "
-            #     f"x[C.kf{line_num:d}] * y[V.{component1}] * y[V.{component2}]"
-            #     + (f" - x[C.kr{line_num:d}] * y[V.{complex}]" if not is_unidirectional else "")
-            #     if is_binding
-            #     else f"v[{line_num:d}] = "
-            #     f"x[C.kf{line_num:d}] * y[V.{complex}]"
-            #     + (
-            #         f" - x[C.kr{line_num:d}] * y[V.{component1}] * y[V.{component2}]"
-            #         if not is_unidirectional
-            #         else ""
-            #     )
-            # )
             if is_binding:
                 self.reactions.append(
                     f"v[{line_num:d}] = "
@@ -1096,7 +1092,7 @@ class ReactionRules(ThermodynamicRestrictions):
             if f"dydt[V.{unphosphorylated_form}]" in eq:
                 counter_unphosphorylated_form += 1
                 self.differential_equations[i] = eq + f" - v[{line_num:d}]"
-            elif "dydt[V.{phosphorylated_form}]" in eq:
+            elif f"dydt[V.{phosphorylated_form}]" in eq:
                 counter_phosphorylated_form += 1
                 self.differential_equations[i] = eq + f" + v[{line_num:d}]"
         if counter_unphosphorylated_form == 0:
@@ -1725,12 +1721,15 @@ class ReactionRules(ThermodynamicRestrictions):
                 products.remove(modifier)
             self._set_species(*modifiers)
             modifiers_string = " * " + " * ".join([f"y[V.{modifier}]" for modifier in modifiers])
+            modifiers_string_raw = " * " + " * ".join([f"{modifier}]" for modifier in modifiers])
         else:
             modifiers = None
             modifiers_string = ""
         self._set_species(*reactants, *products)
         lefthand = "y[V." + "] * y[V.".join(reactants) + "]"
+        lefthand_raw = " * ".join(reactants)
         righthand = "y[V." + "] * y[V.".join(products) + "]"
+        righthand_raw = " * ".join(products)
         self.reactions.append(
             f"v[{line_num:d}] = "
             f"x[C.kf{line_num:d}] * "
@@ -1748,7 +1747,7 @@ class ReactionRules(ThermodynamicRestrictions):
                     tuple(reactants),
                     tuple(products),
                     (),
-                    f"kf{line_num} * " + lefthand,
+                    f"kf{line_num} * " + lefthand_raw,
                 )
             )
         else:
@@ -1757,7 +1756,7 @@ class ReactionRules(ThermodynamicRestrictions):
                     tuple(reactants),
                     tuple(products),
                     tuple(modifiers),
-                    f"kf{line_num} * " + lefthand + modifiers_string,
+                    f"kf{line_num} * " + lefthand_raw + modifiers_string_raw,
                 )
             )
         if not is_unidirectional and modifiers is None:
@@ -1766,7 +1765,7 @@ class ReactionRules(ThermodynamicRestrictions):
                     tuple(products),
                     tuple(reactants),
                     (),
-                    f"kr{line_num} * " + righthand,
+                    f"kr{line_num} * " + righthand_raw,
                 )
             )
         elif not is_unidirectional and modifiers:
@@ -1775,7 +1774,7 @@ class ReactionRules(ThermodynamicRestrictions):
                     tuple(products),
                     tuple(reactants),
                     tuple(modifiers),
-                    f"kr{line_num} * " + righthand + modifiers_string,
+                    f"kr{line_num} * " + righthand_raw + modifiers_string_raw,
                 )
             )
 
