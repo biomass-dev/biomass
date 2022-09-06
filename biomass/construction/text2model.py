@@ -896,7 +896,7 @@ class Text2Model(ReactionRules):
         Parameters
         ----------
         terminology : Dict[str, List[str]], optional
-            Rule to which users register a new rule word and list of user-defined rule words.
+            Pair of reaction rule and user-defined rule words.
 
         Examples
         --------
@@ -967,7 +967,7 @@ class Text2Model(ReactionRules):
     ) -> None:
         """Saves a static image of the network.
 
-        Static image is created using pygraphviz.
+        Static image is created using ``pygraphviz``.
 
         Parameters
         ----------
@@ -1019,17 +1019,17 @@ class Text2Model(ReactionRules):
         which_controls: Optional[List[str]] = None,
     ) -> None:
         """Saves a dynamic and interactive image of the network graph.
-        Graph is read by pyvis. Using pyvis a dynamic and interactive representation of the biological network
+        Graph is read by ``pyvis``. Using ``pyvis`` a dynamic and interactive representation of the biological network
         is created in html format.
 
         Parameters
         ----------
         show: bool, default=True
-            If true the plot will immediately be displayed in the webbrowser.
+            If :obj:`True` the plot will immediately be displayed in the webbrowser.
         annotate_nodes : bool, default=True
-            If true nodes will be scaled according to number of edges and hovering over a node will show interaction partners.
+            If :obj:`True` nodes will be scaled according to number of edges and hovering over a node will show interaction partners.
         show_controls : bool, default=False
-            If true control buttons will be displayed.
+            If :obj:`True` control buttons will be displayed.
         which_controls : List(str), optional, default=None
             Used to specify which control buttons should be displayed. If empty all buttons will be displayed.
 

@@ -17,11 +17,11 @@ class ModelObject(object):
 
     Examples
     --------
-    >>> from biomass import Model
+    >>> from biomass import create_model
     >>> from biomass.models import mapk_cascade
-    >>> model = Model(mapk_cascade.__package__).create()
+    >>> model = create_model(mapk_cascade.__package__)
     >>> type(model)
-    <class 'biomass.exec_model.ModelObject'>
+    <class 'biomass.model_object.ModelObject'>
     >>> print('Parameters:', len(model.parameters))
     Parameters: 22
     >>> print('Species:', len(model.species))
@@ -73,7 +73,7 @@ class ModelObject(object):
 
         Returns
         -------
-        best_individual : numpy.ndarray
+        best_individual : ``numpy.ndarray``
             Estimated parameter values.
         """
         best_generation = np.load(
@@ -105,7 +105,7 @@ class ModelObject(object):
 
         Returns
         -------
-        optimized_values : OptimizedValues
+        optimized_values : :class:`biomass.model_object.OptimizedValues`
             Optimized parameter/initial values.
         """
         best_individual = self.get_individual(paramset)
@@ -151,12 +151,12 @@ class ModelObject(object):
 
         Parameters
         ----------
-        indiv_gene : ``numpy.ndarray```
+        indiv_gene : ``numpy.ndarray``
             Individual gene.
 
         Returns
         -------
-        indiv_values : ``numpy.ndarray```
+        indiv_values : ``numpy.ndarray``
             Corresponding values.
         """
         bounds = self.problem.get_region()
@@ -169,7 +169,7 @@ class ModelObject(object):
 
         Parameters
         ----------
-        indiv_gene : numpy.ndarray
+        indiv_gene : ``numpy.ndarray``
             Genes, not parameter values.
 
         Returns
