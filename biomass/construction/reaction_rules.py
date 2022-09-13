@@ -1824,9 +1824,9 @@ class ReactionRules(ThermodynamicRestrictions):
         for arrow in self.fwd_arrows:
             if arrow in balance:
                 reactant, product = balance.split(arrow)
-                if reactant in ['0','∅']:
+                if reactant in ["0", "∅"]:
                     self._set_species(product.strip())
-                elif product in ['0','∅']:
+                elif product in ["0", "∅"]:
                     self._set_species(reactant.strip())
                 else:
                     self._set_species(reactant.strip(), product.strip())
@@ -1850,8 +1850,8 @@ class ReactionRules(ThermodynamicRestrictions):
         )
         self.kinetics.append(
             KineticInfo(
-                () if reactant in ['0','∅'] else (reactant,),
-                () if product in ['0','∅'] else (product,),
+                () if reactant in ["0", "∅"] else (reactant,),
+                () if product in ["0", "∅"] else (product,),
                 () if modulators is None else (modulators),
                 rate_equation.replace("x[C.", "").replace("y[V.", "").replace("]", ""),
             )
