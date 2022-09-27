@@ -2,7 +2,7 @@ Construction of executable models from text (:py:mod:`biomass.construction`)
 ============================================================================
 
 The Text2Model class converts texts and sentences on biochemical systems into an executable
-mathematical model. It was originally developed in the pasmopy project [1]_ [2]_.
+mathematical model. It was originally developed in the `pasmopy project <https://github.com/pasmopy/pasmopy>`_ [1]_ [2]_.
 
 **References**
 
