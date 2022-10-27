@@ -63,7 +63,7 @@ def setup_package():
         extras_require={
             "graph": [
                 "pygraphviz>=1.9",
-                "pyvis>=0.2.1",
+                "pyvis>=0.2.1,<0.3",
             ],
             "dev": [
                 "black>=20.8b1",
