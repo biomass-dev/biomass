@@ -88,7 +88,7 @@ def test_run_analysis():
 
 def test_param_estim(n_proc: Optional[int] = None):
     if n_proc is None:
-        n_proc = n_proc = max(1, multiprocessing.cpu_count())
+        n_proc = max(1, multiprocessing.cpu_count())
     initpop = InitialPopulation(model).generate(n_proc=n_proc)
     optimize(model, x_id=11, optimizer_options={"maxiter": 5, "init": initpop, "workers": -1})
     with open(os.path.join(model.path, "out", "11", "optimization.log")) as f:
