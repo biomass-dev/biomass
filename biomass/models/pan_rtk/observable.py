@@ -156,7 +156,7 @@ class Observable(DifferentialEquation):
                 self.simulations[self.obs_names.index("pS6_au"), i] = np.log10(
                     x[C.offset_pS6_CelllineH322M] + x[C.scale_pS6_CelllineH322M] * sol.y[V.pS6]
                 )
-            return False
+            return None
 
     def set_data(self):
         pass
