@@ -102,6 +102,7 @@ class Observable(DifferentialEquation):
                 self.simulations[self.obs_names.index("G6Pase"), i] = (
                     sol.y[V.G6Pase] * 0.0363622452066626
                 )
+            return None
 
     def set_data(self):
         pass
@@ -109,3 +110,4 @@ class Observable(DifferentialEquation):
     def get_timepoint(self, obs_name):
         if obs_name in self.obs_names:
             return []
+        assert False

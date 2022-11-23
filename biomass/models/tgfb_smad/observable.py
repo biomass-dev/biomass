@@ -196,6 +196,7 @@ class Observable(DifferentialEquation):
                     return False
                 else:
                     self.simulations[self.obs_names.index(gene_name), i] = np.log2(sol.y[V.gene])
+                return None
 
     def set_data(self):
         pass
@@ -203,3 +204,4 @@ class Observable(DifferentialEquation):
     def get_timepoint(self, obs_name):
         if obs_name in self.obs_names:
             return []
+        assert False

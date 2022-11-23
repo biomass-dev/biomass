@@ -75,6 +75,7 @@ class Observable(DifferentialEquation):
                     sol.y[V.CycET] - sol.y[V.CycEp27]
                 )
                 self.simulations[self.obs_names.index("p27_tot"), i] = sol.y[V.p27T]
+            return None
 
     def set_data(self):
         pass
@@ -82,3 +83,4 @@ class Observable(DifferentialEquation):
     def get_timepoint(self, obs_name):
         if obs_name in self.obs_names:
             return []
+        assert False
