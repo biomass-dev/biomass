@@ -1,12 +1,10 @@
 from dataclasses import dataclass, field
 from math import isnan, log
-from typing import Callable, Dict, Final, Union
+from typing import Callable, Dict, Union
 
 import numpy as np
 from numba import njit
 from scipy.integrate import simpson
-
-EPS: Final[np.float64] = np.finfo(float).eps
 
 
 @dataclass
@@ -29,7 +27,7 @@ class SignalingMetric(object):
     )
 
 
-@njit(fastmath=True)
+@njit(cache=True, fastmath=True, parallel=True)
 def dlnyi_dlnxj(
     signaling_metric: np.ndarray,
     num_file_ids: int,
@@ -69,8 +67,8 @@ def dlnyi_dlnxj(
                     if isnan(signaling_metric[i, j, k, l]):
                         sensitivity_coefficients[i, j, k, l] = np.nan
                     elif (
-                        abs(signaling_metric[i, -1, k, l]) < EPS
-                        or abs(signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l]) < EPS
+                        abs(signaling_metric[i, -1, k, l]) < np.finfo(float).eps
+                        or abs(signaling_metric[i, j, k, l] - signaling_metric[i, -1, k, l]) < np.finfo(float).eps
                         or (signaling_metric[i, j, k, l] / signaling_metric[i, -1, k, l]) <= 0
                     ):
                         # 1. Signaling metric before adding perturbation is zero
@@ -85,7 +83,6 @@ def dlnyi_dlnxj(
     return sensitivity_coefficients
 
 
-@njit(fastmath=True)
 def remove_nan(sensitivity_matrix: np.ndarray) -> np.ndarray:
     """
     Remove NaN from sensitivity matrix. This function is used for preprocessing of visualizing
@@ -99,7 +96,7 @@ def remove_nan(sensitivity_matrix: np.ndarray) -> np.ndarray:
     for i in range(sensitivity_matrix.shape[0]):
         if np.isnan(sensitivity_matrix[i, :]).any():
             nan_idx.append(i)
-        if np.nanmax(np.abs(sensitivity_matrix[i, :])) < EPS:
+        if np.nanmax(np.abs(sensitivity_matrix[i, :])) < np.finfo(float).eps:
             sensitivity_matrix[i, :] = np.zeros(sensitivity_matrix.shape[1])
 
     return np.delete(sensitivity_matrix, nan_idx, axis=0)
