@@ -1,5 +1,5 @@
 import matplotlib as mpl
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
 
 from biomass.plotting import *
 
