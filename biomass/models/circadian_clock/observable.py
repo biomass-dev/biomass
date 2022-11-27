@@ -72,6 +72,7 @@ class Observable(DifferentialEquation):
                 self.simulations[self.obs_names.index("Per_mRNA"), i] = sol.y[V.MP]
                 self.simulations[self.obs_names.index("Cry_mRNA"), i] = sol.y[V.MC]
                 self.simulations[self.obs_names.index("Bmal1_mRNA"), i] = sol.y[V.MB]
+            return None
 
     def set_data(self):
         pass
@@ -79,3 +80,4 @@ class Observable(DifferentialEquation):
     def get_timepoint(self, obs_name):
         if obs_name in self.obs_names:
             return []
+        assert False

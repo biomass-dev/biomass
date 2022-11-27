@@ -1,4 +1,5 @@
-from matplotlib import pyplot as plt
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 
 from biomass.plotting import *
 
@@ -24,7 +25,7 @@ class Visualization(Observable):
     def __init__(self):
         super().__init__()
 
-        self.cm = plt.cm.get_cmap("tab10")
+        self.cm = mpl.colormaps["tab10"]
         self.single_observable_options = [
             SingleObservable(self.cm, obs_name) for obs_name in self.obs_names
         ]

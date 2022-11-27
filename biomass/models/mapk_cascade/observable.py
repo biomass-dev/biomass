@@ -89,6 +89,7 @@ class Observable(DifferentialEquation):
                     V.MAPK_PP
                 ]
                 self.simulations[self.obs_names.index("unphosphorylated_MAPK"), i] = sol.y[V.MAPK]
+            return None
 
     def set_data(self):
         # Test data
@@ -164,3 +165,4 @@ class Observable(DifferentialEquation):
     def get_timepoint(self, obs_name):
         if obs_name in self.obs_names:
             return [60 * i for i in range(0, 150, 5)]
+        assert False
