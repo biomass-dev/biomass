@@ -1,12 +1,10 @@
 from dataclasses import dataclass, field
 from math import isnan, log
-from typing import Callable, Dict, Final, Union
+from typing import Callable, Dict, Union
 
 import numpy as np
 from numba import njit
 from scipy.integrate import simpson
-
-EPS: Final[np.float64] = np.finfo(float).eps
 
 
 @dataclass
@@ -29,7 +27,7 @@ class SignalingMetric(object):
     )
 
 
-@njit(fastmath=True)
+@njit(cache=True, fastmath=True, parallel=True)
 def dlnyi_dlnxj(
     signaling_metric: np.ndarray,
     num_file_ids: int,
@@ -59,6 +57,7 @@ def dlnyi_dlnxj(
     -------
     sensitivity_coefficients: numpy array
     """
+    EPS = 2.220446049250313e-16
     sensitivity_coefficients = np.empty(
         (num_file_ids, num_perturbed_ids, num_observables, num_conditions),
     )
@@ -85,7 +84,6 @@ def dlnyi_dlnxj(
     return sensitivity_coefficients
 
 
-@njit(fastmath=True)
 def remove_nan(sensitivity_matrix: np.ndarray) -> np.ndarray:
     """
     Remove NaN from sensitivity matrix. This function is used for preprocessing of visualizing
@@ -95,11 +93,11 @@ def remove_nan(sensitivity_matrix: np.ndarray) -> np.ndarray:
     sensitivity_matrix : numpy.ndarray
         M x N matrix, where M and M are # of parameter sets and # of perturbed objects, respectively.
     """
+    EPS = 2.220446049250313e-16
     nan_idx = []
     for i in range(sensitivity_matrix.shape[0]):
         if np.isnan(sensitivity_matrix[i, :]).any():
             nan_idx.append(i)
         if np.nanmax(np.abs(sensitivity_matrix[i, :])) < EPS:
             sensitivity_matrix[i, :] = np.zeros(sensitivity_matrix.shape[1])
-
     return np.delete(sensitivity_matrix, nan_idx, axis=0)
