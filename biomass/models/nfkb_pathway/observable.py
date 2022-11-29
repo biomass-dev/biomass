@@ -105,7 +105,7 @@ class Observable(DifferentialEquation):
                 self.simulations[self.obs_names.index("nuclear_NFkB"), i] = x[C.Vnuc] * (
                     sol.y[V.pnNfk] + sol.y[V.nNfk] + sol.y[V.nNfkIkb]
                 )
-            return None
+        return
 
     def set_data(self):
         pass
