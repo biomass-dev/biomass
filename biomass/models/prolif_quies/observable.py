@@ -70,7 +70,7 @@ class Observable(DifferentialEquation):
                 self.simulations[self.obs_names.index("CycE"), i] = sol.y[V.tCe]
                 self.simulations[self.obs_names.index("active_RC"), i] = sol.y[V.aRc]
                 self.simulations[self.obs_names.index("p21_tot"), i] = sol.y[V.tP21]
-            return None
+        return
 
     def set_data(self):
         pass

@@ -89,7 +89,7 @@ class Observable(DifferentialEquation):
                     V.MAPK_PP
                 ]
                 self.simulations[self.obs_names.index("unphosphorylated_MAPK"), i] = sol.y[V.MAPK]
-            return None
+        return
 
     def set_data(self):
         # Test data
