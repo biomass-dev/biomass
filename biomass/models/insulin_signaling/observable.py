@@ -102,7 +102,7 @@ class Observable(DifferentialEquation):
                 self.simulations[self.obs_names.index("G6Pase"), i] = (
                     sol.y[V.G6Pase] * 0.0363622452066626
                 )
-        return
+        return None
 
     def set_data(self):
         pass

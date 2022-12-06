@@ -196,7 +196,7 @@ class Observable(DifferentialEquation):
                     return False
                 else:
                     self.simulations[self.obs_names.index(gene_name), i] = np.log2(sol.y[V.gene])
-        return
+        return None
 
     def set_data(self):
         pass

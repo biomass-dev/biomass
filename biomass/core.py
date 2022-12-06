@@ -48,7 +48,7 @@ class Model(object):
         except ImportError:
             p = Path(self.pkg_name.replace(".", os.sep))
             print(f"cannot import '{p.name}' from '{p.parent}'.")
-        return
+        return None
 
     @staticmethod
     def _check_indices(model: ModelObject) -> None:
