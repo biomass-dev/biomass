@@ -106,7 +106,7 @@ class Observable(DifferentialEquation):
                 self.simulations[self.obs_names.index("Phosphorylated_cFos"), i] = (
                     sol.y[V.pcFOSn] * (x[C.Vn] / x[C.Vc]) + sol.y[V.pcFOSc]
                 )
-        return
+        return None
 
     def set_data(self):
         self.experiments[self.obs_names.index("Phosphorylated_MEKc")] = {

@@ -75,7 +75,7 @@ class Observable(DifferentialEquation):
                     sol.y[V.CycET] - sol.y[V.CycEp27]
                 )
                 self.simulations[self.obs_names.index("p27_tot"), i] = sol.y[V.p27T]
-        return
+        return None
 
     def set_data(self):
         pass
