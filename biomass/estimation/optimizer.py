@@ -15,24 +15,31 @@ from ..model_object import ModelObject
 DIRNAME = "_tmp"
 
 
-class _Logger(object):
+class Tee(object):
     """
     Duplicate stdout to _tmp/optimization.log.
     """
-
     def __init__(self, model_path: str, x_id: int, disp_here: bool):
         self.disp_here = disp_here
-        self.terminal = sys.stdout
-        self.log = open(
+        self.file = open(
             os.path.join(model_path, "out", DIRNAME + str(x_id), "optimization.log"),
             mode="w",
             encoding="utf-8",
         )
+        self.stdout = sys.stdout
+        sys.stdout = self
 
-    def write(self, message: str):
+    def write(self, data):
+        self.file.write(data)
         if self.disp_here:
-            self.terminal.write(message)
-        self.log.write(message)
+            self.stdout.write(data)
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, *args):
+        sys.stdout = self.stdout
+        self.file.close()
 
 
 class Optimizer(object):
@@ -123,14 +130,11 @@ class Optimizer(object):
         Execute the external optimizer.
         """
         os.makedirs(os.path.join(self.model.path, "out", DIRNAME + str(self.x_id)), exist_ok=True)
-        try:
-            sys.stdout = _Logger(self.model.path, self.x_id, self.disp_here)
+        with Tee(self.model.path, self.x_id, self.disp_here):
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 res = self.optimize(*args, **kwargs)
-            return res
-        finally:
-            sys.stdout = self.default_stdout
+        return res
 
     def _get_n_iter(self) -> int:
         n_iter: int = 0
