@@ -19,6 +19,7 @@ class Tee(object):
     """
     Duplicate stdout to _tmp/optimization.log.
     """
+
     def __init__(self, model_path: str, x_id: int, disp_here: bool):
         self.disp_here = disp_here
         self.file = open(
