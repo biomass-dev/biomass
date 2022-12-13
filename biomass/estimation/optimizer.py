@@ -71,7 +71,7 @@ class Optimizer(object):
     >>> optimizer = Optimizer(model, differential_evolution, param_idx)
     >>> def obj_fun(x):
     ...    '''Objective function to be minimized.'''
-    ...    return optimizer.get_obj_val(x)
+    ...    return model.get_obj_val(x)
     >>> res = optimizer.minimize(
     ...     obj_fun,
     ...     [(0, 1) for _ in range(len(model.problem.bounds))],
