@@ -1,4 +1,4 @@
-|PyPI version| |Actions Status| |Documentation Status| |License| |Downloads| |Python versions| |Code quality| |Pre commit| |Code style| |Imports| |Cancers Paper|
+|PyPI version| |Actions Status| |Documentation Status| |License| |Downloads| |Python versions| |Pre commit| |Code style| |Imports| |Cancers Paper|
 
 =====================
 BioMASS documentation
@@ -70,10 +70,6 @@ You can also always send me an `email <mailto:himoto@protein.osaka-u.ac.jp>`_.
 .. |Python versions| image:: https://img.shields.io/pypi/pyversions/biomass.svg?logo=Python&logoColor=white
    :target: https://pypi.python.org/pypi/biomass/
    :alt: Python versions
-
-.. |Code quality| image:: https://img.shields.io/lgtm/grade/python/g/biomass-dev/biomass.svg?logo=lgtm&logoWidth=18
-   :target: https://lgtm.com/projects/g/biomass-dev/biomass/context:python
-   :alt: Code quality: Python
 
 .. |Pre commit| image:: https://results.pre-commit.ci/badge/github/biomass-dev/biomass/master.svg
    :target: https://results.pre-commit.ci/latest/github/biomass-dev/biomass/master
