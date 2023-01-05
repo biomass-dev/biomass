@@ -2,7 +2,7 @@
 Model template for conversion of biomass models into
 BioMASS.jl (https://github.com/biomass-dev/BioMASS.jl) format.
 
-BioMASS.jl >= 0.7.2
+This supports BioMASS.jl v0.8.0 or more. 
 """
 
 from typing import Final
