@@ -46,5 +46,5 @@ If you construct a mathematical model using :class:`biomass.construction.text2mo
 When presenting work that uses BioMASS, feel free to use the logo.
 
 .. image:: _static/img/biomass-logo.png
-   :width: 600px
+   :width: 500px
    :align: center
