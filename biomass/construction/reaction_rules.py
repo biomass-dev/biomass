@@ -1721,7 +1721,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 products.remove(modifier)
             self._set_species(*modifiers)
             modifiers_string = " * " + " * ".join([f"y[V.{modifier}]" for modifier in modifiers])
-            modifiers_string_raw = " * " + " * ".join([f"{modifier}]" for modifier in modifiers])
+            modifiers_string_raw = " * " + " * ".join([f"{modifier}" for modifier in modifiers])
         else:
             modifiers = None
             modifiers_string = ""
