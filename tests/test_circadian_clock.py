@@ -7,7 +7,7 @@ import numpy as np
 from biomass import create_model, run_simulation
 from biomass.models import copy_to_current
 
-MODEL_NAME = "circadian_clock"
+MODEL_NAME: str = "circadian_clock"
 
 copy_to_current(MODEL_NAME)
 assert os.path.exists(MODEL_NAME)
