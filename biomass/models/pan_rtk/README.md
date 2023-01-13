@@ -10,61 +10,70 @@ Hass, H., Masson, K., Wohlgemuth, S. *et al.* Predicting ligand-dependent tumors
 
 ## Run simulation using BioMASS
 
-```python
-import os
+1. Clone this repository and `cd` into it
 
-import numpy as np
-import matplotlib.pyplot as plt
-from biomass.models import pan_rtk
-from biomass import Model, run_simulation
+    ```
+    $ git clone https://github.com/biomass-dev/biomass.git
+    $ cd biomass
+    ```
 
-model = Model(pan_rtk.__package__).create()
+1. Save simulation results
 
-def save_result(model):
+    ```python
+    import os
 
-    run_simulation(model)
-    res = np.load(os.path.join(model.path, "simulation_data", "simulations_original.npy"))
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from biomass.models import pan_rtk
+    from biomass import Model, run_simulation
 
-    colors = ['k', 'b', 'c', 'r', 'y']
-    yticks = [
-        np.arange(0.5, 3, 0.5),
-        np.arange(-0.8, 1.2, 0.2),
-        np.arange(-0.8, 1, 0.2),
-        np.arange(-1.2, 0.2, 0.2),
-        np.arange(-0.8, 0.2, 0.2),
-        np.arange(-0.5, 0.3, 0.1),
-    ]
-    sd = 1.0E-1
-    
-    plt.rcParams['font.size'] = 6
-    plt.rcParams['font.family'] = 'Arial'
-    #plt.rcParams['axes.linewidth'] = 1
-    plt.rcParams['lines.linewidth'] = 0.8
-    
-    plt.subplots_adjust(wspace=0.5, hspace=0.4)
-    
-    for i in range(6):
-        if i < 3:
-            plt.subplot(2, 4, i + 1)
-        else:
-            plt.subplot(2, 4, i + 2)
-        plt.figsize=(7, 4)
-        plt.gca().spines['right'].set_visible(False)
-        plt.gca().spines['top'].set_visible(False)
+    model = Model(pan_rtk.__package__).create()
 
-        for j, color in enumerate(colors):
-            plt.plot(model.problem.t, res[i, j], color, label=model.problem.conditions[j].replace("_", "."))
-            plt.fill_between(model.problem.t, res[i, j] - sd, res[i, j] + sd, facecolor=color, lw=0, alpha=0.1)
-        plt.title(model.observables[i][:-3], fontweight="bold")
-        plt.xlabel('time [min]')
-        plt.xticks([0, 60, 120, 180, 240])
-        plt.ylabel('(conc.) [au]')
-        plt.yticks(yticks[i])
-        if i == 2:
-            plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0, frameon=False)
-    plt.savefig(f"{os.path.basename(model.path)}", dpi=150, bbox_inches="tight")
+    def save_result(model):
 
-save_result(model)
-```
+        run_simulation(model)
+        res = np.load(os.path.join(model.path, "simulation_data", "simulations_original.npy"))
 
-<img align="left" src="./pan_rtk.png" width="800px">
+        colors = ['k', 'b', 'c', 'r', 'y']
+        yticks = [
+            np.arange(0.5, 3, 0.5),
+            np.arange(-0.8, 1.2, 0.2),
+            np.arange(-0.8, 1, 0.2),
+            np.arange(-1.2, 0.2, 0.2),
+            np.arange(-0.8, 0.2, 0.2),
+            np.arange(-0.5, 0.3, 0.1),
+        ]
+        sd = 1.0E-1
+
+        plt.rcParams['font.size'] = 6
+        plt.rcParams['font.family'] = 'Arial'
+        #plt.rcParams['axes.linewidth'] = 1
+        plt.rcParams['lines.linewidth'] = 0.8
+
+        plt.subplots_adjust(wspace=0.5, hspace=0.4)
+
+        for i in range(6):
+            if i < 3:
+                plt.subplot(2, 4, i + 1)
+            else:
+                plt.subplot(2, 4, i + 2)
+            plt.figsize=(7, 4)
+            plt.gca().spines['right'].set_visible(False)
+            plt.gca().spines['top'].set_visible(False)
+
+            for j, color in enumerate(colors):
+                plt.plot(model.problem.t, res[i, j], color, label=model.problem.conditions[j].replace("_", "."))
+                plt.fill_between(model.problem.t, res[i, j] - sd, res[i, j] + sd, facecolor=color, lw=0, alpha=0.1)
+            plt.title(model.observables[i][:-3], fontweight="bold")
+            plt.xlabel('time [min]')
+            plt.xticks([0, 60, 120, 180, 240])
+            plt.ylabel('(conc.) [au]')
+            plt.yticks(yticks[i])
+            if i == 2:
+                plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0, frameon=False)
+        plt.savefig(f"{os.path.basename(model.path)}", dpi=150, bbox_inches="tight")
+
+    save_result(model)
+    ```
+
+    <img align="left" src="./pan_rtk.png" width="800px">

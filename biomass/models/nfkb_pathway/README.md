@@ -6,43 +6,52 @@ Oppelt, A. _et al._ Model-based identification of TNFα-induced IKKβ-mediated a
 
 ## Run simulation using BioMASS
 
-```python
-import os
+1. Clone this repository and `cd` into it
 
-import numpy as np
-import matplotlib.pyplot as plt
-from biomass.models import nfkb_pathway
-from biomass import Model, run_simulation
+    ```
+    $ git clone https://github.com/biomass-dev/biomass.git
+    $ cd biomass
+    ```
 
-model = Model(nfkb_pathway.__package__).create()
+1. Save simulation results
 
-def save_result(model):
+    ```python
+    import os
 
-    run_simulation(model)
-    res = np.load(os.path.join(model.path, "simulation_data", "simulations_original.npy"))
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from biomass.models import nfkb_pathway
+    from biomass import Model, run_simulation
 
-    fig=plt.figure(figsize=(9, 9))
-    plt.rcParams['font.family'] = 'Arial'
-    plt.rcParams['font.size'] = 18
-    plt.rcParams['axes.linewidth'] = 2
-    plt.rcParams['lines.linewidth'] = 3
-    plt.rcParams['lines.markersize'] = 16
-    plt.subplots_adjust(wspace=0, hspace=0.3)
+    model = Model(nfkb_pathway.__package__).create()
 
-    for i, obs_name in enumerate(model.observables):
-        plt.subplot(2, 1, i + 1)
-        for j, (color, label) in enumerate(zip(['k', 'r'], ['TNFα', 'TNFα + DCF'])):
-            plt.plot(model.problem.t, res[i, j], color=color, label=label)
-        plt.title(f'{obs_name}'.replace('_', ' '))
-        plt.xticks([0, 50, 100, 150, 200])
-        if i == 0:
-            plt.yticks([0, 0.05, 0.10, 0.15])
-            plt.legend(loc='upper left', frameon=False)
-    fig.text(0.5, 0.05, 'time [min]', ha='center')
-    fig.text(0.0, 0.5, 'concentration [a.u.]', va='center', rotation='vertical')
-    plt.savefig(f"{os.path.basename(model.path)}", bbox_inches="tight")
+    def save_result(model):
 
-save_result(model)
-```
+        run_simulation(model)
+        res = np.load(os.path.join(model.path, "simulation_data", "simulations_original.npy"))
 
-<img align="left" src="./nfkb_pathway.png" width="400px">
+        fig=plt.figure(figsize=(9, 9))
+        plt.rcParams['font.family'] = 'Arial'
+        plt.rcParams['font.size'] = 18
+        plt.rcParams['axes.linewidth'] = 2
+        plt.rcParams['lines.linewidth'] = 3
+        plt.rcParams['lines.markersize'] = 16
+        plt.subplots_adjust(wspace=0, hspace=0.3)
+
+        for i, obs_name in enumerate(model.observables):
+            plt.subplot(2, 1, i + 1)
+            for j, (color, label) in enumerate(zip(['k', 'r'], ['TNFα', 'TNFα + DCF'])):
+                plt.plot(model.problem.t, res[i, j], color=color, label=label)
+            plt.title(f'{obs_name}'.replace('_', ' '))
+            plt.xticks([0, 50, 100, 150, 200])
+            if i == 0:
+                plt.yticks([0, 0.05, 0.10, 0.15])
+                plt.legend(loc='upper left', frameon=False)
+        fig.text(0.5, 0.05, 'time [min]', ha='center')
+        fig.text(0.0, 0.5, 'concentration [a.u.]', va='center', rotation='vertical')
+        plt.savefig(f"{os.path.basename(model.path)}", bbox_inches="tight")
+
+    save_result(model)
+    ```
+
+    <img align="left" src="./nfkb_pathway.png" width="400px">

@@ -10,41 +10,50 @@ Heldt, F. S., Barr, A. R., Cooper, S., Bakal, C. & Novák, B. A comprehensive mo
 
 ## Run simulation using BioMASS
 
-```python
-import os
+1. Clone this repository and `cd` into it
 
-import numpy as np
-import matplotlib.pyplot as plt
-from biomass.models import prolif_quies
-from biomass import Model, run_simulation
+    ```
+    $ git clone https://github.com/biomass-dev/biomass.git
+    $ cd biomass
+    ```
 
-model = Model(prolif_quies.__package__).create()
+1. Save simulation results
 
-def save_result(model):
-    run_simulation(model)
-    res = np.load(os.path.join(model.path, "simulation_data", "simulations_original.npy"))
+    ```python
+    import os
 
-    plt.figure(figsize=(10,5))
-    plt.rcParams['font.size'] = 32
-    plt.rcParams['axes.linewidth'] = 1.5
-    plt.rcParams['lines.linewidth'] = 6
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from biomass.models import prolif_quies
+    from biomass import Model, run_simulation
 
-    plt.plot([t_ / 60 for t_ in model.problem.t], res[model.observables.index('CycA'), 0], color='slateblue', label='CycA')
-    plt.plot([t_ / 60 for t_ in model.problem.t], res[model.observables.index('CycE'), 0],color='skyblue', label='CycE')
-    plt.plot([t_ / 60 for t_ in model.problem.t], res[model.observables.index('active_RC'), 0], color='firebrick', label='aRC')
-    plt.plot([t_ / 60 for t_ in model.problem.t], res[model.observables.index('p21_tot'), 0], color='limegreen', label='p21')
+    model = Model(prolif_quies.__package__).create()
 
-    plt.xlim(0, 20)
-    plt.xlabel('time from cytokinesis (h)')
-    plt.ylim(0, 2)
-    plt.ylabel('rel. level (AU)')
-    plt.xticks([0, 5, 10, 15, 20])
-    plt.yticks([0, 1, 2])
-    plt.legend(loc='upper left', frameon=False, fontsize=18)
+    def save_result(model):
+        run_simulation(model)
+        res = np.load(os.path.join(model.path, "simulation_data", "simulations_original.npy"))
 
-    plt.savefig(f"{os.path.basename(model.path)}", dpi=150, bbox_inches="tight")
+        plt.figure(figsize=(10,5))
+        plt.rcParams['font.size'] = 32
+        plt.rcParams['axes.linewidth'] = 1.5
+        plt.rcParams['lines.linewidth'] = 6
 
-save_result(model)
-```
+        plt.plot([t_ / 60 for t_ in model.problem.t], res[model.observables.index('CycA'), 0], color='slateblue', label='CycA')
+        plt.plot([t_ / 60 for t_ in model.problem.t], res[model.observables.index('CycE'), 0],color='skyblue', label='CycE')
+        plt.plot([t_ / 60 for t_ in model.problem.t], res[model.observables.index('active_RC'), 0], color='firebrick', label='aRC')
+        plt.plot([t_ / 60 for t_ in model.problem.t], res[model.observables.index('p21_tot'), 0], color='limegreen', label='p21')
 
-<img align="left" src="./prolif_quies.png" width="800px">
+        plt.xlim(0, 20)
+        plt.xlabel('time from cytokinesis (h)')
+        plt.ylim(0, 2)
+        plt.ylabel('rel. level (AU)')
+        plt.xticks([0, 5, 10, 15, 20])
+        plt.yticks([0, 1, 2])
+        plt.legend(loc='upper left', frameon=False, fontsize=18)
+
+        plt.savefig(f"{os.path.basename(model.path)}", dpi=150, bbox_inches="tight")
+
+    save_result(model)
+    ```
+
+    <img align="left" src="./prolif_quies.png" width="800px">

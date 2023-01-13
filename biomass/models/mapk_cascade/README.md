@@ -10,15 +10,24 @@ Kholodenko, B. N. Negative feedback and ultrasensitivity can bring about oscilla
 
 ## Run simulation using BioMASSS
 
-```python
-import os
+1. Clone this repository and `cd` into it
 
-from biomass.models import mapk_cascade
-from biomass import Model, run_simulation
+    ```
+    $ git clone https://github.com/biomass-dev/biomass.git
+    $ cd biomass
+    ```
 
-model = Model(mapk_cascade.__package__).create()
+1. Save simulation results
 
-run_simulation(model)
-```
+    ```python
+    import os
 
-<img align="left" src="./mapk_cascade.png" width="400px">
+    from biomass.models import mapk_cascade
+    from biomass import Model, run_simulation
+
+    model = Model(mapk_cascade.__package__).create()
+
+    run_simulation(model)
+    ```
+
+    <img align="left" src="./mapk_cascade.png" width="400px">
