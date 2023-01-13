@@ -1,6 +1,6 @@
 import os
 import shutil
-from pathlib import Path
+from typing import Optional
 
 
 def copy_to_current(model_name: str) -> None:
@@ -18,7 +18,6 @@ def copy_to_current(model_name: str) -> None:
     model_name : str
         Name of the example model.
     """
-    this_directory = os.path.abspath(os.path.dirname(__file__))
     if model_name not in (
         available_models := [
             "circadian_clock",
@@ -33,4 +32,7 @@ def copy_to_current(model_name: str) -> None:
         ]
     ):
         raise ValueError(f"model_name must be one of [{', '.join(available_models)}].")
-    shutil.copytree(os.path.join(this_directory, model_name), Path.cwd())
+    this_directory = os.path.abspath(os.path.dirname(__file__))
+    shutil.copytree(
+        os.path.join(this_directory, model_name), os.path.join(os.getcwd(), model_name)
+    )
