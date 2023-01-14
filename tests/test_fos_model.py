@@ -1,6 +1,7 @@
 import multiprocessing
 import os
 import shutil
+from distutils.dir_util import copy_tree
 from typing import Final, Optional
 
 import numpy as np
@@ -15,6 +16,14 @@ MODEL_NAME: Final[str] = "Nakakuki_Cell_2010"
 copy_to_current(MODEL_NAME)
 assert os.path.exists(MODEL_NAME)
 model = create_model(MODEL_NAME)
+
+
+def test_initialization():
+    os.mkdir(os.path.join(MODEL_NAME, "out"))
+    copy_tree(
+        os.path.join("tests", "out"),
+        os.path.join("biomass", "models", "Nakakuki_Cell_2010", "out"),
+    )
 
 
 def test_run_simulation():
