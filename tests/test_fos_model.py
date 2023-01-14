@@ -22,7 +22,7 @@ def test_initialization():
     os.mkdir(os.path.join(MODEL_NAME, "out"))
     copy_tree(
         os.path.join("tests", "out"),
-        os.path.join("biomass", "models", "Nakakuki_Cell_2010", "out"),
+        os.path.join(MODEL_NAME, "out"),
     )
 
 
