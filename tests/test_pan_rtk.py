@@ -4,15 +4,14 @@ import shutil
 import matplotlib.pyplot as plt
 import numpy as np
 
-from biomass import Model, run_simulation
-from biomass.models import pan_rtk
+from biomass import create_model, run_simulation
+from biomass.models import copy_to_current
 
-model = Model(pan_rtk.__package__).create()
+MODEL_NAME: str = "pan_rtk"
 
-
-for dir in ["figure", "simulation_data"]:
-    if os.path.isdir(os.path.join(model.path, dir)):
-        shutil.rmtree(os.path.join(model.path, dir))
+copy_to_current(MODEL_NAME)
+assert os.path.exists(MODEL_NAME)
+model = create_model(MODEL_NAME)
 
 
 def test_simulate_successful():
@@ -73,6 +72,4 @@ def test_run_simulation():
 
 
 def test_cleanup():
-    for dir in ["figure", "simulation_data"]:
-        if os.path.isdir(os.path.join(model.path, dir)):
-            shutil.rmtree(os.path.join(model.path, dir))
+    shutil.rmtree(MODEL_NAME)
