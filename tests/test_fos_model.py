@@ -10,7 +10,6 @@ from biomass import OptimizationResults, create_model, optimize, run_analysis, r
 from biomass.estimation import InitialPopulation
 from biomass.models import copy_to_current
 
-
 MODEL_NAME: Final[str] = "Nakakuki_Cell_2010"
 
 copy_to_current(MODEL_NAME)
