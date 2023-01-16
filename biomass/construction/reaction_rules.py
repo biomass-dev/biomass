@@ -1711,12 +1711,12 @@ class ReactionRules(ThermodynamicRestrictions):
                 two_species = description[0].split(arrow)
                 reactants = (
                     two_species[0].replace(" ", "").split("+")
-                    if len(two_species[0].split(" ")) > 1 and "+" not in two_species[0]
+                    if len(two_species[0].strip().split(" ")) > 1 and "+" not in two_species[0]
                     else None
                 )
                 products = (
                     two_species[1].replace(" ", "").split("+")
-                    if len(two_species[1].split(" ")) > 1 and "+" not in two_species[1]
+                    if len(two_species[1].strip().split(" ")) > 1 and "+" not in two_species[1]
                     else None
                 )
                 break
