@@ -27,7 +27,7 @@ class SignalingMetric(object):
     )
 
 
-@njit(cache=True, fastmath=True, parallel=True)
+@njit(cache=True, fastmath=True)
 def dlnyi_dlnxj(
     signaling_metric: np.ndarray,
     num_file_ids: int,
@@ -57,7 +57,7 @@ def dlnyi_dlnxj(
     -------
     sensitivity_coefficients: numpy array
     """
-    EPS = 2.220446049250313e-16
+    EPS = float(np.finfo(float).eps)
     sensitivity_coefficients = np.empty(
         (num_file_ids, num_perturbed_ids, num_observables, num_conditions),
     )
@@ -93,7 +93,7 @@ def remove_nan(sensitivity_matrix: np.ndarray) -> np.ndarray:
     sensitivity_matrix : numpy.ndarray
         M x N matrix, where M and M are # of parameter sets and # of perturbed objects, respectively.
     """
-    EPS = 2.220446049250313e-16
+    EPS = float(np.finfo(float).eps)
     nan_idx = []
     for i in range(sensitivity_matrix.shape[0]):
         if np.isnan(sensitivity_matrix[i, :]).any():
