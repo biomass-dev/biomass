@@ -1710,14 +1710,14 @@ class ReactionRules(ThermodynamicRestrictions):
                 is_unidirectional = True if arrow in self.fwd_arrows else False
                 two_species = description[0].split(arrow)
                 reactants = (
-                    two_species[0].replace(" ", "").split("+")
+                    None
                     if len(two_species[0].strip().split(" ")) > 1 and "+" not in two_species[0]
-                    else None
+                    else two_species[0].replace(" ", "").split("+")
                 )
                 products = (
-                    two_species[1].replace(" ", "").split("+")
+                    None
                     if len(two_species[1].strip().split(" ")) > 1 and "+" not in two_species[1]
-                    else None
+                    else two_species[1].replace(" ", "").split("+")
                 )
                 break
         else:
