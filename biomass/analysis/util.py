@@ -1,4 +1,3 @@
-import sys
 from dataclasses import dataclass, field
 from math import isnan, log
 from typing import Callable, Dict, Union
@@ -58,7 +57,7 @@ def dlnyi_dlnxj(
     -------
     sensitivity_coefficients: numpy array
     """
-    EPS = sys.float_info.epsilon
+    EPS = 2.0**-52.0
     sensitivity_coefficients = np.empty(
         (num_file_ids, num_perturbed_ids, num_observables, num_conditions),
     )
@@ -94,7 +93,7 @@ def remove_nan(sensitivity_matrix: np.ndarray) -> np.ndarray:
     sensitivity_matrix : numpy.ndarray
         M x N matrix, where M and M are # of parameter sets and # of perturbed objects, respectively.
     """
-    EPS = sys.float_info.epsilon
+    EPS = 2.0**-52.0
     nan_idx = []
     for i in range(sensitivity_matrix.shape[0]):
         if np.isnan(sensitivity_matrix[i, :]).any():
