@@ -15,10 +15,11 @@ import os
 
 import numpy as np
 import matplotlib.pyplot as plt
-from biomass.models import pan_rtk
-from biomass import Model, run_simulation
+from biomass import create_model, run_simulation
+from biomass.models import copy_to_current
 
-model = Model(pan_rtk.__package__).create()
+copy_to_current("pan_rtk")
+model = creaet_model("pan_rtk")
 
 def save_result(model):
 
@@ -35,14 +36,14 @@ def save_result(model):
         np.arange(-0.5, 0.3, 0.1),
     ]
     sd = 1.0E-1
-    
+
     plt.rcParams['font.size'] = 6
     plt.rcParams['font.family'] = 'Arial'
     #plt.rcParams['axes.linewidth'] = 1
     plt.rcParams['lines.linewidth'] = 0.8
-    
+
     plt.subplots_adjust(wspace=0.5, hspace=0.4)
-    
+
     for i in range(6):
         if i < 3:
             plt.subplot(2, 4, i + 1)

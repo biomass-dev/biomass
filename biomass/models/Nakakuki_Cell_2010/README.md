@@ -14,9 +14,10 @@ Nakakuki, T. _et al._ Ligand-specific c-Fos expression emerges from the spatiote
 
    ```python
    from biomass import create_model
-   from biomass.models import Nakakuki_Cell_2010
+   from biomass.models import copy_to_current
 
-   model = create_model(Nakakuki_Cell_2010.__package__, show_info=True)
+   copy_to_current("Nakakuki_Cell_2010")
+   model = create_model("Nakakuki_Cell_2010", show_info=True)
    ```
 
    ↓
@@ -28,7 +29,7 @@ Nakakuki, T. _et al._ Ligand-specific c-Fos expression emerges from the spatiote
    115 parameters, of which 75 to be estimated
    ```
 
-1. Parameter estimation
+2. Parameter estimation
 
    ```python
    from tqdm import tqdm
@@ -39,7 +40,7 @@ Nakakuki, T. _et al._ Ligand-specific c-Fos expression emerges from the spatiote
       optimize(model, x_id=x_id, optimizer_options={"workers": -1})
    ```
 
-1. Visualization of simulation results
+3. Visualization of simulation results
 
    ```python
    from biomass import run_simulation
@@ -49,7 +50,7 @@ Nakakuki, T. _et al._ Ligand-specific c-Fos expression emerges from the spatiote
 
    ![simulation_average](https://raw.githubusercontent.com/biomass-dev/biomass/master/docs/_static/img/simulation_average.png)
 
-1. Sensitivity analysis
+4. Sensitivity analysis
 
    ```python
    from biomass import run_analysis

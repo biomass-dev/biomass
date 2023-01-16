@@ -2,28 +2,27 @@ import multiprocessing
 import os
 import shutil
 from distutils.dir_util import copy_tree
-from typing import Optional
+from typing import Final, Optional
 
 import numpy as np
 import pytest
 
-from biomass import Model, OptimizationResults, optimize, run_analysis, run_simulation
+from biomass import OptimizationResults, create_model, optimize, run_analysis, run_simulation
 from biomass.estimation import InitialPopulation
-from biomass.models import Nakakuki_Cell_2010
+from biomass.models import copy_to_current
 
-# from biomass import run_analysis
+MODEL_NAME: Final[str] = "Nakakuki_Cell_2010"
 
-model = Model(Nakakuki_Cell_2010.__package__).create()
+copy_to_current(MODEL_NAME)
+assert os.path.exists(MODEL_NAME)
+model = create_model(MODEL_NAME)
 
 
 def test_initialization():
-    for dir in ["figure", "out", "simulation_data", "sensitivity_coefficients"]:
-        if os.path.isdir(os.path.join(model.path, dir)):
-            shutil.rmtree(os.path.join(model.path, dir))
-    os.mkdir(os.path.join("biomass", "models", "Nakakuki_Cell_2010", "out"))
+    os.mkdir(os.path.join(MODEL_NAME, "out"))
     copy_tree(
         os.path.join("tests", "out"),
-        os.path.join("biomass", "models", "Nakakuki_Cell_2010", "out"),
+        os.path.join(MODEL_NAME, "out"),
     )
 
 
@@ -99,6 +98,4 @@ def test_param_estim(n_proc: Optional[int] = None):
 
 
 def test_cleanup():
-    for dir in ["figure", "simulation_data", "out", "sensitivity_coefficients"]:
-        if os.path.isdir(os.path.join(model.path, dir)):
-            shutil.rmtree(os.path.join(model.path, dir))
+    shutil.rmtree(MODEL_NAME)

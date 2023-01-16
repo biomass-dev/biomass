@@ -15,10 +15,11 @@ import os
 
 import numpy as np
 import matplotlib.pyplot as plt
-from biomass.models import circadian_clock
-from biomass import Model, run_simulation
+from biomass import create_model, run_simulation
+from biomass.models import copy_to_current
 
-model = Model(circadian_clock.__package__).create()
+copy_to_current("circadian_clock")
+model = create_model("circadian_clock")
 
 def save_result(model):
 

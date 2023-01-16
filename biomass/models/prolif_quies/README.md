@@ -15,10 +15,11 @@ import os
 
 import numpy as np
 import matplotlib.pyplot as plt
-from biomass.models import prolif_quies
-from biomass import Model, run_simulation
+from biomass import create_model, run_simulation
+from biomass.models import copy_to_current
 
-model = Model(prolif_quies.__package__).create()
+copy_to_current("prolif_quies")
+model = create_model("prolif_quies")
 
 def save_result(model):
     run_simulation(model)

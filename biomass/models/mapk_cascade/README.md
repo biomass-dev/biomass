@@ -13,10 +13,11 @@ Kholodenko, B. N. Negative feedback and ultrasensitivity can bring about oscilla
 ```python
 import os
 
-from biomass.models import mapk_cascade
-from biomass import Model, run_simulation
+from biomass import create_model, run_simulation
+from biomass.models import copy_to_current
 
-model = Model(mapk_cascade.__package__).create()
+copy_to_current("mapk_cascade")
+model = create_model("mapk_cascade")
 
 run_simulation(model)
 ```
