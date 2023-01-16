@@ -72,13 +72,13 @@ def test_cleanup():
         os.path.join(
             os.path.dirname(__file__),
             "text_files",
-            "unregistered_rule.txt",
+            "unregistered_rule",
         )
     )
     shutil.rmtree(
         os.path.join(
             os.path.dirname(__file__),
             "text_files",
-            "unregistered_rule.txt",
+            "unregistered_rule",
         )
     )
