@@ -1,10 +1,22 @@
 import os
 import shutil
-from typing import Optional
+from typing import Literal
 
 
-def copy_to_current(model_name: str) -> None:
-    """Copy an example model to working directory.
+def copy_to_current(
+    model_name: Literal[
+        "circadian_clock",
+        "insulin_signaling",
+        "mapk_cascade",
+        "Nakakuki_Cell_2010",
+        "nfkb_pathway",
+        "pan_rtk",
+        "tgfb_smad",
+        "g1s_transition",
+        "prolif_quies",
+    ]
+) -> None:
+    """Copy an example model to the current working directory.
 
     To execute example models in your machine, please follow these steps:
 
