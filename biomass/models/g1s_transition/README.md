@@ -10,57 +10,49 @@ Barr, A. R., Heldt, F. S., Zhang, T., Bakal, C. & Novák, B. A Dynamical Framewo
 
 ## Run simulation using BioMASS
 
-1. Clone this repository and `cd` into it
+```python
+import os
 
-    ```
-    $ git clone https://github.com/biomass-dev/biomass.git
-    $ cd biomass
-    ```
+import numpy as np
+import matplotlib.pyplot as plt
+from biomass import create_model, run_simulation
+from biomass.models import copy_to_current
 
-1. Save simulation results
+copy_to_current("g1s_transition")
+model = create_model("g1s_transition")
 
-    ```python
-    import os
+def save_result(model):
+    run_simulation(model)
+    res = np.load(os.path.join(model.path, "simulation_data", "simulations_original.npy"))
 
-    import numpy as np
-    import matplotlib.pyplot as plt
-    from biomass.models import g1s_transition
-    from biomass import Model, run_simulation
+    plt.figure(figsize=(9,6))
+    plt.rcParams['font.family'] = 'Arial'
+    plt.rcParams['font.size'] = 16
+    plt.rcParams['axes.linewidth'] = 1.5
+    plt.rcParams['lines.linewidth'] = 2
+    plt.rcParams['lines.markersize'] = 20
 
-    model = Model(g1s_transition.__package__).create()
+    plt.plot(model.problem.t, res[model.observables.index('p27_tot'), 0],'r-')
+    plt.plot(model.problem.t, res[model.observables.index('CycE_tot'), 0],'b-')
+    plt.plot(model.problem.t, res[model.observables.index('CycE'), 0],'b--')
+    plt.plot(model.problem.t, res[model.observables.index('CycA_tot'), 0],'g-')
+    plt.plot(model.problem.t, res[model.observables.index('CycA'), 0],'g--')
 
-    def save_result(model):
-        run_simulation(model)
-        res = np.load(os.path.join(model.path, "simulation_data", "simulations_original.npy"))
+    plt.xticks([0,300,600,900],[-5,0,5,10])
+    plt.xlim([0,900])
+    plt.xlabel('time relative to G1/S transition(h)')
+    plt.yticks([0,0.3,0.6,0.9])
+    plt.ylabel('relative levels')
 
-        plt.figure(figsize=(9,6))
-        plt.rcParams['font.family'] = 'Arial'
-        plt.rcParams['font.size'] = 16
-        plt.rcParams['axes.linewidth'] = 1.5
-        plt.rcParams['lines.linewidth'] = 2
-        plt.rcParams['lines.markersize'] = 20
+    plt.text(3.2*60,0.75,'p27',ha='center',va='bottom',color='r')
+    plt.text(6.4*60,0.82,'CycE level',ha='center',va='bottom',color='b')
+    plt.text(6.4*60,0.55,'free\nCycE:Cdk2',ha='center',va='bottom',color='b')
+    plt.text(12.4*60,0.6,'CycA level',ha='center',va='bottom',color='g')
+    plt.text(12.4*60,0.35,'free\nCycA:Cdk2',ha='center',va='bottom',color='g')
 
-        plt.plot(model.problem.t, res[model.observables.index('p27_tot'), 0],'r-')
-        plt.plot(model.problem.t, res[model.observables.index('CycE_tot'), 0],'b-')
-        plt.plot(model.problem.t, res[model.observables.index('CycE'), 0],'b--')
-        plt.plot(model.problem.t, res[model.observables.index('CycA_tot'), 0],'g-')
-        plt.plot(model.problem.t, res[model.observables.index('CycA'), 0],'g--')
+    plt.savefig(f"{os.path.basename(model.path)}", dpi=150, bbox_inches="tight")
 
-        plt.xticks([0,300,600,900],[-5,0,5,10])
-        plt.xlim([0,900])
-        plt.xlabel('time relative to G1/S transition(h)')
-        plt.yticks([0,0.3,0.6,0.9])
-        plt.ylabel('relative levels')
+save_result(model)
+```
 
-        plt.text(3.2*60,0.75,'p27',ha='center',va='bottom',color='r')
-        plt.text(6.4*60,0.82,'CycE level',ha='center',va='bottom',color='b')
-        plt.text(6.4*60,0.55,'free\nCycE:Cdk2',ha='center',va='bottom',color='b')
-        plt.text(12.4*60,0.6,'CycA level',ha='center',va='bottom',color='g')
-        plt.text(12.4*60,0.35,'free\nCycA:Cdk2',ha='center',va='bottom',color='g')
-
-        plt.savefig(f"{os.path.basename(model.path)}", dpi=150, bbox_inches="tight")
-
-    save_result(model)
-    ```
-
-    <img align="left" src="./g1s_transition.png" width="800px">
+<img align="left" src="./g1s_transition.png" width="800px">
