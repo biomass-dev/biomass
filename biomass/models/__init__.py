@@ -1,3 +1,9 @@
+"""Example models
+
+`biomass.models` contains sample models and other scripts if you would prefer to learn how to use biomass by example.
+For details, please refer to https://biomass-core.readthedocs.io/en/latest/models.html.
+"""
+
 import os
 import shutil
 from typing import Literal
