@@ -66,9 +66,9 @@ def setup_package():
                 "pyvis>=0.2.1,<0.3",
             ],
             "dev": [
-                "black>=20.8b1",
-                "flake8",
-                "isort",
+                "black==22.12.0",
+                "flake8==6.0.0",
+                "isort==5.11.4",
                 "pre-commit",
                 "pytest",
             ],
