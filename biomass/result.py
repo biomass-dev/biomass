@@ -33,9 +33,10 @@ class OptimizationResults(object):
 
         Examples
         --------
-        >>> from biomass import Model, OptimizationResults
-        >>> from biomass.models import Nakakuki_Cell_2010
-        >>> model = Model(Nakakuki_Cell_2010.__package__).create()
+        >>> from biomass import create_model, OptimizationResults
+        >>> from biomass.models import copy_to_current
+        >>> copy_to_current("Nakakuki_Cell_2010")
+        >>> model = create_model("Nakakuki_Cell_2010")
         >>> res = OptimizationResults(model)
         >>> res.to_csv()
 
@@ -128,9 +129,10 @@ class OptimizationResults(object):
 
         Examples
         --------
-        >>> from biomass import Model, OptimizationResults
-        >>> from biomass.models import Nakakuki_Cell_2010
-        >>> model = Model(Nakakuki_Cell_2010.__package__).create()
+        >>> from biomass import create_model, OptimizationResults
+        >>> from biomass.models import copy_to_current
+        >>> copy_to_current("Nakakuki_Cell_2010")
+        >>> model = create_model("Nakakuki_Cell_2010")
         >>> res = OptimizationResults(model)
         >>> res.savefig(figsize=(16,5), boxplot_kws={"orient": "v"})
 
@@ -202,9 +204,10 @@ class OptimizationResults(object):
 
         Examples
         --------
-        >>> from biomass import Model, OptimizationResults
-        >>> from biomass.models import Nakakuki_Cell_2010
-        >>> model = Model(Nakakuki_Cell_2010.__package__).create()
+        >>> from biomass import create_model, OptimizationResults
+        >>> from biomass.models import copy_to_current
+        >>> copy_to_current("Nakakuki_Cell_2010")
+        >>> model = create_model("Nakakuki_Cell_2010")
         >>> res = OptimizationResults(model)
         >>> res.dynamic_assessment()
 
@@ -271,9 +274,10 @@ class OptimizationResults(object):
 
         Examples
         --------
-        >>> from biomass import Model, OptimizationResults
-        >>> from biomass.models import Nakakuki_Cell_2010
-        >>> model = Model(Nakakuki_Cell_2010.__package__).create()
+        >>> from biomass import create_model, OptimizationResults
+        >>> from biomass.models import copy_to_current
+        >>> copy_to_current("Nakakuki_Cell_2010")
+        >>> model = create_model("Nakakuki_Cell_2010")
         >>> res = OptimizationResults(model)
         >>> res.trace_obj()
 

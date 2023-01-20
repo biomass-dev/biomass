@@ -196,7 +196,6 @@ def create_model(pkg_name: str, show_info: bool = False) -> ModelObject:
     ----------
     pkg_name : str
         Path (dot-sepalated) to a biomass model directory.
-        Use ``__package__``.
     show_info : bool (default: :obj:`False`)
         Set to :obj:`True` to print the information related to model size.
 
@@ -242,9 +241,10 @@ def optimize(
 
     Examples
     --------
-    >>> from biomass.models import Nakakuki_Cell_2010
-    >>> from biomass import Model, optimize
-    >>> model = Model(Nakakuki_Cell_2010.__package__).create()
+    >>> from biomass import create_model, optimize
+    >>> from biomass.models import copy_to_current
+    >>> copy_to_current("Nakakuki_Cell_2010")
+    >>> model = create_model("Nakakuki_Cell_2010")
     >>> optimize(model, x_id=1)
 
     Notes
@@ -322,9 +322,10 @@ def run_simulation(
 
     Examples
     --------
-    >>> from biomass.models import Nakakuki_Cell_2010
-    >>> from biomass import Model, run_simulation
-    >>> model = Model(Nakakuki_Cell_2010.__package__).create()
+    >>> from biomass import create_model, run_simulation
+    >>> from biomass.models import copy_to_current
+    >>> copy_to_current("Nakakuki_Cell_2010")
+    >>> model = create_model("Nakakuki_Cell_2010")
     >>> run_simulation(
     ...     model,
     ...     viz_type='average',
@@ -390,9 +391,10 @@ def run_analysis(
 
     Examples
     --------
-    >>> from biomass.models import Nakakuki_Cell_2010
-    >>> from biomass import Model, run_analysis
-    >>> model = Model(Nakakuki_Cell_2010.__package__).create()
+    >>> from biomass import create_model, run_analysis
+    >>> from biomass.models import copy_to_current
+    >>> copy_to_current("Nakakuki_Cell_2010")
+    >>> model = create_model("Nakakuki_Cell_2010")
 
     Parameters
 
