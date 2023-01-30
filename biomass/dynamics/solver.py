@@ -1,10 +1,11 @@
+import inspect
 import math
 import sys
 import time
 from typing import Callable, List, Literal, Optional, Tuple, Union
 
 import numpy as np
-from scipy.integrate import ode, solve_ivp
+from scipy.integrate import OdeSolver, ode, solve_ivp
 from scipy.integrate._ivp.ivp import OdeResult
 
 __all__ = ["solve_ode", "get_steady_state"]
@@ -16,7 +17,7 @@ def solve_ode(
     t: Union[range, List[int]],
     f_params: Tuple[float, ...],
     *,
-    method: str = "LSODA",
+    method: Union[str, OdeSolver] = "LSODA",
     vectorized: bool = False,
     options: Optional[dict] = None,
 ) -> Optional[OdeResult]:
@@ -33,7 +34,7 @@ def solve_ode(
         A sequence of time points for which to solve for y.
     f_params : tuple
         Model parameters.
-    method : str (default: "LSODA")
+    method : str or `OdeSolver` (default: "LSODA")
         Integration method to use.
     vectorized : bool (default: :obj:`False`)
         Whether `diffeq` is implemented in a vectorized fashion.
@@ -45,6 +46,12 @@ def solve_ode(
     sol : OdeResult
         Represents the solution of ODE.
     """
+    if method not in (
+        available_methods := ["RK23", "RK45", "DOP853", "Radau", "BDF", "LSODA"]
+    ) and not (inspect.isclass(method) and issubclass(method, OdeSolver)):
+        raise ValueError(
+            "`method` must be one of {} or OdeSolver class.".format(available_methods)
+        )
     if options is None:
         options = {}
     options.setdefault("rtol", 1e-8)
@@ -104,8 +111,7 @@ def get_steady_state(
         Steady state concentrations of all species.
         Return an empty list if simulation failed.
     """
-    availabe_integrators = ["vode", "zvode", "lsoda"]
-    if integrator not in availabe_integrators:
+    if integrator not in (availabe_integrators := ["vode", "zvode", "lsoda"]):
         raise ValueError(f"integrator must be one of {availabe_integrators}.")
     if integrator_options is None:
         integrator_options = {}

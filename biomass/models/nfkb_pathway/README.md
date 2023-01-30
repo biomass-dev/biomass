@@ -11,10 +11,11 @@ import os
 
 import numpy as np
 import matplotlib.pyplot as plt
-from biomass.models import nfkb_pathway
-from biomass import Model, run_simulation
+from biomass import create_model, run_simulation
+from biomass.models import copy_to_current
 
-model = Model(nfkb_pathway.__package__).create()
+copy_to_current("nfkb_pathway")
+model = create_model("nfkb_pathway")
 
 def save_result(model):
 

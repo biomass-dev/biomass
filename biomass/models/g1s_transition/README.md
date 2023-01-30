@@ -15,10 +15,11 @@ import os
 
 import numpy as np
 import matplotlib.pyplot as plt
-from biomass.models import g1s_transition
-from biomass import Model, run_simulation
+from biomass import create_model, run_simulation
+from biomass.models import copy_to_current
 
-model = Model(g1s_transition.__package__).create()
+copy_to_current("g1s_transition")
+model = create_model("g1s_transition")
 
 def save_result(model):
     run_simulation(model)

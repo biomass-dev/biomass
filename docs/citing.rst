@@ -42,3 +42,9 @@ If you construct a mathematical model using :class:`biomass.construction.text2mo
       doi       = {10.1016/ j.isci.2022.103944},
       url       = {https://www.cell.com/iscience/fulltext/S2589-0042(22)00214-0}
     }
+
+When presenting work that uses BioMASS, feel free to use the logo.
+
+.. image:: _static/img/biomass-logo.png
+   :width: 500px
+   :align: center

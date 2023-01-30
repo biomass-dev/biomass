@@ -15,10 +15,11 @@ import os
 
 import numpy as np
 import matplotlib.pyplot as plt
-from biomass.models import insulin_signaling
-from biomass import Model, run_simulation
+from biomass import create_model, run_simulation
+from biomass.models import copy_to_current
 
-model = Model(insulin_signaling.__package__).create()
+copy_to_current("insulin_signaling")
+model = create_model("insulin_signaling")
 
 def save_result(model):
 

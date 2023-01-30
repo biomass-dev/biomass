@@ -1,12 +1,12 @@
 import os
 import shutil
 
-import pytest
-
 from biomass import Text2Model
 
 file_dir = os.path.join(os.path.dirname(__file__), "text_files")
 txt_files = [name for name in os.listdir(file_dir) if "__" not in name]
+
+skipped_files = ["duplicate_binding.txt", "typo_1.txt", "typo_2.txt", "unregistered_rule.txt"]
 
 
 def test_preprocessing():
@@ -30,7 +30,7 @@ def test_preprocessing():
 
 def test_graph():
     for model_file in txt_files:
-        if model_file in ["duplicate_binding.txt", "typo_1.txt", "typo_2.txt"]:
+        if model_file in skipped_files:
             continue
         model = Text2Model(os.path.join(os.path.dirname(__file__), "text_files", model_file))
         model_path = os.path.join(file_dir, model_file.split(".")[0])
@@ -44,7 +44,7 @@ def test_graph():
 
 def test_cleanup():
     for model_file in txt_files:
-        if model_file in ["duplicate_binding.txt", "typo_1.txt", "typo_2.txt"]:
+        if model_file in skipped_files:
             continue
         model = model_file.split(".")[0]
         assert os.path.isdir(

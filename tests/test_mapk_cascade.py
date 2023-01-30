@@ -3,19 +3,14 @@ import shutil
 
 import numpy as np
 
-from biomass import Model, OptimizationResults, optimize, run_analysis, run_simulation
-from biomass.models import mapk_cascade
+from biomass import OptimizationResults, create_model, optimize, run_analysis, run_simulation
+from biomass.models import copy_to_current
 
-model = Model(mapk_cascade.__package__).create()
+MODEL_NAME: str = "mapk_cascade"
 
-for dir in [
-    "figure",
-    "simulation_data",
-    "sensitivity_coefficients",
-    "optimization_results",
-]:
-    if os.path.isdir(os.path.join(model.path, dir)):
-        shutil.rmtree(os.path.join(model.path, dir))
+copy_to_current(MODEL_NAME)
+assert os.path.exists(MODEL_NAME)
+model = create_model(MODEL_NAME)
 
 
 def test_simulate_successful():
@@ -167,12 +162,4 @@ def test_sensitivity_analysis():
 
 
 def test_cleanup():
-    for dir in [
-        "figure",
-        "simulation_data",
-        "out",
-        "sensitivity_coefficients",
-        "optimization_results",
-    ]:
-        if os.path.isdir(os.path.join(model.path, dir)):
-            shutil.rmtree(os.path.join(model.path, dir))
+    shutil.rmtree(MODEL_NAME)
