@@ -1709,11 +1709,21 @@ class ReactionRules(ThermodynamicRestrictions):
             if arrow in description[0]:
                 is_unidirectional = True if arrow in self.fwd_arrows else False
                 two_species = description[0].split(arrow)
-                reactants = two_species[0].replace(" ", "").split("+")
-                products = two_species[1].replace(" ", "").split("+")
+                reactants = (
+                    None
+                    if len(two_species[0].split(" ")) > 1 and "+" not in two_species[0]
+                    else two_species[0].replace(" ", "").split("+")
+                )
+                products = (
+                    None
+                    if len(two_species[1].split(" ")) > 1 and "+" not in two_species[1]
+                    else two_species[1].replace(" ", "").split("+")
+                )
                 break
         else:
             raise ArrowError(self._get_arrow_error_message(line_num) + ".")
+        if reactants is None or products is None:
+            raise DetectionError(f"Unregistered words in line{line_num:d}: {line}")
         if list(set(reactants) & set(products)):
             modifiers = list(set(reactants) & set(products))
             for modifier in modifiers:

@@ -39,6 +39,19 @@ def test_typo_detection():
         assert "Maybe: 'binds'." in str(e.value)
 
 
+def test_unregistered_rule():
+    ubiquitination = Text2Model(
+        os.path.join(
+            os.path.dirname(__file__),
+            "text_files",
+            "unregistered_rule.txt",
+        )
+    )
+    with pytest.raises(DetectionError) as e:
+        ubiquitination.convert()
+    assert "Unregistered words in line1: A ubiquitinates B --> uB" in str(e.value)
+
+
 def test_cleanup():
     for i in ["1", "2"]:
         assert os.path.isdir(
@@ -55,3 +68,17 @@ def test_cleanup():
                 f"typo_{i}",
             )
         )
+    assert os.path.isdir(
+        os.path.join(
+            os.path.dirname(__file__),
+            "text_files",
+            "unregistered_rule",
+        )
+    )
+    shutil.rmtree(
+        os.path.join(
+            os.path.dirname(__file__),
+            "text_files",
+            "unregistered_rule",
+        )
+    )
