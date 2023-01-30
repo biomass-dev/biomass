@@ -68,7 +68,7 @@ def setup_package():
             "dev": [
                 "black==22.12.0",
                 "flake8==6.0.0",
-                "isort==5.11.4",
+                "isort==5.12.0",
                 "pre-commit",
                 "pytest",
             ],
