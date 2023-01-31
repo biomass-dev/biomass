@@ -65,8 +65,9 @@ class Optimizer(object):
     >>> from scipy.optimize import differential_evolution
     >>> from biomass import create_model
     >>> from biomass.estimation import Optimizer
-    >>> from biomass.models import Nakakuki_Cell_2010
-    >>> model = create_model(Nakakuki_Cell_2010.__package__)
+    >>> from biomass.models import copy_to_current
+    >>> copy_to_current("Nakakuki_Cell_2010")
+    >>> model = create_model("Nakakuki_Cell_2010")
     >>> param_idx = 1
     >>> optimizer = Optimizer(model, differential_evolution, param_idx)
     >>> def obj_fun(x):
@@ -231,8 +232,9 @@ class InitialPopulation(object):
         --------
         >>> from biomass import create_model, optimize
         >>> from biomass.estimation import InitialPopulation
-        >>> from biomass.models import Nakakuki_Cell_2010
-        >>> model = create_model(Nakakuki_Cell_2010.__package__)
+        >>> from biomass.models import copy_to_current
+        >>> copy_to_current("Nakakuki_Cell_2010")
+        >>> model = create_model("Nakakuki_Cell_2010")
         >>> initpop = InitialPopulation(model).generate(n_proc=2, progress=True)
         >>> optimize(model, x_id=1, optimizer_options={"init": initpop})
         """

@@ -66,14 +66,14 @@ def setup_package():
                 "pyvis>=0.2.1,<0.3",
             ],
             "dev": [
-                "black>=20.8b1",
-                "flake8",
-                "isort",
+                "black==22.12.0",
+                "flake8==6.0.0",
+                "isort==5.12.0",
                 "pre-commit",
                 "pytest",
             ],
             "docs": [
-                "sphinx>=1.7",
+                "sphinx>=1.7,<6",
                 "sphinx_rtd_theme>=0.3",
                 "sphinx_autodoc_typehints>=1.10",
                 "sphinxcontrib-bibtex>=2.2",
