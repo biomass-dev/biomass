@@ -53,6 +53,7 @@ class ParameterSensitivity(SignalingMetric):
         self,
         metric: str,
         param_indices: List[int],
+        show_progress: bool,
     ) -> np.ndarray:
         """Calculating Sensitivity Coefficients
         Parameters
@@ -89,11 +90,12 @@ class ParameterSensitivity(SignalingMetric):
                             signaling_metric[i, j, k, l] = self.quantification[metric](
                                 self.model.problem.simulations[k, l]
                             )
-                sys.stdout.write(
-                    "\r{:d} / {:d}".format(
-                        i * len(param_indices) + j + 1, len(n_file) * len(param_indices)
+                if show_progress:
+                    sys.stdout.write(
+                        "\r{:d} / {:d}".format(
+                            i * len(param_indices) + j + 1, len(n_file) * len(param_indices)
+                        )
                     )
-                )
             # Signaling metric without perturbation (j=-1)
             x = optimized.params[:]
             if self.model.problem.simulate(x, optimized.initials) is None:
@@ -117,6 +119,7 @@ class ParameterSensitivity(SignalingMetric):
         self,
         metric: str,
         param_indices: List[int],
+        show_progress: bool,
     ) -> np.ndarray:
         """
         Load (or calculate) sensitivity coefficients.
@@ -130,14 +133,16 @@ class ParameterSensitivity(SignalingMetric):
                 ),
                 exist_ok=True,
             )
-            sensitivity_coefficients = self._calc_sensitivity_coefficients(metric, param_indices)
+            sensitivity_coefficients = self._calc_sensitivity_coefficients(
+                metric, param_indices, show_progress
+            )
             np.save(self._coefficients(metric), sensitivity_coefficients)
         else:
             sensitivity_coefficients = np.load(self._coefficients(metric))
             if len(param_indices) != sensitivity_coefficients.shape[1]:
                 # User changed options['excluded_params'] after the last trial
                 sensitivity_coefficients = self._calc_sensitivity_coefficients(
-                    metric, param_indices
+                    metric, param_indices, show_progress
                 )
                 np.save(self._coefficients(metric), sensitivity_coefficients)
 
@@ -210,6 +215,8 @@ class ParameterSensitivity(SignalingMetric):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         param_indices: List[int],
+        clustermap_kws: dict,
+        cbar_ax_tick_params: dict,
     ) -> None:
         """
         Visualize sensitivity coefficients using heatmap.
@@ -224,19 +231,11 @@ class ParameterSensitivity(SignalingMetric):
                 if sensitivity_matrix.shape[0] > 1 and not np.all(sensitivity_matrix == 0.0):
                     g = sns.clustermap(
                         data=sensitivity_matrix,
-                        center=0,
-                        robust=True,
-                        method="ward",
-                        cmap="RdBu_r",
-                        linewidth=0.5,
-                        col_cluster=False,
-                        figsize=self._plotting.figsize,
                         xticklabels=[self.model.parameters[i] for i in param_indices],
-                        yticklabels=[],
-                        # cbar_kws={"ticks": [-1, 0, 1]}
+                        **clustermap_kws,
                     )
                     cbar = g.ax_heatmap.collections[0].colorbar
-                    cbar.ax.tick_params(labelsize=8)
+                    cbar.ax.tick_params(**cbar_ax_tick_params)
                     plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90)
                     plt.savefig(
                         os.path.join(
@@ -247,14 +246,23 @@ class ParameterSensitivity(SignalingMetric):
                     )
                     plt.close()
 
-    def analyze(self, *, metric: str, style: str, options: dict) -> None:
+    def analyze(
+        self,
+        *,
+        metric: str,
+        style: str,
+        show_progress: bool,
+        clustermap_kws: dict,
+        cbar_ax_tick_params: dict,
+        options: dict,
+    ) -> None:
         """
         Perform sensitivity analysis.
         """
         if options["overwrite"] and os.path.isfile(self._coefficients(metric)):
             os.remove(self._coefficients(metric))
         param_indices = self._get_param_indices(options["excluded_params"])
-        sensitivity_coefficients = self._load_sc(metric, param_indices)
+        sensitivity_coefficients = self._load_sc(metric, param_indices, show_progress)
         if style == "barplot":
             self._barplot_sensitivity(
                 metric,
@@ -269,6 +277,8 @@ class ParameterSensitivity(SignalingMetric):
                     metric,
                     sensitivity_coefficients,
                     param_indices,
+                    clustermap_kws,
+                    cbar_ax_tick_params,
                 )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")
