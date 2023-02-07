@@ -9,12 +9,10 @@ class DifferentialEquation(ReactionNetwork):
 
     @staticmethod
     def _heaviside(x):
-
         return 1 * (x > 0)
 
     # Refined Model
     def diffeq(self, t, y, *x):
-
         v = self.flux(t, y, x)
 
         if self.perturbation:
@@ -134,7 +132,6 @@ class DifferentialEquation(ReactionNetwork):
 
 
 def param_values():
-
     x = [0] * C.NUM
 
     x[C.Bg] = 0.05
@@ -196,7 +193,6 @@ def param_values():
 
 
 def initial_values():
-
     y0 = [0] * V.NUM
 
     y0[V.tP21] = 0.6

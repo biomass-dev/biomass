@@ -28,7 +28,6 @@ class DifferentialEquation(ReactionNetwork):
 
     # Refined Model
     def diffeq(self, t, y, *x):
-
         v = self.flux(t, y, x)
 
         if self.perturbation:
@@ -104,7 +103,6 @@ class DifferentialEquation(ReactionNetwork):
 
 
 def param_values():
-
     x = [0] * C.NUM
 
     x[C.V1] = 0.34284837
@@ -228,7 +226,6 @@ def param_values():
 
 
 def initial_values():
-
     y0 = [0] * V.NUM
 
     y0[V.ERKc] = 9.60e02

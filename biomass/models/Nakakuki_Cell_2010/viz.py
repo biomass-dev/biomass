@@ -33,7 +33,6 @@ class Visualization(Observable):
         self.sensitivity_options = SensitivityOptions(self.cm)
 
     def get_single_observable_options(self):
-
         for i, _ in enumerate(self.obs_names):
             self.single_observable_options[i].divided_by = 60  # sec. -> min.
             self.single_observable_options[i].xlim = (-5, 95)
@@ -98,7 +97,6 @@ class Visualization(Observable):
         return self.multiple_observables_options
 
     def get_sensitivity_options(self):
-
         return self.sensitivity_options
 
     @staticmethod

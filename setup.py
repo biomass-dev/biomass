@@ -12,7 +12,6 @@ except ImportError:
 
 
 def get_version() -> str:
-
     version_filepath = os.path.join(os.path.dirname(__file__), "biomass", "version.py")
     with open(version_filepath) as f:
         for line in f:
@@ -22,14 +21,12 @@ def get_version() -> str:
 
 
 def get_long_description() -> str:
-
     readme_filepath = os.path.join(os.path.dirname(__file__), "README.md")
     with open(readme_filepath) as f:
         return f.read()
 
 
 def get_install_requires() -> List[str]:
-
     requirements_filepath = os.path.join(os.path.dirname(__file__), "requirements.txt")
     with open(requirements_filepath) as f:
         return f.read().splitlines()

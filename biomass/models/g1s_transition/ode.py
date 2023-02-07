@@ -9,7 +9,6 @@ class DifferentialEquation(ReactionNetwork):
 
     # Refined Model
     def diffeq(self, t, y, *x):
-
         v = self.flux(t, y, x)
 
         if self.perturbation:
@@ -69,7 +68,6 @@ class DifferentialEquation(ReactionNetwork):
 
 
 def param_values():
-
     x = [0] * C.NUM
 
     ## CYCE SYNTHESISx[C.DEGRADATION AND P27 BINDING/DISSOCIATION:
@@ -111,7 +109,6 @@ def param_values():
 
 
 def initial_values():
-
     y0 = [0] * V.NUM
 
     y0[V.Cdh1dp] = 1.0

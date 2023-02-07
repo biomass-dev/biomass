@@ -8,7 +8,6 @@ class DifferentialEquation(ReactionNetwork):
         self.perturbation = perturbation
 
     def diffeq(self, t, y, *x):
-
         v = self.flux(t, y, x)
 
         if self.perturbation:
