@@ -1,3 +1,77 @@
+[build-system]
+requires = ["setuptools >= 61.1.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "biomass"
+description = "A Python Framework for Modeling and Analysis of Signaling Systems"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Hiroaki Imoto"},
+]
+maintainers = [
+    {name = "Hiroaki Imoto", email = "himoto@protein.osaka-u.ac.jp"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "matplotlib>=3.0",
+    "numba>=0.56",
+    "numpy>=1.17",
+    "pandas>=0.24",
+    "scipy>=1.6",
+    "seaborn>=0.11.2",
+    "tqdm>=4.50.2",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+    "black==23.1.0",
+    "flake8==6.0.0",
+    "isort==5.12.0",
+    "pre-commit",
+    "pytest",
+]
+docs = [
+    "sphinx>=5.1.1,<6",
+    "sphinx_rtd_theme",
+    "sphinx_autodoc_typehints>=1.10.3",
+    "sphinxcontrib-bibtex>=2.2.0",
+]
+graph = [
+    "pygraphviz>=1.9",
+    "pyvis>=0.2.1,<0.3",
+]
+
+[project.urls]
+repository = "https://github.com/biomass-dev/biomass"
+documentation = "https://biomass-core.readthedocs.io/en/latest/"
+bugtracker = "https://github.com/biomass-dev/biomass/issues"
+
+[tool.setuptools.packages.find]
+exclude = ["docs", "tests"]
+
+[tool.setuptools.dynamic]
+version = {attr = "biomass.version.__version__"}
+
 [tool.black]
 line-length = 99
 target-version = ['py39']
