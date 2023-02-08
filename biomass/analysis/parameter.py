@@ -271,14 +271,16 @@ class ParameterSensitivity(SignalingMetric):
             )
         elif style == "heatmap":
             if len(param_indices) < 2:
-                pass
-            else:
-                self._heatmap_sensitivity(
-                    metric,
-                    sensitivity_coefficients,
-                    param_indices,
-                    clustermap_kws,
-                    cbar_ax_tick_params,
+                raise ValueError(
+                    "The number of parameters to be perturbed must be greater than 1, "
+                    f"got {len(param_indices)}."
                 )
+            self._heatmap_sensitivity(
+                metric,
+                sensitivity_coefficients,
+                param_indices,
+                clustermap_kws,
+                cbar_ax_tick_params,
+            )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")

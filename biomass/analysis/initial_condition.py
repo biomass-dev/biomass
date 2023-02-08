@@ -272,14 +272,16 @@ class InitialConditionSensitivity(SignalingMetric):
             )
         elif style == "heatmap":
             if len(nonzero_indices) < 2:
-                pass
-            else:
-                self._heatmap_sensitivity(
-                    metric,
-                    sensitivity_coefficients,
-                    nonzero_indices,
-                    clustermap_kws,
-                    cbar_ax_tick_params,
+                raise ValueError(
+                    "The number of nonzero initial conditions must be greater than 1, "
+                    f"got {len(nonzero_indices)}."
                 )
+            self._heatmap_sensitivity(
+                metric,
+                sensitivity_coefficients,
+                nonzero_indices,
+                clustermap_kws,
+                cbar_ax_tick_params,
+            )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")
