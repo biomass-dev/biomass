@@ -7,7 +7,7 @@ It provides useful tools for model construction, numerical simulation, parameter
 Example
 -------
 
-Text file:
+Text file (``michaelis_menten.txt``):
 
 .. code-block::
     :linenos:
