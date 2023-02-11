@@ -147,7 +147,8 @@ class MultipleObservables(object):
 
 class SensitivityOptions(object):
     """
-    Visualization options for sensitivity analysis results.
+    Bar plot visualization options for sensitivity analysis results.
+    When setting `style` to 'heatmap', change plotting options via ``clustermap_kws``.
 
     Attributes
     ----------

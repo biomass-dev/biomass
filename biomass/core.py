@@ -353,6 +353,9 @@ def run_analysis(
     metric: str = "integral",
     create_metrics: Optional[Dict[str, Callable[[np.ndarray], Union[int, float]]]] = None,
     style: Literal["barplot", "heatmap"] = "barplot",
+    show_progress: bool = True,
+    clustermap_kws: Optional[dict] = None,
+    cbar_ax_tick_params: Optional[dict] = None,
     options: Optional[dict] = None,
 ) -> None:
     """
@@ -376,6 +379,12 @@ def run_analysis(
     style :  Literal["barplot", "heatmap"] (default: 'barplot')
         * 'barplot'
         * 'heatmap'
+    show_progress : bool (default: :obj:`True`)
+        Set to :obj:`True` to show the progress indicator while calculating sensitivity coefficients.
+    clustermap_kws : dict, optional
+        Keyword arguments to pass to ``seaborn.clustermap()`` when style is 'heatmap'.
+    cbar_ax_tick_params : dict, optional
+
     options : dict, optional
         * show_indices : bool (default: :obj:`True`)
             (``target`` == 'reaction') Set to :obj:`True` to put reaction index on each bar.
@@ -417,6 +426,20 @@ def run_analysis(
     >>> run_analysis(model, target='reaction')
 
     """
+    if clustermap_kws is None:
+        clustermap_kws = {}
+    clustermap_kws.setdefault("figsize", (12, 5))
+    clustermap_kws.setdefault("center", 0)
+    clustermap_kws.setdefault("robust", True)
+    clustermap_kws.setdefault("method", "ward")
+    clustermap_kws.setdefault("cmap", "RdBu_r")
+    clustermap_kws.setdefault("linewidth", 0.5)
+    clustermap_kws.setdefault("col_cluster", False)
+    clustermap_kws.setdefault("yticklabels", [])
+
+    if cbar_ax_tick_params is None:
+        cbar_ax_tick_params = {}
+    cbar_ax_tick_params.setdefault("labelsize", 8)
 
     if options is None:
         options = {}
@@ -429,18 +452,27 @@ def run_analysis(
         ReactionSensitivity(model, create_metrics).analyze(
             metric=metric,
             style=style,
+            show_progress=show_progress,
+            clustermap_kws=clustermap_kws,
+            cbar_ax_tick_params=cbar_ax_tick_params,
             options=options,
         )
     elif target == "parameter":
         ParameterSensitivity(model, create_metrics).analyze(
             metric=metric,
             style=style,
+            show_progress=show_progress,
+            clustermap_kws=clustermap_kws,
+            cbar_ax_tick_params=cbar_ax_tick_params,
             options=options,
         )
     elif target == "initial_condition":
         InitialConditionSensitivity(model, create_metrics).analyze(
             metric=metric,
             style=style,
+            show_progress=show_progress,
+            clustermap_kws=clustermap_kws,
+            cbar_ax_tick_params=cbar_ax_tick_params,
             options=options,
         )
     else:

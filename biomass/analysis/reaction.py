@@ -39,9 +39,7 @@ class ReactionSensitivity(SignalingMetric):
                 self.quantification[name] = function
 
     def _calc_sensitivity_coefficients(
-        self,
-        metric: str,
-        reaction_indices: List[int],
+        self, metric: str, reaction_indices: List[int], show_progress: bool
     ) -> np.ndarray:
         """Calculating Sensitivity Coefficients
         Parameters
@@ -81,12 +79,13 @@ class ReactionSensitivity(SignalingMetric):
                             signaling_metric[i, j, k, l] = self.quantification[metric](
                                 self.model.problem.simulations[k, l]
                             )
-                sys.stdout.write(
-                    "\r{:d} / {:d}".format(
-                        i * len(reaction_indices) + j + 1,
-                        len(n_file) * len(reaction_indices),
+                if show_progress:
+                    sys.stdout.write(
+                        "\r{:d} / {:d}".format(
+                            i * len(reaction_indices) + j + 1,
+                            len(n_file) * len(reaction_indices),
+                        )
                     )
-                )
             if self.model.problem.simulate(optimized.params, optimized.initials) is None:
                 for k, _ in enumerate(self.model.observables):
                     for l, _ in enumerate(self.model.problem.conditions):
@@ -108,6 +107,7 @@ class ReactionSensitivity(SignalingMetric):
         self,
         metric: str,
         reaction_indices: List[int],
+        show_progress: bool,
     ) -> np.ndarray:
         """
         Load (or calculate) sensitivity coefficients.
@@ -122,7 +122,7 @@ class ReactionSensitivity(SignalingMetric):
                 exist_ok=True,
             )
             sensitivity_coefficients = self._calc_sensitivity_coefficients(
-                metric, reaction_indices
+                metric, reaction_indices, show_progress
             )
             np.save(self._coefficients(metric), sensitivity_coefficients)
         else:
@@ -257,6 +257,8 @@ class ReactionSensitivity(SignalingMetric):
         metric: str,
         sensitivity_coefficients: np.ndarray,
         reaction_indices: List[int],
+        clustermap_kws: dict,
+        cbar_ax_tick_params: dict,
     ) -> None:
         """
         Visualize sensitivity coefficients using heatmap.
@@ -271,19 +273,11 @@ class ReactionSensitivity(SignalingMetric):
                 if sensitivity_matrix.shape[0] > 1 and not np.all(sensitivity_matrix == 0.0):
                     g = sns.clustermap(
                         data=sensitivity_matrix,
-                        center=0,
-                        robust=True,
-                        method="ward",
-                        cmap="RdBu_r",
-                        linewidth=0.5,
-                        col_cluster=False,
-                        figsize=self._plotting.figsize,
                         xticklabels=[str(j) for j in reaction_indices],
-                        yticklabels=[],
-                        # cbar_kws={"ticks": [-1, 0, 1]}
+                        **clustermap_kws,
                     )
                     cbar = g.ax_heatmap.collections[0].colorbar
-                    cbar.ax.tick_params(labelsize=8)
+                    cbar.ax.tick_params(**cbar_ax_tick_params)
                     plt.savefig(
                         os.path.join(
                             self._path_to_figs(metric),
@@ -293,7 +287,16 @@ class ReactionSensitivity(SignalingMetric):
                     )
                     plt.close()
 
-    def analyze(self, *, metric: str, style: str, options: dict) -> None:
+    def analyze(
+        self,
+        *,
+        metric: str,
+        style: str,
+        show_progress: bool,
+        clustermap_kws: dict,
+        cbar_ax_tick_params: dict,
+        options: dict,
+    ) -> None:
         """
         Perform sensitivity analysis.
         """
@@ -303,7 +306,7 @@ class ReactionSensitivity(SignalingMetric):
             raise ValueError("Define reaction indices (reactions) in reaction_network.py")
         biological_processes = self._group()
         reaction_indices = np.sum(biological_processes, axis=0)
-        sensitivity_coefficients = self._load_sc(metric, reaction_indices)
+        sensitivity_coefficients = self._load_sc(metric, reaction_indices, show_progress)
 
         if style == "barplot":
             self._barplot_sensitivity(
@@ -318,6 +321,8 @@ class ReactionSensitivity(SignalingMetric):
                 metric,
                 sensitivity_coefficients,
                 reaction_indices,
+                clustermap_kws,
+                cbar_ax_tick_params,
             )
         else:
             raise ValueError("Available styles are: 'barplot', 'heatmap'")
