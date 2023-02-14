@@ -61,7 +61,6 @@ class Observable(DifferentialEquation):
         # unperturbed steady state
 
         for i, condition in enumerate(self.conditions):
-
             sol = solve_ode(self.diffeq, y0, self.t, tuple(x))
 
             if sol is None:

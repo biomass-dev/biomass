@@ -12,7 +12,6 @@ class ReactionNetwork(object):
 
     @staticmethod
     def flux(t, y, x) -> dict:
-
         v = {}
         v[1] = (
             x[C.V1]

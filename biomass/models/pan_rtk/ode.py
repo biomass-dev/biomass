@@ -9,7 +9,6 @@ class DifferentialEquation(ReactionNetwork):
 
     # Refined Model
     def diffeq(self, t, y, *x):
-
         v = self.flux(t, y, x)
 
         if self.perturbation:
@@ -113,7 +112,6 @@ class DifferentialEquation(ReactionNetwork):
 
 
 def param_values():
-
     x = [0] * C.NUM
 
     x[C.AKT_activation_pEGFR] = 1.00000000000008e-5
@@ -586,7 +584,6 @@ def param_values():
 
 
 def initial_values():
-
     y0 = [0] * V.NUM
 
     y0[V.dose_EGF] = 0.0

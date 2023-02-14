@@ -384,7 +384,6 @@ class ReactionRules(ThermodynamicRestrictions):
             )
 
     def _process_pval_section(self, func_name: str, line_num: int, line: str, *args: str) -> None:
-
         param_values = line.split("|")[1].strip().split(",")
         if all("=" in pval for pval in param_values):
             for pval in param_values:
@@ -461,7 +460,6 @@ class ReactionRules(ThermodynamicRestrictions):
             )
 
     def _process_ival_section(self, line_num: int, line: str) -> None:
-
         initial_values = line.split("|")[2].strip().split(",")
         for ival in initial_values:
             if ival.startswith("fixed "):
