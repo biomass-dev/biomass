@@ -505,7 +505,7 @@ class Text2Model(ReactionRules):
                     for i, condition in enumerate(self.sim_conditions):
                         # Use ';' for adding description of each condition
                         if i == 0:
-                            lines[line_num + 1] = (
+                            lines[line_num] += (
                                 3 * self.indentation
                                 + f'if condition == \'{condition[0].strip(" ")}\':\n'
                                 + 4 * self.indentation
@@ -515,7 +515,7 @@ class Text2Model(ReactionRules):
                                 + ("\n\n" if len(self.sim_conditions) == 1 else "")
                             )
                         else:
-                            lines[line_num + 1] += (
+                            lines[line_num] += (
                                 3 * self.indentation
                                 + f'elif condition == \'{condition[0].strip(" ")}\':\n'
                                 + 4 * self.indentation
@@ -526,8 +526,8 @@ class Text2Model(ReactionRules):
                             )
                         # pa: parameters
                         # init: initial conditions
-                        lines[line_num + 1] = self._convert_names(
-                            line=lines[line_num + 1],
+                        lines[line_num] = self._convert_names(
+                            line=lines[line_num],
                             p=re.findall(r"p\[(.*?)\]", condition[1]),
                             init=re.findall(r"init\[(.*?)\]", condition[1]),
                         )
