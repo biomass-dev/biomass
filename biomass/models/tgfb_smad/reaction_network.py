@@ -10,7 +10,6 @@ class ReactionNetwork(object):
 
     @staticmethod
     def flux(t, y, x) -> dict:
-
         v = {}
 
         v[1] = y[V.Rec] * x[C.Rec_act] * y[V.TGFb]

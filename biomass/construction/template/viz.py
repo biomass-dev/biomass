@@ -35,15 +35,12 @@ class Visualization(Observable):
         self.sensitivity_options = SensitivityOptions(self.cm)
 
     def get_single_observable_options(self) -> List[SingleObservable]:
-
         return self.single_observable_options
 
     def get_multiple_observables_options(self) -> MultipleObservables:
-
         return self.multiple_observables_options
 
     def get_sensitivity_options(self) -> SensitivityOptions:
-
         return self.sensitivity_options
 
     @staticmethod

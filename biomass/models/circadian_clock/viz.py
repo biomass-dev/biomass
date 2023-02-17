@@ -56,7 +56,6 @@ class Visualization(Observable):
         return self.multiple_observables_options
 
     def get_sensitivity_options(self):
-
         return self.sensitivity_options
 
     @staticmethod

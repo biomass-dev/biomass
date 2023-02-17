@@ -10,7 +10,6 @@ class ReactionNetwork(object):
 
     @staticmethod
     def flux(t, y, x):
-
         v = {}
 
         v[1] = x[C.k1_synthesis] * (y[V.pro_IRcom] - y[V.IRcom])
