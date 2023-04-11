@@ -11,7 +11,7 @@ authors = [
     {name = "Hiroaki Imoto"},
 ]
 maintainers = [
-    {name = "Hiroaki Imoto", email = "himoto@protein.osaka-u.ac.jp"},
+    {name = "Hiroaki Imoto", email = "hiroaki.imoto@ucd.ie"},
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
