@@ -60,7 +60,7 @@ Contact
 -------
 
 Please contact me with any questions or comments via `Issues`_ |  `Discussions`_ on GitHub.
-You can also always send me an `email <mailto:himoto@protein.osaka-u.ac.jp>`_.
+You can also always send me an `email <mailto:hiroaki.imoto@ucd.ie>`_.
 
 Any contributions to BioMASS are more than welcome!
 
