@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "biomass"
 description = "A Python Framework for Modeling and Analysis of Signaling Systems"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = {text = "Apache-2.0"}
 authors = [
     {name = "Hiroaki Imoto"},
 ]
