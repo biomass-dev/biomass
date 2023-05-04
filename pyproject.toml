@@ -11,7 +11,7 @@ authors = [
     {name = "Hiroaki Imoto"},
 ]
 maintainers = [
-    {name = "Hiroaki Imoto", email = "himoto@protein.osaka-u.ac.jp"},
+    {name = "Hiroaki Imoto", email = "hiroaki.imoto@ucd.ie"},
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -24,6 +24,7 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
     "Topic :: Software Development",
@@ -51,7 +52,7 @@ dev = [
     "pytest",
 ]
 docs = [
-    "sphinx>=5.1.1,<6",
+    "sphinx>=5.1.1",
     "sphinx_rtd_theme",
     "sphinx_autodoc_typehints>=1.10.3",
     "sphinxcontrib-bibtex>=2.2.0",

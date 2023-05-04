@@ -384,6 +384,7 @@ def run_analysis(
     clustermap_kws : dict, optional
         Keyword arguments to pass to ``seaborn.clustermap()`` when style is 'heatmap'.
     cbar_ax_tick_params : dict, optional
+        Keyword arguments to pass to ``ax.tick_params()`` of the color bar object when style is 'heatmap'.
 
     options : dict, optional
         * show_indices : bool (default: :obj:`True`)

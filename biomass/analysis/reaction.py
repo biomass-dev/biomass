@@ -305,7 +305,7 @@ class ReactionSensitivity(SignalingMetric):
         if not self.model.rxn.reactions:
             raise ValueError("Define reaction indices (reactions) in reaction_network.py")
         biological_processes = self._group()
-        reaction_indices = np.sum(biological_processes, axis=0)
+        reaction_indices = sum(biological_processes, [])
         sensitivity_coefficients = self._load_sc(metric, reaction_indices, show_progress)
 
         if style == "barplot":
