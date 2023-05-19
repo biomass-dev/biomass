@@ -272,8 +272,7 @@ class TemporalDynamics(object):
             ):
                 y_mean = np.nanmean(normalized[i, :, k], axis=0)
                 y_std = [
-                    np.nanstd(normalized[i, :, k, l])
-                    for l, _ in enumerate(self.model.problem.t)
+                    np.nanstd(normalized[i, :, k, l]) for l, _ in enumerate(self.model.problem.t)
                 ]
                 plt.fill_between(
                     np.array(self.model.problem.t) / singleplotting[i].divided_by,
