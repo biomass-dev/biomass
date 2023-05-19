@@ -272,7 +272,7 @@ class TemporalDynamics(object):
             ):
                 y_mean = np.nanmean(normalized[i, :, k], axis=0)
                 y_std = [
-                    np.nanstd(normalized[i, :, k, l], ddof=1)
+                    np.nanstd(normalized[i, :, k, l])
                     for l, _ in enumerate(self.model.problem.t)
                 ]
                 plt.fill_between(

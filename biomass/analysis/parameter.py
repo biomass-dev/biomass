@@ -176,7 +176,7 @@ class ParameterSensitivity(SignalingMetric):
                     if sensitivity_matrix.shape[0] == 1:
                         stdev = np.zeros(sensitivity_matrix.shape[1])
                     else:
-                        stdev = np.std(sensitivity_matrix, axis=0, ddof=1)
+                        stdev = np.std(sensitivity_matrix, axis=0)
                     plt.bar(
                         np.arange(len(param_indices)) + l * self._plotting.width,
                         average,
