@@ -218,7 +218,7 @@ class ReactionSensitivity(SignalingMetric):
                 if sensitivity_array.shape[0] == 1:
                     stdev = np.zeros((sensitivity_array.shape[1], sensitivity_array.shape[2]))
                 else:
-                    stdev = np.std(sensitivity_array, axis=0, ddof=1)
+                    stdev = np.std(sensitivity_array, axis=0)
                 for l, condition in enumerate(self.model.problem.conditions):
                     plt.bar(
                         np.arange(len(reaction_indices)) + l * self._plotting.width,
