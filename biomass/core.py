@@ -14,7 +14,6 @@ from .analysis import InitialConditionSensitivity, ParameterSensitivity, Reactio
 from .dynamics import SignalingSystems
 from .estimation import Optimizer
 from .model_object import ModelObject
-from .version import __version__
 
 __all__ = ["Model", "create_model", "optimize", "run_simulation", "run_analysis"]
 
