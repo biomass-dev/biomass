@@ -9,7 +9,7 @@
 [![Actions Status](https://github.com/biomass-dev/biomass/workflows/Tests/badge.svg)](https://github.com/biomass-dev/biomass/actions)
 [![Documentation Status](https://img.shields.io/readthedocs/biomass-core/latest.svg?logo=read%20the%20docs&logoColor=white&&label=Docs&version=latest)](https://biomass-core.readthedocs.io/en/latest/?badge=latest)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg?logo=apache)](https://opensource.org/licenses/Apache-2.0)
-[![Downloads](https://pepy.tech/badge/biomass)](https://pepy.tech/project/biomass)
+[![Downloads](https://static.pepy.tech/badge/biomass)](https://pepy.tech/project/biomass)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/biomass.svg?logo=Python&logoColor=white)](https://pypi.python.org/pypi/biomass)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/biomass-dev/biomass/master.svg)](https://results.pre-commit.ci/latest/github/biomass-dev/biomass/master)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
