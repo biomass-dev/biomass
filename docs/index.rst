@@ -34,7 +34,7 @@ BioMASS documentation
    :target: https://opensource.org/licenses/Apache-2.0
    :alt: License
 
-.. |Downloads| image:: https://pepy.tech/badge/biomass
+.. |Downloads| image:: https://static.pepy.tech/badge/biomass
    :target: https://pepy.tech/project/biomass
    :alt: Downloads
 
