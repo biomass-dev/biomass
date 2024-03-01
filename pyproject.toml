@@ -25,6 +25,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
     "Topic :: Software Development",
@@ -40,14 +41,15 @@ dependencies = [
     "scipy>=1.6",
     "seaborn>=0.11.2",
     "tqdm>=4.50.2",
+    "setuptools; python_version >= '3.12'",
 ]
 dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
-    "black==23.3.0",
-    "flake8==6.0.0",
-    "isort==5.12.0",
+    "black",
+    "flake8",
+    "isort",
     "pre-commit",
     "pytest",
 ]
