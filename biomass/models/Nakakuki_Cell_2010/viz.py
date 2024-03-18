@@ -44,21 +44,21 @@ class Visualization(Observable):
             self.single_observable_options[i].shape = ["D", "s"]
             self.single_observable_options[i].dont_show = []
 
-        self.single_observable_options[
-            self.obs_names.index("Phosphorylated_MEKc")
-        ].ylabel = "Phosphorylated MEK\n(cytoplasm)"
+        self.single_observable_options[self.obs_names.index("Phosphorylated_MEKc")].ylabel = (
+            "Phosphorylated MEK\n(cytoplasm)"
+        )
 
-        self.single_observable_options[
-            self.obs_names.index("Phosphorylated_ERKc")
-        ].ylabel = "Phosphorylated ERK\n(cytoplasm)"
+        self.single_observable_options[self.obs_names.index("Phosphorylated_ERKc")].ylabel = (
+            "Phosphorylated ERK\n(cytoplasm)"
+        )
 
-        self.single_observable_options[
-            self.obs_names.index("Phosphorylated_RSKw")
-        ].ylabel = "Phosphorylated RSK\n(whole cell)"
+        self.single_observable_options[self.obs_names.index("Phosphorylated_RSKw")].ylabel = (
+            "Phosphorylated RSK\n(whole cell)"
+        )
 
-        self.single_observable_options[
-            self.obs_names.index("Phosphorylated_CREBw")
-        ].ylabel = "Phosphorylated CREB\n(whole cell)"
+        self.single_observable_options[self.obs_names.index("Phosphorylated_CREBw")].ylabel = (
+            "Phosphorylated CREB\n(whole cell)"
+        )
 
         self.single_observable_options[self.obs_names.index("dusp_mRNA")].ylabel = (
             r"$\it{dusp}$" + " mRNA\nexpression"
@@ -68,13 +68,13 @@ class Visualization(Observable):
             r"$\it{c}$" + "-" + r"$\it{fos}$" + " mRNA\nexpression"
         )
 
-        self.single_observable_options[
-            self.obs_names.index("cFos_Protein")
-        ].ylabel = "c-Fos Protein\nexpression"
+        self.single_observable_options[self.obs_names.index("cFos_Protein")].ylabel = (
+            "c-Fos Protein\nexpression"
+        )
 
-        self.single_observable_options[
-            self.obs_names.index("Phosphorylated_cFos")
-        ].ylabel = "Phosphorylated c-Fos\nProtein expression"
+        self.single_observable_options[self.obs_names.index("Phosphorylated_cFos")].ylabel = (
+            "Phosphorylated c-Fos\nProtein expression"
+        )
 
         return self.single_observable_options
 

@@ -94,9 +94,9 @@ class OptimizationResults(object):
                         optimized_params[i + len(self.model.problem.idx_params) + 2, 0] = (
                             "init_" + self.model.species[species_index]
                         )
-                        optimized_params[
-                            i + len(self.model.problem.idx_params) + 2, j
-                        ] = f"{best_individual[i+len(self.model.problem.idx_params)]:8.3e}"
+                        optimized_params[i + len(self.model.problem.idx_params) + 2, j] = (
+                            f"{best_individual[i+len(self.model.problem.idx_params)]:8.3e}"
+                        )
             with open(
                 os.path.join(
                     self.model.path,
