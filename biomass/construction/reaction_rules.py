@@ -1640,14 +1640,16 @@ class ReactionRules(ThermodynamicRestrictions):
                 )
             )
         if float(pre_volume.strip(" ")) != float(post_volume.strip(" ")):
-            self.reactions[
-                -1
-            ] = f"v[{line_num:d}] = " f"x[C.kf{line_num:d}] * y[V.{pre_translocation}]" + (
-                f" - x[C.kr{line_num:d}] * "
-                f"({post_volume.strip()} / {pre_volume.strip()}) * "
-                f"y[V.{post_translocation}]"
-                if not is_unidirectional
-                else ""
+            self.reactions[-1] = (
+                f"v[{line_num:d}] = "
+                f"x[C.kf{line_num:d}] * y[V.{pre_translocation}]"
+                + (
+                    f" - x[C.kr{line_num:d}] * "
+                    f"({post_volume.strip()} / {pre_volume.strip()}) * "
+                    f"y[V.{post_translocation}]"
+                    if not is_unidirectional
+                    else ""
+                )
             )
         counter_pre_translocation, counter_post_translocation = (0, 0)
         for i, eq in enumerate(self.differential_equations):

@@ -64,36 +64,38 @@ class OptimizationProblem(Observable, SearchParam):
                             self.experiments[i],
                             self.get_timepoint(obs_name),
                             self.conditions,
-                            sim_norm_max=1
-                            if not self.normalization
-                            else (
-                                np.max(
-                                    self.simulations[
-                                        self.obs_names.index(obs_name),
-                                        [
-                                            self.conditions.index(c)
-                                            for c in (
-                                                self.normalization[obs_name]["condition"]
-                                                if self.normalization[obs_name]["condition"]
-                                                else self.conditions
-                                            )
-                                        ],
-                                        self.normalization[obs_name]["timepoint"],
-                                    ]
-                                )
-                                if self.normalization[obs_name]["timepoint"] is not None
-                                else np.max(
-                                    self.simulations[
-                                        self.obs_names.index(obs_name),
-                                        [
-                                            self.conditions.index(c)
-                                            for c in (
-                                                self.normalization[obs_name]["condition"]
-                                                if self.normalization[obs_name]["condition"]
-                                                else self.conditions
-                                            )
-                                        ],
-                                    ]
+                            sim_norm_max=(
+                                1
+                                if not self.normalization
+                                else (
+                                    np.max(
+                                        self.simulations[
+                                            self.obs_names.index(obs_name),
+                                            [
+                                                self.conditions.index(c)
+                                                for c in (
+                                                    self.normalization[obs_name]["condition"]
+                                                    if self.normalization[obs_name]["condition"]
+                                                    else self.conditions
+                                                )
+                                            ],
+                                            self.normalization[obs_name]["timepoint"],
+                                        ]
+                                    )
+                                    if self.normalization[obs_name]["timepoint"] is not None
+                                    else np.max(
+                                        self.simulations[
+                                            self.obs_names.index(obs_name),
+                                            [
+                                                self.conditions.index(c)
+                                                for c in (
+                                                    self.normalization[obs_name]["condition"]
+                                                    if self.normalization[obs_name]["condition"]
+                                                    else self.conditions
+                                                )
+                                            ],
+                                        ]
+                                    )
                                 )
                             ),
                         )

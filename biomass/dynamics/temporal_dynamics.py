@@ -132,36 +132,41 @@ class TemporalDynamics(object):
                             1
                             if not self.model.problem.normalization
                             or np.max(simulations_all[i, j, k]) == 0.0
-                            else np.max(
-                                simulations_all[
-                                    i,
-                                    j,
-                                    [
-                                        self.model.problem.conditions.index(c)
-                                        for c in self.model.problem.normalization[obs_name][
-                                            "condition"
-                                        ]
-                                    ],
-                                    self.model.problem.normalization[obs_name]["timepoint"],
-                                ]
-                            )
-                            if self.model.problem.normalization[obs_name]["timepoint"] is not None
-                            else np.max(
-                                simulations_all[
-                                    i,
-                                    j,
-                                    [
-                                        self.model.problem.conditions.index(c)
-                                        for c in self.model.problem.normalization[obs_name][
-                                            "condition"
-                                        ]
-                                    ],
-                                ]
+                            else (
+                                np.max(
+                                    simulations_all[
+                                        i,
+                                        j,
+                                        [
+                                            self.model.problem.conditions.index(c)
+                                            for c in self.model.problem.normalization[obs_name][
+                                                "condition"
+                                            ]
+                                        ],
+                                        self.model.problem.normalization[obs_name]["timepoint"],
+                                    ]
+                                )
+                                if self.model.problem.normalization[obs_name]["timepoint"]
+                                is not None
+                                else np.max(
+                                    simulations_all[
+                                        i,
+                                        j,
+                                        [
+                                            self.model.problem.conditions.index(c)
+                                            for c in self.model.problem.normalization[obs_name][
+                                                "condition"
+                                            ]
+                                        ],
+                                    ]
+                                )
                             )
                         ),
-                        color=singleplotting[i].cmap[k]
-                        if mode == 0
-                        else multiplotting.cmap[multiplotting.observables.index(obs_name)],
+                        color=(
+                            singleplotting[i].cmap[k]
+                            if mode == 0
+                            else multiplotting.cmap[multiplotting.observables.index(obs_name)]
+                        ),
                         alpha=0.05,
                     )
 
@@ -182,27 +187,33 @@ class TemporalDynamics(object):
                     1
                     if not self.model.problem.normalization
                     or np.max(simulations_all[i, j, k]) == 0.0
-                    else np.max(
-                        simulations_all[
-                            i,
-                            j,
-                            [
-                                self.model.problem.conditions.index(c)
-                                for c in self.model.problem.normalization[obs_name]["condition"]
-                            ],
-                            self.model.problem.normalization[obs_name]["timepoint"],
-                        ]
-                    )
-                    if self.model.problem.normalization[obs_name]["timepoint"] is not None
-                    else np.max(
-                        simulations_all[
-                            i,
-                            j,
-                            [
-                                self.model.problem.conditions.index(c)
-                                for c in self.model.problem.normalization[obs_name]["condition"]
-                            ],
-                        ]
+                    else (
+                        np.max(
+                            simulations_all[
+                                i,
+                                j,
+                                [
+                                    self.model.problem.conditions.index(c)
+                                    for c in self.model.problem.normalization[obs_name][
+                                        "condition"
+                                    ]
+                                ],
+                                self.model.problem.normalization[obs_name]["timepoint"],
+                            ]
+                        )
+                        if self.model.problem.normalization[obs_name]["timepoint"] is not None
+                        else np.max(
+                            simulations_all[
+                                i,
+                                j,
+                                [
+                                    self.model.problem.conditions.index(c)
+                                    for c in self.model.problem.normalization[obs_name][
+                                        "condition"
+                                    ]
+                                ],
+                            ]
+                        )
                     )
                 )
         return normalized
@@ -248,9 +259,11 @@ class TemporalDynamics(object):
                 plt.plot(
                     np.array(self.model.problem.t) / singleplotting[i].divided_by,
                     np.nanmean(normalized[i, :, k, :], axis=0),
-                    color=singleplotting[i].cmap[k]
-                    if mode == 0
-                    else multiplotting.cmap[multiplotting.observables.index(obs_name)],
+                    color=(
+                        singleplotting[i].cmap[k]
+                        if mode == 0
+                        else multiplotting.cmap[multiplotting.observables.index(obs_name)]
+                    ),
                     label=condition if mode == 0 else singleplotting[i].ylabel,
                 )
 
@@ -279,9 +292,11 @@ class TemporalDynamics(object):
                     y_mean - y_std,
                     y_mean + y_std,
                     lw=0,
-                    color=singleplotting[i].cmap[k]
-                    if mode == 0
-                    else multiplotting.cmap[multiplotting.observables.index(obs_name)],
+                    color=(
+                        singleplotting[i].cmap[k]
+                        if mode == 0
+                        else multiplotting.cmap[multiplotting.observables.index(obs_name)]
+                    ),
                     alpha=0.1,
                 )
 
@@ -307,34 +322,38 @@ class TemporalDynamics(object):
                         1
                         if not self.model.problem.normalization
                         or np.max(self.model.problem.simulations[i, k, :]) == 0.0
-                        else np.max(
-                            self.model.problem.simulations[
-                                i,
-                                [
-                                    self.model.problem.conditions.index(c)
-                                    for c in self.model.problem.normalization[obs_name][
-                                        "condition"
-                                    ]
-                                ],
-                                self.model.problem.normalization[obs_name]["timepoint"],
-                            ]
-                        )
-                        if self.model.problem.normalization[obs_name]["timepoint"] is not None
-                        else np.max(
-                            self.model.problem.simulations[
-                                i,
-                                [
-                                    self.model.problem.conditions.index(c)
-                                    for c in self.model.problem.normalization[obs_name][
-                                        "condition"
-                                    ]
-                                ],
-                            ]
+                        else (
+                            np.max(
+                                self.model.problem.simulations[
+                                    i,
+                                    [
+                                        self.model.problem.conditions.index(c)
+                                        for c in self.model.problem.normalization[obs_name][
+                                            "condition"
+                                        ]
+                                    ],
+                                    self.model.problem.normalization[obs_name]["timepoint"],
+                                ]
+                            )
+                            if self.model.problem.normalization[obs_name]["timepoint"] is not None
+                            else np.max(
+                                self.model.problem.simulations[
+                                    i,
+                                    [
+                                        self.model.problem.conditions.index(c)
+                                        for c in self.model.problem.normalization[obs_name][
+                                            "condition"
+                                        ]
+                                    ],
+                                ]
+                            )
                         )
                     ),
-                    color=singleplotting[i].cmap[k]
-                    if mode == 0
-                    else multiplotting.cmap[multiplotting.observables.index(obs_name)],
+                    color=(
+                        singleplotting[i].cmap[k]
+                        if mode == 0
+                        else multiplotting.cmap[multiplotting.observables.index(obs_name)]
+                    ),
                     label=condition if mode == 0 else singleplotting[i].ylabel,
                 )
 
@@ -362,25 +381,35 @@ class TemporalDynamics(object):
                         np.array(exp_t) / singleplotting[i].divided_by,
                         self.model.problem.experiments[i][condition],
                         yerr=self.model.problem.error_bars[i][condition],
-                        color=singleplotting[i].cmap[k]
-                        if mode == 0
-                        else multiplotting.cmap[multiplotting.observables.index(obs_name)],
-                        ecolor=singleplotting[i].cmap[k]
-                        if mode == 0
-                        else multiplotting.cmap[multiplotting.observables.index(obs_name)],
+                        color=(
+                            singleplotting[i].cmap[k]
+                            if mode == 0
+                            else multiplotting.cmap[multiplotting.observables.index(obs_name)]
+                        ),
+                        ecolor=(
+                            singleplotting[i].cmap[k]
+                            if mode == 0
+                            else multiplotting.cmap[multiplotting.observables.index(obs_name)]
+                        ),
                         elinewidth=1,
                         capsize=8,
                         markerfacecolor="None",
-                        markeredgecolor=singleplotting[i].cmap[k]
-                        if mode == 0
-                        else multiplotting.cmap[multiplotting.observables.index(obs_name)],
-                        fmt=singleplotting[i].shape[k]
-                        if mode == 0
-                        else multiplotting.shape[multiplotting.observables.index(obs_name)],
+                        markeredgecolor=(
+                            singleplotting[i].cmap[k]
+                            if mode == 0
+                            else multiplotting.cmap[multiplotting.observables.index(obs_name)]
+                        ),
+                        fmt=(
+                            singleplotting[i].shape[k]
+                            if mode == 0
+                            else multiplotting.shape[multiplotting.observables.index(obs_name)]
+                        ),
                         clip_on=False,
-                        label=singleplotting[i].ylabel
-                        if mode == 1 and viz_type == "experiment"
-                        else None,
+                        label=(
+                            singleplotting[i].ylabel
+                            if mode == 1 and viz_type == "experiment"
+                            else None
+                        ),
                     )
                     for capline in exp_data[1]:
                         capline.set_clip_on(False)
@@ -412,20 +441,28 @@ class TemporalDynamics(object):
                     plt.plot(
                         np.array(exp_t) / singleplotting[i].divided_by,
                         self.model.problem.experiments[i][condition],
-                        singleplotting[i].shape[k]
-                        if mode == 0
-                        else multiplotting.shape[multiplotting.observables.index(obs_name)],
+                        (
+                            singleplotting[i].shape[k]
+                            if mode == 0
+                            else multiplotting.shape[multiplotting.observables.index(obs_name)]
+                        ),
                         markerfacecolor="None",
-                        markeredgecolor=singleplotting[i].cmap[k]
-                        if mode == 0
-                        else multiplotting.cmap[multiplotting.observables.index(obs_name)],
-                        color=singleplotting[i].cmap[k]
-                        if mode == 0
-                        else multiplotting.cmap[multiplotting.observables.index(obs_name)],
+                        markeredgecolor=(
+                            singleplotting[i].cmap[k]
+                            if mode == 0
+                            else multiplotting.cmap[multiplotting.observables.index(obs_name)]
+                        ),
+                        color=(
+                            singleplotting[i].cmap[k]
+                            if mode == 0
+                            else multiplotting.cmap[multiplotting.observables.index(obs_name)]
+                        ),
                         clip_on=False,
-                        label=singleplotting[i].ylabel
-                        if mode == 1 and viz_type == "experiment"
-                        else None,
+                        label=(
+                            singleplotting[i].ylabel
+                            if mode == 1 and viz_type == "experiment"
+                            else None
+                        ),
                     )
                 except ValueError as e:
                     print(e, f"in {obs_name}.")
