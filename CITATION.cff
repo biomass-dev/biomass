@@ -3,20 +3,21 @@ message: "If you use this software in your work, we suggest citing the following
 preferred-citation:
   type: article
   authors:
+  - family-names: "Arakane"
+    given-names: "Kiwamu"
   - family-names: "Imoto"
     given-names: "Hiroaki"
     orcid: "https://orcid.org/0000-0002-6817-642X"
-  - family-names: "Zhang"
-    given-names: "Suxiang"
+  - family-names: "Ormersbach"
+    given-names: "Fabian"
+    orcid: "https://orcid.org/0000-0003-1838-5976"
   - family-names: "Okada"
     given-names: "Mariko"
     orcid: "https://orcid.org/0000-0002-6210-8223"
   doi: "10.3390/cancers12102878"
   journal: "Cancers"
-  title: "A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway"
-  issue: 10
-  volume: 12
-  start: 2878
-  end: 2878
-  year: 2020
-  url: "https://www.mdpi.com/2072-6694/12/10/2878"
+  title: "Extending BioMASS to construct mathematical models from external knowledge"
+  start: vbae042
+  end: vbae042
+  year: 2024
+  url: "https://doi.org/10.1093/bioadv/vbae042"

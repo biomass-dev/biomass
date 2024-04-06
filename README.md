@@ -14,7 +14,7 @@
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/biomass-dev/biomass/master.svg)](https://results.pre-commit.ci/latest/github/biomass-dev/biomass/master)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
-[![Cancers Paper](https://img.shields.io/badge/DOI-10.3390%2Fcancers12102878-blue)](https://doi.org/10.3390/cancers12102878)
+[![Paper](https://img.shields.io/badge/DOI-10.1093%2Fbioadv%2Fvbae042-blue)](https://doi.org/10.1093/bioadv/vbae042)
 
 _BioMASS_ is a computational framework for modeling and analysis of biological signaling systems in Python.
 
@@ -40,6 +40,8 @@ BioMASS supports Python 3.8 or newer.
 - Imoto, H., Zhang, S. & Okada, M. A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway. _Cancers_ **12**, 2878 (2020). https://doi.org/10.3390/cancers12102878
 
 - Imoto, H., Yamashiro, S. & Okada, M. A text-based computational framework for patient -specific modeling for classification of cancers. _iScience_ **25**, 103944 (2022). https://doi.org/10.1016/j.isci.2022.103944
+
+- Arakane, K., Imoto, H., Ormersbach, F. & Okada, M. Extending BioMASS to construct mathematical models from external knowledge. *Bioinformatics Advances*, vbae042 (2024). https://doi.org/10.1093/bioadv/vbae042
 
 ## Author
 

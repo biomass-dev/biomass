@@ -3,23 +3,23 @@ Citing BioMASS
 
 If you use BioMASS in your research, please cite the following paper:
 
-* Imoto, H., Zhang, S. & Okada, M. A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway. *Cancers* **12**, 2878 (2020). https://doi.org/10.3390/cancers12102878
+* Arakane, K., Imoto, H., Ormersbach, F. & Okada, M. Extending BioMASS to construct mathematical models from external knowledge. *Bioinformatics Advances*, vbae042 (2024). https://doi.org/10.1093/bioadv/vbae042
 
 *In BibTeX format:*
 
 .. code-block:: bibtex
 
-    @article{cancers12102878,
-      author         = {Imoto, Hiroaki and Zhang, Suxiang and Okada, Mariko},
-      title          = {A Computational Framework for Prediction and Analysis of Cancer Signaling Dynamics from RNA Sequencing Data—Application to the ErbB Receptor Signaling Pathway},
-      journal        = {Cancers},
-      volume         = {12},
-      year           = {2020},
-      number         = {10},
-      article-number = {2878},
-      url            = {https://www.mdpi.com/2072-6694/12/10/2878},
-      issn           = {2072-6694},
-      doi            = {10.3390/cancers12102878}
+    @article{10.1093/bioadv/vbae042,
+      author  = {Arakane, Kiwamu and Imoto, Hiroaki and Ormersbach, Fabian and Okada, Mariko},
+      title   = "{Extending BioMASS to construct mathematical models from external knowledge}",
+      journal = {Bioinformatics Advances},
+      pages   = {vbae042},
+      year    = {2024},
+      month   = {04},
+      issn    = {2635-0041},
+      doi     = {10.1093/bioadv/vbae042},
+      url     = {https://doi.org/10.1093/bioadv/vbae042},
+      eprint  = {https://academic.oup.com/bioinformaticsadvances/advance-article-pdf/doi/10.1093/bioadv/vbae042/57163215/vbae042.pdf},
     }
 
 If you construct a mathematical model using :class:`biomass.construction.text2model.Text2Model`, please also cite the `Pasmopy <https://github.com/pasmopy/pasmopy>`_ paper:
