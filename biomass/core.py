@@ -1,4 +1,5 @@
 """BioMASS core functions"""
+
 import os
 import warnings
 from dataclasses import dataclass
