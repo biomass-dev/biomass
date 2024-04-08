@@ -9,7 +9,7 @@ BioMASS documentation
 .. toctree::
    :maxdepth: 1
    :caption: Contents:
-   
+
    about
    installation
    tutorial/index
@@ -54,6 +54,6 @@ BioMASS documentation
    :target: https://pycqa.github.io/isort/
    :alt: Imports: isort
 
-.. |Cancers Paper| image:: https://img.shields.io/badge/DOI-10.3390%2Fcancers12102878-blue
-   :target: https://doi.org/10.3390/cancers12102878
+.. |Paper| image:: https://img.shields.io/badge/DOI-10.1093%2Fbioadv%2Fvbae042-blue
+   :target: https://doi.org/10.1093/bioadv/vbae042
    :alt: DOI
