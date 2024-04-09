@@ -6,6 +6,11 @@ BioMASS documentation
 
 **Source code:** https://github.com/biomass-dev/biomass
 
+Arakane, K., Imoto, H., Ormersbach, F. & Okada, M.
+Extending BioMASS to construct mathematical models from external knowledge.
+*Bioinformatics Advances*, vbae042 (2024).
+https://doi.org/10.1093/bioadv/vbae042
+
 .. toctree::
    :maxdepth: 1
    :caption: Contents:
@@ -54,6 +59,3 @@ BioMASS documentation
    :target: https://pycqa.github.io/isort/
    :alt: Imports: isort
 
-.. |Paper| image:: https://img.shields.io/badge/DOI-10.1093%2Fbioadv%2Fvbae042-blue
-   :target: https://doi.org/10.1093/bioadv/vbae042
-   :alt: DOI
