@@ -54,6 +54,6 @@ BioMASS documentation
    :target: https://pycqa.github.io/isort/
    :alt: Imports: isort
 
-.. |Paper| image:: https://img.shields.io/badge/DOI-10.1093%2Fbioadv%2Fvbae042-blue
+.. |Bioinformatics Advances| image:: https://img.shields.io/badge/DOI-10.1093%2Fbioadv%2Fvbae042-blue
    :target: https://doi.org/10.1093/bioadv/vbae042
    :alt: DOI
