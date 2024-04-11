@@ -8,7 +8,7 @@ BioMASS documentation
 
 Arakane, K., Imoto, H., Ormersbach, F. & Okada, M.
 Extending BioMASS to construct mathematical models from external knowledge.
-*Bioinformatics Advances*, vbae042 (2024).
+*Bioinformatics Advances* **4**, vbae042 (2024).
 https://doi.org/10.1093/bioadv/vbae042
 
 .. toctree::

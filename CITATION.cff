@@ -17,6 +17,8 @@ preferred-citation:
   doi: "10.3390/cancers12102878"
   journal: "Cancers"
   title: "Extending BioMASS to construct mathematical models from external knowledge"
+  issue: 1
+  volume: 4
   start: vbae042
   end: vbae042
   year: 2024

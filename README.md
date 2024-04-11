@@ -41,7 +41,7 @@ BioMASS supports Python 3.8 or newer.
 
 - Imoto, H., Yamashiro, S. & Okada, M. A text-based computational framework for patient -specific modeling for classification of cancers. _iScience_ **25**, 103944 (2022). https://doi.org/10.1016/j.isci.2022.103944
 
-- Arakane, K., Imoto, H., Ormersbach, F. & Okada, M. Extending BioMASS to construct mathematical models from external knowledge. *Bioinformatics Advances*, vbae042 (2024). https://doi.org/10.1093/bioadv/vbae042
+- Arakane, K., Imoto, H., Ormersbach, F. & Okada, M. Extending BioMASS to construct mathematical models from external knowledge. _Bioinformatics Advances_ **4**, vbae042 (2024). https://doi.org/10.1093/bioadv/vbae042
 
 ## Author
 
