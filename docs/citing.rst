@@ -3,7 +3,7 @@ Citing BioMASS
 
 If you use BioMASS in your research, please cite the following paper:
 
-* Arakane, K., Imoto, H., Ormersbach, F. & Okada, M. Extending BioMASS to construct mathematical models from external knowledge. *Bioinformatics Advances*, vbae042 (2024). https://doi.org/10.1093/bioadv/vbae042
+* Arakane, K., Imoto, H., Ormersbach, F. & Okada, M. Extending BioMASS to construct mathematical models from external knowledge. *Bioinformatics Advances* **4**, vbae042 (2024). https://doi.org/10.1093/bioadv/vbae042
 
 *In BibTeX format:*
 
@@ -13,6 +13,8 @@ If you use BioMASS in your research, please cite the following paper:
       author  = {Arakane, Kiwamu and Imoto, Hiroaki and Ormersbach, Fabian and Okada, Mariko},
       title   = "{Extending BioMASS to construct mathematical models from external knowledge}",
       journal = {Bioinformatics Advances},
+      volume  = {4},
+      number  = {1},
       pages   = {vbae042},
       year    = {2024},
       month   = {04},
