@@ -1,4 +1,4 @@
-|PyPI version| |Actions Status| |Documentation Status| |License| |Downloads| |Python versions| |Pre commit| |Code style| |Imports| |Cancers Paper|
+|PyPI version| |Actions Status| |Documentation Status| |License| |Downloads| |Python versions| |Pre commit| |Code style| |Imports|
 
 =====================
 BioMASS documentation
