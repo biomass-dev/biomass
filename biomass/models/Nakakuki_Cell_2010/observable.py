@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 
 import numpy as np
 
@@ -201,7 +201,7 @@ class Observable(DifferentialEquation):
             "HRG": [sd / np.sqrt(3) for sd in [0.027, 0.059, 0.094, 0.124, 0.113, 0.108]],
         }
 
-    def get_timepoint(self, obs_name) -> List[int]:
+    def get_timepoint(self, obs_name) -> Dict[str, List[int]]:
         if obs_name in [
             "Phosphorylated_MEKc",
             "Phosphorylated_ERKc",
