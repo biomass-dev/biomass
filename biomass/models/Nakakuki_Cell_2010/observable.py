@@ -213,18 +213,11 @@ class Observable(DifferentialEquation):
                 for condition in self.conditions
             }
         elif obs_name == "Phosphorylated_CREBw":
-            return {
-                condition: [0, 600, 1800, 3600, 5400]
-                for condition in self.conditions
-            }
+            return {condition: [0, 600, 1800, 3600, 5400] for condition in self.conditions}
         elif obs_name == "cfos_mRNA":
             return {
-                condition: [0, 600, 1200, 1800, 2700, 3600, 5400]
-                for condition in self.conditions
+                condition: [0, 600, 1200, 1800, 2700, 3600, 5400] for condition in self.conditions
             }
         elif obs_name in ["cFos_Protein", "dusp_mRNA"]:
-            return {
-                condition: [0, 900, 1800, 2700, 3600, 5400]
-                for condition in self.conditions
-            }
+            return {condition: [0, 900, 1800, 2700, 3600, 5400] for condition in self.conditions}
         assert False
