@@ -164,5 +164,5 @@ class Observable(DifferentialEquation):
 
     def get_timepoint(self, obs_name):
         if obs_name in self.obs_names:
-            return [60 * i for i in range(0, 150, 5)]
+            return {condition: [60 * i for i in range(0, 150, 5)] for condition in self.conditions}
         assert False

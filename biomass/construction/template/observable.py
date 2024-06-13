@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 
 import numpy as np
 
@@ -71,7 +71,7 @@ class Observable(DifferentialEquation):
     def set_data(self) -> None:
         pass
 
-    def get_timepoint(self, obs_name: str) -> List[int]:
+    def get_timepoint(self, obs_name: str) -> Dict[str, List[int]]:
         if obs_name in self.obs_names:
-            return []
+            return {condition: [] for condition in self.conditions}
         assert False

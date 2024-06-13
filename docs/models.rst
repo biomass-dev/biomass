@@ -119,6 +119,20 @@ TGF-β/SMAD pathway
 * **Code:** `tgfb_smad`_
 * **Paper:** :cite:p:`LUCARELLI201875`
 
+
+JAK-STAT pathway
+-------------------
+
+.. raw:: html
+
+    <p align="left">
+        <img src="https://raw.githubusercontent.com/biomass-dev/biomass/master/biomass/models/jak_stat_pathway/jak_stat_pathway.png"
+            width="400px" alt="JAK-STAT pathway">
+    </p>
+
+* **Code:** `jak_stat_pathway`_
+* **Paper:** :cite:p:`raia2011Dynamic`
+
 .. _circadian_clock: https://github.com/biomass-dev/biomass/tree/master/biomass/models/circadian_clock
 .. _g1s_transition: https://github.com/biomass-dev/biomass/tree/master/biomass/models/g1s_transition
 .. _Nakakuki_Cell_2010: https://github.com/biomass-dev/biomass/tree/master/biomass/models/Nakakuki_Cell_2010
@@ -128,4 +142,4 @@ TGF-β/SMAD pathway
 .. _pan_rtk: https://github.com/biomass-dev/biomass/tree/master/biomass/models/pan_rtk
 .. _prolif_quies: https://github.com/biomass-dev/biomass/tree/master/biomass/models/prolif_quies
 .. _tgfb_smad: https://github.com/biomass-dev/biomass/tree/master/biomass/models/tgfb_smad
-
+.. _jak_stat_pathway: https://github.com/biomass-dev/biomass/tree/master/biomass/models/jak_stat_pathway

@@ -1,7 +1,7 @@
 import os
 from dataclasses import dataclass
 from math import isnan
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -93,14 +93,14 @@ class TemporalDynamics(object):
                 if (
                     viz_type == "experiment" or singleplotting[i].exp_data
                 ) and self.model.problem.experiments[i] is not None:
-                    exp_t = self.model.problem.get_timepoint(obs_name)
+                    exp_t_dict = self.model.problem.get_timepoint(obs_name)
                     if self.model.problem.error_bars[i] is not None:
                         self._plot_experimental_data_with_error_bars(
-                            viz_type, exp_t, obs_name, mode, singleplotting, multiplotting
+                            viz_type, exp_t_dict, obs_name, mode, singleplotting, multiplotting
                         )
                     else:
                         self._plot_experimental_data_without_error_bars(
-                            viz_type, exp_t, obs_name, mode, singleplotting, multiplotting
+                            viz_type, exp_t_dict, obs_name, mode, singleplotting, multiplotting
                         )
                 if mode == 0:
                     self._save_mode_0(obs_name, singleplotting, viz_type)
@@ -360,7 +360,7 @@ class TemporalDynamics(object):
     def _plot_experimental_data_with_error_bars(
         self,
         viz_type: str,
-        exp_t: Optional[List[int]],
+        exp_t_dict: Optional[Dict[str, List[int]]],
         obs_name: str,
         mode: int,
         singleplotting: List[SingleObservable],
@@ -377,6 +377,7 @@ class TemporalDynamics(object):
                 or (mode == 1 and condition == multiplotting.condition)
             ):
                 try:
+                    exp_t = exp_t_dict[condition]
                     exp_data = plt.errorbar(
                         np.array(exp_t) / singleplotting[i].divided_by,
                         self.model.problem.experiments[i][condition],
@@ -421,7 +422,7 @@ class TemporalDynamics(object):
     def _plot_experimental_data_without_error_bars(
         self,
         viz_type: str,
-        exp_t: Optional[List[int]],
+        exp_t_dict: Optional[Dict[str, List[int]]],
         obs_name: str,
         mode: int,
         singleplotting: List[SingleObservable],
@@ -438,6 +439,7 @@ class TemporalDynamics(object):
                 or (mode == 1 and condition == multiplotting.condition)
             ):
                 try:
+                    exp_t = exp_t_dict[condition]
                     plt.plot(
                         np.array(exp_t) / singleplotting[i].divided_by,
                         self.model.problem.experiments[i][condition],
