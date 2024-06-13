@@ -378,8 +378,7 @@ Open ``observable.py``.
                 "HRG": [sd / np.sqrt(3) for sd in [0.027, 0.059, 0.094, 0.124, 0.113, 0.108]],
             }
     
-        @staticmethod
-        def get_timepoint(obs_name) -> List[int]:
+        def get_timepoint(self, obs_name) -> Dict[str, List[int]]:
             """
             Time points at which experimental data was taken.
             """
@@ -389,13 +388,25 @@ Open ``observable.py``.
                 "Phosphorylated_RSKw",
                 "Phosphorylated_cFos",
             ]:
-                return [0, 300, 600, 900, 1800, 2700, 3600, 5400]  # (Unit: sec.)
+                return {
+                    condition: [0, 300, 600, 900, 1800, 2700, 3600, 5400]  # (Unit: sec.)
+                    for condition in self.conditions
+                }
             elif obs_name == "Phosphorylated_CREBw":
-                return [0, 600, 1800, 3600, 5400]
+                return {
+                    condition: [0, 600, 1800, 3600, 5400]
+                    for condition in self.conditions
+                }
             elif obs_name == "cfos_mRNA":
-                return [0, 600, 1200, 1800, 2700, 3600, 5400]
+                return {
+                    condition: [0, 600, 1200, 1800, 2700, 3600, 5400]
+                    for condition in self.conditions
+                }
             elif obs_name in ["cFos_Protein", "dusp_mRNA"]:
-                return [0, 900, 1800, 2700, 3600, 5400]
+                return {
+                    condition: [0, 900, 1800, 2700, 3600, 5400]
+                    for condition in self.conditions
+                }
             assert False
     
 You can visualize experimental data defined here by running the following code:
