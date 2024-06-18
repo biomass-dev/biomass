@@ -1811,12 +1811,16 @@ class ReactionRules(ThermodynamicRestrictions):
         Examples
         --------
         >>> '@rxn Reactant --> Product: define rate equation here'
+        >>> '@rxn A --> 0: p[Vdeg] * u[A] * u[B] / (p[Kdeg] + u[A])'
+        >>> '@rxn E + S --> E + P: p[Vmax] * u[E] * u[S] / (p[Km] + u[S])'
 
         Notes
         -----
         * Use p[xxx] and u[xxx] for describing parameters and species, respectively.
 
         * Use '0' or '∅' for degradation/creation to/from nothing.
+
+        * Multiple reactants and products can be described by using '+'.
 
         * Differential equation
             .. math::
