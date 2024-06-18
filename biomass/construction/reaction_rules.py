@@ -1837,7 +1837,7 @@ class ReactionRules(ThermodynamicRestrictions):
                 if reactant in self.nothing:
                     self._set_species(product.strip())
                 elif product in self.nothing:
-                    self._set_species(product.strip())
+                    self._set_species(reactant.strip())
                 else:
                     self._set_species(reactant.strip(), product.strip())
                 break
