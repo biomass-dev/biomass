@@ -1811,12 +1811,16 @@ class ReactionRules(ThermodynamicRestrictions):
         Examples
         --------
         >>> '@rxn Reactant --> Product: define rate equation here'
+        >>> '@rxn A --> 0: p[Vdeg] * u[A] * u[B] / (p[Kdeg] + u[A])'
+        >>> '@rxn E + S --> E + P: p[Vmax] * u[E] * u[S] / (p[Km] + u[S])'
 
         Notes
         -----
         * Use p[xxx] and u[xxx] for describing parameters and species, respectively.
 
         * Use '0' or '∅' for degradation/creation to/from nothing.
+
+        * Multiple reactants and products can be described by using '+'.
 
         * Differential equation
             .. math::
@@ -1833,52 +1837,79 @@ class ReactionRules(ThermodynamicRestrictions):
         rate_equation = description[1].strip()
         for arrow in self.fwd_arrows:
             if arrow in balance:
-                reactant, product = balance.split(arrow)
-                if reactant in self.nothing:
-                    self._set_species(product.strip())
-                elif product in self.nothing:
-                    self._set_species(product.strip())
+                two_species = balance.split(arrow)
+                # reactant, product = balance.split(arrow)
+                if len(two_species[0].split(" ")) > 1 and "+" not in two_species[0]:
+                    reactants = None
                 else:
-                    self._set_species(reactant.strip(), product.strip())
+                    reactants = [
+                        reactant
+                        for reactant in two_species[0].replace(" ", "").split("+")
+                        if reactant not in self.nothing
+                    ]
+                if len(two_species[1].split(" ")) > 1 and "+" not in two_species[1]:
+                    products = None
+                else:
+                    products = [
+                        product
+                        for product in two_species[1].replace(" ", "").split("+")
+                        if product not in self.nothing
+                    ]
                 break
         else:
             raise ArrowError(f"line{line_num:d}: Use one of {', '.join(self.fwd_arrows)}.")
+        if reactants is None or products is None:
+            raise DetectionError(f"Unregistered words in line{line_num:d}: {line}")
+        if len(reactants) == 0:
+            self._set_species(*products)
+        elif len(products) == 0:
+            self._set_species(*reactants)
+        else:
+            self._set_species(*reactants, *products)
         rate_equation = (
             rate_equation.replace("p[", "x[C.").replace("u[", "y[V.").replace("^", "**")
         )
         self.reactions.append(f"v[{line_num:d}] = " + rate_equation.strip())
+        modulators = set(reactants) & set(products)
+        for modulator in modulators:
+            reactants.remove(modulator)
+            products.remove(modulator)
         modulators = (
             *list(
                 set(
                     [
                         ent
                         for ent in re.findall(r"(?<=\[V.)(.+?)(?=\])", rate_equation)
-                        if ent not in [reactant, product]
+                        if ent not in [*reactants, *products]
                     ]
                 )
+                | modulators
             ),
         )
         self.kinetics.append(
             KineticInfo(
-                () if reactant in self.nothing else (reactant,),
-                () if product in self.nothing else (product,),
-                () if modulators is None else (modulators),
+                tuple(reactants),
+                tuple(products),
+                tuple(modulators),
                 rate_equation.replace("x[C.", "").replace("y[V.", "").replace("]", ""),
             )
         )
-        counter_reactant = 0
-        counter_product = 0
-        for i, eq in enumerate(self.differential_equations):
-            if f"dydt[V.{reactant}]" in eq and reactant not in self.nothing:
-                counter_reactant += 1
-                self.differential_equations[i] = eq + f" - v[{line_num:d}]"
-            elif f"dydt[V.{product}]" in eq and product not in self.nothing:
-                counter_product += 1
-                self.differential_equations[i] = eq + f" + v[{line_num:d}]"
-        if counter_reactant == 0 and reactant not in self.nothing:
-            self.differential_equations.append(f"dydt[V.{reactant}] = - v[{line_num:d}]")
-        if counter_product == 0 and product not in self.nothing:
-            self.differential_equations.append(f"dydt[V.{product}] = + v[{line_num:d}]")
+        for reactant in reactants:
+            counter_reactant = 0
+            for i, eq in enumerate(self.differential_equations):
+                if f"dydt[V.{reactant}]" in eq:
+                    counter_reactant += 1
+                    self.differential_equations[i] = eq + f" - v[{line_num:d}]"
+            if counter_reactant == 0:
+                self.differential_equations.append(f"dydt[V.{reactant}] = - v[{line_num:d}]")
+        for product in products:
+            counter_product = 0
+            for i, eq in enumerate(self.differential_equations):
+                if f"dydt[V.{product}]" in eq:
+                    counter_product += 1
+                    self.differential_equations[i] = eq + f" + v[{line_num:d}]"
+            if counter_product == 0:
+                self.differential_equations.append(f"dydt[V.{product}] = + v[{line_num:d}]")
 
     def _extract_event(self, line_num: int, line: str):
         # About biochemical event
