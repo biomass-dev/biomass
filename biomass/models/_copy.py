@@ -19,6 +19,7 @@ def copy_to_current(
         "tgfb_smad",
         "g1s_transition",
         "prolif_quies",
+        "jak_stat_pathway",
     ]
 ) -> None:
     """Copy an example model to the current working directory.
@@ -46,6 +47,7 @@ def copy_to_current(
             "tgfb_smad",
             "g1s_transition",
             "prolif_quies",
+            "jak_stat_pathway",
         ]
     ):
         raise ValueError(f"model_name must be one of [{', '.join(available_models)}].")
