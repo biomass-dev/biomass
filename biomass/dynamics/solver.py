@@ -111,8 +111,8 @@ def get_steady_state(
         Steady state concentrations of all species.
         Return an empty list if simulation failed.
     """
-    if integrator not in (availabe_integrators := ["vode", "zvode", "lsoda"]):
-        raise ValueError(f"integrator must be one of {availabe_integrators}.")
+    if integrator not in (available_integrators := ["vode", "zvode", "lsoda"]):
+        raise ValueError(f"integrator must be one of {available_integrators}.")
     if integrator_options is None:
         integrator_options = {}
     if integrator in ["vode", "zvode"]:
