@@ -1,7 +1,7 @@
 Installation
 ============
 
-BioMASS supports Python 3.8 or newer.
+BioMASS supports Python 3.10 or newer.
 
 
 PyPI

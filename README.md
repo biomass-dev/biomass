@@ -33,7 +33,7 @@ The BioMASS library is available at the [Python Package Index (PyPI)](https://py
 $ pip install biomass
 ```
 
-BioMASS supports Python 3.8 or newer.
+BioMASS supports Python 3.10 or newer.
 
 ## References
 
