@@ -20,7 +20,7 @@ def copy_to_current(
         "g1s_transition",
         "prolif_quies",
         "jak_stat_pathway",
-    ]
+    ],
 ) -> None:
     """Copy an example model to the current working directory.
 
