@@ -45,7 +45,6 @@ class OptimizationResults(object):
         Output:
 
         * optimization_results/optimized_params.csv
-        * optimization_results/optimized_initials.csv
         """
         n_file = self.model.get_executable()
 
@@ -55,7 +54,7 @@ class OptimizationResults(object):
                     len(self.model.problem.idx_params) + len(self.model.problem.idx_initials) + 2,
                     len(n_file) + 1,
                 ),
-                dtype="<U21",
+                dtype=object,
             )
             for j, nth_paramset in enumerate(sorted(n_file), start=1):
                 for i, parameter_index in enumerate(self.model.problem.idx_params):
