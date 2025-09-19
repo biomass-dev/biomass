@@ -111,10 +111,10 @@ By comparing the reaction scheme (`Fig.1E <https://ars.els-cdn.com/content/image
     Fc is degraded
     Fc translocates to nucleus (0.94, 0.22) <--> Fn
     Fn is degraded
-    
+
     @add species ppMEKc
     @add param Ligand
-    
+
     @obs Phosphorylated_MEKc: u[ppMEKc]
     @obs Phosphorylated_ERKc: u[pERKc] + u[ppERKc]
     @obs Phosphorylated_RSKw: u[pRSKc] + u[pRSKn] * (0.22 / 0.94)
@@ -123,7 +123,7 @@ By comparing the reaction scheme (`Fig.1E <https://ars.els-cdn.com/content/image
     @obs cfos_mRNA: u[cfosmRNAc]
     @obs cFos_Protein: (u[pcFOSn] + u[cFOSn]) * (0.22 / 0.94) + u[cFOSc] + u[pcFOSc]
     @obs Phosphorylated_cFos: u[pcFOSn] * (0.22 / 0.94) + u[pcFOSc]
-    
+
     @sim tspan: [0, 5400]
     @sim unperturbed: p[Ligand] = 0
     @sim condition EGF: p[Ligand] = 1
@@ -144,7 +144,7 @@ By comparing the reaction scheme (`Fig.1E <https://ars.els-cdn.com/content/image
     63 reactions
     36 species
     110 parameters
-    
+
 You can also export model reactions as markdown files by running the following code:
 
 .. code-block:: python
@@ -160,13 +160,13 @@ The input for the mechanistic c-Fos model is given by an interpolation function 
 Open ``ode.py``.
 
 .. code-block:: python
-    
+
     class DifferentialEquation(ReactionNetwork):
 
         def __init__(self, perturbation):
             super(DifferentialEquation, self).__init__()
             self.perturbation = perturbation
-    
+
         @staticmethod
         def _get_ppMEK_slope(t, ligand) -> float:
             assert ligand in ['EGF', 'HRG']
@@ -185,18 +185,18 @@ Open ``ode.py``.
                 if timepoint <= t <= timepoints[i + 1]:
                     return slope[i]
             assert False
-    
+
         # Refined Model
         def diffeq(self, t, y, *x):
-    
+
             v = self.flux(t, y, x)
-    
+
             if self.perturbation:
                 for i, dv in self.perturbation.items():
                     v[i] = v[i] * dv
-    
+
             dydt = [0] * V.NUM
-    
+
             if x[C.Ligand] == 1:  # EGF=10nM
                 dydt[V.ppMEKc] = self._get_ppMEK_slope(t, 'EGF')
             elif x[C.Ligand] == 2:  # HRG=10nM
@@ -216,9 +216,9 @@ Open ``observable.py``.
 .. code-block:: python
 
     class Observable(DifferentialEquation):
-        
+
         ...
-        
+
         self.normalization: dict = {}
         for observable in self.obs_names:
             self.normalization[observable] = {"timepoint": None, "condition": []}
@@ -242,13 +242,13 @@ Open ``observable.py`` and choose integration method in :func:`~biomass.dynamics
 .. code-block:: python
 
     class Observable(DifferentialEquation):
-        
+
         ...
-        
+
         def simulate(self, x, y0, _perturbation=None):
-            
+
             ...
-            
+
             x[C.Ligand] = 0
             y0 = get_steady_state(self.diffeq, y0, tuple(x), integrator='vode')
             if not y0:
@@ -259,9 +259,9 @@ Open ``observable.py`` and choose integration method in :func:`~biomass.dynamics
                     x[C.Ligand] = 1
                 elif condition == "HRG":
                     x[C.Ligand] = 2
- 
+
                 sol = solve_ode(self.diffeq, y0, self.t, tuple(x), method="BDF")
-                
+
                 ...
 
 - ``get_steady_state`` runs a model simulation till steady state for that parameter set. First, we simulate the model with no ligand until the system reaches steady state, take the final state of the equilibration simulation, and use it as the initial state of the new simulation.
@@ -281,9 +281,9 @@ Open ``observable.py``.
 .. code-block:: python
 
     class Observable(DifferentialEquation):
-        
+
         ...
-        
+
         def set_data(self):
 
             self.experiments[self.obs_names.index("Phosphorylated_MEKc")] = {
@@ -298,7 +298,7 @@ Open ``observable.py``.
                     sd / np.sqrt(3) for sd in [0.000, 0.041, 0.000, 0.051, 0.058, 0.097, 0.157, 0.136]
                 ],
             }
-    
+
             self.experiments[self.obs_names.index("Phosphorylated_ERKc")] = {
                 "EGF": [0.000, 0.867, 0.799, 0.494, 0.313, 0.266, 0.200, 0.194],
                 "HRG": [0.000, 0.848, 1.000, 0.971, 0.950, 0.812, 0.747, 0.595],
@@ -311,7 +311,7 @@ Open ``observable.py``.
                     sd / np.sqrt(3) for sd in [0.000, 0.120, 0.000, 0.037, 0.088, 0.019, 0.093, 0.075]
                 ],
             }
-    
+
             self.experiments[self.obs_names.index("Phosphorylated_RSKw")] = {
                 "EGF": [0, 0.814, 0.812, 0.450, 0.151, 0.059, 0.038, 0.030],
                 "HRG": [0, 0.953, 1.000, 0.844, 0.935, 0.868, 0.779, 0.558],
@@ -324,7 +324,7 @@ Open ``observable.py``.
                     sd / np.sqrt(3) for sd in [0, 0.230, 0.118, 0.058, 0.041, 0.076, 0.090, 0.077]
                 ],
             }
-    
+
             self.experiments[self.obs_names.index("Phosphorylated_cFos")] = {
                 "EGF": [0, 0.060, 0.109, 0.083, 0.068, 0.049, 0.027, 0.017],
                 "HRG": [0, 0.145, 0.177, 0.158, 0.598, 1.000, 0.852, 0.431],
@@ -337,9 +337,9 @@ Open ``observable.py``.
                     sd / np.sqrt(3) for sd in [0, 0.010, 0.013, 0.001, 0.014, 0.000, 0.077, 0.047]
                 ],
             }
-    
+
             # ----------------------------------------------------------------------
-    
+
             self.experiments[self.obs_names.index("Phosphorylated_CREBw")] = {
                 "EGF": [0, 0.446, 0.030, 0.000, 0.000],
                 "HRG": [0, 1.000, 0.668, 0.460, 0.340],
@@ -349,7 +349,7 @@ Open ``observable.py``.
                 "HRG": [sd / np.sqrt(3) for sd in [0, 0.0, 0.0, 0.0, 0.0]],
             }
             # ----------------------------------------------------------------------
-    
+
             self.experiments[self.obs_names.index("cfos_mRNA")] = {
                 "EGF": [0, 0.181, 0.476, 0.518, 0.174, 0.026, 0.000],
                 "HRG": [0, 0.353, 0.861, 1.000, 0.637, 0.300, 0.059],
@@ -359,7 +359,7 @@ Open ``observable.py``.
                 "HRG": [sd / np.sqrt(3) for sd in [0.017, 0.006, 0.065, 0.044, 0.087, 0.023, 0.001]],
             }
             # ----------------------------------------------------------------------
-    
+
             self.experiments[self.obs_names.index("cFos_Protein")] = {
                 "EGF": [0, 0.078, 0.216, 0.240, 0.320, 0.235],
                 "HRG": [0, 0.089, 0.552, 0.861, 1.000, 0.698],
@@ -368,7 +368,7 @@ Open ``observable.py``.
                 "EGF": [sd / np.sqrt(3) for sd in [0, 0.036, 0.028, 0.056, 0.071, 0.048]],
                 "HRG": [sd / np.sqrt(3) for sd in [0, 0.021, 0.042, 0.063, 0.000, 0.047]],
             }
-    
+
             self.experiments[self.obs_names.index("dusp_mRNA")] = {
                 "EGF": [0.000, 0.177, 0.331, 0.214, 0.177, 0.231],
                 "HRG": [0.000, 0.221, 0.750, 1.000, 0.960, 0.934],
@@ -377,7 +377,7 @@ Open ``observable.py``.
                 "EGF": [sd / np.sqrt(3) for sd in [0.033, 0.060, 0.061, 0.032, 0.068, 0.050]],
                 "HRG": [sd / np.sqrt(3) for sd in [0.027, 0.059, 0.094, 0.124, 0.113, 0.108]],
             }
-    
+
         def get_timepoint(self, obs_name) -> Dict[str, List[int]]:
             """
             Time points at which experimental data was taken.
@@ -408,13 +408,13 @@ Open ``observable.py``.
                     for condition in self.conditions
                 }
             assert False
-    
+
 You can visualize experimental data defined here by running the following code:
 
 .. code-block:: python
 
     from biomass import run_simulation
-    
+
     run_simulation(model, viz_type="experiment")
 
 Set lower/upper bounds of parameters to be estimated
@@ -425,15 +425,15 @@ Open ``search_param.py``.
 .. code-block:: python
 
     class SearchParam(object):
-        
+
         ...
-        
+
         def get_region(self):
-            
+
             ...
-            
+
             search_rgn = np.zeros((2, len(x) + len(y0)))
-            
+
             search_rgn[:, C.V1] = [7.33e-2, 6.60e-01]
             search_rgn[:, C.K1] = [1.83e2, 8.50e2]
             search_rgn[:, C.V5] = [6.48e-3, 7.20e1]
@@ -513,13 +513,18 @@ Open ``search_param.py``.
 * Lower bound must be smaller than upper bound.
 * Lower/upper buonds must be positive.
 
+.. warning::
+    Do not reorder the elements of ``self.idx_params`` or ``self.idx_initials``.
+    Their order determines how parameter values are mapped during parameter estimation and simulation.
+    Changing the order will change the meaning of parameter sets and lead to inconsistent results.
+
 Create a new model
 ^^^^^^^^^^^^^^^^^^
 
 BioMASS core functions require :class:`~biomass.exec_model.ModelObject` in the first argument.
 
 .. code-block:: python
-    
+
     >>> from biomass import create_model
     >>> model = create_model('cfos_model')  # Create a new BioMASS model object.
 
@@ -544,10 +549,10 @@ Parameters are adjusted to minimize the distance between model simulation and ex
 * Set lower/upper bounds of parameters to be estimated in ``search_param.py``
 
 .. code-block:: python
-    
+
     from tqdm import tqdm
     from biomass import optimize
-    
+
     # Get 30 parameter sets, it will take more than a few hours
     for x_id in tqdm(range(1, 31)):
         optimize(model, x_id=x_id, disp_here=False, optimizer_options={"workers": -1})
@@ -623,7 +628,7 @@ Sensitivity analysis examines how perturbations to the processes in the model af
 To perform sensitivity analysis on reaction rates (``target='reaction'``), you will need to modify ``reaction_network.py`` in the model folder as follows:
 
 .. code-block:: python
-    
+
     class ReactionNetwork(object):
 
         def __init__(self) -> None:
@@ -632,7 +637,7 @@ To perform sensitivity analysis on reaction rates (``target='reaction'``), you w
             This is used for sensitivity analysis (target='reaction').
             """
             super(ReactionNetwork, self).__init__()
-    
+
             self.reactions: Dict[str, List[int]] = {
                 "ERK_activation": [i for i in range(1, 7)],
                 "ERK_dephosphorylation_by_DUSP": [i for i in range(47, 57)],
@@ -651,7 +656,7 @@ To perform sensitivity analysis on reaction rates (``target='reaction'``), you w
                 "cFos_degradation": [38, 39, 45, 46],
                 "Feedback_from_F": [i for i in range(57, 64)],
             }
-            
+
             ...
 
 Then, run the following code:
@@ -675,4 +680,4 @@ Control coefficients for integrated pc-Fos are shown by bars (blue, EGF; red, HR
 
 
 .. note::
-    If you want to reuse a result from the previous computation and don't want to calculate sensitivity coefficients again, set ``options['overwrite']`` to ``False``. 
+    If you want to reuse a result from the previous computation and don't want to calculate sensitivity coefficients again, set ``options['overwrite']`` to ``False``.
