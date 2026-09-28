@@ -109,7 +109,7 @@ class ModelObject(object):
             Optimized parameter/initial values.
         """
         best_individual = self.get_individual(paramset)
-        (x, y0) = self.problem.update(best_individual)
+        x, y0 = self.problem.update(best_individual)
         optimized_values = OptimizedValues(x, y0)
         return optimized_values
 
