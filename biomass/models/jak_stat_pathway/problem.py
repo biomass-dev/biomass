@@ -44,11 +44,11 @@ class OptimizationProblem(Observable, SearchParam):
     def objective(self, indiv, *args):
         """Define an objective function to be minimized."""
         if len(args) == 0:
-            (x, y0) = self.update(indiv)
+            x, y0 = self.update(indiv)
         elif len(args) == 1:
             raise ValueError("not enough values to unpack (expected 2, got 1)")
         elif len(args) == 2:
-            (x, y0) = args
+            x, y0 = args
         else:
             raise ValueError("too many values to unpack (expected 2)")
 
